@@ -1,7 +1,8 @@
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
+*
+!*/
+!*.go
+!*.zen
+!LICENSE
+!README.md
+!.editorconfig
+!.gitignore
