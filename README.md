@@ -1,0 +1,2 @@
+# ez
+EZ programming language.
