@@ -17,6 +17,7 @@ Don't expect it to do anything useful yet, it can barely create a Linux executab
 ## Installation
 
 ```shell
+git clone https://github.com/akyoto/q
 go build
 ./q testdata/hello.q
 ./hello
