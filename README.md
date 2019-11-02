@@ -29,6 +29,11 @@ go build
 ./hello
 ```
 
+## Backend
+
+I'm using my [asm](https://github.com/akyoto/asm) module to generate machine code for x86-64 systems.
+There is no need to create an intermediary format for an external compiler which makes the compilation very fast.
+
 ## Design goals
 
 * Importing a module should have no side effects
