@@ -10,6 +10,15 @@ The Q programming language (work in progress).
 * Fast compilation (inspired by V)
 * Zero-cost abstractions (inspired by Rust)
 
+## Installation
+
+```shell
+go build
+./q testdata/hello.q
+chmod +x a.out
+./a.out
+```
+
 ## Design goals
 
 * Importing a module should have no side effects
