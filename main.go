@@ -12,7 +12,12 @@ func main() {
 
 	inputFile := os.Args[len(os.Args)-1]
 	compiler := NewCompiler()
-	compiler.Compile(inputFile, "a.out")
+	err := compiler.Compile(inputFile, "a.out")
+
+	if err != nil {
+		os.Stderr.WriteString(err.Error() + "\n")
+		os.Exit(1)
+	}
 }
 
 func help() {
