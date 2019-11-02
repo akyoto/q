@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -12,7 +14,9 @@ func main() {
 
 	inputFile := os.Args[len(os.Args)-1]
 	compiler := NewCompiler()
-	err := compiler.Compile(inputFile, "a.out")
+	inputFileBase := filepath.Base(inputFile)
+	outputFile := strings.TrimSuffix(inputFileBase, filepath.Ext(inputFileBase))
+	err := compiler.Compile(inputFile, outputFile)
 
 	if err != nil {
 		os.Stderr.WriteString(err.Error() + "\n")

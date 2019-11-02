@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
 )
@@ -29,5 +31,11 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
 
 	// Produce ELF binary
 	binary := elf.New(compiler.assembler)
-	return binary.WriteToFile(outputFile)
+	err = binary.WriteToFile(outputFile)
+
+	if err != nil {
+		return err
+	}
+
+	return os.Chmod(outputFile, 0755)
 }

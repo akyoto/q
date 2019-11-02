@@ -1,6 +1,8 @@
 # Q
 
-The Q programming language (work in progress).
+The Q programming language.
+This is a very early version of a programming language I'm currently working on.
+Don't expect it to do anything useful yet, it can barely create a Linux executable printing "Hello World".
 
 ## Features
 
@@ -9,14 +11,14 @@ The Q programming language (work in progress).
 * Functional (inspired by Haskell)
 * Fast compilation (inspired by V)
 * Zero-cost abstractions (inspired by Rust)
+* No dependencies (no LLVM, no GCC, ...)
 
 ## Installation
 
 ```shell
 go build
 ./q testdata/hello.q
-chmod +x a.out
-./a.out
+./hello
 ```
 
 ## Design goals
