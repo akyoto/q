@@ -14,4 +14,5 @@ Zen programming language (work in progress).
 
 * Importing a module should have no side effects
 * Modules should be highly reusable (not bound to predefined data structures)
+* No classes or methods, instead we have data and functions that can operate on data
 * ...TODO...
