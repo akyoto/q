@@ -65,11 +65,13 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) {
 	}
 }
 
+// processBuffer processes the partial read and returns how many bytes were processed.
+// The remaining bytes will be prepended to the next call.
 func (compiler *Compiler) processBuffer(buffer []byte) int {
 	var (
-		i          int
-		c          byte
-		tokenStart int
+		i              int
+		c              byte
+		processedBytes int
 	)
 
 	for i < len(buffer) {
@@ -77,33 +79,33 @@ func (compiler *Compiler) processBuffer(buffer []byte) int {
 
 		// Identifiers
 		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
-			tokenStart = i
+			processedBytes = i
 
 			for (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
 				i++
 
 				if i >= len(buffer) {
-					return tokenStart
+					return processedBytes
 				}
 
 				c = buffer[i]
 			}
 
-			token := Token{TokenIdentifier, buffer[tokenStart:i]}
+			token := Token{TokenIdentifier, buffer[processedBytes:i]}
 			compiler.processToken(token)
-			tokenStart = i + 1
+			processedBytes = i + 1
 			continue
 		}
 
 		// Texts
 		if c == '"' {
-			tokenStart = i
+			processedBytes = i
 
 			for {
 				i++
 
 				if i >= len(buffer) {
-					return tokenStart
+					return processedBytes
 				}
 
 				c = buffer[i]
@@ -114,9 +116,9 @@ func (compiler *Compiler) processBuffer(buffer []byte) int {
 				}
 			}
 
-			token := Token{TokenText, buffer[tokenStart:i]}
+			token := Token{TokenText, buffer[processedBytes:i]}
 			compiler.processToken(token)
-			tokenStart = i + 1
+			processedBytes = i + 1
 			continue
 		}
 
@@ -125,7 +127,7 @@ func (compiler *Compiler) processBuffer(buffer []byte) int {
 			token := Token{TokenBracketStart, buffer[i : i+1]}
 			compiler.processToken(token)
 			i++
-			tokenStart = i
+			processedBytes = i
 			continue
 		}
 
@@ -134,7 +136,7 @@ func (compiler *Compiler) processBuffer(buffer []byte) int {
 			token := Token{TokenBracketEnd, buffer[i : i+1]}
 			compiler.processToken(token)
 			i++
-			tokenStart = i
+			processedBytes = i
 			continue
 		}
 
@@ -143,14 +145,14 @@ func (compiler *Compiler) processBuffer(buffer []byte) int {
 			token := Token{TokenEndOfLine, nil}
 			compiler.processToken(token)
 			i++
-			tokenStart = i
+			processedBytes = i
 			continue
 		}
 
 		i++
 	}
 
-	return tokenStart
+	return processedBytes
 }
 
 func (compiler *Compiler) processToken(token Token) {

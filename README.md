@@ -8,4 +8,10 @@ Zen programming language (work in progress).
 * Memory-safe (inspired by Rust)
 * Functional (inspired by Haskell)
 * Fast compilation (inspired by V)
-* High performance (inspired by Rust)
+* Zero-cost abstractions (inspired by Rust)
+
+## Design goals
+
+* Importing a module should have no side effects
+* Modules should be highly reusable (not bound to predefined data structures)
+* ...TODO...
