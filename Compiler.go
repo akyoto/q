@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/asm/elf"
 )
 
 type Compiler struct {
@@ -17,12 +18,12 @@ func NewCompiler() *Compiler {
 	}
 }
 
-func (compiler *Compiler) Compile(inputFile string, outputFile string) {
+// Compile reads the input file and generates an executable binary.
+func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
 	file, err := os.Open(inputFile)
 
 	if err != nil {
-		os.Stderr.WriteString(err.Error() + "\n")
-		os.Exit(1)
+		return err
 	}
 
 	defer file.Close()
@@ -56,13 +57,18 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) {
 		}
 
 		if err == io.EOF {
-			return
+			break
 		}
 
-		os.Stderr.WriteString(err.Error() + "\n")
-		file.Close()
-		os.Exit(1)
+		return err
 	}
+
+	// Programs should always exit
+	compiler.assembler.Exit(0)
+
+	// Produce ELF binary
+	binary := elf.New(compiler.assembler)
+	return binary.WriteToFile(outputFile)
 }
 
 // processBuffer processes the partial read and returns how many bytes were processed.
@@ -155,10 +161,10 @@ func (compiler *Compiler) processBuffer(buffer []byte) int {
 	return processedBytes
 }
 
+// processToken processes a single token.
 func (compiler *Compiler) processToken(token Token) {
-	// fmt.Println(token.Kind, string(token.Text))
-
 	switch token.Kind {
-	case TokenIdentifier:
+	case TokenText:
+		compiler.assembler.Println(string(token.Text[1 : len(token.Text)-1]))
 	}
 }
