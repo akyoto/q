@@ -3,5 +3,6 @@ linters:
   disable:
     - lll
     - gocognit
+    - gocyclo
     - funlen
     - wsl
