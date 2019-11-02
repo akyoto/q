@@ -2,6 +2,8 @@
 !*/
 !*.q
 !*.go
+!*.mod
+!*.sum
 !LICENSE
 !README.md
 !.editorconfig

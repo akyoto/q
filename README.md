@@ -8,9 +8,9 @@ Don't expect it to do anything useful yet, it can barely create a Linux executab
 ## Features
 
 * Simple (inspired by Go)
+* Fast compilation (inspired by V)
 * Memory-safe (inspired by Rust)
 * Functional (inspired by Haskell)
-* Fast compilation (inspired by V)
 * Zero-cost abstractions (inspired by Rust)
 * No dependencies (no LLVM, no GCC, ...)
 

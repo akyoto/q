@@ -7,7 +7,7 @@ import (
 	"sort"
 
 	"github.com/akyoto/asm"
-	"github.com/akyoto/zen/similarity"
+	"github.com/akyoto/q/similarity"
 )
 
 // FileCompiler is a single-threaded file compiler.
