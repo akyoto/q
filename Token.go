@@ -1,10 +1,16 @@
 package main
 
-type Token int
+type TokenKind int
 
 const (
-	TokenIdentifier Token = iota
+	TokenIdentifier TokenKind = iota
 	TokenText
 	TokenBracketStart
 	TokenBracketEnd
+	TokenEndOfLine
 )
+
+type Token struct {
+	Kind TokenKind
+	Text []byte
+}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -27,13 +26,29 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) {
 	}
 
 	defer file.Close()
-	var buffer [4096]byte
+
+	var (
+		buffer      [16384]byte
+		unprocessed = make([]byte, 0, len(buffer))
+		final       []byte
+	)
 
 	for {
 		n, err := file.Read(buffer[:])
 
 		if n > 0 {
-			compiler.processBuffer(buffer[:n])
+			if len(unprocessed) > 0 {
+				final = append(unprocessed, buffer[:n]...)
+				unprocessed = unprocessed[:0]
+			} else {
+				final = buffer[:n]
+			}
+
+			processedBytes := compiler.processBuffer(final)
+
+			if processedBytes < len(final) {
+				unprocessed = append(unprocessed, final[processedBytes:]...)
+			}
 		}
 
 		if err == nil {
@@ -50,14 +65,14 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) {
 	}
 }
 
-func (compiler *Compiler) processBuffer(buffer []byte) {
+func (compiler *Compiler) processBuffer(buffer []byte) int {
 	var (
 		i          int
 		c          byte
 		tokenStart int
 	)
 
-	for {
+	for i < len(buffer) {
 		c = buffer[i]
 
 		// Identifiers
@@ -68,13 +83,15 @@ func (compiler *Compiler) processBuffer(buffer []byte) {
 				i++
 
 				if i >= len(buffer) {
-					return
+					return tokenStart
 				}
 
 				c = buffer[i]
 			}
 
-			compiler.processToken(TokenIdentifier, buffer[tokenStart:i])
+			token := Token{TokenIdentifier, buffer[tokenStart:i]}
+			compiler.processToken(token)
+			tokenStart = i + 1
 			continue
 		}
 
@@ -86,7 +103,7 @@ func (compiler *Compiler) processBuffer(buffer []byte) {
 				i++
 
 				if i >= len(buffer) {
-					return
+					return tokenStart
 				}
 
 				c = buffer[i]
@@ -97,36 +114,49 @@ func (compiler *Compiler) processBuffer(buffer []byte) {
 				}
 			}
 
-			compiler.processToken(TokenText, buffer[tokenStart:i])
+			token := Token{TokenText, buffer[tokenStart:i]}
+			compiler.processToken(token)
+			tokenStart = i + 1
 			continue
 		}
 
 		// Bracket start
 		if c == '(' {
-			compiler.processToken(TokenBracketStart, buffer[i:i+1])
+			token := Token{TokenBracketStart, buffer[i : i+1]}
+			compiler.processToken(token)
 			i++
+			tokenStart = i
 			continue
 		}
 
 		// Bracket end
 		if c == ')' {
-			compiler.processToken(TokenBracketEnd, buffer[i:i+1])
+			token := Token{TokenBracketEnd, buffer[i : i+1]}
+			compiler.processToken(token)
 			i++
+			tokenStart = i
+			continue
+		}
+
+		// End of line
+		if c == '\n' {
+			token := Token{TokenEndOfLine, nil}
+			compiler.processToken(token)
+			i++
+			tokenStart = i
 			continue
 		}
 
 		i++
-
-		if i >= len(buffer) {
-			return
-		}
 	}
+
+	return tokenStart
 }
 
-func (compiler *Compiler) processToken(token Token, data []byte) {
-	fmt.Println(token, string(data))
+func (compiler *Compiler) processToken(token Token) {
+	// fmt.Println(token.Kind, string(token.Text))
 
-	switch token {
+	switch token.Kind {
 	case TokenIdentifier:
 	}
 }
