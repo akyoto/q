@@ -4,6 +4,7 @@
 !*.go
 !*.mod
 !*.sum
+!*.yml
 !LICENSE
 !README.md
 !.editorconfig

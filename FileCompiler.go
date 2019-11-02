@@ -23,7 +23,7 @@ func NewFileCompiler(inputFile string, assembler *asm.Assembler) *FileCompiler {
 		assembler: assembler,
 		fileName:  inputFile,
 		tokens: []Token{
-			Token{TokenStartOfLine, nil},
+			{TokenStartOfLine, nil},
 		},
 	}
 }
@@ -49,7 +49,7 @@ func (compiler *FileCompiler) Compile() error {
 
 		if n > 0 {
 			if len(unprocessed) > 0 {
-				final = append(unprocessed, buffer[:n]...)
+				final = append(unprocessed, buffer[:n]...) // nolint:gocritic
 				unprocessed = unprocessed[:0]
 			} else {
 				final = buffer[:n]

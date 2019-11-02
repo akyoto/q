@@ -65,6 +65,6 @@ func Jaro(a, b string) float64 {
 		return 0
 	}
 
-	transposes := math.Floor(float64(halfs / 2))
+	transposes := math.Floor(halfs / 2)
 	return ((matches / la) + (matches / lb) + (matches-transposes)/matches) / 3.0
 }
