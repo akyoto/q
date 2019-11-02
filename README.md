@@ -35,3 +35,7 @@ go build
 
 * User-friendly compiler messages
 * ...TODO...
+
+## How to contribute
+
+* ...TODO...
