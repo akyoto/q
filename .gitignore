@@ -1,7 +1,7 @@
 *
 !*/
+!*.q
 !*.go
-!*.zen
 !LICENSE
 !README.md
 !.editorconfig
