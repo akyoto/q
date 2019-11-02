@@ -3,11 +3,12 @@ package main
 type TokenKind int
 
 const (
-	TokenIdentifier TokenKind = iota
+	TokenStartOfLine TokenKind = iota
+	TokenIdentifier
 	TokenText
 	TokenBracketStart
 	TokenBracketEnd
-	TokenEndOfLine
+	TokenWhiteSpace
 )
 
 type Token struct {
