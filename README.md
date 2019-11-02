@@ -58,13 +58,13 @@ Please take a look at the [style guidelines](https://github.com/akyoto/quality/b
 
 Want to see [your own name here?](https://github.com/users/akyoto/sponsorship)
 
-[godoc-image]: https://godoc.org/github.com/akyoto/zen?status.svg
-[godoc-url]: https://godoc.org/github.com/akyoto/zen
-[report-image]: https://goreportcard.com/badge/github.com/akyoto/zen
-[report-url]: https://goreportcard.com/report/github.com/akyoto/zen
-[tests-image]: https://cloud.drone.io/api/badges/akyoto/zen/status.svg
-[tests-url]: https://cloud.drone.io/akyoto/zen
-[coverage-image]: https://codecov.io/gh/akyoto/zen/graph/badge.svg
-[coverage-url]: https://codecov.io/gh/akyoto/zen
+[godoc-image]: https://godoc.org/github.com/akyoto/q?status.svg
+[godoc-url]: https://godoc.org/github.com/akyoto/q
+[report-image]: https://goreportcard.com/badge/github.com/akyoto/q
+[report-url]: https://goreportcard.com/report/github.com/akyoto/q
+[tests-image]: https://cloud.drone.io/api/badges/akyoto/q/status.svg
+[tests-url]: https://cloud.drone.io/akyoto/q
+[coverage-image]: https://codecov.io/gh/akyoto/q/graph/badge.svg
+[coverage-url]: https://codecov.io/gh/akyoto/q
 [sponsor-image]: https://img.shields.io/badge/github-donate-green.svg
 [sponsor-url]: https://github.com/users/akyoto/sponsorship
