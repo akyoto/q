@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"sort"
+	"sync"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/similarity"
@@ -15,9 +16,10 @@ import (
 // File represents a single source file.
 type File struct {
 	token.Producer
-	name      string
-	assembler *asm.Assembler
-	groups    []spec.Group
+	name             string
+	assembler        *asm.Assembler
+	groups           []spec.Group
+	functionCallPool sync.Pool
 }
 
 // NewFile creates a new compiler for a single file.
@@ -25,6 +27,11 @@ func NewFile(inputFile string, assembler *asm.Assembler) *File {
 	return &File{
 		name:      inputFile,
 		assembler: assembler,
+		functionCallPool: sync.Pool{
+			New: func() interface{} {
+				return &FunctionCall{}
+			},
+		},
 		Producer: token.Producer{
 			Tokens: []token.Token{
 				{
@@ -174,10 +181,11 @@ func (file *File) handleToken(t token.Token) error {
 				return file.UnknownFunctionError(functionName)
 			}
 
-			file.groups = append(file.groups, &FunctionCall{
-				Function:        function,
-				ProcessedTokens: len(file.Tokens) + 1,
-			})
+			poolObject := file.functionCallPool.Get()
+			functionCall := poolObject.(*FunctionCall)
+			functionCall.Function = function
+			functionCall.ProcessedTokens = len(file.Tokens) + 1
+			file.groups = append(file.groups, functionCall)
 		}
 
 	// ')'
@@ -216,6 +224,8 @@ func (file *File) handleToken(t token.Token) error {
 			file.assembler.Println(string(text))
 			file.groups = file.groups[:len(file.groups)-1]
 		}
+
+		file.functionCallPool.Put(call)
 	}
 
 	file.Tokens = append(file.Tokens, t)
