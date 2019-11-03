@@ -28,7 +28,7 @@ func NewFile(inputFile string, assembler *asm.Assembler) *File {
 		Producer: token.Producer{
 			Tokens: []token.Token{
 				{
-					Kind: token.StartOfLine,
+					Kind: token.NewLine,
 					Text: nil,
 				},
 			},
@@ -100,7 +100,7 @@ func (file *File) Error(message string) error {
 	column := 1
 
 	for _, oldToken := range file.Tokens {
-		if oldToken.Kind == token.StartOfLine {
+		if oldToken.Kind == token.NewLine {
 			lineCount++
 			column = 1
 		} else {
@@ -111,9 +111,28 @@ func (file *File) Error(message string) error {
 	return fmt.Errorf("%s:%d:%d: %s", file.name, lineCount, column, message)
 }
 
+// UnknownFunctionError produces an unknown function error
+// and tries to guess which function the user was trying to type.
+func (file *File) UnknownFunctionError(functionName string) error {
+	knownFunctions := []string{"print"}
+
+	// Suggest a function name based on the similarity to known functions
+	sort.Slice(knownFunctions, func(a, b int) bool {
+		aSimilarity := similarity.Default(functionName, knownFunctions[a])
+		bSimilarity := similarity.Default(functionName, knownFunctions[b])
+		return aSimilarity > bSimilarity
+	})
+
+	if similarity.Default(functionName, knownFunctions[0]) > 0.9 {
+		return file.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0]))
+	}
+
+	return file.Error(fmt.Sprintf("Unknown function '%s'", functionName))
+}
+
 // handleToken processes a single token.
 func (file *File) handleToken(t token.Token) error {
-	fmt.Println(t.Kind, string(t.Text))
+	fmt.Printf("%-10s | %s\n", t.Kind, string(t.Text))
 
 	switch t.Kind {
 	// "Hello"
@@ -121,7 +140,7 @@ func (file *File) handleToken(t token.Token) error {
 		// text := string(token.Text[1 : len(token.Text)-1])
 		// file.assembler.Println(text)
 
-	case token.StartOfLine:
+	case token.NewLine:
 		if len(file.groups) > 0 {
 			return file.Error("Missing closing bracket ')'")
 		}
@@ -148,8 +167,15 @@ func (file *File) handleToken(t token.Token) error {
 		if isDefinition {
 
 		} else {
+			functionName := string(previous.Text)
+			function := spec.Functions[functionName]
+
+			if function == nil {
+				return file.UnknownFunctionError(functionName)
+			}
+
 			file.groups = append(file.groups, &FunctionCall{
-				Function:        spec.Functions[string(previous.Text)],
+				Function:        function,
 				ProcessedTokens: len(file.Tokens) + 1,
 			})
 		}
@@ -165,24 +191,6 @@ func (file *File) handleToken(t token.Token) error {
 		// Add the last parameter
 		if call.ProcessedTokens < len(file.Tokens) {
 			call.Parameters = append(call.Parameters, file.Tokens[call.ProcessedTokens:])
-		}
-
-		// Currently, we only allow builtin functions
-		if spec.Functions[call.Function.Name] == nil {
-			knownFunctions := []string{"print"}
-
-			// Suggest a function name based on the similarity to known functions
-			sort.Slice(knownFunctions, func(a, b int) bool {
-				aSimilarity := similarity.Default(call.Function.Name, knownFunctions[a])
-				bSimilarity := similarity.Default(call.Function.Name, knownFunctions[b])
-				return aSimilarity > bSimilarity
-			})
-
-			if similarity.Default(call.Function.Name, knownFunctions[0]) > 0.9 {
-				return file.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", call.Function.Name, knownFunctions[0]))
-			}
-
-			return file.Error(fmt.Sprintf("Unknown function '%s'", call.Function.Name))
 		}
 
 		// print builtin

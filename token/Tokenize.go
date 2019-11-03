@@ -42,6 +42,27 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				token.Kind = Keyword
 			}
 
+		// Numbers
+		case c >= '0' && c <= '9':
+			processedBytes = i
+
+			for {
+				i++
+
+				if i >= len(buffer) {
+					return processedBytes, nil
+				}
+
+				c = buffer[i]
+
+				if c < '0' || c > '9' {
+					i--
+					break
+				}
+			}
+
+			token = Token{Number, buffer[processedBytes : i+1]}
+
 		// Texts
 		case c == '"':
 			processedBytes = i
@@ -78,9 +99,9 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 		case c == '}':
 			token = Token{BlockEnd, buffer[i : i+1]}
 
-		// End of line
+		// New line
 		case c == '\n':
-			token = Token{StartOfLine, nil}
+			token = Token{NewLine, nil}
 
 		// Whitespace
 		case c == ' ' || c == '\t':
