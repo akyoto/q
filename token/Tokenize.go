@@ -64,11 +64,11 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 
 		// Parentheses start
 		case c == '(':
-			token = Token{ParenthesesStart, buffer[i : i+1]}
+			token = Token{GroupStart, buffer[i : i+1]}
 
 		// Parentheses end
 		case c == ')':
-			token = Token{ParenthesesEnd, buffer[i : i+1]}
+			token = Token{GroupEnd, buffer[i : i+1]}
 
 		// Block start
 		case c == '{':

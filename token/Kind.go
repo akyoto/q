@@ -1,5 +1,6 @@
 package token
 
+// Kind represents the type of token.
 type Kind int
 
 const (
@@ -8,8 +9,8 @@ const (
 	Identifier
 	Keyword
 	Text
-	ParenthesesStart
-	ParenthesesEnd
+	GroupStart
+	GroupEnd
 	BlockStart
 	BlockEnd
 	WhiteSpace

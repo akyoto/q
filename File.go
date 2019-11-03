@@ -17,7 +17,7 @@ type File struct {
 	token.Producer
 	name      string
 	assembler *asm.Assembler
-	funcCalls []FunctionCall
+	groups    []Group
 }
 
 // NewFile creates a new compiler for a single file.
@@ -122,12 +122,12 @@ func (file *File) handleToken(t token.Token) error {
 		// file.assembler.Println(text)
 
 	case token.StartOfLine:
-		if len(file.funcCalls) > 0 {
+		if len(file.groups) > 0 {
 			return file.Error("Missing closing bracket ')'")
 		}
 
 	// '('
-	case token.ParenthesesStart:
+	case token.GroupStart:
 		previous := file.PreviousToken(-1)
 
 		if previous.Kind != token.Identifier {
@@ -148,66 +148,67 @@ func (file *File) handleToken(t token.Token) error {
 		if isDefinition {
 
 		} else {
-			file.funcCalls = append(file.funcCalls, FunctionCall{
-				FunctionName:   string(previous.Text),
-				ParameterStart: len(file.Tokens) + 1,
+			functionName := string(previous.Text)
+
+			file.groups = append(file.groups, &FunctionCall{
+				Function:        spec.Functions[functionName],
+				ProcessedTokens: len(file.Tokens) + 1,
 			})
 		}
 
 	// ')'
-	case token.ParenthesesEnd:
-		if len(file.funcCalls) == 0 {
+	case token.GroupEnd:
+		if len(file.groups) == 0 {
 			return file.Error("Missing opening bracket '('")
 		}
 
-		call := file.funcCalls[len(file.funcCalls)-1]
+		call := file.groups[len(file.groups)-1].(*FunctionCall)
 
 		// Add the last parameter
-		if call.ParameterStart < len(file.Tokens) {
-			call.Parameters = append(call.Parameters, file.Tokens[call.ParameterStart:])
+		if call.ProcessedTokens < len(file.Tokens) {
+			call.Parameters = append(call.Parameters, file.Tokens[call.ProcessedTokens:])
 		}
 
 		// Currently, we only allow builtin functions
-		if !spec.Functions[call.FunctionName] {
+		if spec.Functions[call.Function.Name] == nil {
 			knownFunctions := []string{"print"}
 
 			// Suggest a function name based on the similarity to known functions
 			sort.Slice(knownFunctions, func(a, b int) bool {
-				aSimilarity := similarity.Default(call.FunctionName, knownFunctions[a])
-				bSimilarity := similarity.Default(call.FunctionName, knownFunctions[b])
+				aSimilarity := similarity.Default(call.Function.Name, knownFunctions[a])
+				bSimilarity := similarity.Default(call.Function.Name, knownFunctions[b])
 				return aSimilarity > bSimilarity
 			})
 
-			if similarity.Default(call.FunctionName, knownFunctions[0]) > 0.9 {
-				return file.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", call.FunctionName, knownFunctions[0]))
+			if similarity.Default(call.Function.Name, knownFunctions[0]) > 0.9 {
+				return file.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", call.Function.Name, knownFunctions[0]))
 			}
 
-			return file.Error(fmt.Sprintf("Unknown function '%s'", call.FunctionName))
+			return file.Error(fmt.Sprintf("Unknown function '%s'", call.Function.Name))
 		}
 
 		// print builtin
-		if call.FunctionName == "print" {
+		if call.Function.Name == "print" {
 			parameters := call.Parameters
-			expectedParameters := 1
 
-			if len(parameters) < expectedParameters {
-				return file.Error(fmt.Sprintf("Too few arguments in '%s' call", call.FunctionName))
+			if len(parameters) < len(call.Function.Parameters) {
+				return file.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
 			}
 
-			if len(parameters) > expectedParameters {
-				return file.Error(fmt.Sprintf("Too many arguments in '%s' call", call.FunctionName))
+			if len(parameters) > len(call.Function.Parameters) {
+				return file.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
 			}
 
 			parameter := parameters[0][0]
 
 			if parameter.Kind != token.Text {
-				return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.FunctionName, string(parameter.Text)))
+				return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, string(parameter.Text)))
 			}
 
 			text := parameter.Text
 			text = text[1 : len(text)-1]
 			file.assembler.Println(string(text))
-			file.funcCalls = file.funcCalls[:len(file.funcCalls)-1]
+			file.groups = file.groups[:len(file.groups)-1]
 		}
 	}
 
