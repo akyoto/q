@@ -11,15 +11,6 @@ The Q programming language.
 This is a very early version of a programming language I'm currently working on.
 Don't expect it to do anything useful yet, it can barely create a Linux executable printing "Hello World".
 
-## Features
-
-* Simple (inspired by Go)
-* Fast compilation (inspired by V)
-* Memory-safe (inspired by Rust)
-* Functional (inspired by Haskell)
-* Zero-cost abstractions (inspired by Rust)
-* No dependencies (no LLVM, no GCC, ...)
-
 ## Installation
 
 ```shell
@@ -29,27 +20,21 @@ go build
 ./hello
 ```
 
-## Backend
+## Goals
 
-I'm using my [asm](https://github.com/akyoto/asm) module to generate machine code for x86-64 systems.
-There is no need to create an intermediary format for an external compiler which makes the compilation very fast.
-
-## Design goals
-
+* No binary dependencies (not even libc)
+* No compiler dependencies (no LLVM, no GCC, ...)
+* Small binaries (a "Hello World" program produces a 247-byte binary)
 * Importing a module should have no side effects
 * Modules should be highly reusable (not bound to predefined data structures)
 * No classes or methods, instead we have data and functions that can operate on data
 * No name shadowing, names never change their meaning
-* ...TODO...
-
-## Implementation goals
-
+* Correctness of the program should be verified at compile time (requires a good type system)
 * User-friendly compiler messages
-* ...TODO...
 
 ## How to contribute
 
-* ...TODO...
+* TODO.
 
 ## Style
 
