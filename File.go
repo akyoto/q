@@ -148,10 +148,8 @@ func (file *File) handleToken(t token.Token) error {
 		if isDefinition {
 
 		} else {
-			functionName := string(previous.Text)
-
 			file.groups = append(file.groups, &FunctionCall{
-				Function:        spec.Functions[functionName],
+				Function:        spec.Functions[string(previous.Text)],
 				ProcessedTokens: len(file.Tokens) + 1,
 			})
 		}
