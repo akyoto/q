@@ -24,6 +24,7 @@ go build
 
 * No binary dependencies (not even libc)
 * No compiler dependencies (no LLVM, no GCC, ...)
+* Fast compilation (a few milliseconds should suffice for most programs)
 * Small binaries (a "Hello World" program produces a 247-byte binary)
 * Testing embedded into the language ("q test")
 * Linting embedded into the compiler (detects common mistakes and suggests solutions)
