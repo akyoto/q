@@ -1,4 +1,4 @@
-package main
+package compiler
 
 import (
 	"os"
@@ -9,13 +9,15 @@ import (
 
 // Compiler reads source files and generates machines code.
 type Compiler struct {
-	assembler *asm.Assembler
+	assembler       *asm.Assembler
+	WriteExecutable bool
 }
 
-// NewCompiler creates a new compiler.
-func NewCompiler() *Compiler {
+// New creates a new compiler.
+func New() *Compiler {
 	return &Compiler{
-		assembler: asm.New(),
+		assembler:       asm.New(),
+		WriteExecutable: true,
 	}
 }
 
@@ -26,6 +28,10 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
 
 	if err != nil {
 		return err
+	}
+
+	if !compiler.WriteExecutable {
+		return nil
 	}
 
 	// Programs should always exit

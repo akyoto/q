@@ -1,4 +1,4 @@
-package main
+package compiler
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ type File struct {
 	token.Producer
 	name      string
 	assembler *asm.Assembler
-	groups    []Group
+	groups    []spec.Group
 }
 
 // NewFile creates a new compiler for a single file.
@@ -132,7 +132,7 @@ func (file *File) UnknownFunctionError(functionName string) error {
 
 // handleToken processes a single token.
 func (file *File) handleToken(t token.Token) error {
-	fmt.Printf("%-10s | %s\n", t.Kind, string(t.Text))
+	// fmt.Printf("%-10s | %s\n", t.Kind, string(t.Text))
 
 	switch t.Kind {
 	// "Hello"
