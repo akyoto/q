@@ -4,5 +4,6 @@ linters:
     - lll
     - gocognit
     - gocyclo
+    - gochecknoglobals
     - funlen
     - wsl

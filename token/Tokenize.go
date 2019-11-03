@@ -1,5 +1,7 @@
 package token
 
+import "github.com/akyoto/q/spec"
+
 // Tokenize processes the partial read and returns how many bytes were processed.
 // The remaining bytes will be prepended to the next call.
 // The custom function handleToken is called for each processed token.
@@ -36,7 +38,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 
 			token = Token{Identifier, buffer[processedBytes : i+1]}
 
-			if keywords[string(token.Text)] {
+			if spec.Keywords[string(token.Text)] {
 				token.Kind = Keyword
 			}
 

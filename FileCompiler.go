@@ -9,29 +9,32 @@ import (
 	"github.com/akyoto/q/token"
 )
 
-// FileCompiler is a single-threaded file compiler.
-type FileCompiler struct {
+// File represents a single source file.
+type File struct {
+	token.Producer
 	assembler *asm.Assembler
 	fileName  string
-	tokens    []token.Token
 	funcCalls []FunctionCall
 }
 
-func NewFileCompiler(inputFile string, assembler *asm.Assembler) *FileCompiler {
-	return &FileCompiler{
+// NewFile creates a new compiler for a single file.
+func NewFile(inputFile string, assembler *asm.Assembler) *File {
+	return &File{
 		assembler: assembler,
 		fileName:  inputFile,
-		tokens: []token.Token{
-			{
-				Kind: token.StartOfLine,
-				Text: nil,
+		Producer: token.Producer{
+			Tokens: []token.Token{
+				{
+					Kind: token.StartOfLine,
+					Text: nil,
+				},
 			},
 		},
 	}
 }
 
-// Compile reads the input file.
-func (compiler *FileCompiler) Compile() error {
+// Compile compiles the input file.
+func (compiler *File) Compile() error {
 	file, err := os.Open(compiler.fileName)
 
 	if err != nil {
@@ -86,19 +89,14 @@ func (compiler *FileCompiler) Compile() error {
 	return nil
 }
 
-// previousToken returns the last token.
-func (compiler *FileCompiler) previousToken() token.Token {
-	return compiler.tokens[len(compiler.tokens)-1]
-}
-
 // Error generates an error message at the current token position.
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
-func (compiler *FileCompiler) Error(message string) error {
+func (compiler *File) Error(message string) error {
 	lineCount := 0
 	column := 1
 
-	for _, oldToken := range compiler.tokens {
+	for _, oldToken := range compiler.Tokens {
 		if oldToken.Kind == token.StartOfLine {
 			lineCount++
 			column = 1

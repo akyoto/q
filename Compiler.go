@@ -7,10 +7,12 @@ import (
 	"github.com/akyoto/asm/elf"
 )
 
+// Compiler reads source files and generates machines code.
 type Compiler struct {
 	assembler *asm.Assembler
 }
 
+// NewCompiler creates a new compiler.
 func NewCompiler() *Compiler {
 	return &Compiler{
 		assembler: asm.New(),
@@ -19,8 +21,8 @@ func NewCompiler() *Compiler {
 
 // Compile reads the input file and generates an executable binary.
 func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
-	fileCompiler := NewFileCompiler(inputFile, compiler.assembler)
-	err := fileCompiler.Compile()
+	file := NewFile(inputFile, compiler.assembler)
+	err := file.Compile()
 
 	if err != nil {
 		return err

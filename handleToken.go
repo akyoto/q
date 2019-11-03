@@ -5,11 +5,12 @@ import (
 	"sort"
 
 	"github.com/akyoto/q/similarity"
+	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
 )
 
 // handleToken processes a single token.
-func (compiler *FileCompiler) handleToken(t token.Token) error {
+func (compiler *File) handleToken(t token.Token) error {
 	fmt.Println(t.Kind, string(t.Text))
 
 	switch t.Kind {
@@ -25,7 +26,7 @@ func (compiler *FileCompiler) handleToken(t token.Token) error {
 
 	// '('
 	case token.ParenthesesStart:
-		previous := compiler.previousToken()
+		previous := compiler.PreviousToken(-1)
 
 		if previous.Kind != token.Identifier {
 			return compiler.Error("Expected function name before '('")
@@ -33,9 +34,9 @@ func (compiler *FileCompiler) handleToken(t token.Token) error {
 
 		isDefinition := false
 
-		if len(compiler.tokens) >= 3 {
-			whiteSpace := compiler.tokens[len(compiler.tokens)-2]
-			functionKeyword := compiler.tokens[len(compiler.tokens)-3]
+		if len(compiler.Tokens) >= 3 {
+			whiteSpace := compiler.PreviousToken(-2)
+			functionKeyword := compiler.PreviousToken(-3)
 
 			if whiteSpace.Kind == token.WhiteSpace && functionKeyword.Kind == token.Keyword && string(functionKeyword.Text) == "func" {
 				isDefinition = true
@@ -47,7 +48,7 @@ func (compiler *FileCompiler) handleToken(t token.Token) error {
 		} else {
 			compiler.funcCalls = append(compiler.funcCalls, FunctionCall{
 				FunctionName:   string(previous.Text),
-				ParameterStart: len(compiler.tokens) + 1,
+				ParameterStart: len(compiler.Tokens) + 1,
 			})
 		}
 
@@ -60,14 +61,30 @@ func (compiler *FileCompiler) handleToken(t token.Token) error {
 		call := compiler.funcCalls[len(compiler.funcCalls)-1]
 
 		// Add the last parameter
-		if call.ParameterStart < len(compiler.tokens) {
-			call.Parameters = append(call.Parameters, compiler.tokens[call.ParameterStart:])
+		if call.ParameterStart < len(compiler.Tokens) {
+			call.Parameters = append(call.Parameters, compiler.Tokens[call.ParameterStart:])
 		}
 
-		knownFunctions := []string{"print"}
+		// Currently, we only allow builtin functions
+		if !spec.Functions[call.FunctionName] {
+			knownFunctions := []string{"print"}
 
-		switch call.FunctionName {
-		case "print":
+			// Suggest a function name based on the similarity to known functions
+			sort.Slice(knownFunctions, func(a, b int) bool {
+				aSimilarity := similarity.Default(call.FunctionName, knownFunctions[a])
+				bSimilarity := similarity.Default(call.FunctionName, knownFunctions[b])
+				return aSimilarity > bSimilarity
+			})
+
+			if similarity.Default(call.FunctionName, knownFunctions[0]) > 0.9 {
+				return compiler.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", call.FunctionName, knownFunctions[0]))
+			}
+
+			return compiler.Error(fmt.Sprintf("Unknown function '%s'", call.FunctionName))
+		}
+
+		// print builtin
+		if call.FunctionName == "print" {
 			parameters := call.Parameters
 			expectedParameters := 1
 
@@ -89,23 +106,9 @@ func (compiler *FileCompiler) handleToken(t token.Token) error {
 			text = text[1 : len(text)-1]
 			compiler.assembler.Println(string(text))
 			compiler.funcCalls = compiler.funcCalls[:len(compiler.funcCalls)-1]
-
-		default:
-			// Suggest a function name based on the similarity to known functions
-			sort.Slice(knownFunctions, func(a, b int) bool {
-				aSimilarity := similarity.Default(call.FunctionName, knownFunctions[a])
-				bSimilarity := similarity.Default(call.FunctionName, knownFunctions[b])
-				return aSimilarity > bSimilarity
-			})
-
-			if similarity.Default(call.FunctionName, knownFunctions[0]) > 0.9 {
-				return compiler.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", call.FunctionName, knownFunctions[0]))
-			}
-
-			return compiler.Error(fmt.Sprintf("Unknown function '%s'", call.FunctionName))
 		}
 	}
 
-	compiler.tokens = append(compiler.tokens, t)
+	compiler.Tokens = append(compiler.Tokens, t)
 	return nil
 }
