@@ -225,6 +225,7 @@ func (file *File) handleToken(t token.Token) error {
 			file.groups = file.groups[:len(file.groups)-1]
 		}
 
+		call.Reset()
 		file.functionCallPool.Put(call)
 	}
 
