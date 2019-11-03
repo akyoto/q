@@ -8,7 +8,7 @@
 
 The Q programming language.
 
-This is a very early version of a programming language I'm currently working on.
+This is a **very early version** of a programming language I'm currently working on.
 Don't expect it to do anything useful yet, it can barely create a Linux executable printing "Hello World".
 
 ## Installation
@@ -25,12 +25,18 @@ go build
 * No binary dependencies (not even libc)
 * No compiler dependencies (no LLVM, no GCC, ...)
 * Small binaries (a "Hello World" program produces a 247-byte binary)
+* Testing embedded into the language ("q test")
+* Linting embedded into the compiler (detects common mistakes and suggests solutions)
 * Importing a module should have no side effects
 * Modules should be highly reusable (not bound to predefined data structures)
 * No classes or methods, instead we have data and functions that can operate on data
 * No name shadowing, names never change their meaning
 * Correctness of the program should be verified at compile time (requires a good type system)
 * User-friendly compiler messages
+
+## Architectures
+
+Currently **Linux x86-64** only. It produces 64-bit ELF binaries. Windows and Mac support are planned.
 
 ## How to contribute
 
