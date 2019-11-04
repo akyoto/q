@@ -16,7 +16,7 @@ type Compiler struct {
 // New creates a new compiler.
 func New() *Compiler {
 	return &Compiler{
-		assembler:       asm.New(),
+		assembler:       assemblerPool.Get().(*asm.Assembler),
 		WriteExecutable: true,
 	}
 }
@@ -47,4 +47,10 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
 	}
 
 	return os.Chmod(outputFile, 0755)
+}
+
+// Close frees up resources used by the compiler.
+func (compiler *Compiler) Close() {
+	compiler.assembler.Reset()
+	assemblerPool.Put(compiler.assembler)
 }

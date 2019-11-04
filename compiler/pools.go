@@ -3,10 +3,18 @@ package compiler
 import (
 	"sync"
 
+	"github.com/akyoto/asm"
 	"github.com/akyoto/q/token"
 )
 
 var (
+	// Pool for assemblers
+	assemblerPool = sync.Pool{
+		New: func() interface{} {
+			return asm.New()
+		},
+	}
+
 	// Pool for function calls
 	functionCallPool = sync.Pool{
 		New: func() interface{} {

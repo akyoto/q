@@ -14,5 +14,6 @@ func BenchmarkCompiler(b *testing.B) {
 		c := compiler.New()
 		c.WriteExecutable = false
 		_ = c.Compile("testdata/compiler-bench-1k.q", "")
+		c.Close()
 	}
 }
