@@ -166,10 +166,16 @@ func (file *File) handleToken(t token.Token) error {
 			}
 		}
 
-		if isDefinition {
+		functionName := previous.Text
 
+		if isDefinition {
+			function := &spec.Function{
+				Name: functionName,
+			}
+
+			spec.Functions[functionName] = function
+			file.groups = append(file.groups, function)
 		} else {
-			functionName := previous.Text
 			function := spec.Functions[functionName]
 
 			if function == nil {
@@ -188,39 +194,48 @@ func (file *File) handleToken(t token.Token) error {
 			return file.Error("Missing opening bracket '('")
 		}
 
-		call := file.groups[len(file.groups)-1].(*FunctionCall)
+		switch group := file.groups[len(file.groups)-1].(type) {
+		case *spec.Function:
+			function := group
+			file.assembler.AddLabel(function.Name)
+			fmt.Println("Function definition:", function.Name)
 
-		// Add the last parameter
-		if call.ProcessedTokens < len(file.Tokens) {
-			call.Parameters = append(call.Parameters, file.Tokens[call.ProcessedTokens:])
+		case *FunctionCall:
+			call := group
+
+			// Add the last parameter
+			if call.ProcessedTokens < len(file.Tokens) {
+				call.Parameters = append(call.Parameters, file.Tokens[call.ProcessedTokens:])
+			}
+
+			// print builtin
+			if call.Function.Name == "print" {
+				parameters := call.Parameters
+
+				if len(parameters) < len(call.Function.Parameters) {
+					return file.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
+				}
+
+				if len(parameters) > len(call.Function.Parameters) {
+					return file.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
+				}
+
+				parameter := parameters[0][0]
+
+				if parameter.Kind != token.Text {
+					return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text))
+				}
+
+				text := parameter.Text
+				text = text[1 : len(text)-1]
+				file.assembler.Println(text)
+			}
+
+			call.Reset()
+			functionCallPool.Put(call)
 		}
 
-		// print builtin
-		if call.Function.Name == "print" {
-			parameters := call.Parameters
-
-			if len(parameters) < len(call.Function.Parameters) {
-				return file.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
-			}
-
-			if len(parameters) > len(call.Function.Parameters) {
-				return file.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
-			}
-
-			parameter := parameters[0][0]
-
-			if parameter.Kind != token.Text {
-				return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text))
-			}
-
-			text := parameter.Text
-			text = text[1 : len(text)-1]
-			file.assembler.Println(text)
-			file.groups = file.groups[:len(file.groups)-1]
-		}
-
-		call.Reset()
-		functionCallPool.Put(call)
+		file.groups = file.groups[:len(file.groups)-1]
 	}
 
 	file.Tokens = append(file.Tokens, t)
