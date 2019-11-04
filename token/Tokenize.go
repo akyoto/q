@@ -10,7 +10,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 		i              int
 		c              byte
 		processedBytes int
-		token          = Token{Unknown, nil}
+		token          = Token{Unknown, ""}
 	)
 
 	for i < len(buffer) {
@@ -36,7 +36,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				}
 			}
 
-			token = Token{Identifier, buffer[processedBytes : i+1]}
+			token = Token{Identifier, string(buffer[processedBytes : i+1])}
 
 			if spec.Keywords[string(token.Text)] {
 				token.Kind = Keyword
@@ -61,7 +61,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				}
 			}
 
-			token = Token{Number, buffer[processedBytes : i+1]}
+			token = Token{Number, string(buffer[processedBytes : i+1])}
 
 		// Texts
 		case c == '"':
@@ -81,27 +81,27 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				}
 			}
 
-			token = Token{Text, buffer[processedBytes : i+1]}
+			token = Token{Text, string(buffer[processedBytes : i+1])}
 
 		// Parentheses start
 		case c == '(':
-			token = Token{GroupStart, buffer[i : i+1]}
+			token = Token{GroupStart, string(buffer[i : i+1])}
 
 		// Parentheses end
 		case c == ')':
-			token = Token{GroupEnd, buffer[i : i+1]}
+			token = Token{GroupEnd, string(buffer[i : i+1])}
 
 		// Block start
 		case c == '{':
-			token = Token{BlockStart, buffer[i : i+1]}
+			token = Token{BlockStart, string(buffer[i : i+1])}
 
 		// Block end
 		case c == '}':
-			token = Token{BlockEnd, buffer[i : i+1]}
+			token = Token{BlockEnd, string(buffer[i : i+1])}
 
 		// New line
 		case c == '\n':
-			token = Token{NewLine, nil}
+			token = Token{NewLine, ""}
 
 		// Whitespace
 		case c == ' ' || c == '\t':
@@ -122,7 +122,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				}
 			}
 
-			token = Token{WhiteSpace, buffer[processedBytes : i+1]}
+			token = Token{WhiteSpace, string(buffer[processedBytes : i+1])}
 		}
 
 		// Handle token

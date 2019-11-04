@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"sort"
-	"sync"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/similarity"
@@ -16,31 +15,27 @@ import (
 // File represents a single source file.
 type File struct {
 	token.Producer
-	name             string
-	assembler        *asm.Assembler
-	groups           []spec.Group
-	functionCallPool sync.Pool
+	name      string
+	assembler *asm.Assembler
+	groups    []spec.Group
 }
 
 // NewFile creates a new compiler for a single file.
 func NewFile(inputFile string, assembler *asm.Assembler) *File {
-	return &File{
+	file := &File{
 		name:      inputFile,
 		assembler: assembler,
-		functionCallPool: sync.Pool{
-			New: func() interface{} {
-				return &FunctionCall{}
-			},
-		},
 		Producer: token.Producer{
-			Tokens: []token.Token{
-				{
-					Kind: token.NewLine,
-					Text: nil,
-				},
-			},
+			Tokens: *tokenBufferPool.Get().(*[]token.Token),
 		},
 	}
+
+	file.Tokens = append(file.Tokens, token.Token{
+		Kind: token.NewLine,
+		Text: "",
+	})
+
+	return file
 }
 
 // Compile compiles the input file.
@@ -166,7 +161,7 @@ func (file *File) handleToken(t token.Token) error {
 			whiteSpace := file.PreviousToken(-2)
 			functionKeyword := file.PreviousToken(-3)
 
-			if whiteSpace.Kind == token.WhiteSpace && functionKeyword.Kind == token.Keyword && string(functionKeyword.Text) == "func" {
+			if whiteSpace.Kind == token.WhiteSpace && functionKeyword.Kind == token.Keyword && functionKeyword.Text == "func" {
 				isDefinition = true
 			}
 		}
@@ -174,15 +169,14 @@ func (file *File) handleToken(t token.Token) error {
 		if isDefinition {
 
 		} else {
-			functionName := string(previous.Text)
+			functionName := previous.Text
 			function := spec.Functions[functionName]
 
 			if function == nil {
 				return file.UnknownFunctionError(functionName)
 			}
 
-			poolObject := file.functionCallPool.Get()
-			functionCall := poolObject.(*FunctionCall)
+			functionCall := functionCallPool.Get().(*FunctionCall)
 			functionCall.Function = function
 			functionCall.ProcessedTokens = len(file.Tokens) + 1
 			file.groups = append(file.groups, functionCall)
@@ -216,19 +210,25 @@ func (file *File) handleToken(t token.Token) error {
 			parameter := parameters[0][0]
 
 			if parameter.Kind != token.Text {
-				return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, string(parameter.Text)))
+				return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text))
 			}
 
 			text := parameter.Text
 			text = text[1 : len(text)-1]
-			file.assembler.Println(string(text))
+			file.assembler.Println(text)
 			file.groups = file.groups[:len(file.groups)-1]
 		}
 
 		call.Reset()
-		file.functionCallPool.Put(call)
+		functionCallPool.Put(call)
 	}
 
 	file.Tokens = append(file.Tokens, t)
 	return nil
+}
+
+// Close frees up all resources.
+func (file *File) Close() {
+	file.Tokens = file.Tokens[:0]
+	tokenBufferPool.Put(&file.Tokens)
 }

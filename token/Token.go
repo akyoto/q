@@ -5,5 +5,5 @@ package token
 // This makes parsing easier and allows us to do better syntax checks.
 type Token struct {
 	Kind Kind
-	Text []byte
+	Text string
 }

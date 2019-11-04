@@ -24,6 +24,7 @@ func New() *Compiler {
 // Compile reads the input file and generates an executable binary.
 func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
 	file := NewFile(inputFile, compiler.assembler)
+	defer file.Close()
 	err := file.Compile()
 
 	if err != nil {
