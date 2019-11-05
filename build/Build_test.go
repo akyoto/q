@@ -9,14 +9,11 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-	// Cleanup
 	defer os.Remove("../examples/hello/hello")
 
-	// Build
 	os.Args = []string{"q", "build", "../examples/hello"}
 	build.Main()
 
-	// Verify the file exists
 	stat, err := os.Stat("../examples/hello/hello")
 	assert.Nil(t, err)
 	assert.True(t, stat.Size() > 0)
@@ -24,6 +21,21 @@ func TestCLI(t *testing.T) {
 
 func TestCLIHelp(t *testing.T) {
 	build.Help()
+}
+
+func TestBuild(t *testing.T) {
+	defer os.Remove("../examples/hello/hello")
+
+	build, err := build.New("../examples/hello")
+	assert.Nil(t, err)
+	defer build.Close()
+
+	err = build.Run()
+	assert.Nil(t, err)
+
+	stat, err := os.Stat("../examples/hello/hello")
+	assert.Nil(t, err)
+	assert.True(t, stat.Size() > 0)
 }
 
 func TestBuildErrors(t *testing.T) {
@@ -38,7 +50,7 @@ func TestBuildErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		file := build.NewFile(test.File, nil)
+		file := build.NewFile(test.File)
 		defer file.Close()
 		err := file.Compile()
 		assert.NotNil(t, err)

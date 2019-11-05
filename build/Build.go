@@ -1,13 +1,16 @@
 package build
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
+	"github.com/akyoto/q/spec"
 )
 
 // Build describes a compiler build.
@@ -17,6 +20,7 @@ type Build struct {
 	ExecutableName  string
 	WriteExecutable bool
 	Verbose         bool
+	functions       sync.Map
 	assembler       *asm.Assembler
 }
 
@@ -63,10 +67,11 @@ func (build *Build) Run() error {
 			fmt.Println("Compiling", info.Name())
 		}
 
-		file := NewFile(path, build.assembler)
-		compilerError := file.Compile()
-		file.Close()
+		file := NewFile(path)
+		file.build = build
+		defer file.Close()
 		files = append(files, file)
+		compilerError := file.Compile()
 		return compilerError
 	})
 
@@ -82,9 +87,11 @@ func (build *Build) Run() error {
 		return nil
 	}
 
-	// if file.functions["main"] == nil {
-	// 	return errors.New("Function 'main' has not been defined")
-	// }
+	_, exists := build.functions.Load("main")
+
+	if !exists {
+		return errors.New("Function 'main' has not been defined")
+	}
 
 	// Produce ELF binary
 	binary := elf.New(build.assembler)
@@ -101,4 +108,11 @@ func (build *Build) Run() error {
 func (build *Build) Close() {
 	build.assembler.Reset()
 	assemblerPool.Put(build.assembler)
+
+	build.functions.Range(func(key interface{}, value interface{}) bool {
+		assembler := value.(*spec.Function).Code
+		assembler.Reset()
+		assemblerPool.Put(assembler)
+		return true
+	})
 }

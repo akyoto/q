@@ -15,19 +15,16 @@ import (
 // File represents a single source file.
 type File struct {
 	token.Producer
-	name      string
-	assembler *asm.Assembler
-	groups    []spec.Group
-	blocks    []spec.Block
-	functions map[string]*spec.Function
+	name   string
+	build  *Build
+	groups []spec.Group
+	blocks []spec.Block
 }
 
 // NewFile creates a new compiler for a single file.
-func NewFile(inputFile string, assembler *asm.Assembler) *File {
+func NewFile(inputFile string) *File {
 	file := &File{
-		name:      inputFile,
-		assembler: assembler,
-		functions: map[string]*spec.Function{},
+		name: inputFile,
 		Producer: token.Producer{
 			Tokens: *tokenBufferPool.Get().(*[]token.Token),
 		},
@@ -157,8 +154,8 @@ func (file *File) handleToken(t token.Token) error {
 			return file.Error("Missing opening bracket '{'")
 		}
 
-		if file.assembler != nil {
-			file.assembler.Return()
+		if file.build != nil {
+			file.build.assembler.Return()
 		}
 
 		file.blocks = file.blocks[:len(file.blocks)-1]
@@ -186,9 +183,13 @@ func (file *File) handleToken(t token.Token) error {
 		if isDefinition {
 			function := &spec.Function{
 				Name: functionName,
+				Code: assemblerPool.Get().(*asm.Assembler),
 			}
 
-			file.functions[functionName] = function
+			if file.build != nil {
+				file.build.functions.Store(functionName, function)
+			}
+
 			file.groups = append(file.groups, function)
 		} else {
 			function := spec.Functions[functionName]
@@ -212,8 +213,8 @@ func (file *File) handleToken(t token.Token) error {
 		case *spec.Function:
 			function := group
 
-			if file.assembler != nil {
-				file.assembler.AddLabel(function.Name)
+			if file.build != nil {
+				file.build.assembler.AddLabel(function.Name)
 			}
 
 		case *FunctionCall:
@@ -245,8 +246,8 @@ func (file *File) handleToken(t token.Token) error {
 				text := parameter.Text
 				text = text[1 : len(text)-1]
 
-				if file.assembler != nil {
-					file.assembler.Println(text)
+				if file.build != nil {
+					file.build.assembler.Println(text)
 				}
 			}
 
