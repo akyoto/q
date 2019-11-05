@@ -6,4 +6,5 @@ linters:
     - gocyclo
     - gochecknoglobals
     - funlen
+    - stylecheck
     - wsl

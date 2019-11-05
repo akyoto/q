@@ -1,3 +1,7 @@
 func main() {
-	print("Hello")
+	print("Hello functions")
+}
+
+func noexec() {
+	print("This is not executed")
 }

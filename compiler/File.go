@@ -18,6 +18,8 @@ type File struct {
 	name      string
 	assembler *asm.Assembler
 	groups    []spec.Group
+	blocks    []spec.Block
+	functions map[string]*spec.Function
 }
 
 // NewFile creates a new compiler for a single file.
@@ -25,6 +27,7 @@ func NewFile(inputFile string, assembler *asm.Assembler) *File {
 	file := &File{
 		name:      inputFile,
 		assembler: assembler,
+		functions: map[string]*spec.Function{},
 		Producer: token.Producer{
 			Tokens: *tokenBufferPool.Get().(*[]token.Token),
 		},
@@ -137,7 +140,6 @@ func (file *File) handleToken(t token.Token) error {
 	// fmt.Printf("%-10s | %s\n", t.Kind, string(t.Text))
 
 	switch t.Kind {
-	// "Hello"
 	case token.Text:
 		// text := string(token.Text[1 : len(token.Text)-1])
 		// file.assembler.Println(text)
@@ -147,7 +149,17 @@ func (file *File) handleToken(t token.Token) error {
 			return file.Error("Missing closing bracket ')'")
 		}
 
-	// '('
+	case token.BlockStart:
+		file.blocks = append(file.blocks, nil)
+
+	case token.BlockEnd:
+		if len(file.blocks) == 0 {
+			return file.Error("Missing opening bracket '{'")
+		}
+
+		file.assembler.Return()
+		file.blocks = file.blocks[:len(file.blocks)-1]
+
 	case token.GroupStart:
 		previous := file.PreviousToken(-1)
 
@@ -173,7 +185,7 @@ func (file *File) handleToken(t token.Token) error {
 				Name: functionName,
 			}
 
-			spec.Functions[functionName] = function
+			file.functions[functionName] = function
 			file.groups = append(file.groups, function)
 		} else {
 			function := spec.Functions[functionName]
@@ -188,7 +200,6 @@ func (file *File) handleToken(t token.Token) error {
 			file.groups = append(file.groups, functionCall)
 		}
 
-	// ')'
 	case token.GroupEnd:
 		if len(file.groups) == 0 {
 			return file.Error("Missing opening bracket '('")
@@ -198,7 +209,6 @@ func (file *File) handleToken(t token.Token) error {
 		case *spec.Function:
 			function := group
 			file.assembler.AddLabel(function.Name)
-			fmt.Println("Function definition:", function.Name)
 
 		case *FunctionCall:
 			call := group

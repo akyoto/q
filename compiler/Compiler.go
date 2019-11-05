@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"errors"
 	"os"
 
 	"github.com/akyoto/asm"
@@ -23,6 +24,10 @@ func New() *Compiler {
 
 // Compile reads the input file and generates an executable binary.
 func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
+	// Call main and exit
+	compiler.assembler.Call("main")
+	compiler.assembler.Exit(0)
+
 	file := NewFile(inputFile, compiler.assembler)
 	defer file.Close()
 	err := file.Compile()
@@ -35,8 +40,9 @@ func (compiler *Compiler) Compile(inputFile string, outputFile string) error {
 		return nil
 	}
 
-	// Programs should always exit
-	compiler.assembler.Exit(0)
+	if file.functions["main"] == nil {
+		return errors.New("Function 'main' has not been defined")
+	}
 
 	// Produce ELF binary
 	binary := elf.New(compiler.assembler)

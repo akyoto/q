@@ -1,1 +1,3 @@
-print("Hello")
+func main() {
+	print("Hello")
+}
