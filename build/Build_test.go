@@ -23,19 +23,12 @@ func TestCLIHelp(t *testing.T) {
 	build.Help()
 }
 
-func TestBuild(t *testing.T) {
-	defer os.Remove("../examples/hello/hello")
+func TestExamplesHelloWorld(t *testing.T) {
+	assertOutput(t, "../examples/hello", "Hello\n")
+}
 
-	build, err := build.New("../examples/hello")
-	assert.Nil(t, err)
-	defer build.Close()
-
-	err = build.Run()
-	assert.Nil(t, err)
-
-	stat, err := os.Stat("../examples/hello/hello")
-	assert.Nil(t, err)
-	assert.True(t, stat.Size() > 0)
+func TestExamplesFunctions(t *testing.T) {
+	assertOutput(t, "../examples/functions", "Hello functions\n")
 }
 
 func TestBuildErrors(t *testing.T) {
@@ -43,10 +36,10 @@ func TestBuildErrors(t *testing.T) {
 		File          string
 		ExpectedError string
 	}{
-		{"testdata/errors/missing-opening-bracket.q", "Missing opening bracket"},
-		{"testdata/errors/missing-closing-bracket.q", "Missing closing bracket"},
-		{"testdata/errors/unknown-function.q", "Unknown function"},
-		{"testdata/errors/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
+		{"testdata/missing-opening-bracket.q", "Missing opening bracket"},
+		{"testdata/missing-closing-bracket.q", "Missing closing bracket"},
+		{"testdata/unknown-function.q", "Unknown function"},
+		{"testdata/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
 	}
 
 	for _, test := range tests {

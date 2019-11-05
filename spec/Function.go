@@ -7,5 +7,5 @@ type Function struct {
 	Name        string
 	Parameters  []Variable
 	ReturnTypes []Type
-	Code        *asm.Assembler
+	Assembler   *asm.Assembler
 }

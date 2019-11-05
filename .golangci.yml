@@ -5,6 +5,7 @@ linters:
     - gocognit
     - gocyclo
     - gochecknoglobals
+    - gosec
     - funlen
     - stylecheck
     - wsl

@@ -45,9 +45,6 @@ func New(directory string) (*Build, error) {
 
 // Run parses the input files and generates an executable binary.
 func (build *Build) Run() error {
-	build.assembler.Call("main")
-	build.assembler.Exit(0)
-
 	files := []*File{}
 
 	err := filepath.Walk(build.Path, func(path string, info os.FileInfo, err error) error {
@@ -93,6 +90,16 @@ func (build *Build) Run() error {
 		return errors.New("Function 'main' has not been defined")
 	}
 
+	// Generate machine code
+	build.assembler.Call("main")
+	build.assembler.Exit(0)
+
+	build.functions.Range(func(key interface{}, value interface{}) bool {
+		function := value.(*spec.Function)
+		build.assembler.Merge(function.Assembler)
+		return true
+	})
+
 	// Produce ELF binary
 	binary := elf.New(build.assembler)
 	err = binary.WriteToFile(build.ExecutablePath)
@@ -110,7 +117,7 @@ func (build *Build) Close() {
 	assemblerPool.Put(build.assembler)
 
 	build.functions.Range(func(key interface{}, value interface{}) bool {
-		assembler := value.(*spec.Function).Code
+		assembler := value.(*spec.Function).Assembler
 		assembler.Reset()
 		assemblerPool.Put(assembler)
 		return true

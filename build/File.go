@@ -15,10 +15,11 @@ import (
 // File represents a single source file.
 type File struct {
 	token.Producer
-	name   string
-	build  *Build
-	groups []spec.Group
-	blocks []spec.Block
+	name      string
+	build     *Build
+	groups    []spec.Group
+	blocks    []spec.Block
+	functions []*spec.Function
 }
 
 // NewFile creates a new compiler for a single file.
@@ -155,7 +156,7 @@ func (file *File) handleToken(t token.Token) error {
 		}
 
 		if file.build != nil {
-			file.build.assembler.Return()
+			file.Assembler().Return()
 		}
 
 		file.blocks = file.blocks[:len(file.blocks)-1]
@@ -182,14 +183,15 @@ func (file *File) handleToken(t token.Token) error {
 
 		if isDefinition {
 			function := &spec.Function{
-				Name: functionName,
-				Code: assemblerPool.Get().(*asm.Assembler),
+				Name:      functionName,
+				Assembler: assemblerPool.Get().(*asm.Assembler),
 			}
 
 			if file.build != nil {
 				file.build.functions.Store(functionName, function)
 			}
 
+			file.functions = append(file.functions, function)
 			file.groups = append(file.groups, function)
 		} else {
 			function := spec.Functions[functionName]
@@ -214,7 +216,7 @@ func (file *File) handleToken(t token.Token) error {
 			function := group
 
 			if file.build != nil {
-				file.build.assembler.AddLabel(function.Name)
+				file.Assembler().AddLabel(function.Name)
 			}
 
 		case *FunctionCall:
@@ -247,7 +249,7 @@ func (file *File) handleToken(t token.Token) error {
 				text = text[1 : len(text)-1]
 
 				if file.build != nil {
-					file.build.assembler.Println(text)
+					file.Assembler().Println(text)
 				}
 			}
 
@@ -260,6 +262,16 @@ func (file *File) handleToken(t token.Token) error {
 
 	file.Tokens = append(file.Tokens, t)
 	return nil
+}
+
+// Assembler returns the current assembler.
+func (file *File) Assembler() *asm.Assembler {
+	return file.CurrentFunction().Assembler
+}
+
+// CurrentFunction returns the current function.
+func (file *File) CurrentFunction() *spec.Function {
+	return file.functions[len(file.functions)-1]
 }
 
 // Close frees up all resources.
