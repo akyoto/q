@@ -25,16 +25,22 @@ func TestCompiler(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestSyntaxErrorMissingOpeningBracket(t *testing.T) {
-	compiler := compiler.New()
-	err := compiler.Compile("testdata/syntax-errors/missing-opening-bracket.q", "a.out")
-	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "Missing opening bracket")
-}
+func TestCompilerErrors(t *testing.T) {
+	tests := []struct {
+		File          string
+		ExpectedError string
+	}{
+		{"testdata/syntax-errors/missing-opening-bracket.q", "Missing opening bracket"},
+		{"testdata/syntax-errors/missing-closing-bracket.q", "Missing closing bracket"},
+		{"testdata/syntax-errors/unknown-function.q", "Unknown function"},
+		{"testdata/syntax-errors/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
+	}
 
-func TestSyntaxErrorMissingClosingBracket(t *testing.T) {
-	compiler := compiler.New()
-	err := compiler.Compile("testdata/syntax-errors/missing-closing-bracket.q", "a.out")
-	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "Missing closing bracket")
+	for _, test := range tests {
+		compiler := compiler.New()
+		defer compiler.Close()
+		err := compiler.Compile(test.File, "a.out")
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), test.ExpectedError)
+	}
 }
