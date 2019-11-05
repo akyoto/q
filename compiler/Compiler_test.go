@@ -30,10 +30,10 @@ func TestCompilerErrors(t *testing.T) {
 		File          string
 		ExpectedError string
 	}{
-		{"testdata/syntax-errors/missing-opening-bracket.q", "Missing opening bracket"},
-		{"testdata/syntax-errors/missing-closing-bracket.q", "Missing closing bracket"},
-		{"testdata/syntax-errors/unknown-function.q", "Unknown function"},
-		{"testdata/syntax-errors/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
+		{"testdata/errors/missing-opening-bracket.q", "Missing opening bracket"},
+		{"testdata/errors/missing-closing-bracket.q", "Missing closing bracket"},
+		{"testdata/errors/unknown-function.q", "Unknown function"},
+		{"testdata/errors/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
 	}
 
 	for _, test := range tests {
