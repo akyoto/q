@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/akyoto/q/compiler"
+	"github.com/akyoto/q/build"
 )
 
 func main() {
-	compiler.Main()
+	build.Main()
 }

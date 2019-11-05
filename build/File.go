@@ -1,4 +1,4 @@
-package compiler
+package build
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"sort"
 
 	"github.com/akyoto/asm"
-	"github.com/akyoto/q/similarity"
+	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
 )
@@ -157,7 +157,10 @@ func (file *File) handleToken(t token.Token) error {
 			return file.Error("Missing opening bracket '{'")
 		}
 
-		file.assembler.Return()
+		if file.assembler != nil {
+			file.assembler.Return()
+		}
+
 		file.blocks = file.blocks[:len(file.blocks)-1]
 
 	case token.GroupStart:
@@ -208,7 +211,10 @@ func (file *File) handleToken(t token.Token) error {
 		switch group := file.groups[len(file.groups)-1].(type) {
 		case *spec.Function:
 			function := group
-			file.assembler.AddLabel(function.Name)
+
+			if file.assembler != nil {
+				file.assembler.AddLabel(function.Name)
+			}
 
 		case *FunctionCall:
 			call := group
@@ -238,7 +244,10 @@ func (file *File) handleToken(t token.Token) error {
 
 				text := parameter.Text
 				text = text[1 : len(text)-1]
-				file.assembler.Println(text)
+
+				if file.assembler != nil {
+					file.assembler.Println(text)
+				}
 			}
 
 			call.Reset()

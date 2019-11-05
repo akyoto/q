@@ -16,8 +16,8 @@ Don't expect it to do anything useful yet, it can barely create a Linux executab
 ```shell
 git clone https://github.com/akyoto/q
 go build
-./q compiler/testdata/hello.q
-./hello
+./q build examples/hello
+./examples/hello
 ```
 
 ## Goals
