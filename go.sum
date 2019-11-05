@@ -2,5 +2,7 @@ github.com/akyoto/asm v0.1.7 h1:kP7S7UTAf30kI3PD1Wk/iAxyFHGnjlWpCgBSOXAGeS0=
 github.com/akyoto/asm v0.1.7/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
 github.com/akyoto/asm v0.1.8 h1:kr9ZkOE7tkNfgE1SYBw/wsbSFK4htKu8IBjGHsZbly0=
 github.com/akyoto/asm v0.1.8/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
+github.com/akyoto/asm v0.1.9 h1:PzuhV6LvQxbnUkDCm2OzJzbEc4HwJmXinMZU7sI/5/s=
+github.com/akyoto/asm v0.1.9/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
 github.com/akyoto/assert v0.2.3 h1:ftENRGDEK5AKuKmZb9LtbDIHeE8p8cIYI4M92CbA9nE=
 github.com/akyoto/assert v0.2.3/go.mod h1:g5e6ag+ksCEQENq/LnmU9z04wCAIFDr8KacBusVL0H8=
