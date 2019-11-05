@@ -38,7 +38,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 
 			token = Token{Identifier, string(buffer[processedBytes : i+1])}
 
-			if spec.Keywords[string(token.Text)] {
+			if spec.Keywords[token.Text] {
 				token.Kind = Keyword
 			}
 
