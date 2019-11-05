@@ -1,4 +1,4 @@
-package main_test
+package build_test
 
 import (
 	"os"
@@ -10,14 +10,14 @@ import (
 
 func TestCLI(t *testing.T) {
 	// Cleanup
-	defer os.Remove("examples/hello/hello")
+	defer os.Remove("../examples/hello/hello")
 
 	// Build
-	os.Args = []string{"q", "build", "examples/hello"}
+	os.Args = []string{"q", "build", "../examples/hello"}
 	build.Main()
 
 	// Verify the file exists
-	stat, err := os.Stat("examples/hello/hello")
+	stat, err := os.Stat("../examples/hello/hello")
 	assert.Nil(t, err)
 	assert.True(t, stat.Size() > 0)
 }
@@ -31,10 +31,10 @@ func TestBuildErrors(t *testing.T) {
 		File          string
 		ExpectedError string
 	}{
-		{"build/testdata/errors/missing-opening-bracket.q", "Missing opening bracket"},
-		{"build/testdata/errors/missing-closing-bracket.q", "Missing closing bracket"},
-		{"build/testdata/errors/unknown-function.q", "Unknown function"},
-		{"build/testdata/errors/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
+		{"testdata/errors/missing-opening-bracket.q", "Missing opening bracket"},
+		{"testdata/errors/missing-closing-bracket.q", "Missing closing bracket"},
+		{"testdata/errors/unknown-function.q", "Unknown function"},
+		{"testdata/errors/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
 	}
 
 	for _, test := range tests {
