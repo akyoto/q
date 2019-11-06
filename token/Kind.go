@@ -1,7 +1,7 @@
 package token
 
 // Kind represents the type of token.
-type Kind int
+type Kind uint8
 
 const (
 	Unknown Kind = iota

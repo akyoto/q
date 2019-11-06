@@ -2,8 +2,7 @@ package build
 
 import (
 	"fmt"
-	"io"
-	"os"
+	"io/ioutil"
 	"sort"
 
 	"github.com/akyoto/asm"
@@ -15,7 +14,8 @@ import (
 // File represents a single source file.
 type File struct {
 	token.Producer
-	name      string
+	path      string
+	contents  []byte
 	build     *Build
 	groups    []spec.Group
 	blocks    []spec.Block
@@ -25,7 +25,7 @@ type File struct {
 // NewFile creates a new compiler for a single file.
 func NewFile(inputFile string) *File {
 	file := &File{
-		name: inputFile,
+		path: inputFile,
 		Producer: token.Producer{
 			Tokens: *tokenBufferPool.Get().(*[]token.Token),
 		},
@@ -33,7 +33,6 @@ func NewFile(inputFile string) *File {
 
 	file.Tokens = append(file.Tokens, token.Token{
 		Kind: token.NewLine,
-		Text: "",
 	})
 
 	return file
@@ -41,55 +40,21 @@ func NewFile(inputFile string) *File {
 
 // Compile compiles the input file.
 func (file *File) Compile() error {
-	fd, err := os.Open(file.name)
+	var err error
+	file.contents, err = ioutil.ReadFile(file.path)
 
 	if err != nil {
 		return err
 	}
 
-	defer fd.Close()
+	processed, err := token.Tokenize(file.contents, file.handleToken)
 
-	var (
-		buffer      [16384]byte
-		unprocessed = make([]byte, 0, len(buffer))
-		final       []byte
-	)
-
-	for {
-		n, err := fd.Read(buffer[:])
-
-		if n > 0 {
-			if len(unprocessed) > 0 {
-				final = append(unprocessed, buffer[:n]...) // nolint:gocritic
-				unprocessed = unprocessed[:0]
-			} else {
-				final = buffer[:n]
-			}
-
-			processedBytes, compilerError := token.Tokenize(final, file.handleToken)
-
-			if compilerError != nil {
-				return compilerError
-			}
-
-			if processedBytes < len(final) {
-				unprocessed = append(unprocessed, final[processedBytes:]...)
-			}
-		}
-
-		if err == nil {
-			continue
-		}
-
-		if err == io.EOF {
-			if len(unprocessed) > 0 {
-				return file.Error(fmt.Sprintf("Unknown expression: %s", string(unprocessed)))
-			}
-
-			break
-		}
-
+	if err != nil {
 		return err
+	}
+
+	if processed != len(file.contents) {
+		return file.Error(fmt.Sprintf("Unknown expression: %s", string(file.contents[:processed])))
 	}
 
 	return nil
@@ -111,7 +76,7 @@ func (file *File) Error(message string) error {
 		}
 	}
 
-	return fmt.Errorf("%s:%d:%d: %s", file.name, lineCount, column, message)
+	return fmt.Errorf("%s:%d:%d: %s", file.path, lineCount, column, message)
 }
 
 // UnknownFunctionError produces an unknown function error
@@ -173,12 +138,12 @@ func (file *File) handleToken(t token.Token) error {
 		if len(file.Tokens) >= 2 {
 			functionKeyword := file.PreviousToken(-2)
 
-			if functionKeyword.Kind == token.Keyword && functionKeyword.Text == "func" {
+			if functionKeyword.Kind == token.Keyword && string(functionKeyword.Text) == "func" {
 				isDefinition = true
 			}
 		}
 
-		functionName := previous.Text
+		functionName := string(previous.Text)
 
 		if isDefinition {
 			function := &spec.Function{
@@ -244,7 +209,7 @@ func (file *File) handleToken(t token.Token) error {
 					return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text))
 				}
 
-				text := parameter.Text
+				text := string(parameter.Text)
 
 				if file.build != nil {
 					file.Assembler().Println(text)
