@@ -66,7 +66,6 @@ func (build *Build) Run() error {
 
 		file := NewFile(path)
 		file.build = build
-		defer file.Close()
 		files = append(files, file)
 		compilerError := file.Compile()
 		return compilerError
@@ -99,6 +98,11 @@ func (build *Build) Run() error {
 		build.assembler.Merge(function.Assembler)
 		return true
 	})
+
+	// Close files
+	for _, file := range files {
+		file.Close()
+	}
 
 	// Produce ELF binary
 	binary := elf.New(build.assembler)
