@@ -1,10 +1,8 @@
 package build
 
-import "github.com/akyoto/q/spec"
-
 // FunctionCall
 type FunctionCall struct {
-	Function        *spec.Function
+	Function        *Function
 	Parameters      []Expression
 	ProcessedTokens int
 }

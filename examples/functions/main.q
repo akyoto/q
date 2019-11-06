@@ -1,3 +1,5 @@
 func main() {
-	print("Hello functions")
+	func1()
+	func2()
+	func3()
 }

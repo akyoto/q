@@ -1,13 +1,15 @@
-package spec
+package build
+
+import "github.com/akyoto/q/spec"
 
 // Functions defines the builtin functions.
 var Functions = map[string]*Function{
 	"print": {
 		Name: "print",
-		Parameters: []Variable{
+		Parameters: []spec.Variable{
 			{
 				Name: "text",
-				Type: Types["Text"],
+				Type: spec.Types["Text"],
 			},
 		},
 	},

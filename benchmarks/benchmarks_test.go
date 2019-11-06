@@ -6,18 +6,22 @@ import (
 	"github.com/akyoto/q/build"
 )
 
-func BenchmarkTokenizer(b *testing.B) {
+func BenchmarkBuild(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		file := build.NewFile("print.q")
-		err := file.Compile()
+		tmp, err := build.New(".")
 
 		if err != nil {
 			b.Fatal(err)
 		}
 
-		file.Close()
+		tmp.WriteExecutable = false
+		err = tmp.Run()
+
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }

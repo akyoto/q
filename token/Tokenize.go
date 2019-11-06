@@ -1,11 +1,11 @@
 package token
 
-import "github.com/akyoto/q/spec"
+import (
+	"github.com/akyoto/q/spec"
+)
 
 // Tokenize processes the partial read and returns how many bytes were processed.
-// The remaining bytes will be prepended to the next call.
-// The custom function handleToken is called for each processed token.
-func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
+func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 	var (
 		i              int
 		c              byte
@@ -25,7 +25,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				i++
 
 				if i >= len(buffer) {
-					return processedBytes, nil
+					return tokens, processedBytes
 				}
 
 				c = buffer[i]
@@ -50,7 +50,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				i++
 
 				if i >= len(buffer) {
-					return processedBytes, nil
+					return tokens, processedBytes
 				}
 
 				c = buffer[i]
@@ -71,7 +71,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				i++
 
 				if i >= len(buffer) {
-					return processedBytes, nil
+					return tokens, processedBytes
 				}
 
 				c = buffer[i]
@@ -106,12 +106,7 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 
 		// Handle token
 		if token.Kind != Unknown {
-			err := handleToken(token)
-
-			if err != nil {
-				return 0, err
-			}
-
+			tokens = append(tokens, token)
 			processedBytes = i + 1
 			token.Kind = Unknown
 		}
@@ -119,5 +114,5 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 		i++
 	}
 
-	return processedBytes, nil
+	return tokens, processedBytes
 }

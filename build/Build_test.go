@@ -28,7 +28,7 @@ func TestExamplesHelloWorld(t *testing.T) {
 }
 
 func TestExamplesFunctions(t *testing.T) {
-	assertOutput(t, "../examples/functions", "Hello functions\n")
+	assertOutput(t, "../examples/functions", "Function 1\nFunction 2\nFunction 3\n")
 }
 
 func TestBuildErrors(t *testing.T) {
@@ -43,9 +43,8 @@ func TestBuildErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		file := build.NewFile(test.File)
-		defer file.Close()
-		err := file.Compile()
+		compiler := syntaxChecker(t, test.File)
+		err := compiler.Run()
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), test.ExpectedError)
 	}

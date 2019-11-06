@@ -10,7 +10,6 @@ import (
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
-	"github.com/akyoto/q/spec"
 )
 
 // Build describes a compiler build.
@@ -61,14 +60,12 @@ func (build *Build) Run() error {
 		}
 
 		if build.Verbose {
-			fmt.Println("Compiling", info.Name())
+			fmt.Println("Scanning", info.Name())
 		}
 
-		file := NewFile(path)
-		file.build = build
+		file := NewFile(path, build)
 		files = append(files, file)
-		compilerError := file.Compile()
-		return compilerError
+		return file.Scan()
 	})
 
 	if err != nil {
@@ -93,9 +90,33 @@ func (build *Build) Run() error {
 	build.assembler.Call("main")
 	build.assembler.Exit(0)
 
+	// Start parallel function compilation
+	wg := sync.WaitGroup{}
+
 	build.functions.Range(func(key interface{}, value interface{}) bool {
-		function := value.(*spec.Function)
-		build.assembler.Merge(function.Assembler)
+		function := value.(*Function)
+		wg.Add(1)
+
+		go func() {
+			err := function.Compile()
+
+			if err != nil {
+				os.Stderr.WriteString(err.Error() + "\n")
+				os.Exit(1)
+			}
+
+			wg.Done()
+		}()
+
+		return true
+	})
+
+	wg.Wait()
+
+	// Merge function codes into the main executable
+	build.functions.Range(func(key interface{}, value interface{}) bool {
+		function := value.(*Function)
+		build.assembler.Merge(function.Compiler.assembler)
 		return true
 	})
 
@@ -121,7 +142,7 @@ func (build *Build) Close() {
 	assemblerPool.Put(build.assembler)
 
 	build.functions.Range(func(key interface{}, value interface{}) bool {
-		assembler := value.(*spec.Function).Assembler
+		assembler := value.(*Function).Compiler.assembler
 		assembler.Reset()
 		assemblerPool.Put(assembler)
 		return true
