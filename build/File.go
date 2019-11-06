@@ -170,11 +170,10 @@ func (file *File) handleToken(t token.Token) error {
 
 		isDefinition := false
 
-		if len(file.Tokens) >= 3 {
-			whiteSpace := file.PreviousToken(-2)
-			functionKeyword := file.PreviousToken(-3)
+		if len(file.Tokens) >= 2 {
+			functionKeyword := file.PreviousToken(-2)
 
-			if whiteSpace.Kind == token.WhiteSpace && functionKeyword.Kind == token.Keyword && functionKeyword.Text == "func" {
+			if functionKeyword.Kind == token.Keyword && functionKeyword.Text == "func" {
 				isDefinition = true
 			}
 		}

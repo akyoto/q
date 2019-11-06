@@ -102,27 +102,6 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 		// New line
 		case c == '\n':
 			token = Token{NewLine, ""}
-
-		// Whitespace
-		case c == ' ' || c == '\t':
-			processedBytes = i
-
-			for {
-				i++
-
-				if i >= len(buffer) {
-					return processedBytes, nil
-				}
-
-				c = buffer[i]
-
-				if c != ' ' && c != '\t' {
-					i--
-					break
-				}
-			}
-
-			token = Token{WhiteSpace, string(buffer[processedBytes : i+1])}
 		}
 
 		// Handle token

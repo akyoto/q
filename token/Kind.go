@@ -14,7 +14,6 @@ const (
 	GroupEnd
 	BlockStart
 	BlockEnd
-	WhiteSpace
 )
 
 func (kind Kind) String() string {
@@ -45,9 +44,6 @@ func (kind Kind) String() string {
 
 	case BlockEnd:
 		return "BlockEnd"
-
-	case WhiteSpace:
-		return "WhiteSpace"
 
 	default:
 		return "Unknown"
