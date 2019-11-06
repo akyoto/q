@@ -72,7 +72,7 @@ func (file *File) Error(message string) error {
 			lineCount++
 			column = 1
 		} else {
-			column += len(oldToken.Text)
+			column += len(oldToken.Bytes)
 		}
 	}
 
@@ -138,12 +138,12 @@ func (file *File) handleToken(t token.Token) error {
 		if len(file.Tokens) >= 2 {
 			functionKeyword := file.PreviousToken(-2)
 
-			if functionKeyword.Kind == token.Keyword && string(functionKeyword.Text) == "func" {
+			if functionKeyword.Kind == token.Keyword && functionKeyword.String() == "func" {
 				isDefinition = true
 			}
 		}
 
-		functionName := string(previous.Text)
+		functionName := previous.String()
 
 		if isDefinition {
 			function := &spec.Function{
@@ -206,10 +206,10 @@ func (file *File) handleToken(t token.Token) error {
 				parameter := parameters[0][0]
 
 				if parameter.Kind != token.Text {
-					return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text))
+					return file.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.String()))
 				}
 
-				text := string(parameter.Text)
+				text := parameter.String()
 
 				if file.build != nil {
 					file.Assembler().Println(text)
