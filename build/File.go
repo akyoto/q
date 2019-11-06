@@ -245,7 +245,6 @@ func (file *File) handleToken(t token.Token) error {
 				}
 
 				text := parameter.Text
-				text = text[1 : len(text)-1]
 
 				if file.build != nil {
 					file.Assembler().Println(text)

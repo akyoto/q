@@ -81,23 +81,23 @@ func Tokenize(buffer []byte, handleToken func(Token) error) (int, error) {
 				}
 			}
 
-			token = Token{Text, string(buffer[processedBytes : i+1])}
+			token = Token{Text, string(buffer[processedBytes+1 : i])}
 
 		// Parentheses start
 		case c == '(':
-			token = Token{GroupStart, string(buffer[i : i+1])}
+			token = Token{GroupStart, ""}
 
 		// Parentheses end
 		case c == ')':
-			token = Token{GroupEnd, string(buffer[i : i+1])}
+			token = Token{GroupEnd, ""}
 
 		// Block start
 		case c == '{':
-			token = Token{BlockStart, string(buffer[i : i+1])}
+			token = Token{BlockStart, ""}
 
 		// Block end
 		case c == '}':
-			token = Token{BlockEnd, string(buffer[i : i+1])}
+			token = Token{BlockEnd, ""}
 
 		// New line
 		case c == '\n':
