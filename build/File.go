@@ -65,17 +65,17 @@ func (file *File) Compile() error {
 // directly to the faulty file at the given line and position.
 func (file *File) Error(message string) error {
 	lineCount := 0
-	column := 1
+	lineStart := 0
 
 	for _, oldToken := range file.Tokens {
 		if oldToken.Kind == token.NewLine {
 			lineCount++
-			column = 1
-		} else {
-			column += len(oldToken.Bytes)
+			lineStart = oldToken.Position
 		}
 	}
 
+	lastToken := file.PreviousToken(-1)
+	column := lastToken.Position - lineStart
 	return fmt.Errorf("%s:%d:%d: %s", file.path, lineCount, column, message)
 }
 
