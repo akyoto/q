@@ -43,7 +43,7 @@ func TestBuildErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		compiler, err := syntaxChecker(t, test.File)
+		compiler, err := syntaxChecker(test.File)
 		assert.Nil(t, err)
 		err = compiler.Run()
 		assert.NotNil(t, err)
@@ -60,7 +60,7 @@ func TestTokenizerErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		_, err := syntaxChecker(t, test.File)
+		_, err := syntaxChecker(test.File)
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), test.ExpectedError)
 	}

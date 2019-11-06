@@ -36,7 +36,7 @@ func assertOutput(t *testing.T, path string, expectedOutput string) {
 }
 
 // syntaxChecker creates a compiler that is purely used for syntax checks.
-func syntaxChecker(t testing.TB, inputFile string) (*build.Compiler, error) {
+func syntaxChecker(inputFile string) (*build.Compiler, error) {
 	file := build.NewFile(inputFile)
 	err := file.Read()
 

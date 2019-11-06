@@ -65,10 +65,10 @@ func (build *Build) Run() error {
 
 		file := NewFile(path)
 		files = append(files, file)
-		err = file.Read()
+		readError := file.Read()
 
-		if err != nil {
-			return err
+		if readError != nil {
+			return readError
 		}
 
 		return file.Scan(func(function *Function) {
