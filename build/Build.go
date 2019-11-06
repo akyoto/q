@@ -14,12 +14,12 @@ import (
 
 // Build describes a compiler build.
 type Build struct {
+	Environment
 	Path            string
 	ExecutablePath  string
 	ExecutableName  string
 	WriteExecutable bool
 	Verbose         bool
-	functions       sync.Map
 	assembler       *asm.Assembler
 }
 
@@ -63,9 +63,18 @@ func (build *Build) Run() error {
 			fmt.Println("Scanning", info.Name())
 		}
 
-		file := NewFile(path, build)
+		file := NewFile(path)
 		files = append(files, file)
-		return file.Scan()
+		err = file.Read()
+
+		if err != nil {
+			return err
+		}
+
+		return file.Scan(func(function *Function) {
+			function.compiler.environment = &build.Environment
+			build.functions.Store(function.Name, function)
+		})
 	})
 
 	if err != nil {
@@ -116,7 +125,7 @@ func (build *Build) Run() error {
 	// Merge function codes into the main executable
 	build.functions.Range(func(key interface{}, value interface{}) bool {
 		function := value.(*Function)
-		build.assembler.Merge(function.Compiler.assembler)
+		build.assembler.Merge(function.compiler.assembler)
 		return true
 	})
 
@@ -142,7 +151,7 @@ func (build *Build) Close() {
 	assemblerPool.Put(build.assembler)
 
 	build.functions.Range(func(key interface{}, value interface{}) bool {
-		assembler := value.(*Function).Compiler.assembler
+		assembler := value.(*Function).compiler.assembler
 		assembler.Reset()
 		assemblerPool.Put(assembler)
 		return true

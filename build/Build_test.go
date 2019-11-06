@@ -43,8 +43,24 @@ func TestBuildErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		compiler := syntaxChecker(t, test.File)
-		err := compiler.Run()
+		compiler, err := syntaxChecker(t, test.File)
+		assert.Nil(t, err)
+		err = compiler.Run()
+		assert.NotNil(t, err)
+		assert.Contains(t, err.Error(), test.ExpectedError)
+	}
+}
+
+func TestTokenizerErrors(t *testing.T) {
+	tests := []struct {
+		File          string
+		ExpectedError string
+	}{
+		{"testdata/unknown-expression.q", "Unknown expression"},
+	}
+
+	for _, test := range tests {
+		_, err := syntaxChecker(t, test.File)
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), test.ExpectedError)
 	}

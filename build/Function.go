@@ -10,22 +10,20 @@ type Function struct {
 	Parameters  []spec.Variable
 	ReturnTypes []spec.Type
 	File        *File
-	Compiler    *Compiler
 	TokenStart  int
 	TokenEnd    int
+	compiler    *Compiler
 }
 
 // Compile compiles the function code.
 func (function *Function) Compile() error {
-	compiler := NewCompiler(function.File.tokens[function.TokenStart:function.TokenEnd], function.File.build)
-	function.Compiler = compiler
-	compiler.assembler.AddLabel(function.Name)
-	err := compiler.Run()
+	function.compiler.assembler.AddLabel(function.Name)
+	err := function.compiler.Run()
 
 	if err != nil {
 		return err
 	}
 
-	compiler.assembler.Return()
+	function.compiler.assembler.Return()
 	return nil
 }

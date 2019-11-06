@@ -1,14 +1,12 @@
 package build_test
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"testing"
 
 	"github.com/akyoto/assert"
 	"github.com/akyoto/q/build"
-	"github.com/akyoto/q/token"
 )
 
 // assertOutput builds and runs the program to
@@ -38,11 +36,13 @@ func assertOutput(t *testing.T, path string, expectedOutput string) {
 }
 
 // syntaxChecker creates a compiler that is purely used for syntax checks.
-func syntaxChecker(t testing.TB, inputFile string) *build.Compiler {
-	tmp := &build.Build{}
-	contents, err := ioutil.ReadFile(inputFile)
-	assert.Nil(t, err)
-	tokens, processed := token.Tokenize(contents, []token.Token{})
-	assert.Equal(t, processed, len(contents))
-	return build.NewCompiler(tokens, tmp)
+func syntaxChecker(t testing.TB, inputFile string) (*build.Compiler, error) {
+	file := build.NewFile(inputFile)
+	err := file.Read()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return build.NewCompiler(file.Tokens()), nil
 }

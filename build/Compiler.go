@@ -15,7 +15,7 @@ type Compiler struct {
 	tokens        []token.Token
 	cursor        int
 	path          string
-	build         *Build
+	environment   *Environment
 	groups        []spec.Group
 	blocks        []spec.Block
 	functionStack []*Function
@@ -23,10 +23,9 @@ type Compiler struct {
 }
 
 // NewCompiler creates a new compiler.
-func NewCompiler(tokens []token.Token, build *Build) *Compiler {
+func NewCompiler(tokens []token.Token) *Compiler {
 	return &Compiler{
 		tokens:    tokens,
-		build:     build,
 		assembler: assemblerPool.Get().(*asm.Assembler),
 	}
 }
@@ -58,8 +57,8 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		functionName := previous.String()
 		function := Functions[functionName]
 
-		if function == nil {
-			obj, exists := compiler.build.functions.Load(functionName)
+		if function == nil && compiler.environment != nil {
+			obj, exists := compiler.environment.functions.Load(functionName)
 
 			if exists {
 				function = obj.(*Function)

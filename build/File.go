@@ -13,15 +13,14 @@ type File struct {
 	path     string
 	contents []byte
 	tokens   []token.Token
-	build    *Build
+	verbose  bool
 }
 
 // NewFile creates a new compiler for a single file.
-func NewFile(inputFile string, build *Build) *File {
+func NewFile(inputFile string) *File {
 	file := &File{
 		path:   inputFile,
 		tokens: *tokenBufferPool.Get().(*[]token.Token),
-		build:  build,
 	}
 
 	file.tokens = append(file.tokens, token.Token{
@@ -31,8 +30,8 @@ func NewFile(inputFile string, build *Build) *File {
 	return file
 }
 
-// Scan scans the input file.
-func (file *File) Scan() error {
+// Read reads the entire file contents.
+func (file *File) Read() error {
 	var (
 		err       error
 		processed int
@@ -50,6 +49,11 @@ func (file *File) Scan() error {
 		return fmt.Errorf("Unknown expression: %s", string(file.contents[processed:]))
 	}
 
+	return nil
+}
+
+// Scan scans the input file.
+func (file *File) Scan(handleFunction func(*Function)) error {
 	var (
 		function   *Function
 		blockLevel = 0
@@ -77,7 +81,7 @@ func (file *File) Scan() error {
 				Name: nameToken.String(),
 			}
 
-			if file.build.Verbose {
+			if file.verbose {
 				fmt.Println("Function:", function.Name)
 			}
 
@@ -98,11 +102,17 @@ func (file *File) Scan() error {
 			}
 
 			function.TokenEnd = index
-			file.build.functions.Store(function.Name, function)
+			function.compiler = NewCompiler(file.tokens[function.TokenStart:function.TokenEnd])
+			handleFunction(function)
 		}
 	}
 
 	return nil
+}
+
+// Tokens returns the complete list of tokens.
+func (file *File) Tokens() []token.Token {
+	return file.tokens
 }
 
 // Close frees up all resources.
