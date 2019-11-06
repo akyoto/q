@@ -26,4 +26,8 @@ func TestTokenize(t *testing.T) {
 	tokens, processed = token.Tokenize(source, tokens)
 	assert.Equal(t, processed, len(source))
 	assert.DeepEqual(t, tokens, expected)
+
+	for index := range tokens {
+		assert.Equal(t, tokens[index].Kind.String(), expected[index].Kind.String())
+	}
 }
