@@ -100,18 +100,7 @@ func (file *File) UnknownFunctionError(functionName string) error {
 
 // handleToken processes a single token.
 func (file *File) handleToken(t token.Token) error {
-	// fmt.Printf("%-10s | %s\n", t.Kind, string(t.Text))
-
 	switch t.Kind {
-	case token.Text:
-		// text := string(token.Text[1 : len(token.Text)-1])
-		// file.assembler.Println(text)
-
-	case token.NewLine:
-		if len(file.groups) > 0 {
-			return file.Error("Missing closing bracket ')'")
-		}
-
 	case token.BlockStart:
 		file.blocks = append(file.blocks, nil)
 
@@ -221,6 +210,11 @@ func (file *File) handleToken(t token.Token) error {
 		}
 
 		file.groups = file.groups[:len(file.groups)-1]
+
+	case token.NewLine:
+		if len(file.groups) > 0 {
+			return file.Error("Missing closing bracket ')'")
+		}
 	}
 
 	file.Tokens = append(file.Tokens, t)
