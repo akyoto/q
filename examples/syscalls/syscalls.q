@@ -1,3 +1,12 @@
 main() {
-	syscall(1, 1, "Hello", 5)
+	out()
+}
+
+out() {
+	id = 1
+	fd = 1
+	msg = "Hello World"
+	msgLength = 11
+
+	syscall(id, fd, msg, msgLength)
 }

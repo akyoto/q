@@ -113,22 +113,22 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 			call.ParameterStart = -1
 		}
 
+		parameters := call.Parameters
+
 		// Builtin functions
 		builtin := Functions[call.Function.Name]
 
-		if builtin != nil {
-			parameters := call.Parameters
-
-			if !builtin.NoParameterCheck {
-				if len(parameters) < len(call.Function.Parameters) {
-					return compiler.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
-				}
-
-				if len(parameters) > len(call.Function.Parameters) {
-					return compiler.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
-				}
+		if builtin == nil || !builtin.NoParameterCheck {
+			if len(parameters) < len(call.Function.Parameters) {
+				return compiler.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
 			}
 
+			if len(parameters) > len(call.Function.Parameters) {
+				return compiler.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
+			}
+		}
+
+		if builtin != nil {
 			switch builtin.Name {
 			case "print":
 				parameter := parameters[0][0]
@@ -143,28 +143,25 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 			case "syscall":
 				for index, expression := range call.Parameters {
 					register := syscall.Registers[index]
-					singleToken := expression[0]
+					err := compiler.saveExpressionInRegister(register, expression)
 
-					switch singleToken.Kind {
-					case token.Number:
-						numberAsString := singleToken.String()
-						number, err := strconv.ParseInt(numberAsString, 10, 64)
-
-						if err != nil {
-							return compiler.Error(fmt.Sprintf("Not a number: %s", numberAsString))
-						}
-
-						compiler.assembler.MoveRegisterNumber(register, uint64(number))
-
-					case token.Text:
-						address := compiler.assembler.Strings.Add(singleToken.String())
-						compiler.assembler.MoveRegisterAddress(register, address)
+					if err != nil {
+						return err
 					}
 				}
 
 				compiler.assembler.Syscall()
 			}
 		} else {
+			for index, expression := range call.Parameters {
+				register := syscall.Registers[index]
+				err := compiler.saveExpressionInRegister(register, expression)
+
+				if err != nil {
+					return err
+				}
+			}
+
 			compiler.assembler.Call(call.Function.Name)
 		}
 
@@ -224,25 +221,82 @@ func (compiler *Compiler) handleAssignment() error {
 		compiler.registerCounter++
 	}
 
-	right := compiler.TokenAtOffset(1)
+	var expression Expression
+	expressionStart := compiler.cursor + 1
+	tokenIndex := expressionStart
 
-	switch right.Kind {
-	case token.Number:
-		expression := right.String()
-		number, err := strconv.ParseInt(expression, 10, 64)
-
-		if err != nil {
-			return compiler.Error(fmt.Sprintf("Not a number: %s", expression))
+	for {
+		if tokenIndex >= len(compiler.tokens) {
+			return compiler.Error("Invalid expression")
 		}
 
-		compiler.assembler.MoveRegisterNumber(variable.Register, uint64(number))
+		t := compiler.tokens[tokenIndex]
 
-	case token.Text:
-		address := compiler.assembler.Strings.Add(right.String())
-		compiler.assembler.MoveRegisterAddress(variable.Register, address)
+		if t.Kind == token.NewLine {
+			expression = compiler.tokens[expressionStart:tokenIndex]
+			break
+		}
+
+		tokenIndex++
+	}
+
+	return compiler.saveExpressionInRegister(variable.Register, expression)
+}
+
+// saveExpressionInRegister moves the result of an expression to the given register.
+func (compiler *Compiler) saveExpressionInRegister(register string, expression Expression) error {
+	result, typ, err := compiler.evaluateExpression(expression)
+
+	if err != nil {
+		return err
+	}
+
+	switch typ.Name {
+	case "Number":
+		compiler.assembler.MoveRegisterNumber(register, result.(uint64))
+
+	case "Register":
+		compiler.assembler.MoveRegisterRegister(register, result.(string))
+
+	case "Pointer":
+		compiler.assembler.MoveRegisterAddress(register, result.(uint32))
 	}
 
 	return nil
+}
+
+// evaluateExpression evaluates an expression.
+func (compiler *Compiler) evaluateExpression(expression Expression) (interface{}, *spec.Type, error) {
+	singleToken := expression[0]
+
+	switch singleToken.Kind {
+	case token.Identifier:
+		variableName := singleToken.String()
+		variable := compiler.scopes.Get(variableName)
+
+		if variable == nil {
+			return 0, nil, compiler.Error(fmt.Sprintf("Unknown variable %s", variableName))
+		}
+
+		return variable.Register, &spec.Type{Name: "Register"}, nil
+
+	case token.Number:
+		numberAsString := singleToken.String()
+		number, err := strconv.ParseInt(numberAsString, 10, 64)
+
+		if err != nil {
+			return 0, nil, compiler.Error(fmt.Sprintf("Not a number: %s", numberAsString))
+		}
+
+		return uint64(number), &spec.Type{Name: "Number"}, nil
+
+	case token.Text:
+		address := compiler.assembler.Strings.Add(singleToken.String())
+		return address, &spec.Type{Name: "Pointer"}, nil
+
+	default:
+		return 0, nil, compiler.Error("Invalid expression")
+	}
 }
 
 // TokenAtOffset returns the token at the given offset relative to the cursor.
