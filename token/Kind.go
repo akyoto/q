@@ -4,15 +4,34 @@ package token
 type Kind uint8
 
 const (
+	// Unknown represents an invalid token.
 	Unknown Kind = iota
+
+	// NewLine represents the newline character.
 	NewLine
+
+	// Identifier represents a series of characters used to identify a variable or function.
 	Identifier
+
+	// Keyword represents a language keyword.
 	Keyword
+
+	// Text represents an uninterpreted series of characters in the source code.
 	Text
+
+	// Number represents a series of numerical characters.
 	Number
+
+	// GroupStart represents '('.
 	GroupStart
+
+	// GroupEnd represents ')'.
 	GroupEnd
+
+	// BlockStart represents '{'.
 	BlockStart
+
+	// BlockEnd represents '}'.
 	BlockEnd
 )
 

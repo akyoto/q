@@ -1,3 +1,4 @@
+// Package similarity includes utilities to calculate string similarity.
 // Copyright (C) 2016 Felipe da Cunha Gonçalves
 // Source: https://github.com/xrash/smetrics
 // Algorithm: William E. Winkler (1990) and Matthew A. Jaro (1989)
@@ -9,11 +10,11 @@ import (
 
 // Default compares two strings and returns the similarity between 0 and 1.
 func Default(a string, b string) float64 {
-	return JaroWinkler(a, b, 0.7, 4)
+	return jaroWinkler(a, b, 0.7, 4)
 }
 
-func JaroWinkler(a, b string, boostThreshold float64, prefixSize int) float64 {
-	j := Jaro(a, b)
+func jaroWinkler(a, b string, boostThreshold float64, prefixSize int) float64 {
+	j := jaro(a, b)
 
 	if j <= boostThreshold {
 		return j
@@ -31,7 +32,7 @@ func JaroWinkler(a, b string, boostThreshold float64, prefixSize int) float64 {
 	return j + 0.1*prefixMatch*(1.0-j)
 }
 
-func Jaro(a, b string) float64 {
+func jaro(a, b string) float64 {
 	la := float64(len(a))
 	lb := float64(len(b))
 
