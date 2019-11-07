@@ -83,6 +83,30 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 			token = Token{Text, buffer[processedBytes+1 : i], processedBytes + 1}
 
+		// Operators
+		case c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>':
+			processedBytes = i
+
+			for {
+				i++
+
+				if i >= len(buffer) {
+					return tokens, processedBytes
+				}
+
+				c = buffer[i]
+
+				if !(c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>') {
+					break
+				}
+			}
+
+			token = Token{Operator, buffer[processedBytes:i], processedBytes}
+
+			if !spec.Operators[string(token.Bytes)] {
+				return tokens, processedBytes
+			}
+
 		// Parentheses start
 		case c == '(':
 			token = Token{GroupStart, nil, i}

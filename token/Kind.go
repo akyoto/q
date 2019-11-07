@@ -22,6 +22,9 @@ const (
 	// Number represents a series of numerical characters.
 	Number
 
+	// Operator represents a mathematical operator.
+	Operator
+
 	// GroupStart represents '('.
 	GroupStart
 
@@ -52,6 +55,9 @@ func (kind Kind) String() string {
 	case Number:
 		return "Number"
 
+	case Operator:
+		return "Operator"
+
 	case GroupStart:
 		return "GroupStart"
 
@@ -64,7 +70,10 @@ func (kind Kind) String() string {
 	case BlockEnd:
 		return "BlockEnd"
 
-	default:
+	case Unknown:
 		return "Unknown"
+
+	default:
+		return "<undefined>"
 	}
 }
