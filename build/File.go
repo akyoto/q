@@ -77,7 +77,8 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			}
 
 			function = &Function{
-				Name: functionName,
+				Name:           functionName,
+				parameterStart: index + 2,
 			}
 
 			if file.verbose {
@@ -114,6 +115,27 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 
 		case token.GroupEnd:
 			groupLevel--
+
+			if groupLevel != 0 {
+				continue
+			}
+
+			if function.TokenStart != 0 {
+				continue
+			}
+
+			if function.parameterStart < index {
+				parameter := file.tokens[function.parameterStart:index]
+				parameterName := parameter[0]
+
+				function.Parameters = append(function.Parameters, Variable{
+					Name: parameterName.String(),
+				})
+
+				function.parameterStart = -1
+			}
+
+		case token.Separator:
 
 		case token.NewLine:
 			// OK.

@@ -141,7 +141,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 				compiler.assembler.Println(text)
 
 			case "syscall":
-				err := compiler.beforeCall(call)
+				err := compiler.beforeCall(call, syscall.Registers)
 
 				if err != nil {
 					return err
@@ -151,7 +151,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 				compiler.afterCall(call)
 			}
 		} else {
-			err := compiler.beforeCall(call)
+			err := compiler.beforeCall(call, variableRegisters)
 
 			if err != nil {
 				return err
@@ -198,9 +198,9 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 }
 
 // beforeCall pushes parameters into registers.
-func (compiler *Compiler) beforeCall(call *FunctionCall) error {
+func (compiler *Compiler) beforeCall(call *FunctionCall, registers []string) error {
 	for index, expression := range call.Parameters {
-		register := syscall.Registers[index]
+		register := registers[index]
 		err := compiler.saveExpressionInRegister(register, expression)
 
 		if err != nil {
@@ -213,7 +213,7 @@ func (compiler *Compiler) beforeCall(call *FunctionCall) error {
 
 // afterCall restores saved registers from the stack.
 func (compiler *Compiler) afterCall(call *FunctionCall) {
-	// Currently a noop.
+	// Noop.
 }
 
 // handleAssignment handles assignment instructions.
@@ -272,6 +272,7 @@ func (compiler *Compiler) saveExpressionInRegister(register string, expression E
 		}
 
 		if variable.Register != register {
+			// fmt.Printf("mov %s, %s\n", register, variable.Register)
 			compiler.assembler.MoveRegisterRegister(register, variable.Register)
 		}
 

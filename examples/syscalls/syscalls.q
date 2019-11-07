@@ -1,12 +1,11 @@
 main() {
-	out()
+	out(11)
 }
 
-out() {
+out(msgLength) {
 	id = 1
 	fd = 1
 	msg = "Hello World"
-	msgLength = 11
 
 	syscall(id, fd, msg, msgLength)
 }

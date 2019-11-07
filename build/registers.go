@@ -5,7 +5,7 @@ var variableRegisters = []string{
 	"rcx",
 	// "rdx",
 	"rbx",
-	//"rsp",
+	// "rsp",
 	"rbp",
 	// "rsi",
 	// "rdi",
