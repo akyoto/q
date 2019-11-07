@@ -1,11 +1,7 @@
 main() {
-	out(11)
+	write("Hello Syscalls", 14)
 }
 
-out(msgLength) {
-	id = 1
-	fd = 1
-	msg = "Hello World"
-
-	syscall(id, fd, msg, msgLength)
+write(msg, length) {
+	syscall(1, 1, msg, length)
 }

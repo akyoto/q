@@ -136,6 +136,20 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			}
 
 		case token.Separator:
+			if function == nil || function.TokenStart != 0 || groupLevel != 1 {
+				continue
+			}
+
+			if function.parameterStart < index {
+				parameter := file.tokens[function.parameterStart:index]
+				parameterName := parameter[0]
+
+				function.Parameters = append(function.Parameters, Variable{
+					Name: parameterName.String(),
+				})
+
+				function.parameterStart = index + 1
+			}
 
 		case token.NewLine:
 			// OK.
