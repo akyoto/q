@@ -66,12 +66,18 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 				continue
 			}
 
+			functionName := t.String()
+
+			if functionName == "func" || functionName == "fn" {
+				return NewError("A function can not be named 'func' or 'fn'", file.path, file.tokens[:index+1])
+			}
+
 			if index+1 >= len(file.tokens) || file.tokens[index+1].Kind != token.GroupStart {
 				return NewError("Missing opening bracket '(' after the function name", file.path, file.tokens[:index+2])
 			}
 
 			function = &Function{
-				Name: t.String(),
+				Name: functionName,
 			}
 
 			if file.verbose {
