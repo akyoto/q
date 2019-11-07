@@ -1,9 +1,7 @@
 package build
 
-import "github.com/akyoto/q/spec"
-
 // Scope represents a map of variables.
-type Scope map[string]*spec.Variable
+type Scope map[string]*Variable
 
 // ScopeStack represents a list of scopes.
 type ScopeStack struct {
@@ -11,13 +9,13 @@ type ScopeStack struct {
 }
 
 // Add adds a variable.
-func (stack *ScopeStack) Add(variable *spec.Variable) {
+func (stack *ScopeStack) Add(variable *Variable) {
 	top := stack.scopes[len(stack.scopes)-1]
 	top[variable.Name] = variable
 }
 
 // Get returns the variable with the specified name.
-func (stack *ScopeStack) Get(variableName string) *spec.Variable {
+func (stack *ScopeStack) Get(variableName string) *Variable {
 	for index := len(stack.scopes) - 1; index >= 0; index-- {
 		scope := stack.scopes[index]
 		variable := scope[variableName]

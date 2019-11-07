@@ -3,6 +3,7 @@ package build
 import (
 	"fmt"
 	"sort"
+	"strconv"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/similarity"
@@ -13,17 +14,18 @@ import (
 // Compiler handles the compilation of tokens.
 // Each function has its own compiler.
 type Compiler struct {
-	cursor        int
-	file          *File
-	tokenStart    int
-	tokenEnd      int
-	tokens        []token.Token
-	environment   *Environment
-	groups        []spec.Group
-	blocks        []spec.Block
-	functionStack []*Function
-	scopes        ScopeStack
-	assembler     *asm.Assembler
+	cursor          int
+	file            *File
+	tokenStart      int
+	tokenEnd        int
+	tokens          []token.Token
+	environment     *Environment
+	groups          []spec.Group
+	blocks          []spec.Block
+	functionStack   []*Function
+	scopes          ScopeStack
+	assembler       *asm.Assembler
+	registerCounter int
 }
 
 // NewCompiler creates a new compiler.
@@ -140,12 +142,32 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 	case token.Operator:
 		if t.String() == "=" {
 			left := compiler.TokenAtOffset(-1)
-			// right := compiler.TokenAtOffset(1)
-			variable := &spec.Variable{
-				Name: left.String(),
+			variableName := left.String()
+			variable := compiler.scopes.Get(variableName)
+
+			if variable == nil {
+				if compiler.registerCounter == len(variableRegisters) {
+					return compiler.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(variableRegisters)))
+				}
+
+				variable = &Variable{
+					Name:     variableName,
+					Register: variableRegisters[compiler.registerCounter],
+				}
+
+				compiler.scopes.Add(variable)
+				compiler.registerCounter++
 			}
 
-			compiler.scopes.Add(variable)
+			right := compiler.TokenAtOffset(1)
+			expression := right.String()
+			number, err := strconv.ParseInt(expression, 10, 64)
+
+			if err != nil {
+				return compiler.Error(fmt.Sprintf("Not a number: %s", expression))
+			}
+
+			compiler.assembler.MoveRegisterNumber(variable.Register, uint64(number))
 		}
 
 	case token.NewLine:

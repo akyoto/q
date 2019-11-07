@@ -6,7 +6,7 @@ import "github.com/akyoto/q/spec"
 var Functions = map[string]*Function{
 	"print": {
 		Name: "print",
-		Parameters: []spec.Variable{
+		Parameters: []Variable{
 			{
 				Name: "text",
 				Type: spec.Types["Text"],

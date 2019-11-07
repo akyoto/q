@@ -7,7 +7,7 @@ import (
 // Function represents a function.
 type Function struct {
 	Name        string
-	Parameters  []spec.Variable
+	Parameters  []Variable
 	ReturnTypes []spec.Type
 	TokenStart  int
 	TokenEnd    int
