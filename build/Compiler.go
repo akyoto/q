@@ -141,25 +141,19 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 				compiler.assembler.Println(text)
 
 			case "syscall":
-				for index, expression := range call.Parameters {
-					register := syscall.Registers[index]
-					err := compiler.saveExpressionInRegister(register, expression)
+				err := compiler.prepareCall(call)
 
-					if err != nil {
-						return err
-					}
+				if err != nil {
+					return err
 				}
 
 				compiler.assembler.Syscall()
 			}
 		} else {
-			for index, expression := range call.Parameters {
-				register := syscall.Registers[index]
-				err := compiler.saveExpressionInRegister(register, expression)
+			err := compiler.prepareCall(call)
 
-				if err != nil {
-					return err
-				}
+			if err != nil {
+				return err
 			}
 
 			compiler.assembler.Call(call.Function.Name)
@@ -195,6 +189,20 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 	case token.NewLine:
 		if len(compiler.groups) > 0 {
 			return compiler.Error("Missing closing bracket ')'")
+		}
+	}
+
+	return nil
+}
+
+// prepareCall pushes parameters into registers.
+func (compiler *Compiler) prepareCall(call *FunctionCall) error {
+	for index, expression := range call.Parameters {
+		register := syscall.Registers[index]
+		err := compiler.saveExpressionInRegister(register, expression)
+
+		if err != nil {
+			return err
 		}
 	}
 
@@ -245,28 +253,6 @@ func (compiler *Compiler) handleAssignment() error {
 
 // saveExpressionInRegister moves the result of an expression to the given register.
 func (compiler *Compiler) saveExpressionInRegister(register string, expression Expression) error {
-	result, typ, err := compiler.evaluateExpression(expression)
-
-	if err != nil {
-		return err
-	}
-
-	switch typ.Name {
-	case "Number":
-		compiler.assembler.MoveRegisterNumber(register, result.(uint64))
-
-	case "Register":
-		compiler.assembler.MoveRegisterRegister(register, result.(string))
-
-	case "Pointer":
-		compiler.assembler.MoveRegisterAddress(register, result.(uint32))
-	}
-
-	return nil
-}
-
-// evaluateExpression evaluates an expression.
-func (compiler *Compiler) evaluateExpression(expression Expression) (interface{}, *spec.Type, error) {
 	singleToken := expression[0]
 
 	switch singleToken.Kind {
@@ -275,28 +261,32 @@ func (compiler *Compiler) evaluateExpression(expression Expression) (interface{}
 		variable := compiler.scopes.Get(variableName)
 
 		if variable == nil {
-			return 0, nil, compiler.Error(fmt.Sprintf("Unknown variable %s", variableName))
+			return compiler.Error(fmt.Sprintf("Unknown variable %s", variableName))
 		}
 
-		return variable.Register, &spec.Type{Name: "Register"}, nil
+		if variable.Register != register {
+			compiler.assembler.MoveRegisterRegister(register, variable.Register)
+		}
 
 	case token.Number:
 		numberAsString := singleToken.String()
 		number, err := strconv.ParseInt(numberAsString, 10, 64)
 
 		if err != nil {
-			return 0, nil, compiler.Error(fmt.Sprintf("Not a number: %s", numberAsString))
+			return compiler.Error(fmt.Sprintf("Not a number: %s", numberAsString))
 		}
 
-		return uint64(number), &spec.Type{Name: "Number"}, nil
+		compiler.assembler.MoveRegisterNumber(register, uint64(number))
 
 	case token.Text:
 		address := compiler.assembler.Strings.Add(singleToken.String())
-		return address, &spec.Type{Name: "Pointer"}, nil
+		compiler.assembler.MoveRegisterAddress(register, address)
 
 	default:
-		return 0, nil, compiler.Error("Invalid expression")
+		return compiler.Error("Invalid expression")
 	}
+
+	return nil
 }
 
 // TokenAtOffset returns the token at the given offset relative to the cursor.
