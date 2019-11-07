@@ -16,8 +16,12 @@ Don't expect it to do anything useful yet, it can barely create a Linux executab
 ```shell
 git clone https://github.com/akyoto/q
 go build
-./q build examples/hello
-./examples/hello/hello
+```
+
+This will produce the `q` compiler in your current directory.
+
+```shell
+./q build examples/hello && ./examples/hello/hello
 ```
 
 ## Goals
