@@ -65,12 +65,13 @@ func (build *Build) Run() error {
 		}
 
 		file := NewFile(path)
-		files = append(files, file)
 		readError := file.Read()
 
 		if readError != nil {
 			return readError
 		}
+
+		files = append(files, file)
 
 		return file.Scan(func(function *Function) {
 			function.compiler.environment = &build.Environment
