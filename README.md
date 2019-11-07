@@ -15,6 +15,7 @@ Don't expect it to do anything useful yet, it can barely create a Linux executab
 
 ```shell
 git clone https://github.com/akyoto/q
+cd q
 go build
 ```
 
