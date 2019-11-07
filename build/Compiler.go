@@ -11,6 +11,7 @@ import (
 )
 
 // Compiler handles the compilation of tokens.
+// Each function has its own compiler.
 type Compiler struct {
 	cursor        int
 	file          *File
@@ -21,18 +22,22 @@ type Compiler struct {
 	groups        []spec.Group
 	blocks        []spec.Block
 	functionStack []*Function
+	scopes        ScopeStack
 	assembler     *asm.Assembler
 }
 
 // NewCompiler creates a new compiler.
 func NewCompiler(file *File, tokenStart int, tokenEnd int) *Compiler {
-	return &Compiler{
+	compiler := &Compiler{
 		file:       file,
 		tokenStart: tokenStart,
 		tokenEnd:   tokenEnd,
 		tokens:     file.tokens[tokenStart:tokenEnd],
 		assembler:  assemblerPool.Get().(*asm.Assembler),
 	}
+
+	compiler.scopes.Push()
+	return compiler
 }
 
 // Run compiles the set of tokens to machine code.
@@ -122,6 +127,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 
 	case token.BlockStart:
 		compiler.blocks = append(compiler.blocks, nil)
+		compiler.scopes.Push()
 
 	case token.BlockEnd:
 		if len(compiler.blocks) == 0 {
@@ -129,6 +135,18 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		}
 
 		compiler.blocks = compiler.blocks[:len(compiler.blocks)-1]
+		compiler.scopes.Pop()
+
+	case token.Operator:
+		if t.String() == "=" {
+			left := compiler.TokenAtOffset(-1)
+			// right := compiler.TokenAtOffset(1)
+			variable := &spec.Variable{
+				Name: left.String(),
+			}
+
+			compiler.scopes.Add(variable)
+		}
 
 	case token.NewLine:
 		if len(compiler.groups) > 0 {

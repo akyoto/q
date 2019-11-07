@@ -5,3 +5,8 @@ type Variable struct {
 	Name string
 	Type *Type
 }
+
+// String returns the string representation.
+func (variable *Variable) String() string {
+	return variable.Name
+}
