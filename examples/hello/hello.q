@@ -1,3 +1,3 @@
-func main() {
+main() {
 	print("Hello")
 }

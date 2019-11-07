@@ -1,7 +1,6 @@
 package build
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -61,23 +60,13 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 
 	for index, t := range file.tokens {
 		switch t.Kind {
-		case token.Keyword:
-			if t.String() != "func" {
+		case token.Identifier:
+			if function != nil {
 				continue
 			}
 
-			if index+1 >= len(file.tokens) {
-				return errors.New("Expected function name")
-			}
-
-			nameToken := file.tokens[index+1]
-
-			if nameToken.Kind != token.Identifier {
-				return errors.New("Function name must be a valid identifier")
-			}
-
 			function = &Function{
-				Name: nameToken.String(),
+				Name: t.String(),
 			}
 
 			if file.verbose {
@@ -103,6 +92,7 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			function.TokenEnd = index
 			function.compiler = NewCompiler(file, function.TokenStart, function.TokenEnd)
 			handleFunction(function)
+			function = nil
 		}
 	}
 

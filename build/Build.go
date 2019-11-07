@@ -65,6 +65,7 @@ func (build *Build) Run() error {
 		}
 
 		file := NewFile(path)
+		file.verbose = build.Verbose
 		readError := file.Read()
 
 		if readError != nil {
