@@ -141,22 +141,24 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 				compiler.assembler.Println(text)
 
 			case "syscall":
-				err := compiler.prepareCall(call)
+				err := compiler.beforeCall(call)
 
 				if err != nil {
 					return err
 				}
 
 				compiler.assembler.Syscall()
+				compiler.afterCall(call)
 			}
 		} else {
-			err := compiler.prepareCall(call)
+			err := compiler.beforeCall(call)
 
 			if err != nil {
 				return err
 			}
 
 			compiler.assembler.Call(call.Function.Name)
+			compiler.afterCall(call)
 		}
 
 		call.Reset()
@@ -195,8 +197,8 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 	return nil
 }
 
-// prepareCall pushes parameters into registers.
-func (compiler *Compiler) prepareCall(call *FunctionCall) error {
+// beforeCall pushes parameters into registers.
+func (compiler *Compiler) beforeCall(call *FunctionCall) error {
 	for index, expression := range call.Parameters {
 		register := syscall.Registers[index]
 		err := compiler.saveExpressionInRegister(register, expression)
@@ -207,6 +209,11 @@ func (compiler *Compiler) prepareCall(call *FunctionCall) error {
 	}
 
 	return nil
+}
+
+// afterCall restores saved registers from the stack.
+func (compiler *Compiler) afterCall(call *FunctionCall) {
+	// Currently a noop.
 }
 
 // handleAssignment handles assignment instructions.
