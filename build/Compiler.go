@@ -153,21 +153,7 @@ func (compiler *Compiler) Function() *Function {
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
 func (compiler *Compiler) Error(message string) error {
-	var (
-		lineCount = 0
-		lineStart = 0
-	)
-
-	for _, oldToken := range compiler.file.tokens[:compiler.tokenStart+compiler.cursor] {
-		if oldToken.Kind == token.NewLine {
-			lineCount++
-			lineStart = oldToken.Position
-		}
-	}
-
-	cursorToken := compiler.TokenAtOffset(0)
-	column := cursorToken.Position - lineStart
-	return &Error{compiler.file.path, lineCount, column, compiler.cursor, message}
+	return NewError(message, compiler.file.path, compiler.file.tokens[:compiler.tokenStart+compiler.cursor+1])
 }
 
 // UnknownFunctionError produces an unknown function error
