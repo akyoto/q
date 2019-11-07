@@ -8,17 +8,16 @@ import (
 )
 
 func TestTokenize(t *testing.T) {
-	source := []byte("func abc() {\n 123 \"text\" }")
+	source := []byte("abc() {\n 123 \"text\" }")
 	expected := []token.Token{
-		{token.Keyword, []byte("func"), 0},
-		{token.Identifier, []byte("abc"), 5},
-		{token.GroupStart, nil, 8},
-		{token.GroupEnd, nil, 9},
-		{token.BlockStart, nil, 11},
-		{token.NewLine, nil, 12},
-		{token.Number, []byte("123"), 14},
-		{token.Text, []byte("text"), 19},
-		{token.BlockEnd, nil, 25},
+		{token.Identifier, []byte("abc"), 0},
+		{token.GroupStart, nil, 3},
+		{token.GroupEnd, nil, 4},
+		{token.BlockStart, nil, 6},
+		{token.NewLine, nil, 7},
+		{token.Number, []byte("123"), 9},
+		{token.Text, []byte("text"), 14},
+		{token.BlockEnd, nil, 20},
 	}
 
 	tokens := []token.Token{}
