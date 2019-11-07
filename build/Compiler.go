@@ -140,34 +140,13 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		compiler.scopes.Pop()
 
 	case token.Operator:
+		// Assignments
 		if t.String() == "=" {
-			left := compiler.TokenAtOffset(-1)
-			variableName := left.String()
-			variable := compiler.scopes.Get(variableName)
-
-			if variable == nil {
-				if compiler.registerCounter == len(variableRegisters) {
-					return compiler.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(variableRegisters)))
-				}
-
-				variable = &Variable{
-					Name:     variableName,
-					Register: variableRegisters[compiler.registerCounter],
-				}
-
-				compiler.scopes.Add(variable)
-				compiler.registerCounter++
-			}
-
-			right := compiler.TokenAtOffset(1)
-			expression := right.String()
-			number, err := strconv.ParseInt(expression, 10, 64)
+			err := compiler.handleAssignment()
 
 			if err != nil {
-				return compiler.Error(fmt.Sprintf("Not a number: %s", expression))
+				return err
 			}
-
-			compiler.assembler.MoveRegisterNumber(variable.Register, uint64(number))
 		}
 
 	case token.NewLine:
@@ -176,6 +155,38 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		}
 	}
 
+	return nil
+}
+
+// handleAssignment handles assignment instructions.
+func (compiler *Compiler) handleAssignment() error {
+	left := compiler.TokenAtOffset(-1)
+	variableName := left.String()
+	variable := compiler.scopes.Get(variableName)
+
+	if variable == nil {
+		if compiler.registerCounter == len(variableRegisters) {
+			return compiler.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(variableRegisters)))
+		}
+
+		variable = &Variable{
+			Name:     variableName,
+			Register: variableRegisters[compiler.registerCounter],
+		}
+
+		compiler.scopes.Add(variable)
+		compiler.registerCounter++
+	}
+
+	right := compiler.TokenAtOffset(1)
+	expression := right.String()
+	number, err := strconv.ParseInt(expression, 10, 64)
+
+	if err != nil {
+		return compiler.Error(fmt.Sprintf("Not a number: %s", expression))
+	}
+
+	compiler.assembler.MoveRegisterNumber(variable.Register, uint64(number))
 	return nil
 }
 
