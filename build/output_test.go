@@ -44,5 +44,5 @@ func syntaxChecker(inputFile string) (*build.Compiler, error) {
 		return nil, err
 	}
 
-	return build.NewCompiler(file.Tokens()), nil
+	return build.NewCompiler(file, 0, len(file.Tokens())), nil
 }

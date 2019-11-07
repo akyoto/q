@@ -3,6 +3,7 @@ package build
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -101,6 +102,8 @@ func (build *Build) Run() error {
 
 	// Start parallel function compilation
 	wg := sync.WaitGroup{}
+	errors := log.New(os.Stderr, "", 0)
+	errorCount := 0
 
 	build.functions.Range(func(key interface{}, value interface{}) bool {
 		function := value.(*Function)
@@ -110,8 +113,8 @@ func (build *Build) Run() error {
 			err := function.Compile()
 
 			if err != nil {
-				os.Stderr.WriteString(err.Error() + "\n")
-				os.Exit(1)
+				errors.Println(err)
+				errorCount++
 			}
 
 			wg.Done()
@@ -121,6 +124,10 @@ func (build *Build) Run() error {
 	})
 
 	wg.Wait()
+
+	if errorCount > 0 {
+		os.Exit(1)
+	}
 
 	// Merge function codes into the main executable
 	build.functions.Range(func(key interface{}, value interface{}) bool {

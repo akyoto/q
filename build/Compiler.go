@@ -12,9 +12,11 @@ import (
 
 // Compiler handles the compilation of tokens.
 type Compiler struct {
-	tokens        []token.Token
 	cursor        int
-	path          string
+	file          *File
+	tokenStart    int
+	tokenEnd      int
+	tokens        []token.Token
 	environment   *Environment
 	groups        []spec.Group
 	blocks        []spec.Block
@@ -23,10 +25,13 @@ type Compiler struct {
 }
 
 // NewCompiler creates a new compiler.
-func NewCompiler(tokens []token.Token) *Compiler {
+func NewCompiler(file *File, tokenStart int, tokenEnd int) *Compiler {
 	return &Compiler{
-		tokens:    tokens,
-		assembler: assemblerPool.Get().(*asm.Assembler),
+		file:       file,
+		tokenStart: tokenStart,
+		tokenEnd:   tokenEnd,
+		tokens:     file.tokens[tokenStart:tokenEnd],
+		assembler:  assemblerPool.Get().(*asm.Assembler),
 	}
 }
 
@@ -148,10 +153,12 @@ func (compiler *Compiler) Function() *Function {
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
 func (compiler *Compiler) Error(message string) error {
-	lineCount := 0
-	lineStart := 0
+	var (
+		lineCount = 0
+		lineStart = 0
+	)
 
-	for _, oldToken := range compiler.tokens[:compiler.cursor] {
+	for _, oldToken := range compiler.file.tokens[:compiler.tokenStart+compiler.cursor] {
 		if oldToken.Kind == token.NewLine {
 			lineCount++
 			lineStart = oldToken.Position
@@ -160,7 +167,7 @@ func (compiler *Compiler) Error(message string) error {
 
 	cursorToken := compiler.TokenAtOffset(0)
 	column := cursorToken.Position - lineStart
-	return fmt.Errorf("%s:%d:%d: %s", compiler.path, lineCount, column, message)
+	return &Error{compiler.file.path, lineCount, column, compiler.cursor, message}
 }
 
 // UnknownFunctionError produces an unknown function error

@@ -77,7 +77,6 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			}
 
 			function = &Function{
-				File: file,
 				Name: nameToken.String(),
 			}
 
@@ -102,7 +101,7 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			}
 
 			function.TokenEnd = index
-			function.compiler = NewCompiler(file.tokens[function.TokenStart:function.TokenEnd])
+			function.compiler = NewCompiler(file, function.TokenStart, function.TokenEnd)
 			handleFunction(function)
 		}
 	}

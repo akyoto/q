@@ -9,7 +9,6 @@ type Function struct {
 	Name        string
 	Parameters  []spec.Variable
 	ReturnTypes []spec.Type
-	File        *File
 	TokenStart  int
 	TokenEnd    int
 	compiler    *Compiler
