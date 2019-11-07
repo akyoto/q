@@ -8,7 +8,7 @@ type Variable struct {
 	Type      *spec.Type
 	Mutable   bool
 	TimesUsed int
-	Register  string
+	Register  *Register
 }
 
 // String returns the string representation.

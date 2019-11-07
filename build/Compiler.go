@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
-	"github.com/akyoto/asm/syscall"
 	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
@@ -26,17 +25,19 @@ type Compiler struct {
 	functionStack   []*Function
 	scopes          ScopeStack
 	assembler       *asm.Assembler
-	registerCounter int
+	registerManager *RegisterManager
+	verbose         bool
 }
 
 // NewCompiler creates a new compiler.
 func NewCompiler(file *File, tokenStart int, tokenEnd int) *Compiler {
 	compiler := &Compiler{
-		file:       file,
-		tokenStart: tokenStart,
-		tokenEnd:   tokenEnd,
-		tokens:     file.tokens[tokenStart:tokenEnd],
-		assembler:  assemblerPool.Get().(*asm.Assembler),
+		file:            file,
+		tokenStart:      tokenStart,
+		tokenEnd:        tokenEnd,
+		tokens:          file.tokens[tokenStart:tokenEnd],
+		assembler:       assemblerPool.Get().(*asm.Assembler),
+		registerManager: NewRegisterManager(),
 	}
 
 	compiler.scopes.Push()
@@ -141,7 +142,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 				compiler.assembler.Println(text)
 
 			case "syscall":
-				err := compiler.beforeCall(call, syscall.Registers)
+				err := compiler.beforeCall(call, compiler.registerManager.SyscallRegisters)
 
 				if err != nil {
 					return err
@@ -151,7 +152,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 				compiler.afterCall(call)
 			}
 		} else {
-			err := compiler.beforeCall(call, variableRegisters)
+			err := compiler.beforeCall(call, compiler.registerManager.SyscallRegisters)
 
 			if err != nil {
 				return err
@@ -198,7 +199,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 }
 
 // beforeCall pushes parameters into registers.
-func (compiler *Compiler) beforeCall(call *FunctionCall, registers []string) error {
+func (compiler *Compiler) beforeCall(call *FunctionCall, registers []*Register) error {
 	for index, expression := range call.Parameters {
 		register := registers[index]
 		err := compiler.saveExpressionInRegister(register, expression)
@@ -223,17 +224,19 @@ func (compiler *Compiler) handleAssignment() error {
 	variable := compiler.scopes.Get(variableName)
 
 	if variable == nil {
-		if compiler.registerCounter == len(variableRegisters) {
-			return compiler.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(variableRegisters)))
+		register := compiler.registerManager.FindFreeRegister()
+
+		if register == nil {
+			return compiler.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(compiler.registerManager.Registers)))
 		}
 
 		variable = &Variable{
 			Name:     variableName,
-			Register: variableRegisters[compiler.registerCounter],
+			Register: register,
 		}
 
+		register.UsedBy = variable
 		compiler.scopes.Add(variable)
-		compiler.registerCounter++
 	}
 
 	var expression Expression
@@ -259,7 +262,7 @@ func (compiler *Compiler) handleAssignment() error {
 }
 
 // saveExpressionInRegister moves the result of an expression to the given register.
-func (compiler *Compiler) saveExpressionInRegister(register string, expression Expression) error {
+func (compiler *Compiler) saveExpressionInRegister(register *Register, expression Expression) error {
 	singleToken := expression[0]
 
 	switch singleToken.Kind {
@@ -272,8 +275,11 @@ func (compiler *Compiler) saveExpressionInRegister(register string, expression E
 		}
 
 		if variable.Register != register {
-			// fmt.Printf("mov %s, %s\n", register, variable.Register)
-			compiler.assembler.MoveRegisterRegister(register, variable.Register)
+			compiler.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
+
+			if compiler.verbose {
+				fmt.Printf("mov %s, %s\n", register, variable.Register)
+			}
 		}
 
 	case token.Number:
@@ -284,11 +290,19 @@ func (compiler *Compiler) saveExpressionInRegister(register string, expression E
 			return compiler.Error(fmt.Sprintf("Not a number: %s", numberAsString))
 		}
 
-		compiler.assembler.MoveRegisterNumber(register, uint64(number))
+		compiler.assembler.MoveRegisterNumber(register.Name, uint64(number))
+
+		if compiler.verbose {
+			fmt.Printf("mov %s, %d\n", register, number)
+		}
 
 	case token.Text:
 		address := compiler.assembler.Strings.Add(singleToken.String())
-		compiler.assembler.MoveRegisterAddress(register, address)
+		compiler.assembler.MoveRegisterAddress(register.Name, address)
+
+		if compiler.verbose {
+			fmt.Printf("mov %s, <%d>\n", register, address)
+		}
 
 	default:
 		return compiler.Error("Invalid expression")

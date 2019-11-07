@@ -1,6 +1,8 @@
 package build
 
 import (
+	"errors"
+
 	"github.com/akyoto/q/spec"
 )
 
@@ -20,13 +22,20 @@ type Function struct {
 func (function *Function) Compile() error {
 	function.compiler.assembler.AddLabel(function.Name)
 
-	for _, variable := range function.Parameters {
-		function.compiler.scopes.Add(&Variable{
-			Name:     variable.Name,
-			Register: variableRegisters[function.compiler.registerCounter],
-		})
+	for _, parameter := range function.Parameters {
+		register := function.compiler.registerManager.FindFreeRegister()
 
-		function.compiler.registerCounter++
+		if register == nil {
+			return errors.New("Exceeded maximum number of parameters")
+		}
+
+		variable := &Variable{
+			Name:     parameter.Name,
+			Register: register,
+		}
+
+		register.UsedBy = variable
+		function.compiler.scopes.Add(variable)
 	}
 
 	err := function.compiler.Run()
