@@ -55,6 +55,7 @@ func (file *File) Read() error {
 func (file *File) Scan(handleFunction func(*Function)) error {
 	var (
 		function   *Function
+		groupLevel = 0
 		blockLevel = 0
 	)
 
@@ -63,6 +64,10 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 		case token.Identifier:
 			if function != nil {
 				continue
+			}
+
+			if index+1 >= len(file.tokens) || file.tokens[index+1].Kind != token.GroupStart {
+				return NewError("Missing opening bracket '(' after the function name", file.path, file.tokens[:index+2])
 			}
 
 			function = &Function{
@@ -74,6 +79,10 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			}
 
 		case token.BlockStart:
+			if groupLevel > 0 {
+				return NewError("Missing closing bracket ')'", file.path, file.tokens[:index+1])
+			}
+
 			blockLevel++
 
 			if function.TokenStart != 0 {
@@ -93,6 +102,20 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			function.compiler = NewCompiler(file, function.TokenStart, function.TokenEnd)
 			handleFunction(function)
 			function = nil
+
+		case token.GroupStart:
+			groupLevel++
+
+		case token.GroupEnd:
+			groupLevel--
+
+		case token.NewLine:
+			// OK.
+
+		default:
+			if function == nil {
+				return NewError("Only function definitions are allowed at the top level", file.path, file.tokens[:index+1])
+			}
 		}
 	}
 
