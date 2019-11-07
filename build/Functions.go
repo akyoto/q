@@ -13,4 +13,8 @@ var Functions = map[string]*Function{
 			},
 		},
 	},
+	"syscall": {
+		Name:             "syscall",
+		NoParameterCheck: true,
+	},
 }

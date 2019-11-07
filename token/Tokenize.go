@@ -123,6 +123,10 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		case c == '}':
 			token = Token{BlockEnd, nil, i}
 
+		// Separator
+		case c == ',':
+			token = Token{Separator, nil, i}
+
 		// New line
 		case c == '\n':
 			token = Token{NewLine, nil, i}

@@ -25,6 +25,9 @@ const (
 	// Operator represents a mathematical operator.
 	Operator
 
+	// Separator represents a comma.
+	Separator
+
 	// GroupStart represents '('.
 	GroupStart
 

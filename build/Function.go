@@ -6,12 +6,13 @@ import (
 
 // Function represents a function.
 type Function struct {
-	Name        string
-	Parameters  []Variable
-	ReturnTypes []spec.Type
-	TokenStart  int
-	TokenEnd    int
-	compiler    *Compiler
+	Name             string
+	Parameters       []Variable
+	ReturnTypes      []spec.Type
+	TokenStart       int
+	TokenEnd         int
+	NoParameterCheck bool
+	compiler         *Compiler
 }
 
 // Compile compiles the function code.

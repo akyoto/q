@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/asm/syscall"
 	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
@@ -83,8 +84,21 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 
 		functionCall := functionCallPool.Get().(*FunctionCall)
 		functionCall.Function = function
-		functionCall.ProcessedTokens = compiler.cursor + 1
+		functionCall.ParameterStart = compiler.cursor + 1
 		compiler.groups = append(compiler.groups, functionCall)
+
+	case token.Separator:
+		if len(compiler.groups) == 0 {
+			return compiler.Error("Invalid use of comma ',' without a function call")
+		}
+
+		call := compiler.groups[len(compiler.groups)-1].(*FunctionCall)
+
+		// Add the parameter
+		if call.ParameterStart < compiler.cursor {
+			call.Parameters = append(call.Parameters, compiler.tokens[call.ParameterStart:compiler.cursor+1])
+			call.ParameterStart = compiler.cursor + 1
+		}
 
 	case token.GroupEnd:
 		if len(compiler.groups) == 0 {
@@ -94,30 +108,62 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		call := compiler.groups[len(compiler.groups)-1].(*FunctionCall)
 
 		// Add the last parameter
-		if call.ProcessedTokens < compiler.cursor {
-			call.Parameters = append(call.Parameters, compiler.tokens[call.ProcessedTokens:])
+		if call.ParameterStart < compiler.cursor {
+			call.Parameters = append(call.Parameters, compiler.tokens[call.ParameterStart:compiler.cursor+1])
+			call.ParameterStart = -1
 		}
 
-		// print builtin
-		if call.Function.Name == "print" {
+		// Builtin functions
+		builtin := Functions[call.Function.Name]
+
+		if builtin != nil {
 			parameters := call.Parameters
 
-			if len(parameters) < len(call.Function.Parameters) {
-				return compiler.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
+			if !builtin.NoParameterCheck {
+				if len(parameters) < len(call.Function.Parameters) {
+					return compiler.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
+				}
+
+				if len(parameters) > len(call.Function.Parameters) {
+					return compiler.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
+				}
 			}
 
-			if len(parameters) > len(call.Function.Parameters) {
-				return compiler.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
+			switch builtin.Name {
+			case "print":
+				parameter := parameters[0][0]
+
+				if parameter.Kind != token.Text {
+					return compiler.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.String()))
+				}
+
+				text := parameter.String()
+				compiler.assembler.Println(text)
+
+			case "syscall":
+				for index, expression := range call.Parameters {
+					register := syscall.Registers[index]
+					singleToken := expression[0]
+
+					switch singleToken.Kind {
+					case token.Number:
+						numberAsString := singleToken.String()
+						number, err := strconv.ParseInt(numberAsString, 10, 64)
+
+						if err != nil {
+							return compiler.Error(fmt.Sprintf("Not a number: %s", numberAsString))
+						}
+
+						compiler.assembler.MoveRegisterNumber(register, uint64(number))
+
+					case token.Text:
+						address := compiler.assembler.Strings.Add(singleToken.String())
+						compiler.assembler.MoveRegisterAddress(register, address)
+					}
+				}
+
+				compiler.assembler.Syscall()
 			}
-
-			parameter := parameters[0][0]
-
-			if parameter.Kind != token.Text {
-				return compiler.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.String()))
-			}
-
-			text := parameter.String()
-			compiler.assembler.Println(text)
 		} else {
 			compiler.assembler.Call(call.Function.Name)
 		}
@@ -179,14 +225,23 @@ func (compiler *Compiler) handleAssignment() error {
 	}
 
 	right := compiler.TokenAtOffset(1)
-	expression := right.String()
-	number, err := strconv.ParseInt(expression, 10, 64)
 
-	if err != nil {
-		return compiler.Error(fmt.Sprintf("Not a number: %s", expression))
+	switch right.Kind {
+	case token.Number:
+		expression := right.String()
+		number, err := strconv.ParseInt(expression, 10, 64)
+
+		if err != nil {
+			return compiler.Error(fmt.Sprintf("Not a number: %s", expression))
+		}
+
+		compiler.assembler.MoveRegisterNumber(variable.Register, uint64(number))
+
+	case token.Text:
+		address := compiler.assembler.Strings.Add(right.String())
+		compiler.assembler.MoveRegisterAddress(variable.Register, address)
 	}
 
-	compiler.assembler.MoveRegisterNumber(variable.Register, uint64(number))
 	return nil
 }
 
