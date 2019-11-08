@@ -178,13 +178,19 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		compiler.scopes.Pop()
 
 	case token.Operator:
-		// Assignments
-		if t.String() == "=" {
-			err := compiler.handleAssignment()
+		var err error
 
-			if err != nil {
-				return err
-			}
+		// Assignments
+		switch t.String() {
+		case "=":
+			err = compiler.handleAssignment()
+
+		default:
+			err = compiler.Error(fmt.Sprintf("Operator %s has not been implemented yet", t.String()))
+		}
+
+		if err != nil {
+			return err
 		}
 
 	case token.NewLine:
