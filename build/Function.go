@@ -1,9 +1,8 @@
 package build
 
 import (
-	"errors"
-
 	"github.com/akyoto/q/spec"
+	"github.com/akyoto/q/token"
 )
 
 // Function represents a function.
@@ -11,39 +10,14 @@ type Function struct {
 	Name             string
 	Parameters       []Variable
 	ReturnTypes      []spec.Type
-	TokenStart       int
-	TokenEnd         int
+	TokenStart       token.Position
+	TokenEnd         token.Position
+	File             *File
 	NoParameterCheck bool
-	parameterStart   int
-	compiler         *Compiler
+	parameterStart   token.Position
 }
 
-// Compile compiles the function code.
-func (function *Function) Compile() error {
-	function.compiler.assembler.AddLabel(function.Name)
-
-	for _, parameter := range function.Parameters {
-		register := function.compiler.registerManager.FindFreeRegister()
-
-		if register == nil {
-			return errors.New("Exceeded maximum number of parameters")
-		}
-
-		variable := &Variable{
-			Name:     parameter.Name,
-			Register: register,
-		}
-
-		register.UsedBy = variable
-		function.compiler.scopes.Add(variable)
-	}
-
-	err := function.compiler.Run()
-
-	if err != nil {
-		return err
-	}
-
-	function.compiler.assembler.Return()
-	return nil
+// Tokens returns all tokens within the function body (excluding the braces '{' and '}').
+func (function *Function) Tokens() []token.Token {
+	return function.File.tokens[function.TokenStart:function.TokenEnd]
 }

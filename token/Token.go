@@ -11,7 +11,13 @@ type Token struct {
 	Position int
 }
 
-// String converts the bytes of the token to a string.
-func (t Token) String() string {
+// Text converts the bytes of the token to a string.
+func (t Token) Text() string {
 	return unsafe.BytesToString(t.Bytes)
+}
+
+// String includes the kind of token and the token text.
+// It is meant to be used for debugging via fmt.Print().
+func (t Token) String() string {
+	return t.Kind.String() + " " + t.Text()
 }

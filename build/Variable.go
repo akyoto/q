@@ -14,6 +14,12 @@ type Variable struct {
 	Register  *register.Register
 }
 
+// BindRegister binds the variable to a register.
+func (variable *Variable) BindRegister(register *register.Register) {
+	variable.Register = register
+	register.UsedBy = variable
+}
+
 // String returns the string representation.
 func (variable *Variable) String() string {
 	return variable.Name

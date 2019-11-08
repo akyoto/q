@@ -16,8 +16,7 @@ type Build struct {
 	ExecutableName  string
 	WriteExecutable bool
 	Verbose         bool
-	environment
-	assembler *asm.Assembler
+	*Environment
 }
 
 // New creates a new build.
@@ -35,10 +34,7 @@ func New(directory string) (*Build, error) {
 		ExecutableName:  executableName,
 		ExecutablePath:  filepath.Join(directory, executableName),
 		WriteExecutable: true,
-		assembler:       asm.New(),
-		environment: environment{
-			functions: map[string]*Function{},
-		},
+		Environment:     NewEnvironment(),
 	}
 
 	return build, nil
@@ -53,39 +49,39 @@ func (build *Build) Run() error {
 		build.functions[function.Name] = function
 	}
 
-	build.Compile()
-
-	if !build.WriteExecutable {
-		return nil
-	}
-
-	return build.writeToDisk()
-}
-
-// writeToDisk writes the executable file to disk.
-func (build *Build) writeToDisk() error {
 	_, exists := build.functions["main"]
 
 	if !exists {
 		return errors.New("Function 'main' has not been defined")
 	}
 
+	assemblers := build.Compile()
+
 	// Generate machine code
-	build.assembler.Call("main")
-	build.assembler.Exit(0)
+	main := asm.New()
+	main.Call("main")
+	main.Exit(0)
 
 	// Merge function codes into the main executable
-	for _, function := range build.functions {
-		build.assembler.Merge(function.compiler.assembler)
+	for functionCode := range assemblers {
+		main.Merge(functionCode)
 	}
 
-	// Produce ELF binary
-	binary := elf.New(build.assembler)
-	err := binary.WriteToFile(build.ExecutablePath)
+	if !build.WriteExecutable {
+		return nil
+	}
+
+	return writeToDisk(main, build.ExecutablePath)
+}
+
+// writeToDisk writes the executable file to disk.
+func writeToDisk(main *asm.Assembler, filePath string) error {
+	binary := elf.New(main)
+	err := binary.WriteToFile(filePath)
 
 	if err != nil {
 		return err
 	}
 
-	return os.Chmod(build.ExecutablePath, 0755)
+	return os.Chmod(filePath, 0755)
 }

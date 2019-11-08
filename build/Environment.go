@@ -5,38 +5,56 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/log"
 )
 
-// environment represents the global state.
-type environment struct {
+// Environment represents the global state.
+type Environment struct {
 	functions map[string]*Function
 }
 
+// NewEnvironment creates a new build environment.
+func NewEnvironment() *Environment {
+	return &Environment{
+		functions: map[string]*Function{},
+	}
+}
+
 // Compile compiles all functions.
-func (env *environment) Compile() {
-	wg := sync.WaitGroup{}
-	errorCount := uint64(0)
+func (env *Environment) Compile() <-chan *asm.Assembler {
+	assemblers := make(chan *asm.Assembler)
 
-	for _, function := range env.functions {
-		function := function
-		function.compiler.environment = env
-		wg.Add(1)
+	go func() {
+		wg := sync.WaitGroup{}
+		errorCount := uint64(0)
 
-		go func() {
-			defer wg.Done()
-			err := function.Compile()
+		for _, function := range env.functions {
+			function := function
+			wg.Add(1)
 
-			if err != nil {
-				log.Error.Println(err)
-				atomic.AddUint64(&errorCount, 1)
-			}
-		}()
-	}
+			go func() {
+				defer wg.Done()
+				assembler, err := Compile(function, env)
 
-	wg.Wait()
+				if err != nil {
+					log.Error.Println(err)
+					atomic.AddUint64(&errorCount, 1)
+					return
+				}
 
-	if errorCount > 0 {
-		os.Exit(1)
-	}
+				assemblers <- assembler
+			}()
+		}
+
+		wg.Wait()
+
+		if errorCount > 0 {
+			os.Exit(1)
+		}
+
+		close(assemblers)
+	}()
+
+	return assemblers
 }

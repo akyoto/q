@@ -58,16 +58,18 @@ func (file *File) Scan(functions chan<- *Function) error {
 		function   *Function
 		groupLevel = 0
 		blockLevel = 0
+		index      token.Position
+		t          token.Token
 	)
 
-	for index, t := range file.tokens {
+	for index, t = range file.tokens {
 		switch t.Kind {
 		case token.Identifier:
 			if function != nil {
 				continue
 			}
 
-			functionName := t.String()
+			functionName := t.Text()
 
 			if functionName == "func" || functionName == "fn" {
 				return NewError("A function can not be named 'func' or 'fn'", file.path, file.tokens[:index+1])
@@ -79,6 +81,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 			function = &Function{
 				Name:           functionName,
+				File:           file,
 				parameterStart: index + 2,
 			}
 
@@ -107,8 +110,6 @@ func (file *File) Scan(functions chan<- *Function) error {
 			}
 
 			function.TokenEnd = index
-			function.compiler = NewCompiler(file, function.TokenStart, function.TokenEnd)
-			function.compiler.verbose = file.verbose
 			functions <- function
 			function = nil
 
@@ -131,7 +132,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 				parameterName := parameter[0]
 
 				function.Parameters = append(function.Parameters, Variable{
-					Name: parameterName.String(),
+					Name: parameterName.Text(),
 				})
 
 				function.parameterStart = -1
@@ -147,7 +148,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 				parameterName := parameter[0]
 
 				function.Parameters = append(function.Parameters, Variable{
-					Name: parameterName.String(),
+					Name: parameterName.Text(),
 				})
 
 				function.parameterStart = index + 1
