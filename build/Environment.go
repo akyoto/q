@@ -1,8 +1,40 @@
 package build
 
-import "sync"
+import (
+	"os"
+	"sync"
+	"sync/atomic"
+)
 
-// Environment represents the global state.
-type Environment struct {
-	functions sync.Map
+// environment represents the global state.
+type environment struct {
+	functions map[string]*Function
+}
+
+// Compile compiles all functions.
+func (env *environment) Compile() {
+	wg := sync.WaitGroup{}
+	errorCount := uint64(0)
+
+	for _, function := range env.functions {
+		function := function
+		function.compiler.environment = env
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			err := function.Compile()
+
+			if err != nil {
+				stderr.Println(err)
+				atomic.AddUint64(&errorCount, 1)
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	if errorCount > 0 {
+		os.Exit(1)
+	}
 }

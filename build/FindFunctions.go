@@ -15,6 +15,9 @@ func FindFunctions(files <-chan *File) <-chan *Function {
 		errorCount := uint64(0)
 
 		for file := range files {
+			file := file
+			wg.Add(1)
+
 			go func() {
 				defer wg.Done()
 				err := file.Tokenize()
@@ -33,8 +36,6 @@ func FindFunctions(files <-chan *File) <-chan *Function {
 					return
 				}
 			}()
-
-			wg.Add(1)
 		}
 
 		wg.Wait()

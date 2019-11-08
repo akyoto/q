@@ -20,7 +20,7 @@ type Compiler struct {
 	tokenStart      int
 	tokenEnd        int
 	tokens          []token.Token
-	environment     *Environment
+	environment     *environment
 	groups          []spec.Group
 	blocks          []spec.Block
 	functionStack   []*Function
@@ -73,11 +73,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 		function := Functions[functionName]
 
 		if function == nil && compiler.environment != nil {
-			obj, exists := compiler.environment.functions.Load(functionName)
-
-			if exists {
-				function = obj.(*Function)
-			}
+			function = compiler.environment.functions[functionName]
 		}
 
 		if function == nil {
