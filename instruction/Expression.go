@@ -1,4 +1,4 @@
-package build
+package instruction
 
 import "github.com/akyoto/q/token"
 

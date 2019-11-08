@@ -8,7 +8,7 @@ import (
 )
 
 func TestTokenize(t *testing.T) {
-	source := []byte("abc() {\n 123 = \"text\", }")
+	source := []byte("abc() {\n 123 = \"text\", return}")
 	expected := []token.Token{
 		{token.Identifier, []byte("abc"), 0},
 		{token.GroupStart, nil, 3},
@@ -19,7 +19,8 @@ func TestTokenize(t *testing.T) {
 		{token.Operator, []byte("="), 13},
 		{token.Text, []byte("text"), 16},
 		{token.Separator, nil, 21},
-		{token.BlockEnd, nil, 23},
+		{token.Keyword, []byte("return"), 23},
+		{token.BlockEnd, nil, 29},
 	}
 
 	tokens := []token.Token{}

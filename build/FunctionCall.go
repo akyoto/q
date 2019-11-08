@@ -1,9 +1,11 @@
 package build
 
+import "github.com/akyoto/q/instruction"
+
 // FunctionCall represents a function call in the source code.
 type FunctionCall struct {
 	Function       *Function
-	Parameters     []Expression
+	Parameters     []instruction.Expression
 	ParameterStart int
 }
 

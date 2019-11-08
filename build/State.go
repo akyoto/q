@@ -9,6 +9,7 @@ import (
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/similarity"
+	"github.com/akyoto/q/instruction"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
 )
@@ -263,7 +264,7 @@ func (state *State) OperatorAssign() error {
 		state.scopes.Add(variable)
 	}
 
-	var expression Expression
+	var expression instruction.Expression
 	expressionStart := state.cursor + 1
 	tokenIndex := expressionStart
 
@@ -286,7 +287,7 @@ func (state *State) OperatorAssign() error {
 }
 
 // SaveExpressionInRegister moves the result of an expression to the given register.
-func (state *State) SaveExpressionInRegister(register *register.Register, expression Expression) error {
+func (state *State) SaveExpressionInRegister(register *register.Register, expression instruction.Expression) error {
 	singleToken := expression[0]
 
 	switch singleToken.Kind {
