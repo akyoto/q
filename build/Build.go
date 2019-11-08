@@ -2,12 +2,10 @@ package build
 
 import (
 	"errors"
-	"fmt"
-	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
@@ -36,7 +34,7 @@ func New(directory string) (*Build, error) {
 		Path:            directory,
 		ExecutableName:  filepath.Base(directory),
 		WriteExecutable: true,
-		assembler:       assemblerPool.Get().(*asm.Assembler),
+		assembler:       asm.New(),
 	}
 
 	build.ExecutablePath = filepath.Join(build.Path, build.ExecutableName)
@@ -45,53 +43,23 @@ func New(directory string) (*Build, error) {
 
 // Run parses the input files and generates an executable binary.
 func (build *Build) Run() error {
-	files := []*File{}
+	files := FindSourceFiles(build.Path)
+	functions := FindFunctions(files)
 
-	err := filepath.Walk(build.Path, func(path string, info os.FileInfo, err error) error {
-		if path == build.Path {
-			return nil
-		}
-
-		if info.IsDir() {
-			return filepath.SkipDir
-		}
-
-		if !strings.HasSuffix(path, ".q") {
-			return nil
-		}
-
-		if build.Verbose {
-			fmt.Println("Scanning", info.Name())
-		}
-
-		file := NewFile(path)
-		file.verbose = build.Verbose
-		tokenError := file.Tokenize()
-
-		if tokenError != nil {
-			return tokenError
-		}
-
-		files = append(files, file)
-
-		return file.Scan(func(function *Function) {
-			function.compiler.environment = &build.Environment
-			build.functions.Store(function.Name, function)
-		})
-	})
-
-	if err != nil {
-		return err
-	}
-
-	if len(files) == 0 {
-		return fmt.Errorf("No source files found in %s", build.Path)
+	for function := range functions {
+		function.compiler.environment = &build.Environment
+		build.functions.Store(function.Name, function)
 	}
 
 	if !build.WriteExecutable {
 		return nil
 	}
 
+	return build.WriteToDisk()
+}
+
+// WriteToDisk writes the executable file to disk.
+func (build *Build) WriteToDisk() error {
 	_, exists := build.functions.Load("main")
 
 	if !exists {
@@ -104,8 +72,7 @@ func (build *Build) Run() error {
 
 	// Start parallel function compilation
 	wg := sync.WaitGroup{}
-	errors := log.New(os.Stderr, "", 0)
-	errorCount := 0
+	errorCount := uint64(0)
 
 	build.functions.Range(func(key interface{}, value interface{}) bool {
 		function := value.(*Function)
@@ -115,8 +82,8 @@ func (build *Build) Run() error {
 			err := function.Compile()
 
 			if err != nil {
-				errors.Println(err)
-				errorCount++
+				stderr.Println(err)
+				atomic.AddUint64(&errorCount, 1)
 			}
 
 			wg.Done()
@@ -138,31 +105,13 @@ func (build *Build) Run() error {
 		return true
 	})
 
-	// Close files
-	for _, file := range files {
-		file.Close()
-	}
-
 	// Produce ELF binary
 	binary := elf.New(build.assembler)
-	err = binary.WriteToFile(build.ExecutablePath)
+	err := binary.WriteToFile(build.ExecutablePath)
 
 	if err != nil {
 		return err
 	}
 
 	return os.Chmod(build.ExecutablePath, 0755)
-}
-
-// Close frees up resources used by the build.
-func (build *Build) Close() {
-	build.assembler.Reset()
-	assemblerPool.Put(build.assembler)
-
-	build.functions.Range(func(key interface{}, value interface{}) bool {
-		assembler := value.(*Function).compiler.assembler
-		assembler.Reset()
-		assemblerPool.Put(assembler)
-		return true
-	})
 }

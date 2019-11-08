@@ -37,7 +37,7 @@ func NewCompiler(file *File, tokenStart int, tokenEnd int) *Compiler {
 		tokenStart:      tokenStart,
 		tokenEnd:        tokenEnd,
 		tokens:          file.tokens[tokenStart:tokenEnd],
-		assembler:       assemblerPool.Get().(*asm.Assembler),
+		assembler:       asm.New(),
 		registerManager: register.NewManager(),
 	}
 
@@ -279,7 +279,7 @@ func (compiler *Compiler) saveExpressionInRegister(register *register.Register, 
 			compiler.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
 
 			if compiler.verbose {
-				fmt.Printf("mov %s, %s\n", register, variable.Register)
+				stdout.Printf("mov %s, %s\n", register, variable.Register)
 			}
 		}
 
@@ -294,7 +294,7 @@ func (compiler *Compiler) saveExpressionInRegister(register *register.Register, 
 		compiler.assembler.MoveRegisterNumber(register.Name, uint64(number))
 
 		if compiler.verbose {
-			fmt.Printf("mov %s, %d\n", register, number)
+			stdout.Printf("mov %s, %d\n", register, number)
 		}
 
 	case token.Text:
@@ -302,7 +302,7 @@ func (compiler *Compiler) saveExpressionInRegister(register *register.Register, 
 		compiler.assembler.MoveRegisterAddress(register.Name, address)
 
 		if compiler.verbose {
-			fmt.Printf("mov %s, <%d>\n", register, address)
+			stdout.Printf("mov %s, <%d>\n", register, address)
 		}
 
 	default:

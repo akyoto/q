@@ -23,12 +23,24 @@ func TestCLIHelp(t *testing.T) {
 	build.Help()
 }
 
-func TestExamplesHelloWorld(t *testing.T) {
-	assertOutput(t, "../examples/hello", "Hello\n")
-}
+func TestExamples(t *testing.T) {
+	examples := []struct {
+		Name           string
+		ExpectedOutput string
+	}{
+		{"hello", "Hello\n"},
+		{"functions", "Function 1\nFunction 2\nFunction 3\n"},
+		{"syscalls", "Hello Syscalls"},
+	}
 
-func TestExamplesFunctions(t *testing.T) {
-	assertOutput(t, "../examples/functions", "Function 1\nFunction 2\nFunction 3\n")
+	for _, example := range examples {
+		directory := "../examples/" + example.Name
+		output := example.ExpectedOutput
+
+		t.Run(example.Name, func(t *testing.T) {
+			assertOutput(t, directory, output)
+		})
+	}
 }
 
 func TestBuildErrors(t *testing.T) {

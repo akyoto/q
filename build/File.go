@@ -19,7 +19,7 @@ type File struct {
 func NewFile(inputFile string) *File {
 	file := &File{
 		path:   inputFile,
-		tokens: *tokenBufferPool.Get().(*[]token.Token),
+		tokens: make([]token.Token, 0, 1024),
 	}
 
 	file.tokens = append(file.tokens, token.Token{
@@ -52,7 +52,7 @@ func (file *File) Tokenize() error {
 }
 
 // Scan scans the input file.
-func (file *File) Scan(handleFunction func(*Function)) error {
+func (file *File) Scan(functions chan<- *Function) error {
 	var (
 		function   *Function
 		groupLevel = 0
@@ -82,7 +82,7 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			}
 
 			if file.verbose {
-				fmt.Println("Function:", function.Name)
+				stdout.Println("Function:", function.Name)
 			}
 
 		case token.BlockStart:
@@ -108,7 +108,7 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 			function.TokenEnd = index
 			function.compiler = NewCompiler(file, function.TokenStart, function.TokenEnd)
 			function.compiler.verbose = file.verbose
-			handleFunction(function)
+			functions <- function
 			function = nil
 
 		case token.GroupStart:
@@ -168,10 +168,4 @@ func (file *File) Scan(handleFunction func(*Function)) error {
 // Tokens returns the complete list of tokens.
 func (file *File) Tokens() []token.Token {
 	return file.tokens
-}
-
-// Close frees up all resources.
-func (file *File) Close() {
-	file.tokens = file.tokens[:0]
-	tokenBufferPool.Put(&file.tokens)
 }

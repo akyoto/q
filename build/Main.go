@@ -35,12 +35,12 @@ func Main() {
 			stat, err := os.Stat(directory)
 
 			if err != nil {
-				os.Stderr.WriteString(err.Error() + "\n")
+				stderr.Println(err)
 				os.Exit(2)
 			}
 
 			if !stat.IsDir() {
-				os.Stderr.WriteString("Build path must be a directory\n")
+				stderr.Println("Build path must be a directory")
 				os.Exit(2)
 			}
 		}
@@ -49,7 +49,7 @@ func Main() {
 	build, err := New(directory)
 
 	if err != nil {
-		os.Stderr.WriteString(err.Error() + "\n")
+		stderr.Println(err)
 		os.Exit(1)
 	}
 
@@ -57,7 +57,7 @@ func Main() {
 	err = build.Run()
 
 	if err != nil {
-		os.Stderr.WriteString(err.Error() + "\n")
+		stderr.Println(err)
 		os.Exit(1)
 	}
 }

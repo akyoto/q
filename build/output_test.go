@@ -15,7 +15,6 @@ func assertOutput(t *testing.T, path string, expectedOutput string) {
 	build, err := build.New(path)
 	assert.Nil(t, err)
 	assert.True(t, len(build.ExecutablePath) > 0)
-	defer build.Close()
 	defer os.Remove(build.ExecutablePath)
 
 	t.Run("Compile", func(t *testing.T) {
