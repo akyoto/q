@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
@@ -25,7 +26,7 @@ type Compiler struct {
 	functionStack   []*Function
 	scopes          ScopeStack
 	assembler       *asm.Assembler
-	registerManager *RegisterManager
+	registerManager *register.Manager
 	verbose         bool
 }
 
@@ -37,7 +38,7 @@ func NewCompiler(file *File, tokenStart int, tokenEnd int) *Compiler {
 		tokenEnd:        tokenEnd,
 		tokens:          file.tokens[tokenStart:tokenEnd],
 		assembler:       assemblerPool.Get().(*asm.Assembler),
-		registerManager: NewRegisterManager(),
+		registerManager: register.NewManager(),
 	}
 
 	compiler.scopes.Push()
@@ -199,7 +200,7 @@ func (compiler *Compiler) handleToken(t token.Token) error {
 }
 
 // beforeCall pushes parameters into registers.
-func (compiler *Compiler) beforeCall(call *FunctionCall, registers []*Register) error {
+func (compiler *Compiler) beforeCall(call *FunctionCall, registers []*register.Register) error {
 	for index, expression := range call.Parameters {
 		register := registers[index]
 		err := compiler.saveExpressionInRegister(register, expression)
@@ -262,7 +263,7 @@ func (compiler *Compiler) handleAssignment() error {
 }
 
 // saveExpressionInRegister moves the result of an expression to the given register.
-func (compiler *Compiler) saveExpressionInRegister(register *Register, expression Expression) error {
+func (compiler *Compiler) saveExpressionInRegister(register *register.Register, expression Expression) error {
 	singleToken := expression[0]
 
 	switch singleToken.Kind {

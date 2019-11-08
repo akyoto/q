@@ -1,17 +1,14 @@
-package build
+package register
 
-type Register struct {
-	Name   string
-	UsedBy *Variable
-}
-
-type RegisterManager struct {
+// Manager manages the allocation state of registers.
+type Manager struct {
 	Registers        []*Register
 	SyscallRegisters []*Register
 }
 
-func NewRegisterManager() *RegisterManager {
-	manager := &RegisterManager{
+// NewManager creates a new register manager.
+func NewManager() *Manager {
+	manager := &Manager{
 		Registers: []*Register{
 			{Name: "rcx"},
 			{Name: "rbx"},
@@ -22,16 +19,15 @@ func NewRegisterManager() *RegisterManager {
 			{Name: "r14"},
 			{Name: "r15"},
 		},
-	}
-
-	manager.SyscallRegisters = []*Register{
-		{Name: "rax"},
-		{Name: "rdi"},
-		{Name: "rsi"},
-		{Name: "rdx"},
-		{Name: "r10"},
-		{Name: "r8"},
-		{Name: "r9"},
+		SyscallRegisters: []*Register{
+			{Name: "rax"},
+			{Name: "rdi"},
+			{Name: "rsi"},
+			{Name: "rdx"},
+			{Name: "r10"},
+			{Name: "r8"},
+			{Name: "r9"},
+		},
 	}
 
 	return manager
@@ -39,7 +35,7 @@ func NewRegisterManager() *RegisterManager {
 
 // FindFreeRegister tries to find a free register
 // and returns nil when all are currently occupied.
-func (manager *RegisterManager) FindFreeRegister() *Register {
+func (manager *Manager) FindFreeRegister() *Register {
 	for _, register := range manager.Registers {
 		if register.UsedBy == nil {
 			return register
@@ -50,7 +46,7 @@ func (manager *RegisterManager) FindFreeRegister() *Register {
 }
 
 // RegisterByName returns the register with the given name.
-func (manager *RegisterManager) RegisterByName(name string) *Register {
+func (manager *Manager) RegisterByName(name string) *Register {
 	for _, register := range manager.Registers {
 		if register.Name == name {
 			return register

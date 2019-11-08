@@ -1,6 +1,9 @@
 package build
 
-import "github.com/akyoto/q/spec"
+import (
+	"github.com/akyoto/q/build/register"
+	"github.com/akyoto/q/spec"
+)
 
 // Variable represents both local variables and function parameters.
 type Variable struct {
@@ -8,7 +11,7 @@ type Variable struct {
 	Type      *spec.Type
 	Mutable   bool
 	TimesUsed int
-	Register  *Register
+	Register  *register.Register
 }
 
 // String returns the string representation.
