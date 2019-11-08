@@ -4,6 +4,8 @@ import (
 	"os"
 	"sync"
 	"sync/atomic"
+
+	"github.com/akyoto/q/build/log"
 )
 
 // environment represents the global state.
@@ -26,7 +28,7 @@ func (env *environment) Compile() {
 			err := function.Compile()
 
 			if err != nil {
-				stderr.Println(err)
+				log.Error.Println(err)
 				atomic.AddUint64(&errorCount, 1)
 			}
 		}()

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/token"
 )
 
@@ -82,7 +83,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 			}
 
 			if file.verbose {
-				stdout.Println("Function:", function.Name)
+				log.Info.Println("Function:", function.Name)
 			}
 
 		case token.BlockStart:

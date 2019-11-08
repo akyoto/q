@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/akyoto/q/build/log"
 )
 
 // FindSourceFiles returns all source files in the directory (top-level only, not recursive).
@@ -29,7 +31,7 @@ func FindSourceFiles(directory string) <-chan *File {
 		})
 
 		if err != nil {
-			stderr.Println(err)
+			log.Error.Println(err)
 			os.Exit(1)
 		}
 

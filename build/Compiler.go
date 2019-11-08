@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/spec"
@@ -275,7 +276,7 @@ func (compiler *Compiler) saveExpressionInRegister(register *register.Register, 
 			compiler.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
 
 			if compiler.verbose {
-				stdout.Printf("mov %s, %s\n", register, variable.Register)
+				log.Info.Printf("mov %s, %s\n", register, variable.Register)
 			}
 		}
 
@@ -290,7 +291,7 @@ func (compiler *Compiler) saveExpressionInRegister(register *register.Register, 
 		compiler.assembler.MoveRegisterNumber(register.Name, uint64(number))
 
 		if compiler.verbose {
-			stdout.Printf("mov %s, %d\n", register, number)
+			log.Info.Printf("mov %s, %d\n", register, number)
 		}
 
 	case token.Text:
@@ -298,7 +299,7 @@ func (compiler *Compiler) saveExpressionInRegister(register *register.Register, 
 		compiler.assembler.MoveRegisterAddress(register.Name, address)
 
 		if compiler.verbose {
-			stdout.Printf("mov %s, <%d>\n", register, address)
+			log.Info.Printf("mov %s, <%d>\n", register, address)
 		}
 
 	default:

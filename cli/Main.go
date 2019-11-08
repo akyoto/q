@@ -1,7 +1,10 @@
-package build
+package cli
 
 import (
 	"os"
+
+	"github.com/akyoto/q/build"
+	"github.com/akyoto/q/build/log"
 )
 
 // Main is the entry point for the CLI frontend.
@@ -35,29 +38,29 @@ func Main() {
 			stat, err := os.Stat(directory)
 
 			if err != nil {
-				stderr.Println(err)
+				log.Error.Println(err)
 				os.Exit(2)
 			}
 
 			if !stat.IsDir() {
-				stderr.Println("Build path must be a directory")
+				log.Error.Println("Build path must be a directory")
 				os.Exit(2)
 			}
 		}
 	}
 
-	build, err := New(directory)
+	b, err := build.New(directory)
 
 	if err != nil {
-		stderr.Println(err)
+		log.Error.Println(err)
 		os.Exit(1)
 	}
 
-	build.Verbose = verbose
-	err = build.Run()
+	b.Verbose = verbose
+	err = b.Run()
 
 	if err != nil {
-		stderr.Println(err)
+		log.Error.Println(err)
 		os.Exit(1)
 	}
 }

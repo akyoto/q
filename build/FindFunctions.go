@@ -4,6 +4,8 @@ import (
 	"os"
 	"sync"
 	"sync/atomic"
+
+	"github.com/akyoto/q/build/log"
 )
 
 // FindFunctions scans the files for functions.
@@ -23,7 +25,7 @@ func FindFunctions(files <-chan *File) <-chan *Function {
 				err := file.Tokenize()
 
 				if err != nil {
-					stderr.Println(err)
+					log.Error.Println(err)
 					atomic.AddUint64(&errorCount, 1)
 					return
 				}
@@ -31,7 +33,7 @@ func FindFunctions(files <-chan *File) <-chan *Function {
 				err = file.Scan(functions)
 
 				if err != nil {
-					stderr.Println(err)
+					log.Error.Println(err)
 					atomic.AddUint64(&errorCount, 1)
 					return
 				}
