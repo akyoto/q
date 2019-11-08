@@ -29,8 +29,8 @@ func NewFile(inputFile string) *File {
 	return file
 }
 
-// Read reads the entire file contents.
-func (file *File) Read() error {
+// Tokenize converts the entire file contents to a list of tokens.
+func (file *File) Tokenize() error {
 	var (
 		err       error
 		processed int

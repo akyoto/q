@@ -66,10 +66,10 @@ func (build *Build) Run() error {
 
 		file := NewFile(path)
 		file.verbose = build.Verbose
-		readError := file.Read()
+		tokenError := file.Tokenize()
 
-		if readError != nil {
-			return readError
+		if tokenError != nil {
+			return tokenError
 		}
 
 		files = append(files, file)

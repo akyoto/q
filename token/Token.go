@@ -11,6 +11,7 @@ type Token struct {
 	Position int
 }
 
+// String converts the bytes of the token to a string.
 func (t Token) String() string {
 	return unsafe.BytesToString(t.Bytes)
 }
