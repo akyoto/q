@@ -16,7 +16,7 @@ type Function struct {
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
-	TimesUsed        uint64
+	Used             bool
 	NoParameterCheck bool
 	parameterStart   token.Position
 }
