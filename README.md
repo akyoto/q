@@ -29,15 +29,17 @@ This will produce the `q` compiler in your current directory.
 
 * No binary dependencies (not even libc)
 * No compiler dependencies (no LLVM, no GCC, ...)
-* Fast compilation (a few milliseconds should suffice for most programs)
-* Small binaries (a "Hello World" program produces a 247-byte binary)
-* Testing embedded into the language ("q test")
-* Linting embedded into the compiler (detects common mistakes and suggests solutions)
-* Importing a module should have no side effects
-* Modules should be highly reusable (not bound to predefined data structures)
-* No classes or methods, instead we have data and functions that can operate on data
+* No global state (all mutable variables are local)
+* No classes or methods: There is just a) data and b) functions that can operate on data
 * No name shadowing, names never change their meaning
-* Correctness of the program should be verified at compile time (requires a good type system)
+* Importing a package should have no side effects
+* Fast compilation (a couple milliseconds should suffice for most programs)
+* Small binaries (a "Hello World" program produces a 247-byte binary)
+* Linting embedded into the build process (detects common mistakes and suggests solutions)
+* Testing embedded into the language ("q test")
+* Formatting tools included ("q format")
+* Packages should be highly reusable (not bound to predefined data structures)
+* Statically typed with type inference
 * User-friendly compiler messages
 
 ## Architectures
