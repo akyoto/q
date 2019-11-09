@@ -1,12 +1,20 @@
 package cli_test
 
 import (
+	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/akyoto/assert"
+	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/cli"
 )
+
+func TestMain(m *testing.M) {
+	log.Info.SetOutput(ioutil.Discard)
+	log.Error.SetOutput(ioutil.Discard)
+	os.Exit(m.Run())
+}
 
 func TestCLI(t *testing.T) {
 	tests := []struct {

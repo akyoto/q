@@ -1,10 +1,20 @@
 package build_test
 
 import (
+	"io/ioutil"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/akyoto/assert"
+	"github.com/akyoto/q/build/log"
 )
+
+func TestMain(m *testing.M) {
+	log.Info.SetOutput(ioutil.Discard)
+	log.Error.SetOutput(ioutil.Discard)
+	os.Exit(m.Run())
+}
 
 func TestExamples(t *testing.T) {
 	examples := []struct {
@@ -39,9 +49,14 @@ func TestBuildErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Log(test.File)
-		err := syntaxCheck(test.File)
-		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), test.ExpectedError)
+		test := test
+		name := strings.TrimPrefix(test.File, "testdata/")
+		name = strings.TrimSuffix(name, ".q")
+
+		t.Run(name, func(t *testing.T) {
+			err := syntaxCheck(test.File)
+			assert.NotNil(t, err)
+			assert.Contains(t, err.Error(), test.ExpectedError)
+		})
 	}
 }
