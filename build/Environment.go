@@ -39,6 +39,10 @@ func (env *Environment) Compile() (<-chan *asm.Assembler, <-chan error) {
 					return
 				}
 
+				if function.TimesUsed == 0 && function.Name != "main" {
+					return
+				}
+
 				assemblers <- assembler
 			}()
 		}

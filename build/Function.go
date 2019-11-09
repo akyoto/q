@@ -13,9 +13,10 @@ type Function struct {
 	Name             string
 	Parameters       []Variable
 	ReturnTypes      []spec.Type
+	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
-	File             *File
+	TimesUsed        uint64
 	NoParameterCheck bool
 	parameterStart   token.Position
 }

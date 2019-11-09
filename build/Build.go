@@ -107,6 +107,10 @@ done:
 		return nil
 	}
 
+	for _, err := range main.Verify() {
+		return err
+	}
+
 	return writeToDisk(main, build.ExecutablePath)
 }
 

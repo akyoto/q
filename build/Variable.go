@@ -11,7 +11,7 @@ type Variable struct {
 	Name      string
 	Type      *spec.Type
 	Mutable   bool
-	TimesUsed int
+	TimesUsed uint
 	Position  token.Position
 	Register  *register.Register
 }

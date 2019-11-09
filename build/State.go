@@ -3,6 +3,7 @@ package build
 import (
 	"sort"
 	"strconv"
+	"sync/atomic"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/log"
@@ -242,7 +243,7 @@ func (state *State) BeforeCall(call *FunctionCall, registers []*register.Registe
 
 // AfterCall restores saved registers from the stack.
 func (state *State) AfterCall(call *FunctionCall) {
-	// Noop.
+	atomic.AddUint64(&call.Function.TimesUsed, 1)
 }
 
 // SaveExpressionInRegister moves the result of an expression to the given register.
