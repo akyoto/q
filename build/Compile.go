@@ -24,15 +24,16 @@ func Compile(function *Function, environment *Environment) (*asm.Assembler, erro
 	}
 
 	state := State{
-		assembler:   assembler,
-		scopes:      scopes,
-		registers:   registers,
-		environment: environment,
-		function:    function,
-		tokens:      function.Tokens(),
+		assembler:    assembler,
+		scopes:       scopes,
+		registers:    registers,
+		environment:  environment,
+		function:     function,
+		tokens:       function.Tokens(),
+		instructions: function.Instructions(),
 	}
 
-	err = state.ProcessTokens()
+	err = state.CompileInstructions()
 
 	if err != nil {
 		return nil, err

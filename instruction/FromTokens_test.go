@@ -9,12 +9,12 @@ import (
 )
 
 func TestFromTokens(t *testing.T) {
-	source := []byte("a = 1\nb()\nreturn\n")
+	source := []byte("\na = 1\nb()\nreturn\n")
 	tokens := []token.Token{}
 	processed := 0
 	tokens, processed = token.Tokenize(source, tokens)
 	assert.Equal(t, processed, len(source))
-	assert.Equal(t, len(tokens), 10)
+	assert.Equal(t, len(tokens), 11)
 	instructions := instruction.FromTokens(tokens)
 	assert.Equal(t, len(instructions), 3)
 	assert.Equal(t, instructions[0].Kind, instruction.Assignment)

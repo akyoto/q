@@ -1,6 +1,7 @@
 package build
 
 import (
+	"github.com/akyoto/q/instruction"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
 )
@@ -20,4 +21,9 @@ type Function struct {
 // Tokens returns all tokens within the function body (excluding the braces '{' and '}').
 func (function *Function) Tokens() []token.Token {
 	return function.File.tokens[function.TokenStart:function.TokenEnd]
+}
+
+// Instructions returns all instructions within the function body.
+func (function *Function) Instructions() []instruction.Instruction {
+	return instruction.FromTokens(function.Tokens())
 }

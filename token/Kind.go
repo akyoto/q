@@ -4,8 +4,8 @@ package token
 type Kind uint8
 
 const (
-	// Unknown represents an invalid token.
-	Unknown Kind = iota
+	// Invalid represents an invalid token.
+	Invalid Kind = iota
 
 	// NewLine represents the newline character.
 	NewLine
@@ -41,6 +41,7 @@ const (
 	BlockEnd
 )
 
+// String returns the text representation.
 func (kind Kind) String() string {
 	switch kind {
 	case NewLine:
@@ -73,10 +74,13 @@ func (kind Kind) String() string {
 	case BlockEnd:
 		return "BlockEnd"
 
-	case Unknown:
-		return "Unknown"
+	case Separator:
+		return "Separator"
+
+	case Invalid:
+		return "Invalid"
 
 	default:
-		return "<undefined>"
+		return "<undefined token>"
 	}
 }

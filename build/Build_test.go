@@ -56,6 +56,7 @@ func TestBuildErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
+		t.Log(test.File)
 		err := syntaxCheck(test.File)
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), test.ExpectedError)

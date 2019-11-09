@@ -10,128 +10,168 @@ import (
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/instruction"
-	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
 )
 
 // State encapsulates a compiler's state.
 // Every compilation requires a fresh state.
 type State struct {
-	assembler   *asm.Assembler
-	scopes      *ScopeStack
-	registers   *register.Manager
-	function    *Function
-	environment *Environment
-	tokens      []token.Token
-	cursor      token.Position
-	groups      []spec.Group
-	blocks      []spec.Block
-	verbose     bool
+	assembler    *asm.Assembler
+	scopes       *ScopeStack
+	registers    *register.Manager
+	function     *Function
+	environment  *Environment
+	tokens       []token.Token
+	instructions []instruction.Instruction
+	cursor       token.Position
+	verbose      bool
 }
 
-// ProcessTokens processes all tokens and fills the assembler with machine code.
-func (state *State) ProcessTokens() error {
-	for state.cursor < len(state.tokens) {
-		err := state.Token(state.tokens[state.cursor])
+// CompileInstructions compiles all instructions.
+func (state *State) CompileInstructions() error {
+	for _, instr := range state.instructions {
+		err := state.Instruction(instr)
 
 		if err != nil {
 			return err
 		}
-
-		state.cursor++
 	}
 
 	return nil
 }
 
-// Token processes a token.
-func (state *State) Token(t token.Token) error {
-	switch t.Kind {
-	case token.GroupStart:
-		return state.GroupStart()
+// Instruction generates machine code for the given instruction.
+func (state *State) Instruction(instr instruction.Instruction) error {
+	state.cursor = instr.Position
 
-	case token.GroupEnd:
-		return state.GroupEnd()
+	switch instr.Kind {
+	case instruction.Assignment:
+		return state.Assignment(instr.Tokens)
 
-	case token.Separator:
-		return state.Separator()
+	case instruction.Call:
+		return state.Call(instr.Tokens)
 
-	case token.BlockStart:
-		return state.BlockStart()
+	case instruction.Keyword:
+		return state.Keyword(instr.Tokens)
 
-	case token.BlockEnd:
-		return state.BlockEnd()
-
-	case token.Operator:
-		return state.Operator(t)
-
-	case token.NewLine:
-		return state.NewLine()
+	case instruction.Invalid:
+		return state.Invalid(instr.Tokens)
 
 	default:
 		return nil
 	}
 }
 
-// GroupStart processes a GroupStart token.
-func (state *State) GroupStart() error {
-	previous := state.TokenAtOffset(-1)
+// Assignment handles assignment instructions.
+func (state *State) Assignment(tokens Expression) error {
+	left := tokens[0]
 
-	if previous.Kind != token.Identifier {
+	if left.Kind != token.Identifier {
+		return state.Error("Expected variable on the left side of the assignment")
+	}
+
+	variableName := left.Text()
+	variable := state.scopes.Get(variableName)
+
+	if variable == nil {
+		register := state.registers.FindFreeRegister()
+
+		if register == nil {
+			return state.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(state.registers.Registers)))
+		}
+
+		variable = &Variable{
+			Name: variableName,
+		}
+
+		variable.BindRegister(register)
+		state.scopes.Add(variable)
+	}
+
+	// Skip variable name and operator
+	expressionStart := 2
+	state.cursor += expressionStart
+	expression := tokens[expressionStart:]
+
+	return state.SaveExpressionInRegister(variable.Register, expression)
+}
+
+// Call handles function calls.
+func (state *State) Call(tokens Expression) error {
+	left := tokens[0]
+
+	if left.Kind != token.Identifier {
 		return state.Error("Expected function name before '('")
 	}
 
-	functionName := previous.Text()
-	function := Functions[functionName]
+	right := tokens[len(tokens)-1]
 
-	if function == nil && state.environment != nil {
-		function = state.environment.functions[functionName]
+	if right.Kind != token.GroupEnd {
+		return state.Error("Missing closing bracket ')'")
+	}
+
+	functionName := left.Text()
+	function := state.environment.functions[functionName]
+	isBuiltin := false
+
+	if function == nil {
+		function = BuiltinFunctions[functionName]
+		isBuiltin = true
 	}
 
 	if function == nil {
 		return state.UnknownFunctionError(functionName)
 	}
 
-	functionCall := functionCallPool.Get().(*FunctionCall)
-	functionCall.Function = function
-	functionCall.ParameterStart = state.cursor + 1
-	state.groups = append(state.groups, functionCall)
-	return nil
-}
-
-// GroupEnd processes a GroupEnd token.
-func (state *State) GroupEnd() error {
-	if len(state.groups) == 0 {
-		return state.Error("Missing opening bracket '('")
+	call := FunctionCall{
+		Function: function,
 	}
 
-	call := state.groups[len(state.groups)-1].(*FunctionCall)
+	bracketPos := 1
+	parameterStart := bracketPos + 1
+	pos := parameterStart
 
-	// Add the last parameter
-	if call.ParameterStart < state.cursor {
-		call.Parameters = append(call.Parameters, state.tokens[call.ParameterStart:state.cursor+1])
-		call.ParameterStart = -1
+	for pos < len(tokens) {
+		t := tokens[pos]
+
+		switch t.Kind {
+		case token.Separator:
+			if pos == parameterStart {
+				state.cursor += pos
+				return state.Error("Missing parameter")
+			}
+
+			call.Parameters = append(call.Parameters, tokens[parameterStart:pos])
+			parameterStart = pos + 1
+
+		case token.GroupEnd:
+			if pos == parameterStart {
+				// Call with no parameters
+				break
+			}
+
+			call.Parameters = append(call.Parameters, tokens[parameterStart:pos])
+			parameterStart = pos + 1
+		}
+
+		pos++
 	}
 
-	parameters := call.Parameters
-
-	// Builtin functions
-	builtin := Functions[call.Function.Name]
-
-	if builtin == nil || !builtin.NoParameterCheck {
-		if len(parameters) < len(call.Function.Parameters) {
+	// Parameter check
+	if !function.NoParameterCheck {
+		if len(call.Parameters) < len(call.Function.Parameters) {
 			return state.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
 		}
 
-		if len(parameters) > len(call.Function.Parameters) {
+		if len(call.Parameters) > len(call.Function.Parameters) {
 			return state.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
 		}
 	}
 
-	if builtin != nil {
-		switch builtin.Name {
+	if isBuiltin {
+		switch functionName {
 		case "print":
-			parameter := parameters[0][0]
+			parameter := call.Parameters[0][0]
 
 			if parameter.Kind != token.Text {
 				return state.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text()))
@@ -141,86 +181,49 @@ func (state *State) GroupEnd() error {
 			state.assembler.Println(text)
 
 		case "syscall":
-			err := state.BeforeCall(call, state.registers.SyscallRegisters)
+			err := state.BeforeCall(&call, state.registers.SyscallRegisters)
 
 			if err != nil {
 				return err
 			}
 
 			state.assembler.Syscall()
-			state.AfterCall(call)
-		}
-	} else {
-		err := state.BeforeCall(call, state.registers.SyscallRegisters)
-
-		if err != nil {
-			return err
+			state.AfterCall(&call)
 		}
 
-		state.assembler.Call(call.Function.Name)
-		state.AfterCall(call)
+		return nil
 	}
 
-	call.Reset()
-	functionCallPool.Put(call)
+	err := state.BeforeCall(&call, state.registers.SyscallRegisters)
 
-	state.groups = state.groups[:len(state.groups)-1]
+	if err != nil {
+		return err
+	}
+
+	state.assembler.Call(call.Function.Name)
+	state.AfterCall(&call)
 	return nil
 }
 
-// Separator processes a Separator token.
-func (state *State) Separator() error {
-	if len(state.groups) == 0 {
-		return state.Error("Invalid use of comma ',' without a function call")
-	}
-
-	call := state.groups[len(state.groups)-1].(*FunctionCall)
-
-	// Add the parameter
-	if call.ParameterStart < state.cursor {
-		call.Parameters = append(call.Parameters, state.tokens[call.ParameterStart:state.cursor+1])
-		call.ParameterStart = state.cursor + 1
-	}
-
-	return nil
+// Keyword handles keywords.
+func (state *State) Keyword(tokens Expression) error {
+	return state.Error("Not implemented")
 }
 
-// BlockStart processes a BlockStart token.
-func (state *State) BlockStart() error {
-	state.blocks = append(state.blocks, nil)
-	state.scopes.Push()
-	return nil
-}
+// Invalid handles invalid instructions.
+func (state *State) Invalid(tokens Expression) error {
+	openingBrackets := token.Count(tokens, token.GroupStart)
+	closingBrackets := token.Count(tokens, token.GroupEnd)
 
-// BlockEnd processes a BlockEnd token.
-func (state *State) BlockEnd() error {
-	if len(state.blocks) == 0 {
-		return state.Error("Missing opening bracket '{'")
+	if openingBrackets < closingBrackets {
+		return state.Error("Missing opening bracket '('")
 	}
 
-	state.blocks = state.blocks[:len(state.blocks)-1]
-	state.scopes.Pop()
-	return nil
-}
-
-// Operator processes a Operator token.
-func (state *State) Operator(t token.Token) error {
-	switch t.Text() {
-	case "=":
-		return state.OperatorAssign()
-
-	default:
-		return state.Error(fmt.Sprintf("Operator %s has not been implemented yet", t.Text()))
-	}
-}
-
-// NewLine processes a NewLine token.
-func (state *State) NewLine() error {
-	if len(state.groups) > 0 {
+	if openingBrackets > closingBrackets {
 		return state.Error("Missing closing bracket ')'")
 	}
 
-	return nil
+	return state.Error("Invalid instruction")
 }
 
 // BeforeCall pushes parameters into registers.
@@ -242,52 +245,8 @@ func (state *State) AfterCall(call *FunctionCall) {
 	// Noop.
 }
 
-// OperatorAssign handles assignment instructions.
-func (state *State) OperatorAssign() error {
-	left := state.TokenAtOffset(-1)
-	variableName := left.Text()
-	variable := state.scopes.Get(variableName)
-
-	if variable == nil {
-		register := state.registers.FindFreeRegister()
-
-		if register == nil {
-			return state.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(state.registers.Registers)))
-		}
-
-		variable = &Variable{
-			Name:     variableName,
-			Register: register,
-		}
-
-		register.UsedBy = variable
-		state.scopes.Add(variable)
-	}
-
-	var expression instruction.Expression
-	expressionStart := state.cursor + 1
-	tokenIndex := expressionStart
-
-	for {
-		if tokenIndex >= len(state.tokens) {
-			return state.Error("Invalid expression")
-		}
-
-		t := state.tokens[tokenIndex]
-
-		if t.Kind == token.NewLine {
-			expression = state.tokens[expressionStart:tokenIndex]
-			break
-		}
-
-		tokenIndex++
-	}
-
-	return state.SaveExpressionInRegister(variable.Register, expression)
-}
-
 // SaveExpressionInRegister moves the result of an expression to the given register.
-func (state *State) SaveExpressionInRegister(register *register.Register, expression instruction.Expression) error {
+func (state *State) SaveExpressionInRegister(register *register.Register, expression Expression) error {
 	singleToken := expression[0]
 
 	switch singleToken.Kind {
@@ -336,11 +295,6 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 	return nil
 }
 
-// TokenAtOffset returns the token at the given offset relative to the cursor.
-func (state *State) TokenAtOffset(offset token.Position) token.Token {
-	return state.tokens[state.cursor+offset]
-}
-
 // Error generates an error message at the current token position.
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
@@ -353,7 +307,15 @@ func (state *State) Error(message string) error {
 // UnknownFunctionError produces an unknown function error
 // and tries to guess which function the user was trying to type.
 func (state *State) UnknownFunctionError(functionName string) error {
-	knownFunctions := []string{"print"}
+	knownFunctions := make([]string, 0, len(state.environment.functions)+len(BuiltinFunctions))
+
+	for builtin := range BuiltinFunctions {
+		knownFunctions = append(knownFunctions, builtin)
+	}
+
+	for function := range state.environment.functions {
+		knownFunctions = append(knownFunctions, function)
+	}
 
 	// Suggest a function name based on the similarity to known functions
 	sort.Slice(knownFunctions, func(a, b int) bool {

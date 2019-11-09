@@ -13,16 +13,17 @@ func FromTokens(tokens []token.Token) []Instruction {
 	for cursor, t := range tokens {
 		switch t.Kind {
 		case token.NewLine:
-			if instruction.Kind != Unknown {
-				instruction.Expression = tokens[start:cursor]
+			if cursor > start {
+				instruction.Tokens = tokens[start:cursor]
+				instruction.Position = start
 				instructions = append(instructions, instruction)
 			}
 
-			instruction.Kind = Unknown
+			instruction.Kind = Invalid
 			start = cursor + 1
 
 		case token.Operator:
-			if instruction.Kind != Unknown {
+			if instruction.Kind != Invalid {
 				continue
 			}
 
@@ -33,14 +34,14 @@ func FromTokens(tokens []token.Token) []Instruction {
 			instruction.Kind = Assignment
 
 		case token.Keyword:
-			if instruction.Kind != Unknown {
+			if instruction.Kind != Invalid {
 				continue
 			}
 
 			instruction.Kind = Keyword
 
 		case token.GroupStart:
-			if instruction.Kind != Unknown {
+			if instruction.Kind != Invalid {
 				continue
 			}
 

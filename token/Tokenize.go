@@ -10,7 +10,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		i              int
 		c              byte
 		processedBytes int
-		token          = Token{Unknown, nil, 0}
+		token          = Token{Invalid, nil, 0}
 	)
 
 	for i < len(buffer) {
@@ -133,10 +133,10 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		}
 
 		// Handle token
-		if token.Kind != Unknown {
+		if token.Kind != Invalid {
 			tokens = append(tokens, token)
 			processedBytes = i + 1
-			token.Kind = Unknown
+			token.Kind = Invalid
 		}
 
 		i++
