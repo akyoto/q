@@ -48,7 +48,7 @@ Currently **Linux x86-64** only. It produces 64-bit ELF binaries. Windows and Ma
 
 ## Editors
 
-There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables basic highlighting. It is far from finished and needs to be copied manually into `$HOME/.vscode/extensions`.
+There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables basic highlighting (copy into `$HOME/.vscode/extensions`).
 
 ## How to contribute
 
