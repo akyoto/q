@@ -1,27 +1,10 @@
 package build_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/akyoto/assert"
-	"github.com/akyoto/q/cli"
 )
-
-func TestCLI(t *testing.T) {
-	defer os.Remove("../examples/hello/hello")
-
-	os.Args = []string{"q", "build", "../examples/hello"}
-	cli.Main()
-
-	stat, err := os.Stat("../examples/hello/hello")
-	assert.Nil(t, err)
-	assert.True(t, stat.Size() > 0)
-}
-
-func TestCLIHelp(t *testing.T) {
-	cli.Help()
-}
 
 func TestExamples(t *testing.T) {
 	examples := []struct {
