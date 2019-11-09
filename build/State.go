@@ -7,9 +7,9 @@ import (
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/register"
-	"github.com/akyoto/q/build/similarity"
 	"github.com/akyoto/q/instruction"
 	"github.com/akyoto/q/token"
+	"github.com/akyoto/stringutils/similarity"
 )
 
 // State encapsulates a compiler's state.
@@ -322,12 +322,12 @@ func (state *State) UnknownFunctionError(functionName string) error {
 
 	// Suggest a function name based on the similarity to known functions
 	sort.Slice(knownFunctions, func(a, b int) bool {
-		aSimilarity := similarity.Default(functionName, knownFunctions[a])
-		bSimilarity := similarity.Default(functionName, knownFunctions[b])
+		aSimilarity := similarity.JaroWinkler(functionName, knownFunctions[a])
+		bSimilarity := similarity.JaroWinkler(functionName, knownFunctions[b])
 		return aSimilarity > bSimilarity
 	})
 
-	if similarity.Default(functionName, knownFunctions[0]) > 0.9 {
+	if similarity.JaroWinkler(functionName, knownFunctions[0]) > 0.9 {
 		return state.Errorf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0])
 	}
 

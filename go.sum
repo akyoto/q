@@ -1,11 +1,6 @@
-github.com/akyoto/asm v0.2.0 h1:vzZVy87DRlMcYZO/cPcIvJJ/Zd/IsZKFKGQ7w5NfZcg=
-github.com/akyoto/asm v0.2.0/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
-github.com/akyoto/asm v0.2.2 h1:fPKQU5XQePpiZv/D6bUOxOSpYmQt+2UnC/IibZoxSuQ=
-github.com/akyoto/asm v0.2.2/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
 github.com/akyoto/asm v0.2.3 h1:xMbHB4n6F7ARsmb6xWT6NUsbnxS2Uie216o1Y1CsZdo=
 github.com/akyoto/asm v0.2.3/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
-github.com/akyoto/assert v0.2.2/go.mod h1:g5e6ag+ksCEQENq/LnmU9z04wCAIFDr8KacBusVL0H8=
 github.com/akyoto/assert v0.2.3 h1:ftENRGDEK5AKuKmZb9LtbDIHeE8p8cIYI4M92CbA9nE=
 github.com/akyoto/assert v0.2.3/go.mod h1:g5e6ag+ksCEQENq/LnmU9z04wCAIFDr8KacBusVL0H8=
-github.com/akyoto/stringutils v0.2.6 h1:IP+7jtH8uofpan8MYlV/WMNaLDGBRbzgiTKYnxcAwkw=
-github.com/akyoto/stringutils v0.2.6/go.mod h1:OPVSI2QOvOGJ8GZoVdsS5BrAUb/l9zf63QgMvLPYOjQ=
+github.com/akyoto/stringutils v0.3.0 h1:NJpcnpvp1dYmJAvuZapj1D5aEDRPv+c8vAva7qSklL4=
+github.com/akyoto/stringutils v0.3.0/go.mod h1:v+Lr6tJxVd/Q1InaxsqaSXO+vSkG7MYMNc9Y9ul6Mkc=
