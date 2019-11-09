@@ -37,3 +37,17 @@ func (stack *ScopeStack) Push() {
 func (stack *ScopeStack) Pop() {
 	stack.scopes = stack.scopes[:len(stack.scopes)-1]
 }
+
+// Unused returns a list of unused variables at the top of the stack.
+func (stack *ScopeStack) Unused() []*Variable {
+	var unused []*Variable
+	scope := stack.scopes[len(stack.scopes)-1]
+
+	for _, variable := range scope {
+		if variable.TimesUsed == 0 {
+			unused = append(unused, variable)
+		}
+	}
+
+	return unused
+}

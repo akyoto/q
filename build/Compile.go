@@ -2,6 +2,7 @@ package build
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/register"
@@ -39,6 +40,10 @@ func Compile(function *Function, environment *Environment) (*asm.Assembler, erro
 		return nil, err
 	}
 
+	for _, variable := range scopes.Unused() {
+		return nil, NewError(fmt.Sprintf("Variable '%s' has never been used", variable.Name), function.File.path, function.File.tokens[:function.TokenStart+variable.Position])
+	}
+
 	assembler.Return()
 	return assembler, nil
 }
@@ -54,7 +59,8 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 		}
 
 		variable := &Variable{
-			Name: parameter.Name,
+			Name:     parameter.Name,
+			Position: 0,
 		}
 
 		variable.BindRegister(register)

@@ -81,7 +81,8 @@ func (state *State) Assignment(tokens Expression) error {
 		}
 
 		variable = &Variable{
-			Name: variableName,
+			Name:     variableName,
+			Position: state.cursor,
 		}
 
 		variable.BindRegister(register)
@@ -257,6 +258,8 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 		if variable == nil {
 			return state.Error(fmt.Sprintf("Unknown variable %s", variableName))
 		}
+
+		variable.TimesUsed++
 
 		if variable.Register != register {
 			state.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
