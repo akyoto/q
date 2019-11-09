@@ -299,12 +299,8 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 }
 
 // Error generates an error message at the current token position.
-// The error message is clickable in popular editors and leads you
-// directly to the faulty file at the given line and position.
 func (state *State) Error(message string) error {
-	function := state.function
-	until := function.TokenStart + state.cursor + 1
-	return NewError(message, function.File.path, function.File.tokens[:until])
+	return state.function.Error(message, state.cursor)
 }
 
 // UnknownFunctionError produces an unknown function error

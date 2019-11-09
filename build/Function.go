@@ -27,3 +27,8 @@ func (function *Function) Tokens() []token.Token {
 func (function *Function) Instructions() []instruction.Instruction {
 	return instruction.FromTokens(function.Tokens())
 }
+
+// Error creates an error inside the function.
+func (function *Function) Error(message string, position token.Position) error {
+	return NewError(message, function.File.path, function.File.tokens[:function.TokenStart+position+1])
+}
