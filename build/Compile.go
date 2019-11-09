@@ -41,7 +41,7 @@ func Compile(function *Function, environment *Environment) (*asm.Assembler, erro
 	}
 
 	for _, variable := range scopes.Unused() {
-		return nil, NewError(fmt.Sprintf("Variable '%s' has never been used", variable.Name), function.File.path, function.File.tokens[:function.TokenStart+variable.Position])
+		return nil, NewError(fmt.Sprintf("Variable '%s' has never been used", variable.Name), function.File.path, function.File.tokens[:function.TokenStart+variable.Position+1])
 	}
 
 	assembler.Return()
