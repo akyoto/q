@@ -1,7 +1,11 @@
 package main
 
-import "github.com/akyoto/q/cli"
+import (
+	"os"
+
+	"github.com/akyoto/q/cli"
+)
 
 func main() {
-	cli.Main()
+	os.Exit(cli.Main())
 }

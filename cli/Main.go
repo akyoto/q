@@ -8,7 +8,9 @@ import (
 )
 
 // Main is the entry point for the CLI frontend.
-func Main() {
+// It returns the exit code of the compiler.
+// We never call os.Exit directly here because it's bad for testing.
+func Main() int {
 	var (
 		verbose   = false
 		directory = "."
@@ -16,14 +18,14 @@ func Main() {
 
 	if len(os.Args) < 2 {
 		Help()
-		os.Exit(2)
+		return 2
 	}
 
 	command := os.Args[1]
 
 	if command != "build" {
 		Help()
-		os.Exit(2)
+		return 2
 	}
 
 	for i := 2; i < len(os.Args); i++ {
@@ -39,12 +41,12 @@ func Main() {
 
 			if err != nil {
 				log.Error.Println(err)
-				os.Exit(2)
+				return 1
 			}
 
 			if !stat.IsDir() {
 				log.Error.Println("Build path must be a directory")
-				os.Exit(2)
+				return 2
 			}
 		}
 	}
@@ -53,7 +55,7 @@ func Main() {
 
 	if err != nil {
 		log.Error.Println(err)
-		os.Exit(1)
+		return 1
 	}
 
 	b.Verbose = verbose
@@ -61,6 +63,8 @@ func Main() {
 
 	if err != nil {
 		log.Error.Println(err)
-		os.Exit(1)
+		return 1
 	}
+
+	return 0
 }
