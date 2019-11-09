@@ -14,9 +14,9 @@ type Build struct {
 	Path            string
 	ExecutablePath  string
 	ExecutableName  string
+	Environment     *Environment
 	WriteExecutable bool
 	Verbose         bool
-	*Environment
 }
 
 // New creates a new build.
@@ -42,31 +42,67 @@ func New(directory string) (*Build, error) {
 
 // Run parses the input files and generates an executable binary.
 func (build *Build) Run() error {
-	files := FindSourceFiles(build.Path)
-	functions := FindFunctions(files)
+	files, fileSystemErrors := FindSourceFiles(build.Path)
+	functions, tokenizeErrors := FindFunctions(files)
 
-	for function := range functions {
-		build.functions[function.Name] = function
+	for {
+		select {
+		case err, ok := <-fileSystemErrors:
+			if ok {
+				return err
+			}
+
+		case err, ok := <-tokenizeErrors:
+			if ok {
+				return err
+			}
+
+		case function, ok := <-functions:
+			if !ok {
+				goto done
+			}
+
+			build.Environment.Functions[function.Name] = function
+		}
 	}
 
-	_, exists := build.functions["main"]
+done:
+	return build.Compile()
+}
+
+// Compile compiles all the functions in the environment.
+func (build *Build) Compile() error {
+	_, exists := build.Environment.Functions["main"]
 
 	if !exists {
 		return errors.New("Function 'main' has not been defined")
 	}
 
-	assemblers := build.Compile()
+	assemblers, errors := build.Environment.Compile()
 
 	// Generate machine code
 	main := asm.New()
 	main.Call("main")
 	main.Exit(0)
 
-	// Merge function codes into the main executable
-	for functionCode := range assemblers {
-		main.Merge(functionCode)
+	for {
+		select {
+		case err, ok := <-errors:
+			if ok {
+				return err
+			}
+
+		case functionCode, ok := <-assemblers:
+			if !ok {
+				goto done
+			}
+
+			// Merge function code into the main executable
+			main.Merge(functionCode)
+		}
 	}
 
+done:
 	if !build.WriteExecutable {
 		return nil
 	}

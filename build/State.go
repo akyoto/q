@@ -111,7 +111,7 @@ func (state *State) Call(tokens Expression) error {
 	}
 
 	functionName := left.Text()
-	function := state.environment.functions[functionName]
+	function := state.environment.Functions[functionName]
 	isBuiltin := false
 
 	if function == nil {
@@ -307,13 +307,13 @@ func (state *State) Error(message string) error {
 // UnknownFunctionError produces an unknown function error
 // and tries to guess which function the user was trying to type.
 func (state *State) UnknownFunctionError(functionName string) error {
-	knownFunctions := make([]string, 0, len(state.environment.functions)+len(BuiltinFunctions))
+	knownFunctions := make([]string, 0, len(state.environment.Functions)+len(BuiltinFunctions))
 
 	for builtin := range BuiltinFunctions {
 		knownFunctions = append(knownFunctions, builtin)
 	}
 
-	for function := range state.environment.functions {
+	for function := range state.environment.Functions {
 		knownFunctions = append(knownFunctions, function)
 	}
 

@@ -1,35 +1,32 @@
 package build
 
 import (
-	"os"
 	"sync"
-	"sync/atomic"
 
 	"github.com/akyoto/asm"
-	"github.com/akyoto/q/build/log"
 )
 
 // Environment represents the global state.
 type Environment struct {
-	functions map[string]*Function
+	Functions map[string]*Function
 }
 
 // NewEnvironment creates a new build environment.
 func NewEnvironment() *Environment {
 	return &Environment{
-		functions: map[string]*Function{},
+		Functions: map[string]*Function{},
 	}
 }
 
 // Compile compiles all functions.
-func (env *Environment) Compile() <-chan *asm.Assembler {
+func (env *Environment) Compile() (<-chan *asm.Assembler, <-chan error) {
 	assemblers := make(chan *asm.Assembler)
+	errors := make(chan error)
 
 	go func() {
 		wg := sync.WaitGroup{}
-		errorCount := uint64(0)
 
-		for _, function := range env.functions {
+		for _, function := range env.Functions {
 			function := function
 			wg.Add(1)
 
@@ -38,8 +35,7 @@ func (env *Environment) Compile() <-chan *asm.Assembler {
 				assembler, err := Compile(function, env)
 
 				if err != nil {
-					log.Error.Println(err)
-					atomic.AddUint64(&errorCount, 1)
+					errors <- err
 					return
 				}
 
@@ -48,13 +44,9 @@ func (env *Environment) Compile() <-chan *asm.Assembler {
 		}
 
 		wg.Wait()
-
-		if errorCount > 0 {
-			os.Exit(1)
-		}
-
 		close(assemblers)
+		close(errors)
 	}()
 
-	return assemblers
+	return assemblers, errors
 }

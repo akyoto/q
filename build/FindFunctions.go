@@ -1,20 +1,16 @@
 package build
 
 import (
-	"os"
 	"sync"
-	"sync/atomic"
-
-	"github.com/akyoto/q/build/log"
 )
 
 // FindFunctions scans the files for functions.
-func FindFunctions(files <-chan *File) <-chan *Function {
+func FindFunctions(files <-chan *File) (<-chan *Function, <-chan error) {
 	functions := make(chan *Function)
+	errors := make(chan error)
 
 	go func() {
 		wg := sync.WaitGroup{}
-		errorCount := uint64(0)
 
 		for file := range files {
 			file := file
@@ -25,29 +21,23 @@ func FindFunctions(files <-chan *File) <-chan *Function {
 				err := file.Tokenize()
 
 				if err != nil {
-					log.Error.Println(err)
-					atomic.AddUint64(&errorCount, 1)
+					errors <- err
 					return
 				}
 
 				err = file.Scan(functions)
 
 				if err != nil {
-					log.Error.Println(err)
-					atomic.AddUint64(&errorCount, 1)
+					errors <- err
 					return
 				}
 			}()
 		}
 
 		wg.Wait()
-
-		if errorCount > 0 {
-			os.Exit(1)
-		}
-
 		close(functions)
+		close(errors)
 	}()
 
-	return functions
+	return functions, errors
 }
