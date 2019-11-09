@@ -1,7 +1,6 @@
 package build
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 
@@ -77,7 +76,7 @@ func (state *State) Assignment(tokens Expression) error {
 		register := state.registers.FindFreeRegister()
 
 		if register == nil {
-			return state.Error(fmt.Sprintf("Exceeded maximum limit of %d variables", len(state.registers.Registers)))
+			return state.Errorf("Exceeded maximum limit of %d variables", len(state.registers.Registers))
 		}
 
 		variable = &Variable{
@@ -161,11 +160,11 @@ func (state *State) Call(tokens Expression) error {
 	// Parameter check
 	if !function.NoParameterCheck {
 		if len(call.Parameters) < len(call.Function.Parameters) {
-			return state.Error(fmt.Sprintf("Too few arguments in '%s' call", call.Function.Name))
+			return state.Errorf("Too few arguments in '%s' call", call.Function.Name)
 		}
 
 		if len(call.Parameters) > len(call.Function.Parameters) {
-			return state.Error(fmt.Sprintf("Too many arguments in '%s' call", call.Function.Name))
+			return state.Errorf("Too many arguments in '%s' call", call.Function.Name)
 		}
 	}
 
@@ -175,7 +174,7 @@ func (state *State) Call(tokens Expression) error {
 			parameter := call.Parameters[0][0]
 
 			if parameter.Kind != token.Text {
-				return state.Error(fmt.Sprintf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text()))
+				return state.Errorf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text())
 			}
 
 			text := parameter.Text()
@@ -256,7 +255,7 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 		variable := state.scopes.Get(variableName)
 
 		if variable == nil {
-			return state.Error(fmt.Sprintf("Unknown variable %s", variableName))
+			return state.Errorf("Unknown variable %s", variableName)
 		}
 
 		variable.TimesUsed++
@@ -274,7 +273,7 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 		number, err := strconv.ParseInt(numberAsString, 10, 64)
 
 		if err != nil {
-			return state.Error(fmt.Sprintf("Not a number: %s", numberAsString))
+			return state.Errorf("Not a number: %s", numberAsString)
 		}
 
 		state.assembler.MoveRegisterNumber(register.Name, uint64(number))
@@ -300,7 +299,12 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 
 // Error generates an error message at the current token position.
 func (state *State) Error(message string) error {
-	return state.function.Error(message, state.cursor)
+	return state.function.Error(state.cursor, message)
+}
+
+// Errorf generates a formatted error message at the current token position.
+func (state *State) Errorf(message string, args ...interface{}) error {
+	return state.function.Errorf(state.cursor, message, args...)
 }
 
 // UnknownFunctionError produces an unknown function error
@@ -324,8 +328,8 @@ func (state *State) UnknownFunctionError(functionName string) error {
 	})
 
 	if similarity.Default(functionName, knownFunctions[0]) > 0.9 {
-		return state.Error(fmt.Sprintf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0]))
+		return state.Errorf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0])
 	}
 
-	return state.Error(fmt.Sprintf("Unknown function '%s'", functionName))
+	return state.Errorf("Unknown function '%s'", functionName)
 }

@@ -1,5 +1,7 @@
 package build
 
+import "sort"
+
 // Scope represents a map of variables.
 type Scope map[string]*Variable
 
@@ -48,6 +50,14 @@ func (stack *ScopeStack) Unused() []*Variable {
 			unused = append(unused, variable)
 		}
 	}
+
+	if len(unused) == 0 {
+		return nil
+	}
+
+	sort.Slice(unused, func(a int, b int) bool {
+		return unused[a].Position < unused[b].Position
+	})
 
 	return unused
 }

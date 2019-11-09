@@ -2,7 +2,6 @@ package build
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/register"
@@ -41,7 +40,7 @@ func Compile(function *Function, environment *Environment) (*asm.Assembler, erro
 	}
 
 	for _, variable := range scopes.Unused() {
-		return nil, function.Error(fmt.Sprintf("Variable '%s' has never been used", variable.Name), variable.Position)
+		return nil, function.Errorf(variable.Position, "Variable '%s' has never been used", variable.Name)
 	}
 
 	assembler.Return()

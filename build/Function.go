@@ -1,6 +1,8 @@
 package build
 
 import (
+	"fmt"
+
 	"github.com/akyoto/q/instruction"
 	"github.com/akyoto/q/spec"
 	"github.com/akyoto/q/token"
@@ -29,6 +31,11 @@ func (function *Function) Instructions() []instruction.Instruction {
 }
 
 // Error creates an error inside the function.
-func (function *Function) Error(message string, position token.Position) error {
+func (function *Function) Error(position token.Position, message string) error {
 	return NewError(message, function.File.path, function.File.tokens[:function.TokenStart+position+1])
+}
+
+// Errorf creates a formatted error inside the function.
+func (function *Function) Errorf(position token.Position, message string, args ...interface{}) error {
+	return function.Error(position, fmt.Sprintf(message, args...))
 }
