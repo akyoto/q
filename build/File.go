@@ -20,7 +20,7 @@ type File struct {
 func NewFile(inputFile string) *File {
 	file := &File{
 		path:   inputFile,
-		tokens: make([]token.Token, 0, 1024),
+		tokens: make([]token.Token, 0, 4096),
 	}
 
 	file.tokens = append(file.tokens, token.Token{
