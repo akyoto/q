@@ -2,8 +2,6 @@ package build
 
 import (
 	"sync"
-
-	"github.com/akyoto/asm"
 )
 
 // Environment represents the global state.
@@ -19,8 +17,8 @@ func NewEnvironment() *Environment {
 }
 
 // Compile compiles all functions.
-func (env *Environment) Compile() (<-chan *asm.Assembler, <-chan error) {
-	assemblers := make(chan *asm.Assembler)
+func (env *Environment) Compile() (<-chan *CompilationResult, <-chan error) {
+	results := make(chan *CompilationResult)
 	errors := make(chan error)
 
 	go func() {
@@ -39,18 +37,14 @@ func (env *Environment) Compile() (<-chan *asm.Assembler, <-chan error) {
 					return
 				}
 
-				if function.TimesUsed == 0 && function.Name != "main" {
-					return
-				}
-
-				assemblers <- assembler
+				results <- &CompilationResult{function, assembler}
 			}()
 		}
 
 		wg.Wait()
-		close(assemblers)
+		close(results)
 		close(errors)
 	}()
 
-	return assemblers, errors
+	return results, errors
 }

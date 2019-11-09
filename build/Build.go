@@ -78,7 +78,8 @@ func (build *Build) Compile() error {
 		return errors.New("Function 'main' has not been defined")
 	}
 
-	assemblers, errors := build.Environment.Compile()
+	var results []*CompilationResult
+	resultsChannel, errors := build.Environment.Compile()
 
 	// Generate machine code
 	main := asm.New()
@@ -92,19 +93,27 @@ func (build *Build) Compile() error {
 				return err
 			}
 
-		case functionCode, ok := <-assemblers:
+		case compiled, ok := <-resultsChannel:
 			if !ok {
 				goto done
 			}
 
-			// Merge function code into the main executable
-			main.Merge(functionCode)
+			results = append(results, compiled)
 		}
 	}
 
 done:
 	if !build.WriteExecutable {
 		return nil
+	}
+
+	for _, compiled := range results {
+		if compiled.Function.TimesUsed == 0 && compiled.Function.Name != "main" {
+			continue
+		}
+
+		// Merge function code into the main executable
+		main.Merge(compiled.Assembler)
 	}
 
 	for _, err := range main.Verify() {
