@@ -32,7 +32,7 @@ This will produce the `q` compiler in your current directory.
 * No global state (all mutable variables are local)
 * No classes or methods: There is just a) data and b) functions that can operate on data
 * No name shadowing, names never change their meaning
-* Importing a package should have no side effects
+* No side effects when importing a package
 * Fast compilation (a couple milliseconds should suffice for most programs)
 * Small binaries (a "Hello World" program produces a 247-byte binary)
 * Linting embedded into the build process (detects common mistakes and suggests solutions)
