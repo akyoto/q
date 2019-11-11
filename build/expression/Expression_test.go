@@ -15,16 +15,17 @@ func TestFromTokens(t *testing.T) {
 		Result     string
 	}{
 		{"Identity", "1", "1"},
-		{"Basic calculation", "1+2", "(1+2)"},
-		{"Same operator", "1+2+3", "(1+2+3)"},
-		{"Different operator", "1+2-3", "((1+2)-3)"},
-		{"Operator precedence", "1+2*3", "(1+(2*3))"},
+		{"Basic calculation", "1+2", "1+2"},
+		{"Same operator", "1+2+3", "1+2+3"},
+		{"Different operator", "1+2-3", "(1+2)-3"},
+		{"Operator precedence", "1+2*3", "1+(2*3)"},
 		{"Grouping identity", "(1)", "1"},
-		{"Adding identity 2 times", "(1)+(2)", "(1+2)"},
-		{"Adding identity 3 times", "(1)+(2)+(3)", "(1+2+3)"},
-		// {"Grouping left", "(1+2)*3", "((1+2)*3)"},
-		{"Grouping right", "1*(2+3)", "(1*(2+3))"},
-		// {"Grouping same operator", "1+(2+3)", "(1+2+3)"},
+		{"Adding identity twice", "(1)+(2)", "1+2"},
+		{"Adding identity thrice", "(1)+(2)+(3)", "1+2+3"},
+		{"Grouping left", "(1+2)*3", "(1+2)*3"},
+		{"Grouping right", "1*(2+3)", "1*(2+3)"},
+		{"Grouping same operator", "1+(2+3)", "1+2+3"},
+		{"Grouping same operator twice", "1+(2+3)+(4+5)", "1+2+3+4+5"},
 	}
 
 	for _, test := range tests {

@@ -48,6 +48,16 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				current.Parent.Children = current.Parent.Children[:len(current.Parent.Children)-1]
 			}
 
+			// Same operator as parent?
+			if current.Value.Kind == token.Operator && current.Parent.Value.Kind == token.Operator && current.Value.Text() == current.Parent.Value.Text() {
+				for _, child := range current.Children {
+					child.Parent = current.Parent
+				}
+
+				current.Parent.Children = current.Parent.Children[:len(current.Parent.Children)-1]
+				current.Parent.Children = append(current.Parent.Children, current.Children...)
+			}
+
 			current = current.Parent
 
 		case token.Operator:
@@ -63,6 +73,12 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 					Parent: current,
 				})
 
+				current.Value = t
+				continue
+			}
+
+			// If it started with a group, we need to set the operator
+			if current.Value.Kind == token.Invalid {
 				current.Value = t
 				continue
 			}
@@ -114,7 +130,9 @@ func (expr *Expression) write(builder *strings.Builder) {
 		return
 	}
 
-	builder.WriteByte('(')
+	if expr.Parent != nil {
+		builder.WriteByte('(')
+	}
 
 	for index, operand := range expr.Children {
 		operand.write(builder)
@@ -124,5 +142,7 @@ func (expr *Expression) write(builder *strings.Builder) {
 		}
 	}
 
-	builder.WriteByte(')')
+	if expr.Parent != nil {
+		builder.WriteByte(')')
+	}
 }
