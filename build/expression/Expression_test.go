@@ -54,14 +54,22 @@ func TestFromTokens(t *testing.T) {
 			tokens, processed := token.Tokenize(src, []token.Token{})
 			assert.Equal(t, processed, len(src))
 
-			if test.Name == "Complex" {
-				print("Go!")
-			}
-
 			expr, err := expression.FromTokens(tokens)
 			assert.Nil(t, err)
 			assert.NotNil(t, expr)
 			assert.Equal(t, expr.String(), test.Result)
 		})
+	}
+}
+
+func BenchmarkExpression(b *testing.B) {
+	src := []byte("(1+2-3*4)*(5+6-7*8)\n")
+	tokens, _ := token.Tokenize(src, []token.Token{})
+
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, _ = expression.FromTokens(tokens)
 	}
 }
