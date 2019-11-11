@@ -14,66 +14,71 @@ type Expression struct {
 	Parent   *Expression
 }
 
+// AddChild adds a child to the expression.
+func (expr *Expression) AddChild(t token.Token) {
+	if expr.Value.Kind == token.Invalid {
+		expr.Value = t
+		return
+	}
+
+	expr.Children = append(expr.Children, &Expression{
+		Value:  t,
+		Parent: expr,
+	})
+}
+
+// LastChild returns the last child.
+func (expr *Expression) LastChild() *Expression {
+	return expr.Children[len(expr.Children)-1]
+}
+
+// IsLeaf returns true if the expression is a leaf node with no children.
+func (expr *Expression) IsLeaf() bool {
+	return len(expr.Children) == 0
+}
+
 // FromTokens generates an expression tree from tokens.
 func FromTokens(tokens []token.Token) (*Expression, error) {
 	current := &Expression{}
+	stack := []*Expression{current}
+	goUp := false
 
-	for _, t := range tokens {
+	for index, t := range tokens {
 		switch t.Kind {
 		case token.Identifier, token.Number, token.Text:
-			// Identity
-			if current.Value.Kind == token.Invalid {
-				current.Value = t
-				continue
-			}
+			current.AddChild(t)
 
-			// Add operand
-			current.Children = append(current.Children, &Expression{
-				Value:  t,
-				Parent: current,
-			})
+			if goUp {
+				current = current.Parent
+				goUp = false
+			}
 
 		case token.GroupStart:
 			group := &Expression{
 				Parent: current,
 			}
 
-			current.Children = append(current.Children, group)
 			current = group
+			stack = append(stack, group)
 
 		case token.GroupEnd:
-			// Identity group
-			if current.Value.Kind != token.Operator && current.Parent.Value.Kind == token.Invalid {
-				current.Parent.Value = current.Value
-				current.Parent.Children = current.Parent.Children[:len(current.Parent.Children)-1]
-			}
-
-			// Same operator as parent?
-			if current.Value.Kind == token.Operator && current.Parent.Value.Kind == token.Operator && current.Value.Text() == current.Parent.Value.Text() {
-				for _, child := range current.Children {
-					child.Parent = current.Parent
+			if len(current.Children) == 0 {
+				current.Parent.AddChild(current.Value)
+			} else {
+				if len(current.Parent.Children) == 0 {
+					current.Parent.Value = current.Value
+					current.Parent.Children = current.Children
+				} else {
+					current.Parent.Children = append(current.Parent.Children, current)
 				}
-
-				current.Parent.Children = current.Parent.Children[:len(current.Parent.Children)-1]
-				current.Parent.Children = append(current.Parent.Children, current.Children...)
 			}
 
-			current = current.Parent
+			stack = stack[:len(stack)-1]
+			current = stack[len(stack)-1]
 
 		case token.Operator:
-			// Same operator
-			if current.Value.Kind == token.Operator && current.Value.Text() == t.Text() {
-				continue
-			}
-
-			// Same operator as parent
-			if current.Parent != nil && current.Value.Kind == token.Operator && current.Parent.Value.Kind == token.Operator && current.Parent.Value.Text() == t.Text() {
-				current = current.Parent
-				continue
-			}
-
 			// Turn identifier into an operation
-			if current.Value.Kind == token.Identifier || current.Value.Kind == token.Number || current.Value.Kind == token.Text {
+			if current.IsLeaf() {
 				current.Children = append(current.Children, &Expression{
 					Value:  current.Value,
 					Parent: current,
@@ -83,50 +88,45 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				continue
 			}
 
-			// If it started with a group, we need to set the operator
-			if current.Value.Kind == token.Invalid {
-				current.Value = t
-				continue
+			// Calculate priority
+			if index > 0 && tokens[index-1].Kind != token.GroupEnd && len(current.Children) >= 2 && current.LastChild().Value.Kind != token.Operator {
+				priority := spec.Operators[t.Text()]
+				lastPriority := spec.Operators[current.Value.Text()]
+
+				if priority > lastPriority {
+					// Expression: 1 + 2 * 3
+					//                 ^
+					//                 lastChild
+					//                 ^^^
+					//                 subExpression
+					lastChild := current.Children[len(current.Children)-1]
+
+					subExpression := &Expression{
+						Value:    t,
+						Children: []*Expression{lastChild},
+						Parent:   current,
+					}
+
+					current.Children[len(current.Children)-1] = subExpression
+					current = subExpression
+					goUp = true
+					continue
+				}
 			}
 
-			// Calculate precedence
-			precedence := spec.Operators[t.Text()]
-			currentPrecedence := spec.Operators[current.Value.Text()]
-
-			if precedence > currentPrecedence {
-				lastChild := current.Children[len(current.Children)-1]
-
-				lastChild = &Expression{
-					Value:    t,
-					Children: []*Expression{lastChild},
-					Parent:   current,
-				}
-
-				current.Children[len(current.Children)-1] = lastChild
-				current = lastChild
-			} else {
-				// Current expression becomes a child of right expression
-				right := &Expression{
-					Value:    t,
-					Children: []*Expression{current},
-					Parent:   current.Parent,
-				}
-
-				if current.Parent != nil {
-					current.Parent.Children[len(current.Parent.Children)-1] = right
-				}
-
-				current.Parent = right
-				current = right
+			newOperator := &Expression{
+				Value:    t,
+				Children: []*Expression{current},
+				Parent:   current.Parent,
 			}
+
+			current.Parent = newOperator
+			current = newOperator
+			stack[len(stack)-1] = newOperator
 		}
 	}
 
-	for current.Parent != nil {
-		current = current.Parent
-	}
-
-	return current, nil
+	return stack[0], nil
 }
 
 // String generates a textual representation of the expression.
@@ -143,9 +143,7 @@ func (expr *Expression) write(builder *strings.Builder) {
 		return
 	}
 
-	if expr.Parent != nil {
-		builder.WriteByte('(')
-	}
+	builder.WriteByte('(')
 
 	for index, operand := range expr.Children {
 		operand.write(builder)
@@ -155,7 +153,5 @@ func (expr *Expression) write(builder *strings.Builder) {
 		}
 	}
 
-	if expr.Parent != nil {
-		builder.WriteByte(')')
-	}
+	builder.WriteByte(')')
 }
