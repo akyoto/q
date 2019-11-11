@@ -46,7 +46,7 @@ func (stack *ScopeStack) Unused() []*Variable {
 	scope := stack.scopes[len(stack.scopes)-1]
 
 	for _, variable := range scope {
-		if variable.TimesUsed == 0 {
+		if variable.AliveUntil == 0 {
 			unused = append(unused, variable)
 		}
 	}

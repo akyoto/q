@@ -1,6 +1,7 @@
 package build
 
 import (
+	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
@@ -8,12 +9,12 @@ import (
 
 // Variable represents both local variables and function parameters.
 type Variable struct {
-	Name      string
-	Type      *spec.Type
-	TimesUsed uint
-	Position  token.Position
-	Register  *register.Register
-	Mutable   bool
+	Name       string
+	Type       *spec.Type
+	AliveUntil instruction.Position
+	Position   token.Position
+	Register   *register.Register
+	Mutable    bool
 }
 
 // BindRegister binds the variable to a register.

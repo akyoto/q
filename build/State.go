@@ -22,14 +22,15 @@ type State struct {
 	registers    *register.Manager
 	function     *Function
 	environment  *Environment
-	cursor       token.Position
+	tokenCursor  token.Position
+	instrCursor  instruction.Position
 	verbose      bool
 }
 
 // CompileInstructions compiles all instructions.
 func (state *State) CompileInstructions() error {
-	for _, instr := range state.instructions {
-		err := state.Instruction(instr)
+	for index, instr := range state.instructions {
+		err := state.Instruction(instr, index)
 
 		if err != nil {
 			return err
@@ -40,8 +41,9 @@ func (state *State) CompileInstructions() error {
 }
 
 // Instruction generates machine code for the given instruction.
-func (state *State) Instruction(instr instruction.Instruction) error {
-	state.cursor = instr.Position
+func (state *State) Instruction(instr instruction.Instruction, index instruction.Position) error {
+	state.tokenCursor = instr.Position
+	state.instrCursor = index
 
 	switch instr.Kind {
 	case instruction.Assignment:
@@ -81,7 +83,7 @@ func (state *State) Assignment(tokens Expression) error {
 
 		variable = &Variable{
 			Name:     variableName,
-			Position: state.cursor,
+			Position: state.tokenCursor,
 		}
 
 		variable.BindRegister(register)
@@ -90,7 +92,7 @@ func (state *State) Assignment(tokens Expression) error {
 
 	// Skip variable name and operator
 	expressionStart := 2
-	state.cursor += expressionStart
+	state.tokenCursor += expressionStart
 	expression := tokens[expressionStart:]
 
 	return state.SaveExpressionInRegister(variable.Register, expression)
@@ -137,7 +139,7 @@ func (state *State) Call(tokens Expression) error {
 		switch t.Kind {
 		case token.Separator:
 			if pos == parameterStart {
-				state.cursor += pos
+				state.tokenCursor += pos
 				return state.Error("Missing parameter")
 			}
 
@@ -258,7 +260,7 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 			return state.Errorf("Unknown variable %s", variableName)
 		}
 
-		variable.TimesUsed++
+		variable.AliveUntil = state.instrCursor + 1
 
 		if variable.Register != register {
 			state.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
@@ -299,12 +301,12 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expres
 
 // Error generates an error message at the current token position.
 func (state *State) Error(message string) error {
-	return state.function.Error(state.cursor, message)
+	return state.function.Error(state.tokenCursor, message)
 }
 
 // Errorf generates a formatted error message at the current token position.
 func (state *State) Errorf(message string, args ...interface{}) error {
-	return state.function.Errorf(state.cursor, message, args...)
+	return state.function.Errorf(state.tokenCursor, message, args...)
 }
 
 // UnknownFunctionError produces an unknown function error

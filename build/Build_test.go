@@ -43,6 +43,7 @@ func TestBuildErrors(t *testing.T) {
 	}{
 		{"testdata/missing-opening-bracket.q", "Missing opening bracket"},
 		{"testdata/missing-closing-bracket.q", "Missing closing bracket"},
+		{"testdata/unused-variable.q", "Variable 'a' has never been used"},
 		{"testdata/unknown-function.q", "Unknown function"},
 		{"testdata/unknown-function-suggestion.q", "Unknown function 'prin', did you mean 'print'?"},
 		{"testdata/unknown-expression.q", "Unknown expression"},
