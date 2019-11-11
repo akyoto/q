@@ -137,6 +137,7 @@ func (state *State) Call(tokens []token.Token) error {
 
 	bracketPos := 1
 	parameterStart := bracketPos + 1
+	state.tokenCursor += bracketPos
 	pos := parameterStart
 
 	for pos < len(tokens) {
@@ -145,7 +146,6 @@ func (state *State) Call(tokens []token.Token) error {
 		switch t.Kind {
 		case token.Separator:
 			if pos == parameterStart {
-				state.tokenCursor += pos
 				return state.Error("Missing parameter")
 			}
 
@@ -176,6 +176,7 @@ func (state *State) Call(tokens []token.Token) error {
 			parameterStart = pos + 1
 		}
 
+		state.tokenCursor++
 		pos++
 	}
 

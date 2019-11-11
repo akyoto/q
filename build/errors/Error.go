@@ -1,4 +1,4 @@
-package build
+package errors
 
 import (
 	"fmt"
@@ -14,10 +14,10 @@ type Error struct {
 	Message string
 }
 
-// NewError generates an error message at the current token position.
+// New generates an error message at the current token position.
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
-func NewError(message string, path string, tokens []token.Token) *Error {
+func New(message string, path string, tokens []token.Token) *Error {
 	var (
 		lineCount = 0
 		lineStart = 0

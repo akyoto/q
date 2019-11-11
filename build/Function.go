@@ -3,6 +3,7 @@ package build
 import (
 	"fmt"
 
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
@@ -33,7 +34,7 @@ func (function *Function) Instructions() []instruction.Instruction {
 
 // Error creates an error inside the function.
 func (function *Function) Error(position token.Position, message string) error {
-	return NewError(message, function.File.path, function.File.tokens[:function.TokenStart+position+1])
+	return errors.New(message, function.File.path, function.File.tokens[:function.TokenStart+position+1])
 }
 
 // Errorf creates a formatted error inside the function.
