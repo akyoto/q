@@ -66,6 +66,12 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				continue
 			}
 
+			// Same operator as parent
+			if current.Parent != nil && current.Value.Kind == token.Operator && current.Parent.Value.Kind == token.Operator && current.Parent.Value.Text() == t.Text() {
+				current = current.Parent
+				continue
+			}
+
 			// Turn identifier into an operation
 			if current.Value.Kind == token.Identifier || current.Value.Kind == token.Number || current.Value.Kind == token.Text {
 				current.Children = append(current.Children, &Expression{
@@ -88,19 +94,26 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			currentPrecedence := spec.Operators[current.Value.Text()]
 
 			if precedence > currentPrecedence {
-				//
-				current.Children[len(current.Children)-1] = &Expression{
+				lastChild := current.Children[len(current.Children)-1]
+
+				lastChild = &Expression{
 					Value:    t,
-					Children: []*Expression{current.Children[len(current.Children)-1]},
+					Children: []*Expression{lastChild},
 					Parent:   current,
 				}
 
-				current = current.Children[len(current.Children)-1]
+				current.Children[len(current.Children)-1] = lastChild
+				current = lastChild
 			} else {
 				// Current expression becomes a child of right expression
 				right := &Expression{
 					Value:    t,
 					Children: []*Expression{current},
+					Parent:   current.Parent,
+				}
+
+				if current.Parent != nil {
+					current.Parent.Children[len(current.Parent.Children)-1] = right
 				}
 
 				current.Parent = right
