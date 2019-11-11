@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/register"
@@ -64,7 +65,7 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 }
 
 // Assignment handles assignment instructions.
-func (state *State) Assignment(tokens Expression) error {
+func (state *State) Assignment(tokens []token.Token) error {
 	left := tokens[0]
 
 	if left.Kind != token.Identifier {
@@ -93,20 +94,25 @@ func (state *State) Assignment(tokens Expression) error {
 	// Skip variable name and operator
 	expressionStart := 2
 	state.tokenCursor += expressionStart
-	expression := tokens[expressionStart:]
+	value := tokens[expressionStart:]
+	expr, err := expression.FromTokens(value)
 
-	return state.SaveExpressionInRegister(variable.Register, expression)
+	if err != nil {
+		return state.Error(err.Error())
+	}
+
+	return state.SaveExpressionInRegister(variable.Register, expr)
 }
 
 // Call handles function calls.
-func (state *State) Call(tokens Expression) error {
-	firstToken := tokens.First()
+func (state *State) Call(tokens []token.Token) error {
+	firstToken := tokens[0]
 
 	if firstToken.Kind != token.Identifier {
 		return state.Error("Expected function name before '('")
 	}
 
-	lastToken := tokens.Last()
+	lastToken := tokens[len(tokens)-1]
 
 	if lastToken.Kind != token.GroupEnd {
 		return state.Error("Missing closing bracket ')'")
@@ -143,7 +149,14 @@ func (state *State) Call(tokens Expression) error {
 				return state.Error("Missing parameter")
 			}
 
-			call.Parameters = append(call.Parameters, tokens[parameterStart:pos])
+			parameterTokens := tokens[parameterStart:pos]
+			expr, err := expression.FromTokens(parameterTokens)
+
+			if err != nil {
+				return state.Error(err.Error())
+			}
+
+			call.Parameters = append(call.Parameters, expr)
 			parameterStart = pos + 1
 
 		case token.GroupEnd:
@@ -152,7 +165,14 @@ func (state *State) Call(tokens Expression) error {
 				break
 			}
 
-			call.Parameters = append(call.Parameters, tokens[parameterStart:pos])
+			parameterTokens := tokens[parameterStart:pos]
+			expr, err := expression.FromTokens(parameterTokens)
+
+			if err != nil {
+				return state.Error(err.Error())
+			}
+
+			call.Parameters = append(call.Parameters, expr)
 			parameterStart = pos + 1
 		}
 
@@ -173,7 +193,7 @@ func (state *State) Call(tokens Expression) error {
 	if isBuiltin {
 		switch functionName {
 		case "print":
-			parameter := call.Parameters[0][0]
+			parameter := call.Parameters[0].Value
 
 			if parameter.Kind != token.Text {
 				return state.Errorf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text())
@@ -208,12 +228,12 @@ func (state *State) Call(tokens Expression) error {
 }
 
 // Keyword handles keywords.
-func (state *State) Keyword(tokens Expression) error {
+func (state *State) Keyword(tokens []token.Token) error {
 	return state.Error("Not implemented")
 }
 
 // Invalid handles invalid instructions.
-func (state *State) Invalid(tokens Expression) error {
+func (state *State) Invalid(tokens []token.Token) error {
 	openingBrackets := token.Count(tokens, token.GroupStart)
 	closingBrackets := token.Count(tokens, token.GroupEnd)
 
@@ -248,8 +268,8 @@ func (state *State) AfterCall(call *FunctionCall) {
 }
 
 // SaveExpressionInRegister moves the result of an expression to the given register.
-func (state *State) SaveExpressionInRegister(register *register.Register, expression Expression) error {
-	singleToken := expression[0]
+func (state *State) SaveExpressionInRegister(register *register.Register, expr *expression.Expression) error {
+	singleToken := expr.Value
 
 	switch singleToken.Kind {
 	case token.Identifier:
