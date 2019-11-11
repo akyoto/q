@@ -1,5 +1,4 @@
 main() {
-	a = 1
-	b = 2
-	c = 3
+	c = 3 + 3
+	syscall(60, c)
 }

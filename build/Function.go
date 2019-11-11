@@ -3,9 +3,9 @@ package build
 import (
 	"fmt"
 
-	"github.com/akyoto/q/instruction"
-	"github.com/akyoto/q/spec"
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/instruction"
+	"github.com/akyoto/q/build/spec"
+	"github.com/akyoto/q/build/token"
 )
 
 // Function represents a function.

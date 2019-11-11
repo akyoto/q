@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/akyoto/q/spec"
+	"github.com/akyoto/q/build/spec"
 )
 
 // Tokenize processes the partial read and returns how many bytes were processed.

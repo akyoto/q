@@ -3,7 +3,7 @@ package build
 import (
 	"fmt"
 
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/token"
 )
 
 // Error is a compiler error at a given line and column.

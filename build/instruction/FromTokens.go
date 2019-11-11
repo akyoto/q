@@ -1,7 +1,7 @@
 package instruction
 
 import (
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/token"
 )
 
 // FromTokens takes a list of tokens and generates instructions.

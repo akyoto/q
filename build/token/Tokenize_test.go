@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/akyoto/assert"
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/token"
 )
 
 func TestTokenize(t *testing.T) {

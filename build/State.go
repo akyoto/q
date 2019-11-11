@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/register"
-	"github.com/akyoto/q/instruction"
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/token"
 	"github.com/akyoto/stringutils/similarity"
 )
 

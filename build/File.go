@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/akyoto/q/build/log"
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/token"
 )
 
 // File represents a single source file.

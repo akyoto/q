@@ -1,6 +1,6 @@
 package build
 
-import "github.com/akyoto/q/spec"
+import "github.com/akyoto/q/build/spec"
 
 // BuiltinFunctions defines the builtin functions.
 var BuiltinFunctions = map[string]*Function{

@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/akyoto/assert"
-	"github.com/akyoto/q/instruction"
-	"github.com/akyoto/q/token"
+	"github.com/akyoto/q/build/instruction"
+	"github.com/akyoto/q/build/token"
 )
 
 func TestFromTokens(t *testing.T) {
