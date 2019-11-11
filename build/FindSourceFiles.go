@@ -13,16 +13,12 @@ func FindSourceFiles(directory string) (<-chan *File, <-chan error) {
 
 	go func() {
 		err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-			if path == directory {
+			if path == directory || !strings.HasSuffix(path, ".q") {
 				return nil
 			}
 
 			if info.IsDir() {
 				return filepath.SkipDir
-			}
-
-			if !strings.HasSuffix(path, ".q") {
-				return nil
 			}
 
 			files <- NewFile(path)

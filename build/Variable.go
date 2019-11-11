@@ -10,10 +10,10 @@ import (
 type Variable struct {
 	Name      string
 	Type      *spec.Type
-	Mutable   bool
 	TimesUsed uint
 	Position  token.Position
 	Register  *register.Register
+	Mutable   bool
 }
 
 // BindRegister binds the variable to a register.

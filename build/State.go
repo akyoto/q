@@ -15,13 +15,13 @@ import (
 // State encapsulates a compiler's state.
 // Every compilation requires a fresh state.
 type State struct {
+	instructions []instruction.Instruction
+	tokens       []token.Token
 	assembler    *asm.Assembler
 	scopes       *ScopeStack
 	registers    *register.Manager
 	function     *Function
 	environment  *Environment
-	tokens       []token.Token
-	instructions []instruction.Instruction
 	cursor       token.Position
 	verbose      bool
 }
@@ -98,19 +98,19 @@ func (state *State) Assignment(tokens Expression) error {
 
 // Call handles function calls.
 func (state *State) Call(tokens Expression) error {
-	left := tokens[0]
+	firstToken := tokens.First()
 
-	if left.Kind != token.Identifier {
+	if firstToken.Kind != token.Identifier {
 		return state.Error("Expected function name before '('")
 	}
 
-	right := tokens[len(tokens)-1]
+	lastToken := tokens.Last()
 
-	if right.Kind != token.GroupEnd {
+	if lastToken.Kind != token.GroupEnd {
 		return state.Error("Missing closing bracket ')'")
 	}
 
-	functionName := left.Text()
+	functionName := firstToken.Text()
 	function := state.environment.Functions[functionName]
 	isBuiltin := false
 

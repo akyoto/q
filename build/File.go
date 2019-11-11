@@ -10,9 +10,9 @@ import (
 
 // File represents a single source file.
 type File struct {
-	path     string
 	contents []byte
 	tokens   []token.Token
+	path     string
 	verbose  bool
 }
 
@@ -20,13 +20,10 @@ type File struct {
 func NewFile(inputFile string) *File {
 	file := &File{
 		path:   inputFile,
-		tokens: make([]token.Token, 0, 4096),
+		tokens: make([]token.Token, 1, 4096),
 	}
 
-	file.tokens = append(file.tokens, token.Token{
-		Kind: token.NewLine,
-	})
-
+	file.tokens[0].Kind = token.NewLine
 	return file
 }
 
