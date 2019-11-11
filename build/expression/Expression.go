@@ -48,6 +48,8 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		case token.Identifier, token.Number, token.Text:
 			current.AddChild(t)
 
+			// In case an operator priority was enforced,
+			// we need to go back up to the original node.
 			if goUp {
 				current = current.Parent
 				goUp = false
