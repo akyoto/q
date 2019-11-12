@@ -328,16 +328,33 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 
 // ExpressionToRegister moves the result of an expression into the given register.
 func (state *State) ExpressionToRegister(expr *expression.Expression, register *register.Register) error {
-	if expr.Value.Kind != token.Operator {
+	if expr.IsLeaf() {
 		return state.TokenToRegister(expr.Value, register)
 	}
 
-	return expr.EachOperation(func(sub *expression.Expression) error {
-		sub.Register = register
+	expr.SortByRegisterCount()
+	tmp := expr
+
+	for len(tmp.Children) > 0 {
+		tmp.Children[0].Register = register
+		tmp = tmp.Children[0]
+	}
+
+	err := expr.EachOperation(func(sub *expression.Expression) error {
+		left := sub.Children[0]
+		right := sub.Children[1]
+
+		if left.Register == nil {
+			left.Register = state.registers.FindFreeRegister()
+		}
+
+		sub.Register = left.Register
+
+		if sub.Register.UsedBy == nil {
+			sub.Register.UsedBy = sub
+		}
 
 		// Left operand
-		left := sub.Children[0]
-
 		if left.IsLeaf() {
 			err := state.TokenToRegister(left.Value, sub.Register)
 
@@ -348,13 +365,11 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 			state.assembler.MoveRegisterRegister(sub.Register.Name, left.Register.Name)
 
 			if state.verbose {
-				log.Asm.Printf("mov %s, %s\n", sub.Register, left.Register.Name)
+				log.Asm.Printf("mov %s, %s\n", sub.Register, left.Register)
 			}
 		}
 
 		// Right operand
-		right := sub.Children[1]
-
 		switch sub.Value.Text() {
 		case "+":
 			if right.IsLeaf() {
@@ -394,7 +409,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 			state.assembler.AddRegisterRegister(sub.Register.Name, right.Register.Name)
 
 			if state.verbose {
-				log.Asm.Printf("add %s, %s\n", sub.Register, right.Register.Name)
+				log.Asm.Printf("add %s, %s\n", sub.Register, right.Register)
 			}
 
 		case "-":
@@ -404,8 +419,26 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 			return state.Error("Not implemented")
 		}
 
+		if right.Register != nil {
+			right.Register.UsedBy = nil
+		}
+
 		return nil
 	})
+
+	if err != nil {
+		return err
+	}
+
+	_ = expr.EachOperation(func(expr *expression.Expression) error {
+		if expr.Register != register {
+			expr.Register.UsedBy = nil
+		}
+
+		return nil
+	})
+
+	return nil
 }
 
 // Error generates an error message at the current token position.

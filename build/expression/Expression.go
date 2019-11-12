@@ -49,6 +49,44 @@ func (expr *Expression) EachOperation(callBack func(*Expression) error) error {
 	return callBack(expr)
 }
 
+// SortByRegisterCount sorts the children by register count.
+func (expr *Expression) SortByRegisterCount() {
+	if expr.IsLeaf() {
+		return
+	}
+
+	for _, child := range expr.Children {
+		child.SortByRegisterCount()
+	}
+
+	left := expr.Children[0]
+	right := expr.Children[1]
+
+	leftCount := left.RegisterCount()
+	rightCount := right.RegisterCount()
+
+	if rightCount > leftCount {
+		expr.Children[0] = right
+		expr.Children[1] = left
+	}
+}
+
+// RegisterCount returns the number of registers
+// needed to calculate this expression tree.
+func (expr *Expression) RegisterCount() int {
+	count := 0
+
+	for _, child := range expr.Children {
+		count += child.RegisterCount()
+	}
+
+	if expr.Value.Kind == token.Operator && count == 0 {
+		count = 1
+	}
+
+	return count
+}
+
 // LastChild returns the last child.
 func (expr *Expression) LastChild() *Expression {
 	return expr.Children[len(expr.Children)-1]
