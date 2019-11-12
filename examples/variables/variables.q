@@ -1,5 +1,5 @@
 main() {
 	sysExit = 20 + 40
-	exitCode = 1 + 2 + 3 + 4
+	exitCode = sysExit + 15 + sysExit
 	syscall(sysExit, exitCode)
 }

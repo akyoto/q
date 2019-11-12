@@ -49,6 +49,6 @@ func syntaxCheck(inputFile string) error {
 		TokenEnd:   len(file.Tokens()),
 	}
 
-	_, err = build.Compile(function, build.NewEnvironment())
+	_, err = build.Compile(function, build.NewEnvironment(), false)
 	return err
 }

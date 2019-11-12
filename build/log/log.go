@@ -6,9 +6,12 @@ import (
 )
 
 var (
-	// Info is used instead of os.Stdout for goroutine-safe logging.
+	// Info is used for general info messages.
 	Info = log.New(os.Stdout, "", 0)
 
-	// Error is used instead of os.Stderr for goroutine-safe logging.
+	// Asm is used for assembler instructions.
+	Asm = Info
+
+	// Error is used for error messages.
 	Error = log.New(os.Stderr, "", 0)
 )

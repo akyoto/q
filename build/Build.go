@@ -79,7 +79,7 @@ func (build *Build) Compile() error {
 	}
 
 	var results []*CompilationResult
-	resultsChannel, errors := build.Environment.Compile()
+	resultsChannel, errors := build.Environment.Compile(build.Verbose)
 
 	// Generate machine code
 	main := asm.New()

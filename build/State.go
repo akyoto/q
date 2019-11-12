@@ -1,7 +1,6 @@
 package build
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 
@@ -96,15 +95,7 @@ func (state *State) Assignment(tokens []token.Token) error {
 	expressionStart := 2
 	state.tokenCursor += expressionStart
 	value := tokens[expressionStart:]
-
-	// Generate expression
-	expr, err := expression.FromTokens(value)
-
-	if err != nil {
-		return state.Error(err.Error())
-	}
-
-	return state.SaveExpressionInRegister(expr, variable.Register)
+	return state.TokensToRegister(value, variable.Register)
 }
 
 // Call handles function calls.
@@ -153,13 +144,7 @@ func (state *State) Call(tokens []token.Token) error {
 			}
 
 			parameterTokens := tokens[parameterStart:pos]
-			expr, err := expression.FromTokens(parameterTokens)
-
-			if err != nil {
-				return state.Error(err.Error())
-			}
-
-			call.Parameters = append(call.Parameters, expr)
+			call.Parameters = append(call.Parameters, parameterTokens)
 			parameterStart = pos + 1
 
 		case token.GroupEnd:
@@ -169,13 +154,7 @@ func (state *State) Call(tokens []token.Token) error {
 			}
 
 			parameterTokens := tokens[parameterStart:pos]
-			expr, err := expression.FromTokens(parameterTokens)
-
-			if err != nil {
-				return state.Error(err.Error())
-			}
-
-			call.Parameters = append(call.Parameters, expr)
+			call.Parameters = append(call.Parameters, parameterTokens)
 			parameterStart = pos + 1
 		}
 
@@ -197,7 +176,7 @@ func (state *State) Call(tokens []token.Token) error {
 	if isBuiltin {
 		switch functionName {
 		case "print":
-			parameter := call.Parameters[0].Value
+			parameter := call.Parameters[0][0]
 
 			if parameter.Kind != token.Text {
 				return state.Errorf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text())
@@ -214,6 +193,11 @@ func (state *State) Call(tokens []token.Token) error {
 			}
 
 			state.assembler.Syscall()
+
+			if state.verbose {
+				log.Asm.Println("syscall")
+			}
+
 			state.AfterCall(&call)
 		}
 
@@ -227,6 +211,11 @@ func (state *State) Call(tokens []token.Token) error {
 	}
 
 	state.assembler.Call(call.Function.Name)
+
+	if state.verbose {
+		log.Asm.Printf("call %s\n", call.Function.Name)
+	}
+
 	state.AfterCall(&call)
 	return nil
 }
@@ -254,9 +243,9 @@ func (state *State) Invalid(tokens []token.Token) error {
 
 // BeforeCall pushes parameters into registers.
 func (state *State) BeforeCall(call *FunctionCall, registers []*register.Register) error {
-	for index, expression := range call.Parameters {
+	for index, tokens := range call.Parameters {
 		register := registers[index]
-		err := state.SaveExpressionInRegister(expression, register)
+		err := state.TokensToRegister(tokens, register)
 
 		if err != nil {
 			return err
@@ -271,10 +260,9 @@ func (state *State) AfterCall(call *FunctionCall) {
 	call.Function.Used = true
 }
 
-// SaveExpressionInRegister moves the result of an expression to the given register.
-func (state *State) SaveExpressionInRegister(expr *expression.Expression, register *register.Register) error {
-	singleToken := expr.Value
-
+// TokenToRegister moves a token into a register.
+// It only works with identifiers, numbers and texts.
+func (state *State) TokenToRegister(singleToken token.Token, register *register.Register) error {
 	switch singleToken.Kind {
 	case token.Identifier:
 		variableName := singleToken.Text()
@@ -286,26 +274,29 @@ func (state *State) SaveExpressionInRegister(expr *expression.Expression, regist
 
 		variable.AliveUntil = state.instrCursor + 1
 
-		if variable.Register != register {
-			state.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
+		// Moving a variable into its own register is pointless
+		if variable.Register == register {
+			return nil
+		}
 
-			if state.verbose {
-				log.Info.Printf("mov %s, %s\n", register, variable.Register)
-			}
+		state.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
+
+		if state.verbose {
+			log.Asm.Printf("mov %s, %s\n", register, variable.Register)
 		}
 
 	case token.Number:
-		numberAsString := singleToken.Text()
-		number, err := strconv.ParseInt(numberAsString, 10, 64)
+		numberString := singleToken.Text()
+		number, err := strconv.ParseInt(numberString, 10, 64)
 
 		if err != nil {
-			return state.Errorf("Not a number: %s", numberAsString)
+			return state.Errorf("Not a number: %s", numberString)
 		}
 
 		state.assembler.MoveRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
-			log.Info.Printf("mov %s, %d\n", register, number)
+			log.Asm.Printf("mov %s, %d\n", register, number)
 		}
 
 	case token.Text:
@@ -313,51 +304,108 @@ func (state *State) SaveExpressionInRegister(expr *expression.Expression, regist
 		state.assembler.MoveRegisterAddress(register.Name, address)
 
 		if state.verbose {
-			log.Info.Printf("mov %s, <%d>\n", register, address)
+			log.Asm.Printf("mov %s, <%d>\n", register, address)
 		}
-
-	case token.Operator:
-		expr.IterateOperations(func(sub *expression.Expression) {
-			sub.Register = register
-
-			// Left operand
-			left := sub.Children[0]
-
-			if left.IsLeaf() {
-				err := state.SaveExpressionInRegister(left, sub.Register)
-
-				if err != nil {
-					return //err
-				}
-			} else if sub.Register != left.Register {
-				fmt.Printf("mov %s, %s\n", sub.Register, left.Register.Name)
-			}
-
-			// Right operand
-			right := sub.Children[1]
-
-			switch sub.Value.Text() {
-			case "+":
-				if right.IsLeaf() {
-					number, err := strconv.ParseInt(right.Value.Text(), 10, 64)
-
-					if err != nil {
-						return //state.Errorf("Not a number: %s", numberAsString)
-					}
-
-					state.assembler.AddRegisterNumber(sub.Register.Name, uint64(number))
-					fmt.Printf("add %s, %s\n", sub.Register, right.Value.Text())
-				} else {
-					fmt.Printf("add %s, %s\n", sub.Register, right.Register.Name)
-				}
-
-			case "-":
-				return
-			}
-		})
 	}
 
 	return nil
+}
+
+// TokensToRegister moves the result of a token expression into the given register.
+func (state *State) TokensToRegister(tokens []token.Token, register *register.Register) error {
+	if len(tokens) == 1 {
+		return state.TokenToRegister(tokens[0], register)
+	}
+
+	expr, err := expression.FromTokens(tokens)
+
+	if err != nil {
+		return state.Error(err.Error())
+	}
+
+	return state.ExpressionToRegister(expr, register)
+}
+
+// ExpressionToRegister moves the result of an expression into the given register.
+func (state *State) ExpressionToRegister(expr *expression.Expression, register *register.Register) error {
+	if expr.Value.Kind != token.Operator {
+		return state.TokenToRegister(expr.Value, register)
+	}
+
+	return expr.EachOperation(func(sub *expression.Expression) error {
+		sub.Register = register
+
+		// Left operand
+		left := sub.Children[0]
+
+		if left.IsLeaf() {
+			err := state.TokenToRegister(left.Value, sub.Register)
+
+			if err != nil {
+				return err
+			}
+		} else if sub.Register != left.Register {
+			state.assembler.MoveRegisterRegister(sub.Register.Name, left.Register.Name)
+
+			if state.verbose {
+				log.Asm.Printf("mov %s, %s\n", sub.Register, left.Register.Name)
+			}
+		}
+
+		// Right operand
+		right := sub.Children[1]
+
+		switch sub.Value.Text() {
+		case "+":
+			if right.IsLeaf() {
+				switch right.Value.Kind {
+				case token.Identifier:
+					variableName := right.Value.Text()
+					variable := state.scopes.Get(variableName)
+
+					if variable == nil {
+						return state.Errorf("Unknown variable %s", variableName)
+					}
+
+					variable.AliveUntil = state.instrCursor + 1
+					state.assembler.AddRegisterRegister(sub.Register.Name, variable.Register.Name)
+
+					if state.verbose {
+						log.Asm.Printf("add %s, %s\n", sub.Register, variable.Register)
+					}
+
+				case token.Number:
+					number, err := strconv.ParseInt(right.Value.Text(), 10, 64)
+
+					if err != nil {
+						return state.Errorf("Not a number: %s", right.Value.Text())
+					}
+
+					state.assembler.AddRegisterNumber(sub.Register.Name, uint64(number))
+
+					if state.verbose {
+						log.Asm.Printf("add %s, %s\n", sub.Register, right.Value.Text())
+					}
+				}
+
+				return nil
+			}
+
+			state.assembler.AddRegisterRegister(sub.Register.Name, right.Register.Name)
+
+			if state.verbose {
+				log.Asm.Printf("add %s, %s\n", sub.Register, right.Register.Name)
+			}
+
+		case "-":
+			return state.Error("Not implemented")
+
+		default:
+			return state.Error("Not implemented")
+		}
+
+		return nil
+	})
 }
 
 // Error generates an error message at the current token position.

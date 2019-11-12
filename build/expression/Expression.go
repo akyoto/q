@@ -28,10 +28,10 @@ func (expr *Expression) AddChild(t token.Token) {
 	})
 }
 
-// IterateOperations iterates the operations in the tree.
-func (expr *Expression) IterateOperations(callBack func(*Expression)) {
+// EachOperation iterates the operations in the tree.
+func (expr *Expression) EachOperation(callBack func(*Expression) error) error {
 	if expr.IsLeaf() {
-		return
+		return nil
 	}
 
 	for _, child := range expr.Children {
@@ -39,10 +39,14 @@ func (expr *Expression) IterateOperations(callBack func(*Expression)) {
 			continue
 		}
 
-		child.IterateOperations(callBack)
+		err := child.EachOperation(callBack)
+
+		if err != nil {
+			return err
+		}
 	}
 
-	callBack(expr)
+	return callBack(expr)
 }
 
 // LastChild returns the last child.

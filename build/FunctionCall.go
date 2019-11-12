@@ -1,9 +1,9 @@
 package build
 
-import "github.com/akyoto/q/build/expression"
+import "github.com/akyoto/q/build/token"
 
 // FunctionCall represents a function call in the source code.
 type FunctionCall struct {
 	Function   *Function
-	Parameters []*expression.Expression
+	Parameters [][]token.Token
 }
