@@ -3,6 +3,7 @@ package expression
 import (
 	"strings"
 
+	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -11,6 +12,7 @@ type Expression struct {
 	Value    token.Token
 	Children []*Expression
 	Parent   *Expression
+	Register *register.Register
 }
 
 // AddChild adds a child to the expression.
@@ -24,6 +26,23 @@ func (expr *Expression) AddChild(t token.Token) {
 		Value:  t,
 		Parent: expr,
 	})
+}
+
+// IterateOperations iterates the operations in the tree.
+func (expr *Expression) IterateOperations(callBack func(*Expression)) {
+	if expr.IsLeaf() {
+		return
+	}
+
+	for _, child := range expr.Children {
+		if child.IsLeaf() {
+			continue
+		}
+
+		child.IterateOperations(callBack)
+	}
+
+	callBack(expr)
 }
 
 // LastChild returns the last child.

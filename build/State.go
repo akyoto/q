@@ -1,6 +1,7 @@
 package build
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 
@@ -95,13 +96,15 @@ func (state *State) Assignment(tokens []token.Token) error {
 	expressionStart := 2
 	state.tokenCursor += expressionStart
 	value := tokens[expressionStart:]
+
+	// Generate expression
 	expr, err := expression.FromTokens(value)
 
 	if err != nil {
 		return state.Error(err.Error())
 	}
 
-	return state.SaveExpressionInRegister(variable.Register, expr)
+	return state.SaveExpressionInRegister(expr, variable.Register)
 }
 
 // Call handles function calls.
@@ -253,7 +256,7 @@ func (state *State) Invalid(tokens []token.Token) error {
 func (state *State) BeforeCall(call *FunctionCall, registers []*register.Register) error {
 	for index, expression := range call.Parameters {
 		register := registers[index]
-		err := state.SaveExpressionInRegister(register, expression)
+		err := state.SaveExpressionInRegister(expression, register)
 
 		if err != nil {
 			return err
@@ -269,7 +272,7 @@ func (state *State) AfterCall(call *FunctionCall) {
 }
 
 // SaveExpressionInRegister moves the result of an expression to the given register.
-func (state *State) SaveExpressionInRegister(register *register.Register, expr *expression.Expression) error {
+func (state *State) SaveExpressionInRegister(expr *expression.Expression, register *register.Register) error {
 	singleToken := expr.Value
 
 	switch singleToken.Kind {
@@ -313,8 +316,45 @@ func (state *State) SaveExpressionInRegister(register *register.Register, expr *
 			log.Info.Printf("mov %s, <%d>\n", register, address)
 		}
 
-	default:
-		return state.Error("Invalid expression")
+	case token.Operator:
+		expr.IterateOperations(func(sub *expression.Expression) {
+			sub.Register = register
+
+			// Left operand
+			left := sub.Children[0]
+
+			if left.IsLeaf() {
+				err := state.SaveExpressionInRegister(left, sub.Register)
+
+				if err != nil {
+					return //err
+				}
+			} else if sub.Register != left.Register {
+				fmt.Printf("mov %s, %s\n", sub.Register, left.Register.Name)
+			}
+
+			// Right operand
+			right := sub.Children[1]
+
+			switch sub.Value.Text() {
+			case "+":
+				if right.IsLeaf() {
+					number, err := strconv.ParseInt(right.Value.Text(), 10, 64)
+
+					if err != nil {
+						return //state.Errorf("Not a number: %s", numberAsString)
+					}
+
+					state.assembler.AddRegisterNumber(sub.Register.Name, uint64(number))
+					fmt.Printf("add %s, %s\n", sub.Register, right.Value.Text())
+				} else {
+					fmt.Printf("add %s, %s\n", sub.Register, right.Register.Name)
+				}
+
+			case "-":
+				return
+			}
+		})
 	}
 
 	return nil

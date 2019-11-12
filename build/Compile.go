@@ -31,6 +31,7 @@ func Compile(function *Function, environment *Environment) (*asm.Assembler, erro
 		function:     function,
 		tokens:       function.Tokens(),
 		instructions: function.Instructions(),
+		verbose:      true,
 	}
 
 	err = state.CompileInstructions()
