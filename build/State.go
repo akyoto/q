@@ -369,61 +369,39 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 			}
 		}
 
-		// Right operand
-		switch sub.Value.Text() {
-		case "+":
-			if right.IsLeaf() {
-				switch right.Value.Kind {
-				case token.Identifier:
-					variableName := right.Value.Text()
-					variable := state.scopes.Get(variableName)
+		// Operator
+		operator := sub.Value.Text()
 
-					if variable == nil {
-						return state.Errorf("Unknown variable %s", variableName)
-					}
+		// Right operand is a leaf node
+		if right.IsLeaf() {
+			switch right.Value.Kind {
+			case token.Identifier:
+				variableName := right.Value.Text()
+				variable := state.scopes.Get(variableName)
 
-					variable.AliveUntil = state.instrCursor + 1
-					state.assembler.AddRegisterRegister(sub.Register.Name, variable.Register.Name)
-
-					if state.verbose {
-						log.Asm.Printf("add %s, %s\n", sub.Register, variable.Register)
-					}
-
-				case token.Number:
-					number, err := strconv.ParseInt(right.Value.Text(), 10, 64)
-
-					if err != nil {
-						return state.Errorf("Not a number: %s", right.Value.Text())
-					}
-
-					state.assembler.AddRegisterNumber(sub.Register.Name, uint64(number))
-
-					if state.verbose {
-						log.Asm.Printf("add %s, %s\n", sub.Register, right.Value.Text())
-					}
+				if variable == nil {
+					return state.Errorf("Unknown variable %s", variableName)
 				}
 
-				return nil
+				variable.AliveUntil = state.instrCursor + 1
+				return state.CalculateRegisterRegister(operator, sub.Register, variable.Register)
+
+			case token.Number:
+				return state.CalculateRegisterNumber(operator, sub.Register, right.Value.Text())
+
+			default:
+				return state.Errorf("Invalid operand %s", right.Value)
 			}
-
-			state.assembler.AddRegisterRegister(sub.Register.Name, right.Register.Name)
-
-			if state.verbose {
-				log.Asm.Printf("add %s, %s\n", sub.Register, right.Register)
-			}
-
-		case "-":
-			return state.Error("Not implemented")
-
-		default:
-			return state.Error("Not implemented")
 		}
+
+		// Right operand is an expression
+		err := state.CalculateRegisterRegister(operator, sub.Register, right.Register)
 
 		if right.Register != nil {
 			right.Register.UsedBy = nil
 		}
 
-		return nil
+		return err
 	})
 
 	if err != nil {
@@ -437,6 +415,60 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 
 		return nil
 	})
+
+	return nil
+}
+
+// CalculateRegisterRegister performs an operation on a register and a number.
+func (state *State) CalculateRegisterNumber(operation string, register *register.Register, operand string) error {
+	number, err := strconv.ParseInt(operand, 10, 64)
+
+	if err != nil {
+		return state.Errorf("Not a number: %s", operand)
+	}
+
+	switch operation {
+	case "+":
+		state.assembler.AddRegisterNumber(register.Name, uint64(number))
+
+		if state.verbose {
+			log.Asm.Printf("add %s, %d\n", register, number)
+		}
+
+	case "-":
+		state.assembler.SubRegisterNumber(register.Name, uint64(number))
+
+		if state.verbose {
+			log.Asm.Printf("sub %s, %d\n", register, number)
+		}
+
+	default:
+		return state.Error("Not implemented")
+	}
+
+	return nil
+}
+
+// CalculateRegisterRegister performs an operation on two registers.
+func (state *State) CalculateRegisterRegister(operation string, registerTo *register.Register, registerFrom *register.Register) error {
+	switch operation {
+	case "+":
+		state.assembler.AddRegisterRegister(registerTo.Name, registerFrom.Name)
+
+		if state.verbose {
+			log.Asm.Printf("add %s, %s\n", registerTo, registerFrom)
+		}
+
+	case "-":
+		state.assembler.SubRegisterRegister(registerTo.Name, registerFrom.Name)
+
+		if state.verbose {
+			log.Asm.Printf("sub %s, %s\n", registerTo, registerFrom)
+		}
+
+	default:
+		return state.Error("Not implemented")
+	}
 
 	return nil
 }
