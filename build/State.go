@@ -442,6 +442,13 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 			log.Asm.Printf("sub %s, %d\n", register, number)
 		}
 
+	case "*":
+		state.assembler.MulRegisterNumber(register.Name, uint64(number))
+
+		if state.verbose {
+			log.Asm.Printf("imul %s, %d\n", register, number)
+		}
+
 	default:
 		return state.Error("Not implemented")
 	}
@@ -464,6 +471,13 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 
 		if state.verbose {
 			log.Asm.Printf("sub %s, %s\n", registerTo, registerFrom)
+		}
+
+	case "*":
+		state.assembler.MulRegisterRegister(registerTo.Name, registerFrom.Name)
+
+		if state.verbose {
+			log.Asm.Printf("imul %s, %s\n", registerTo, registerFrom)
 		}
 
 	default:
