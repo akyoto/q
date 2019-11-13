@@ -18,20 +18,21 @@ func TestMain(m *testing.M) {
 
 func TestExamples(t *testing.T) {
 	examples := []struct {
-		Name           string
-		ExpectedOutput string
+		Name             string
+		ExpectedOutput   string
+		ExpectedExitCode int
 	}{
-		{"hello", "Hello\n"},
-		{"functions", "Function 1\nFunction 2\nFunction 3\n"},
-		{"syscalls", "Hello Syscalls"},
+		{"hello", "Hello\n", 0},
+		{"functions", "Function 1\nFunction 2\nFunction 3\n", 0},
+		{"syscalls", "Hello Syscalls", 0},
+		{"variables", "", 100},
 	}
 
 	for _, example := range examples {
-		directory := "../examples/" + example.Name
-		output := example.ExpectedOutput
+		example := example
 
 		t.Run(example.Name, func(t *testing.T) {
-			assertOutput(t, directory, output)
+			assertOutput(t, "../examples/"+example.Name, example.ExpectedOutput, example.ExpectedExitCode)
 		})
 	}
 }

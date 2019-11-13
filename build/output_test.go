@@ -11,7 +11,7 @@ import (
 
 // assertOutput builds and runs the program to
 // check if the output matches the expected output.
-func assertOutput(t *testing.T, path string, expectedOutput string) {
+func assertOutput(t *testing.T, path string, expectedOutput string, expectedExitCode int) {
 	build, err := build.New(path)
 	assert.Nil(t, err)
 	assert.True(t, len(build.ExecutablePath) > 0)
@@ -29,7 +29,14 @@ func assertOutput(t *testing.T, path string, expectedOutput string) {
 	t.Run("Output", func(t *testing.T) {
 		cmd := exec.Command(build.ExecutablePath)
 		output, err := cmd.Output()
-		assert.Nil(t, err)
+		exitCode := 0
+
+		if err != nil {
+			exitError := err.(*exec.ExitError)
+			exitCode = exitError.ExitCode()
+		}
+
+		assert.Equal(t, exitCode, expectedExitCode)
 		assert.DeepEqual(t, string(output), expectedOutput)
 	})
 }
