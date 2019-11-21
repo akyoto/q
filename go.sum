@@ -1,6 +1,6 @@
-github.com/akyoto/asm v0.3.0 h1:eIn/eO4/GI0FFE1m3yW1UqyQ23fte8XJu7y7YkooQR4=
-github.com/akyoto/asm v0.3.0/go.mod h1:B1J4SN5SwOMW7oP1YvsS4acJc1eHk366RVKUaJmtRs0=
-github.com/akyoto/assert v0.2.3 h1:ftENRGDEK5AKuKmZb9LtbDIHeE8p8cIYI4M92CbA9nE=
-github.com/akyoto/assert v0.2.3/go.mod h1:g5e6ag+ksCEQENq/LnmU9z04wCAIFDr8KacBusVL0H8=
-github.com/akyoto/stringutils v0.3.0 h1:NJpcnpvp1dYmJAvuZapj1D5aEDRPv+c8vAva7qSklL4=
-github.com/akyoto/stringutils v0.3.0/go.mod h1:v+Lr6tJxVd/Q1InaxsqaSXO+vSkG7MYMNc9Y9ul6Mkc=
+github.com/akyoto/asm v0.3.1 h1:B9q0kjb4qwTP+EoEPuHgvqbS3mNqUaXSjfc+Mps6MU4=
+github.com/akyoto/asm v0.3.1/go.mod h1:cCOva58eM6v26RK9qw7CXPQ4XxT0w5IbhBQDjTHPx+g=
+github.com/akyoto/assert v0.2.4 h1:n0FwcNH5dMYq3I8Iu7MOR1WWGkkGH8ao84nvCRJmsbs=
+github.com/akyoto/assert v0.2.4/go.mod h1:SoqVayyOmM/YSBnwOxJHCt4BCocoIrgeceWtJV701C0=
+github.com/akyoto/stringutils v0.3.1 h1:C+VGuXfud9SSo54QRfdQO+rgQiHmLS5f4nJ4yUOM+8I=
+github.com/akyoto/stringutils v0.3.1/go.mod h1:I1F9f8FF7gnAQyYp4PVAl+GJ2WBnaN6kNoYjidCV5Qk=

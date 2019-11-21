@@ -1,6 +1,7 @@
 package build
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 
@@ -25,6 +26,7 @@ type State struct {
 	environment  *Environment
 	tokenCursor  token.Position
 	instrCursor  instruction.Position
+	loopCounter  int
 	verbose      bool
 }
 
@@ -53,8 +55,11 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	case instruction.Call:
 		return state.Call(instr.Tokens)
 
-	case instruction.Keyword:
-		return state.Keyword(instr.Tokens)
+	case instruction.LoopStart:
+		return state.LoopStart()
+
+	case instruction.LoopEnd:
+		return state.LoopEnd()
 
 	case instruction.Invalid:
 		return state.Invalid(instr.Tokens)
@@ -62,6 +67,20 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	default:
 		return nil
 	}
+}
+
+// LoopStart handles the start of loops.
+func (state *State) LoopStart() error {
+	state.loopCounter++
+	state.assembler.AddLabel(fmt.Sprintf("loop_%d", state.loopCounter))
+	return nil
+}
+
+// LoopEnd handles the end of loops.
+func (state *State) LoopEnd() error {
+	state.assembler.Jump(fmt.Sprintf("loop_%d", state.loopCounter))
+	state.loopCounter--
+	return nil
 }
 
 // Assignment handles assignment instructions.

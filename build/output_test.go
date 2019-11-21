@@ -32,7 +32,12 @@ func assertOutput(t *testing.T, path string, expectedOutput string, expectedExit
 		exitCode := 0
 
 		if err != nil {
-			exitError := err.(*exec.ExitError)
+			exitError, ok := err.(*exec.ExitError)
+
+			if !ok {
+				panic(err)
+			}
+
 			exitCode = exitError.ExitCode()
 		}
 

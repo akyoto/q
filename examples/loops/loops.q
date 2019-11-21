@@ -1,0 +1,5 @@
+main() {
+	loop {
+		print("Hello")
+	}
+}

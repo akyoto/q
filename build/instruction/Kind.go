@@ -13,8 +13,11 @@ const (
 	// Call represents a function call.
 	Call
 
-	// Keyword represents an instruction based on a keyword.
-	Keyword
+	// LoopStart represents the start of the loop.
+	LoopStart
+
+	// LoopEnd represents the end of the loop.
+	LoopEnd
 )
 
 // String returns the text representation.
@@ -29,8 +32,11 @@ func (kind Kind) String() string {
 	case Call:
 		return "Call"
 
-	case Keyword:
-		return "Keyword"
+	case LoopStart:
+		return "LoopStart"
+
+	case LoopEnd:
+		return "LoopEnd"
 
 	default:
 		return "<undefined instruction>"
