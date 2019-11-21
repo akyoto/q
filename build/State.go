@@ -438,7 +438,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 	return nil
 }
 
-// CalculateRegisterRegister performs an operation on a register and a number.
+// CalculateRegisterNumber performs an operation on a register and a number.
 func (state *State) CalculateRegisterNumber(operation string, register *register.Register, operand string) error {
 	number, err := strconv.ParseInt(operand, 10, 64)
 
