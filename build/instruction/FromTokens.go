@@ -1,6 +1,7 @@
 package instruction
 
 import (
+	"fmt"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -111,6 +112,9 @@ func FromTokens(tokens []token.Token) []Instruction {
 
 				instruction.Kind = Invalid
 				start = i + 1
+
+			default:
+				panic(fmt.Errorf("Not implemented: %v", block))
 			}
 
 			blocks = blocks[:len(blocks)-1]
