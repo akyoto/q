@@ -2,6 +2,7 @@ package instruction
 
 import (
 	"fmt"
+
 	"github.com/akyoto/q/build/token"
 )
 
