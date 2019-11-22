@@ -26,7 +26,7 @@ type State struct {
 	environment  *Environment
 	tokenCursor  token.Position
 	instrCursor  instruction.Position
-	loopCounter  int
+	loop         LoopState
 	verbose      bool
 }
 
@@ -71,15 +71,28 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 
 // LoopStart handles the start of loops.
 func (state *State) LoopStart() error {
-	state.loopCounter++
-	state.assembler.AddLabel(fmt.Sprintf("loop_%d", state.loopCounter))
+	state.loop.counter++
+	label := fmt.Sprintf("loop_%d", state.loop.counter)
+	state.loop.labels = append(state.loop.labels, label)
+	state.assembler.AddLabel(label)
+
+	if state.verbose {
+		log.Asm.Printf("%s:\n", label)
+	}
+
 	return nil
 }
 
 // LoopEnd handles the end of loops.
 func (state *State) LoopEnd() error {
-	state.assembler.Jump(fmt.Sprintf("loop_%d", state.loopCounter))
-	state.loopCounter--
+	label := state.loop.labels[len(state.loop.labels)-1]
+	state.assembler.Jump(label)
+	state.loop.labels = state.loop.labels[:len(state.loop.labels)-1]
+
+	if state.verbose {
+		log.Asm.Printf("jmp %s\n", label)
+	}
+
 	return nil
 }
 
@@ -203,6 +216,10 @@ func (state *State) Call(tokens []token.Token) error {
 
 			text := parameter.Text()
 			state.assembler.Println(text)
+
+			if state.verbose {
+				log.Asm.Printf("print \"%s\"", text)
+			}
 
 		case "syscall":
 			err := state.BeforeCall(&call, state.registers.SyscallRegisters)
