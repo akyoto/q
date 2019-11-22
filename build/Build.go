@@ -16,6 +16,7 @@ type Build struct {
 	ExecutableName  string
 	Environment     *Environment
 	WriteExecutable bool
+	Optimize        bool
 	Verbose         bool
 }
 
@@ -79,7 +80,7 @@ func (build *Build) Compile() error {
 	}
 
 	var results []*CompilationResult
-	resultsChannel, errors := build.Environment.Compile(build.Verbose)
+	resultsChannel, errors := build.Environment.Compile(build.Optimize, build.Verbose)
 
 	// Generate machine code
 	main := asm.New()

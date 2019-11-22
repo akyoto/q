@@ -9,7 +9,7 @@ import (
 
 // Compile turns a function into machine code.
 // It is executed for all function bodies.
-func Compile(function *Function, environment *Environment, verbose bool) (*asm.Assembler, error) {
+func Compile(function *Function, environment *Environment, optimize bool, verbose bool) (*asm.Assembler, error) {
 	assembler := asm.New()
 	assembler.AddLabel(function.Name)
 
@@ -31,6 +31,7 @@ func Compile(function *Function, environment *Environment, verbose bool) (*asm.A
 		function:     function,
 		tokens:       function.Tokens(),
 		instructions: function.Instructions(),
+		optimize:     optimize,
 		verbose:      verbose,
 	}
 

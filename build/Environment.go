@@ -17,7 +17,7 @@ func NewEnvironment() *Environment {
 }
 
 // Compile compiles all functions.
-func (env *Environment) Compile(verbose bool) (<-chan *CompilationResult, <-chan error) {
+func (env *Environment) Compile(optimize bool, verbose bool) (<-chan *CompilationResult, <-chan error) {
 	results := make(chan *CompilationResult)
 	errors := make(chan error)
 
@@ -30,7 +30,7 @@ func (env *Environment) Compile(verbose bool) (<-chan *CompilationResult, <-chan
 
 			go func() {
 				defer wg.Done()
-				assembler, err := Compile(function, env, verbose)
+				assembler, err := Compile(function, env, optimize, verbose)
 
 				if err != nil {
 					errors <- err

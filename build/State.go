@@ -27,6 +27,7 @@ type State struct {
 	tokenCursor  token.Position
 	instrCursor  instruction.Position
 	loop         LoopState
+	optimize     bool
 	verbose      bool
 }
 
@@ -479,7 +480,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 
 	switch operation {
 	case "+":
-		if number == 1 {
+		if number == 1 && state.optimize {
 			state.assembler.IncreaseRegister(register.Name)
 
 			if state.verbose {
@@ -496,7 +497,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		}
 
 	case "-":
-		if number == 1 {
+		if number == 1 && state.optimize {
 			state.assembler.DecreaseRegister(register.Name)
 
 			if state.verbose {

@@ -13,6 +13,7 @@ import (
 func Main() int {
 	var (
 		verbose   = false
+		optimize  = true
 		directory = "."
 	)
 
@@ -59,6 +60,7 @@ func Main() int {
 	}
 
 	b.Verbose = verbose
+	b.Optimize = optimize
 	err = b.Run()
 
 	if err != nil {
