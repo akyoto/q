@@ -85,6 +85,8 @@ func FromTokens(tokens []token.Token) []Instruction {
 			}
 
 			switch t.Text() {
+			case "if":
+				instruction.Kind = IfStart
 			case "loop":
 				instruction.Kind = LoopStart
 			case "return":
@@ -109,16 +111,20 @@ func FromTokens(tokens []token.Token) []Instruction {
 			switch block {
 			case LoopStart:
 				instruction.Kind = LoopEnd
-				instruction.Tokens = tokens[start:i]
-				instruction.Position = start
-				instructions = append(instructions, instruction)
 
-				instruction.Kind = Invalid
-				start = i + 1
+			case IfStart:
+				instruction.Kind = IfEnd
 
 			default:
 				panic(fmt.Errorf("Not implemented: %v", block))
 			}
+
+			instruction.Tokens = tokens[start:i]
+			instruction.Position = start
+			instructions = append(instructions, instruction)
+
+			instruction.Kind = Invalid
+			start = i + 1
 
 			blocks = blocks[:len(blocks)-1]
 		}

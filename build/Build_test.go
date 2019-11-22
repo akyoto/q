@@ -26,6 +26,7 @@ func TestExamples(t *testing.T) {
 		{"functions", "Function 1\nFunction 2\nFunction 3\n", 0},
 		{"syscalls", "Hello Syscalls", 0},
 		{"variables", "", 100},
+		{"loops", "Hello Loops\nHello Loops\nHello Loops\n", 0},
 	}
 
 	for _, example := range examples {

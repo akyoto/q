@@ -24,7 +24,31 @@ func TestFromTokens(t *testing.T) {
 	assert.Equal(t, processed, len(source))
 	assert.Equal(t, len(tokens), 18)
 	instructions := instruction.FromTokens(tokens)
-	assert.Equal(t, len(instructions), 5)
+	assert.Equal(t, len(instructions), len(expected))
+
+	for index := range instructions {
+		t.Logf("[%d][%s] %s", index, instructions[index].Kind, instructions[index].Tokens)
+		assert.Equal(t, instructions[index].Kind, expected[index].Kind)
+		assert.Equal(t, instructions[index].Position, expected[index].Position)
+		assert.Equal(t, instructions[index].Kind.String(), expected[index].Kind.String())
+	}
+}
+
+func TestFromTokensIf(t *testing.T) {
+	source := []byte("if x > 1 {\nx = 2\n}\n")
+	expected := []instruction.Instruction{
+		{instruction.IfStart, nil, 0},
+		{instruction.Assignment, nil, 6},
+		{instruction.IfEnd, nil, 10},
+	}
+
+	tokens := []token.Token{}
+	processed := 0
+	tokens, processed = token.Tokenize(source, tokens)
+	assert.Equal(t, processed, len(source))
+	assert.Equal(t, len(tokens), 12)
+	instructions := instruction.FromTokens(tokens)
+	assert.Equal(t, len(instructions), len(expected))
 
 	for index := range instructions {
 		t.Logf("[%d][%s] %s", index, instructions[index].Kind, instructions[index].Tokens)

@@ -13,6 +13,12 @@ const (
 	// Call represents a function call.
 	Call
 
+	// IfStart represents the start of the branch.
+	IfStart
+
+	// IfEnd represents the end of the branch.
+	IfEnd
+
 	// LoopStart represents the start of the loop.
 	LoopStart
 

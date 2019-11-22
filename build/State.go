@@ -56,6 +56,12 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	case instruction.Call:
 		return state.Call(instr.Tokens)
 
+	case instruction.IfStart:
+		return state.IfStart(instr.Tokens)
+
+	case instruction.IfEnd:
+		return state.IfEnd()
+
 	case instruction.LoopStart:
 		return state.LoopStart()
 
@@ -71,6 +77,48 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	default:
 		return nil
 	}
+}
+
+// IfStart handles the start of if conditions.
+func (state *State) IfStart(tokens []token.Token) error {
+	state.tokenCursor++
+	expression := tokens[1:]
+	variableName := expression[0].Text()
+	variable := state.scopes.Get(variableName)
+
+	if variable == nil {
+		return state.Errorf("Unknown variable %s", variableName)
+	}
+
+	numberString := expression[len(expression)-1].Text()
+	number, err := strconv.ParseInt(numberString, 10, 64)
+
+	if err != nil {
+		return state.Errorf("Not a number: %s", numberString)
+	}
+
+	label := "if_1_end"
+	state.assembler.CompareRegisterNumber(variable.Register.Name, uint64(number))
+	state.assembler.JumpIfLess(label)
+
+	if state.verbose {
+		log.Asm.Printf("cmp %s, %d\n", variable.Register.Name, number)
+		log.Asm.Printf("jl %s\n", label)
+	}
+
+	return nil
+}
+
+// IfEnd handles the end of if conditions.
+func (state *State) IfEnd() error {
+	label := "if_1_end"
+	state.assembler.AddLabel(label)
+
+	if state.verbose {
+		log.Asm.Printf("%s:\n", label)
+	}
+
+	return nil
 }
 
 // LoopStart handles the start of loops.
@@ -233,7 +281,11 @@ func (state *State) Call(tokens []token.Token) error {
 			state.assembler.Println(text)
 
 			if state.verbose {
-				log.Asm.Printf("print \"%s\"", text)
+				log.Asm.Printf("mov %s, 1", state.registers.SyscallRegisters[0])
+				log.Asm.Printf("mov %s, 1", state.registers.SyscallRegisters[1])
+				log.Asm.Printf("mov %s, \"%s\"", state.registers.SyscallRegisters[2], text)
+				log.Asm.Printf("mov %s, %d", state.registers.SyscallRegisters[3], len(text)+1)
+				log.Asm.Println("syscall")
 			}
 
 		case "syscall":

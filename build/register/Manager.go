@@ -10,14 +10,17 @@ type Manager struct {
 func NewManager() *Manager {
 	manager := &Manager{
 		Registers: []*Register{
-			{Name: "rcx"},
 			{Name: "rbx"},
 			{Name: "rbp"},
-			{Name: "r11"},
 			{Name: "r12"},
 			{Name: "r13"},
 			{Name: "r14"},
 			{Name: "r15"},
+
+			// These registers are clobbered after syscalls:
+			// {Name: "rax"},
+			// {Name: "rcx"},
+			// {Name: "r11"},
 		},
 		SyscallRegisters: []*Register{
 			{Name: "rax"},
