@@ -7,7 +7,6 @@
 [![Sponsor][sponsor-image]][sponsor-url]
 
 This is a **very early version** of a programming language I'm currently working on.
-Don't expect it to do anything useful yet, it can barely create a Linux executable printing "Hello World".
 
 ## Installation
 
@@ -42,11 +41,22 @@ This will produce the `q` compiler in your current directory.
 
 ## Architectures
 
-Currently **Linux x86-64** only. It produces 64-bit ELF binaries. Windows and Mac support are planned.
+Currently **Linux x86-64** only. It produces 64-bit ELF binaries.
 
 ## Editors
 
 There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables basic highlighting (copy into `$HOME/.vscode/extensions`).
+
+## Assembly
+
+You can view the produced assembly output via the `-v` verbose flag:
+
+```shell
+./q build -v examples/loops
+```
+
+Note that this intermediate text representation is only generated when the verbose flag is specified.
+Q uses its own binary assembler which avoids the intermediary text format during normal compilation.
 
 ## How to contribute
 

@@ -479,6 +479,16 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 
 	switch operation {
 	case "+":
+		if number == 1 {
+			state.assembler.IncreaseRegister(register.Name)
+
+			if state.verbose {
+				log.Asm.Printf("inc %s\n", register)
+			}
+
+			return nil
+		}
+
 		state.assembler.AddRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
@@ -486,6 +496,16 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		}
 
 	case "-":
+		if number == 1 {
+			state.assembler.DecreaseRegister(register.Name)
+
+			if state.verbose {
+				log.Asm.Printf("dec %s\n", register)
+			}
+
+			return nil
+		}
+
 		state.assembler.SubRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
