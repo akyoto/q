@@ -4,5 +4,6 @@ main() {
 	loop {
 		i = i + 1
 		print("Hello")
+		return
 	}
 }

@@ -61,6 +61,9 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	case instruction.LoopEnd:
 		return state.LoopEnd()
 
+	case instruction.Return:
+		return state.Return(instr.Tokens)
+
 	case instruction.Invalid:
 		return state.Invalid(instr.Tokens)
 
@@ -91,6 +94,17 @@ func (state *State) LoopEnd() error {
 
 	if state.verbose {
 		log.Asm.Printf("jmp %s\n", label)
+	}
+
+	return nil
+}
+
+// Return handles return statements.
+func (state *State) Return(tokens []token.Token) error {
+	state.assembler.Return()
+
+	if state.verbose {
+		log.Asm.Print("ret")
 	}
 
 	return nil

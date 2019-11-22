@@ -22,7 +22,7 @@ func FromTokens(tokens []token.Token) []Instruction {
 				continue
 			}
 
-			if instruction.Kind != Assignment && instruction.Kind != Invalid {
+			if instruction.Kind != Assignment && instruction.Kind != Return && instruction.Kind != Invalid {
 				continue
 			}
 
@@ -87,6 +87,8 @@ func FromTokens(tokens []token.Token) []Instruction {
 			switch t.Text() {
 			case "loop":
 				instruction.Kind = LoopStart
+			case "return":
+				instruction.Kind = Return
 			default:
 				panic("Keyword not implemented")
 			}

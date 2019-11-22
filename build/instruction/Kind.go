@@ -18,6 +18,9 @@ const (
 
 	// LoopEnd represents the end of the loop.
 	LoopEnd
+
+	// Return represents the return statement.
+	Return
 )
 
 // String returns the text representation.
