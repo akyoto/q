@@ -27,6 +27,7 @@ type State struct {
 	tokenCursor  token.Position
 	instrCursor  instruction.Position
 	loop         LoopState
+	forLoop      ForState
 	optimize     bool
 	verbose      bool
 }
@@ -62,6 +63,12 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	case instruction.IfEnd:
 		return state.IfEnd()
 
+	case instruction.ForStart:
+		return state.ForStart(instr.Tokens)
+
+	case instruction.ForEnd:
+		return state.ForEnd()
+
 	case instruction.LoopStart:
 		return state.LoopStart()
 
@@ -81,7 +88,7 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 
 // IfStart handles the start of if conditions.
 func (state *State) IfStart(tokens []token.Token) error {
-	state.tokenCursor++
+	state.Expect(token.Keyword)
 	expression := tokens[1:]
 	variableName := expression[0].Text()
 	variable := state.scopes.Get(variableName)
@@ -165,8 +172,83 @@ func (state *State) IfEnd() error {
 	return nil
 }
 
+// ForStart handles the start of for loops.
+func (state *State) ForStart(tokens []token.Token) error {
+	state.Expect(token.Keyword)
+	state.scopes.Push()
+	expression := tokens[1:]
+
+	rangePos := token.Index(tokens, token.Range)
+
+	if rangePos == -1 {
+		return state.Errorf("Missing upper limit in for loop")
+	}
+
+	assignment := expression[:rangePos]
+	err := state.Assignment(assignment)
+
+	if err != nil {
+		return err
+	}
+
+	variableName := expression[0].Text()
+	variable := state.scopes.Get(variableName)
+
+	state.forLoop.counter++
+
+	labelStart := fmt.Sprintf("for_%d", state.forLoop.counter)
+	labelEnd := fmt.Sprintf("for_%d_end", state.forLoop.counter)
+
+	state.forLoop.labels = append(state.forLoop.labels, labelStart)
+	state.forLoop.variables = append(state.forLoop.variables, variable)
+
+	rangeExpression := expression[rangePos:]
+	numberString := rangeExpression[0].Text()
+	number, err := strconv.ParseInt(numberString, 10, 64)
+
+	if err != nil {
+		return state.Errorf("Not a number: %s", numberString)
+	}
+
+	state.assembler.AddLabel(labelStart)
+	state.assembler.CompareRegisterNumber(variable.Register.Name, uint64(number))
+	state.assembler.JumpIfEqual(labelEnd)
+
+	if state.verbose {
+		log.Asm.Printf("%s:\n", labelStart)
+		log.Asm.Printf("cmp %s, %d\n", variable.Register, uint64(number))
+		log.Asm.Printf("je %s\n", labelEnd)
+	}
+
+	return nil
+}
+
+// ForEnd handles the end of for loops.
+func (state *State) ForEnd() error {
+	state.scopes.Pop()
+
+	label := state.forLoop.labels[len(state.forLoop.labels)-1]
+	variable := state.forLoop.variables[len(state.forLoop.variables)-1]
+
+	state.forLoop.labels = state.forLoop.labels[:len(state.forLoop.labels)-1]
+	state.forLoop.variables = state.forLoop.variables[:len(state.forLoop.variables)-1]
+
+	state.assembler.IncreaseRegister(variable.Register.Name)
+	state.assembler.Jump(label)
+	state.assembler.AddLabel(label + "_end")
+
+	if state.verbose {
+		log.Asm.Printf("inc %s\n", variable.Register)
+		log.Asm.Printf("jmp %s\n", label)
+		log.Asm.Printf("%s:\n", label+"_end")
+	}
+
+	return nil
+}
+
 // LoopStart handles the start of loops.
 func (state *State) LoopStart() error {
+	state.scopes.Push()
 	state.loop.counter++
 	label := fmt.Sprintf("loop_%d", state.loop.counter)
 	state.loop.labels = append(state.loop.labels, label)
@@ -181,6 +263,7 @@ func (state *State) LoopStart() error {
 
 // LoopEnd handles the end of loops.
 func (state *State) LoopEnd() error {
+	state.scopes.Pop()
 	label := state.loop.labels[len(state.loop.labels)-1]
 	state.assembler.Jump(label)
 	state.loop.labels = state.loop.labels[:len(state.loop.labels)-1]
@@ -662,6 +745,20 @@ func (state *State) Error(message string) error {
 // Errorf generates a formatted error message at the current token position.
 func (state *State) Errorf(message string, args ...interface{}) error {
 	return state.function.Errorf(state.tokenCursor, message, args...)
+}
+
+// Expect asserts that the token at the current cursor position has the given kind.
+// If the comparison was successful, it will increment the cursor and return the token.
+// If the expectation is not met, it will panic.
+func (state *State) Expect(expectedKind token.Kind) token.Token {
+	actual := state.tokens[state.tokenCursor]
+
+	if actual.Kind != expectedKind {
+		panic(fmt.Errorf("Expected '%s' instead of '%s'", expectedKind, actual))
+	}
+
+	state.tokenCursor++
+	return actual
 }
 
 // UnknownFunctionError produces an unknown function error

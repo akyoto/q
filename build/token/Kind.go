@@ -28,6 +28,12 @@ const (
 	// Separator represents a comma.
 	Separator
 
+	// Accessor represents '.'.
+	Accessor
+
+	// Range represents '..'.
+	Range
+
 	// GroupStart represents '('.
 	GroupStart
 
@@ -68,6 +74,15 @@ func (kind Kind) String() string {
 	case Operator:
 		return "Operator"
 
+	case Separator:
+		return "Separator"
+
+	case Accessor:
+		return "Accessor"
+
+	case Range:
+		return "Range"
+
 	case GroupStart:
 		return "GroupStart"
 
@@ -85,9 +100,6 @@ func (kind Kind) String() string {
 
 	case ArrayEnd:
 		return "ArrayEnd"
-
-	case Separator:
-		return "Separator"
 
 	case Invalid:
 		return "Invalid"

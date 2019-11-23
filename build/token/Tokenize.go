@@ -162,6 +162,15 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		case c == ',':
 			token = Token{Separator, nil, i}
 
+		// Accessor
+		case c == '.':
+			if buffer[i+1] == '.' {
+				token = Token{Range, nil, i}
+				i++
+			} else {
+				token = Token{Accessor, nil, i}
+			}
+
 		// New line
 		case c == '\n':
 			token = Token{NewLine, nil, i}

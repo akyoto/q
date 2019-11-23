@@ -1,12 +1,5 @@
 main() {
-	i = 0
-
-	loop {
-		if i == -3 {
-			return
-		}
-
+	for i = 0..3 {
 		print("Hello Loops")
-		i = i - 1
 	}
 }

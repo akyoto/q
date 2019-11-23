@@ -19,10 +19,16 @@ const (
 	// IfEnd represents the end of the branch.
 	IfEnd
 
-	// LoopStart represents the start of the loop.
+	// ForStart represents the start of the for loop.
+	ForStart
+
+	// ForEnd represents the end of the for loop.
+	ForEnd
+
+	// LoopStart represents the start of the infinite loop.
 	LoopStart
 
-	// LoopEnd represents the end of the loop.
+	// LoopEnd represents the end of the infinite loop.
 	LoopEnd
 
 	// Return represents the return statement.
