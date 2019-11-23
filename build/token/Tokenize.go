@@ -10,6 +10,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		i              int
 		c              byte
 		processedBytes int
+		lastTokenKind  Kind
 		token          = Token{Invalid, nil, 0}
 	)
 
@@ -43,7 +44,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			}
 
 		// Numbers
-		case c >= '0' && c <= '9' || (c == '-' && buffer[i+1] >= '0' && buffer[i+1] <= '9'):
+		case (c >= '0' && c <= '9') || (c == '-' && lastTokenKind != Number && lastTokenKind != Identifier && lastTokenKind != GroupEnd && buffer[i+1] >= '0' && buffer[i+1] <= '9'):
 			processedBytes = i
 
 			for {
@@ -162,6 +163,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		if token.Kind != Invalid {
 			tokens = append(tokens, token)
 			processedBytes = i + 1
+			lastTokenKind = token.Kind
 			token.Kind = Invalid
 		}
 
