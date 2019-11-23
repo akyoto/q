@@ -43,7 +43,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			}
 
 		// Numbers
-		case c >= '0' && c <= '9':
+		case c >= '0' && c <= '9' || (c == '-' && buffer[i+1] >= '0' && buffer[i+1] <= '9'):
 			processedBytes = i
 
 			for {
@@ -91,6 +91,8 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		// Texts
 		case c == '"':
 			processedBytes = i
+			escape := false
+			text := make([]byte, 0, 4)
 
 			for {
 				i++
@@ -101,12 +103,35 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 				c = buffer[i]
 
+				if escape {
+					switch c {
+					case 'n':
+						text = append(text, '\n')
+					case 'r':
+						text = append(text, '\r')
+					case '\\':
+						text = append(text, '\\')
+					case '"':
+						text = append(text, '"')
+					}
+
+					escape = false
+					continue
+				}
+
+				if c == '\\' {
+					escape = true
+					continue
+				}
+
 				if c == '"' {
 					break
 				}
+
+				text = append(text, c)
 			}
 
-			token = Token{Text, buffer[processedBytes+1 : i], processedBytes + 1}
+			token = Token{Text, text, processedBytes + 1}
 
 		// Parentheses start
 		case c == '(':
