@@ -98,10 +98,10 @@ func (state *State) IfStart(tokens []token.Token) error {
 	}
 
 	numberString := expression[len(expression)-1].Text()
-	number, err := strconv.ParseInt(numberString, 10, 64)
+	number, err := state.ParseInt(numberString)
 
 	if err != nil {
-		return state.Errorf("Not a number: %s", numberString)
+		return err
 	}
 
 	label := "if_1_end"
@@ -204,10 +204,10 @@ func (state *State) ForStart(tokens []token.Token) error {
 
 	rangeExpression := expression[rangePos:]
 	numberString := rangeExpression[0].Text()
-	number, err := strconv.ParseInt(numberString, 10, 64)
+	number, err := state.ParseInt(numberString)
 
 	if err != nil {
-		return state.Errorf("Not a number: %s", numberString)
+		return err
 	}
 
 	state.assembler.AddLabel(labelStart)
@@ -317,7 +317,14 @@ func (state *State) Assignment(tokens []token.Token) error {
 	expressionStart := 2
 	state.tokenCursor += expressionStart
 	value := tokens[expressionStart:]
-	return state.TokensToRegister(value, variable.Register)
+	err := state.TokensToRegister(value, variable.Register)
+
+	if err != nil {
+		return err
+	}
+
+	state.tokenCursor += len(value)
+	return nil
 }
 
 // Call handles function calls.
@@ -517,10 +524,10 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 
 	case token.Number:
 		numberString := singleToken.Text()
-		number, err := strconv.ParseInt(numberString, 10, 64)
+		number, err := state.ParseInt(numberString)
 
 		if err != nil {
-			return state.Errorf("Not a number: %s", numberString)
+			return err
 		}
 
 		state.assembler.MoveRegisterNumber(register.Name, uint64(number))
@@ -651,10 +658,10 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 
 // CalculateRegisterNumber performs an operation on a register and a number.
 func (state *State) CalculateRegisterNumber(operation string, register *register.Register, operand string) error {
-	number, err := strconv.ParseInt(operand, 10, 64)
+	number, err := state.ParseInt(operand)
 
 	if err != nil {
-		return state.Errorf("Not a number: %s", operand)
+		return err
 	}
 
 	switch operation {
@@ -735,6 +742,17 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 	}
 
 	return nil
+}
+
+// ParseInt parses an integer number.
+func (state *State) ParseInt(numberString string) (int64, error) {
+	number, err := strconv.ParseInt(numberString, 10, 64)
+
+	if err != nil {
+		return 0, state.Errorf("Not a number: %s", numberString)
+	}
+
+	return number, nil
 }
 
 // Error generates an error message at the current token position.
