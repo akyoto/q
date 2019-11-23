@@ -39,6 +39,12 @@ const (
 
 	// BlockEnd represents '}'.
 	BlockEnd
+
+	// ArrayStart represents '['.
+	ArrayStart
+
+	// ArrayEnd represents ']'.
+	ArrayEnd
 )
 
 // String returns the text representation.
@@ -73,6 +79,12 @@ func (kind Kind) String() string {
 
 	case BlockEnd:
 		return "BlockEnd"
+
+	case ArrayStart:
+		return "ArrayStart"
+
+	case ArrayEnd:
+		return "ArrayEnd"
 
 	case Separator:
 		return "Separator"

@@ -44,7 +44,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			}
 
 		// Numbers
-		case (c >= '0' && c <= '9') || (c == '-' && lastTokenKind != Number && lastTokenKind != Identifier && lastTokenKind != GroupEnd && buffer[i+1] >= '0' && buffer[i+1] <= '9'):
+		case (c >= '0' && c <= '9') || (c == '-' && lastTokenKind != Number && lastTokenKind != Identifier && lastTokenKind != GroupEnd && lastTokenKind != ArrayEnd && buffer[i+1] >= '0' && buffer[i+1] <= '9'):
 			processedBytes = i
 
 			for {
@@ -149,6 +149,14 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 		// Block end
 		case c == '}':
 			token = Token{BlockEnd, nil, i}
+
+		// Array start
+		case c == '[':
+			token = Token{ArrayStart, nil, i}
+
+		// Array end
+		case c == ']':
+			token = Token{ArrayEnd, nil, i}
 
 		// Separator
 		case c == ',':
