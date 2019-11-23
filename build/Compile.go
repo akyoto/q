@@ -38,7 +38,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	err = state.CompileInstructions()
 
 	if err != nil {
-		return nil, err
+		return nil, function.Error(state.tokenCursor, err)
 	}
 
 	for _, variable := range scopes.Unused() {

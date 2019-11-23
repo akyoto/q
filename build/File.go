@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
 )
@@ -70,11 +69,11 @@ func (file *File) Scan(functions chan<- *Function) error {
 			functionName := t.Text()
 
 			if functionName == "func" || functionName == "fn" {
-				return errors.New("A function can not be named 'func' or 'fn'", file.path, file.tokens[:index+1])
+				return NewError(ErrInvalidFunctionName, file.path, file.tokens[:index+1])
 			}
 
 			if index+1 >= len(file.tokens) || file.tokens[index+1].Kind != token.GroupStart {
-				return errors.New("Missing opening bracket '(' after the function name", file.path, file.tokens[:index+2])
+				return NewError(ErrParameterOpeningBracket, file.path, file.tokens[:index+2])
 			}
 
 			function = &Function{
@@ -89,7 +88,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		case token.BlockStart:
 			if groupLevel > 0 {
-				return errors.New("Missing closing bracket ')'", file.path, file.tokens[:index+1])
+				return NewError(&ErrMissingCharacter{")"}, file.path, file.tokens[:index+1])
 			}
 
 			blockLevel++
@@ -157,7 +156,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		default:
 			if function == nil {
-				return errors.New("Only function definitions are allowed at the top level", file.path, file.tokens[:index+1])
+				return NewError(ErrTopLevel, file.path, file.tokens[:index+1])
 			}
 		}
 	}

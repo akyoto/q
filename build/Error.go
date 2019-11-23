@@ -1,4 +1,4 @@
-package errors
+package build
 
 import (
 	"fmt"
@@ -8,16 +8,16 @@ import (
 
 // Error is a compiler error at a given line and column.
 type Error struct {
-	Path    string
-	Line    int
-	Column  int
-	Message string
+	Path   string
+	Line   int
+	Column int
+	Err    error
 }
 
-// New generates an error message at the current token position.
+// NewError generates an error message at the current token position.
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
-func New(message string, path string, tokens []token.Token) *Error {
+func NewError(err error, path string, tokens []token.Token) *Error {
 	var (
 		lineCount = 0
 		lineStart = 0
@@ -32,10 +32,10 @@ func New(message string, path string, tokens []token.Token) *Error {
 
 	cursorToken := tokens[len(tokens)-1]
 	column := cursorToken.Position - lineStart
-	return &Error{path, lineCount, column, message}
+	return &Error{path, lineCount, column, err}
 }
 
 // Error generates the string representation.
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s:%d:%d: %s", e.Path, e.Line, e.Column, e.Message)
+	return fmt.Sprintf("%s:%d:%d: %s", e.Path, e.Line, e.Column, e.Err)
 }

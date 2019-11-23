@@ -94,7 +94,7 @@ func (state *State) IfStart(tokens []token.Token) error {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
-		return state.Errorf("Unknown variable %s", variableName)
+		return &ErrUnknownVariable{variableName}
 	}
 
 	numberString := expression[len(expression)-1].Text()
@@ -181,7 +181,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	rangePos := token.Index(tokens, token.Range)
 
 	if rangePos == -1 {
-		return state.Errorf("Missing upper limit in for loop")
+		return ErrMissingRange
 	}
 
 	assignment := expression[:rangePos]
@@ -291,7 +291,7 @@ func (state *State) Assignment(tokens []token.Token) error {
 	left := tokens[0]
 
 	if left.Kind != token.Identifier {
-		return state.Error("Expected variable on the left side of the assignment")
+		return ErrExpectedVariable
 	}
 
 	variableName := left.Text()
@@ -301,7 +301,7 @@ func (state *State) Assignment(tokens []token.Token) error {
 		register := state.registers.FindFreeRegister()
 
 		if register == nil {
-			return state.Errorf("Exceeded maximum limit of %d variables", len(state.registers.Registers))
+			return fmt.Errorf("Exceeded maximum limit of %d variables", len(state.registers.Registers))
 		}
 
 		variable = &Variable{
@@ -332,13 +332,13 @@ func (state *State) Call(tokens []token.Token) error {
 	firstToken := tokens[0]
 
 	if firstToken.Kind != token.Identifier {
-		return state.Error("Expected function name before '('")
+		return ErrMissingFunctionName
 	}
 
 	lastToken := tokens[len(tokens)-1]
 
 	if lastToken.Kind != token.GroupEnd {
-		return state.Error("Missing closing bracket ')'")
+		return &ErrMissingCharacter{")"}
 	}
 
 	functionName := firstToken.Text()
@@ -369,7 +369,7 @@ func (state *State) Call(tokens []token.Token) error {
 		switch t.Kind {
 		case token.Separator:
 			if pos == parameterStart {
-				return state.Error("Missing parameter")
+				return ErrMissingParameter
 			}
 
 			parameterTokens := tokens[parameterStart:pos]
@@ -394,11 +394,11 @@ func (state *State) Call(tokens []token.Token) error {
 	// Parameter check
 	if !function.NoParameterCheck {
 		if len(call.Parameters) < len(call.Function.Parameters) {
-			return state.Errorf("Too few arguments in '%s' call", call.Function.Name)
+			return fmt.Errorf("Too few arguments in '%s' call", call.Function.Name)
 		}
 
 		if len(call.Parameters) > len(call.Function.Parameters) {
-			return state.Errorf("Too many arguments in '%s' call", call.Function.Name)
+			return fmt.Errorf("Too many arguments in '%s' call", call.Function.Name)
 		}
 	}
 
@@ -408,7 +408,7 @@ func (state *State) Call(tokens []token.Token) error {
 			parameter := call.Parameters[0][0]
 
 			if parameter.Kind != token.Text {
-				return state.Errorf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text())
+				return fmt.Errorf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text())
 			}
 
 			text := parameter.Text()
@@ -457,25 +457,20 @@ func (state *State) Call(tokens []token.Token) error {
 	return nil
 }
 
-// Keyword handles keywords.
-func (state *State) Keyword(tokens []token.Token) error {
-	return state.Error("Not implemented")
-}
-
 // Invalid handles invalid instructions.
 func (state *State) Invalid(tokens []token.Token) error {
 	openingBrackets := token.Count(tokens, token.GroupStart)
 	closingBrackets := token.Count(tokens, token.GroupEnd)
 
 	if openingBrackets < closingBrackets {
-		return state.Error("Missing opening bracket '('")
+		return &ErrMissingCharacter{"("}
 	}
 
 	if openingBrackets > closingBrackets {
-		return state.Error("Missing closing bracket ')'")
+		return &ErrMissingCharacter{")"}
 	}
 
-	return state.Error("Invalid instruction")
+	return ErrInvalidInstruction
 }
 
 // BeforeCall pushes parameters into registers.
@@ -506,7 +501,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		variable := state.scopes.Get(variableName)
 
 		if variable == nil {
-			return state.Errorf("Unknown variable %s", variableName)
+			return fmt.Errorf("Unknown variable %s", variableName)
 		}
 
 		variable.AliveUntil = state.instrCursor + 1
@@ -557,7 +552,7 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 	expr, err := expression.FromTokens(tokens)
 
 	if err != nil {
-		return state.Error(err.Error())
+		return err
 	}
 
 	return state.ExpressionToRegister(expr, register)
@@ -617,7 +612,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 				variable := state.scopes.Get(variableName)
 
 				if variable == nil {
-					return state.Errorf("Unknown variable %s", variableName)
+					return fmt.Errorf("Unknown variable %s", variableName)
 				}
 
 				variable.AliveUntil = state.instrCursor + 1
@@ -627,7 +622,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 				return state.CalculateRegisterNumber(operator, sub.Register, right.Value.Text())
 
 			default:
-				return state.Errorf("Invalid operand %s", right.Value)
+				return fmt.Errorf("Invalid operand %s", right.Value)
 			}
 		}
 
@@ -707,7 +702,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		}
 
 	default:
-		return state.Error("Not implemented")
+		return ErrNotImplemented
 	}
 
 	return nil
@@ -738,7 +733,7 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 		}
 
 	default:
-		return state.Error("Not implemented")
+		return ErrNotImplemented
 	}
 
 	return nil
@@ -749,20 +744,10 @@ func (state *State) ParseInt(numberString string) (int64, error) {
 	number, err := strconv.ParseInt(numberString, 10, 64)
 
 	if err != nil {
-		return 0, state.Errorf("Not a number: %s", numberString)
+		return 0, &ErrNotANumber{numberString}
 	}
 
 	return number, nil
-}
-
-// Error generates an error message at the current token position.
-func (state *State) Error(message string) error {
-	return state.function.Error(state.tokenCursor, message)
-}
-
-// Errorf generates a formatted error message at the current token position.
-func (state *State) Errorf(message string, args ...interface{}) error {
-	return state.function.Errorf(state.tokenCursor, message, args...)
 }
 
 // Expect asserts that the token at the current cursor position has the given kind.
@@ -800,8 +785,8 @@ func (state *State) UnknownFunctionError(functionName string) error {
 	})
 
 	if similarity.JaroWinkler(functionName, knownFunctions[0]) > 0.9 {
-		return state.Errorf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0])
+		return fmt.Errorf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0])
 	}
 
-	return state.Errorf("Unknown function '%s'", functionName)
+	return fmt.Errorf("Unknown function '%s'", functionName)
 }
