@@ -2,7 +2,7 @@ main() {
 	i = 0
 
 	loop {
-		if i >= 3 {
+		if i == 3 {
 			return
 		}
 

@@ -99,11 +99,55 @@ func (state *State) IfStart(tokens []token.Token) error {
 
 	label := "if_1_end"
 	state.assembler.CompareRegisterNumber(variable.Register.Name, uint64(number))
-	state.assembler.JumpIfLess(label)
 
 	if state.verbose {
 		log.Asm.Printf("cmp %s, %d\n", variable.Register.Name, number)
-		log.Asm.Printf("jl %s\n", label)
+	}
+
+	operator := expression[1].Text()
+
+	switch operator {
+	case ">=":
+		state.assembler.JumpIfLess(label)
+
+		if state.verbose {
+			log.Asm.Printf("jl %s\n", label)
+		}
+
+	case ">":
+		state.assembler.JumpIfLessOrEqual(label)
+
+		if state.verbose {
+			log.Asm.Printf("jle %s\n", label)
+		}
+
+	case "<=":
+		state.assembler.JumpIfGreater(label)
+
+		if state.verbose {
+			log.Asm.Printf("jg %s\n", label)
+		}
+
+	case "<":
+		state.assembler.JumpIfGreaterOrEqual(label)
+
+		if state.verbose {
+			log.Asm.Printf("jle %s\n", label)
+		}
+
+	case "==":
+		state.assembler.JumpIfNotEqual(label)
+
+		if state.verbose {
+			log.Asm.Printf("jne %s\n", label)
+		}
+
+	case "!=":
+		state.assembler.JumpIfEqual(label)
+
+		if state.verbose {
+			log.Asm.Printf("je %s\n", label)
+		}
 	}
 
 	return nil

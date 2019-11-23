@@ -16,6 +16,7 @@ var Operators = map[string]int{
 	"&&": 3,
 
 	"==": 4,
+	"!=": 4,
 	"<=": 4,
 	">=": 4,
 

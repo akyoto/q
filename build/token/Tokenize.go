@@ -64,7 +64,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			token = Token{Number, buffer[processedBytes : i+1], processedBytes}
 
 		// Operators
-		case c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>':
+		case c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>' || c == '!':
 			processedBytes = i
 
 			for {
@@ -76,7 +76,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 				c = buffer[i]
 
-				if !(c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>') {
+				if !(c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>' || c == '!') {
 					i--
 					break
 				}
