@@ -35,6 +35,23 @@ func (err *ErrUnknownVariable) Error() string {
 	return fmt.Sprintf("Unknown variable: '%s'", err.VariableName)
 }
 
+// ErrParameterCount represents an error where the parameter count is different from the expected number of parameters.
+type ErrParameterCount struct {
+	Call FunctionCall
+}
+
+func (err *ErrParameterCount) Error() string {
+	if len(err.Call.Parameters) < len(err.Call.Function.Parameters) {
+		return fmt.Sprintf("Too few arguments in '%s' call", err.Call.Function.Name)
+	}
+
+	if len(err.Call.Parameters) > len(err.Call.Function.Parameters) {
+		return fmt.Sprintf("Too many arguments in '%s' call", err.Call.Function.Name)
+	}
+
+	return ""
+}
+
 // ErrMissingCharacter represents an error where a required character is missing.
 type ErrMissingCharacter struct {
 	Character string

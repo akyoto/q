@@ -392,14 +392,8 @@ func (state *State) Call(tokens []token.Token) error {
 	}
 
 	// Parameter check
-	if !function.NoParameterCheck {
-		if len(call.Parameters) < len(call.Function.Parameters) {
-			return fmt.Errorf("Too few arguments in '%s' call", call.Function.Name)
-		}
-
-		if len(call.Parameters) > len(call.Function.Parameters) {
-			return fmt.Errorf("Too many arguments in '%s' call", call.Function.Name)
-		}
+	if !function.NoParameterCheck && len(call.Parameters) != len(call.Function.Parameters) {
+		return &ErrParameterCount{call}
 	}
 
 	if isBuiltin {
