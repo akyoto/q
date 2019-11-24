@@ -19,7 +19,8 @@ go build
 This will produce the `q` compiler in your current directory.
 
 ```shell
-./q build examples/hello && ./examples/hello/hello
+./q build examples/hello
+./examples/hello/hello
 ```
 
 ## Goals
