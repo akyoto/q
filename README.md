@@ -54,6 +54,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Simple `if` conditions
 * [x] `return` with no arguments
 * [x] Syscalls
+* [x] Detect pure functions
 * [x] Linter: Unused variables
 * [x] Linter: Unused parameters
 * [ ] Function return values

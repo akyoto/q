@@ -454,6 +454,11 @@ func (state *State) Call(tokens []token.Token) error {
 		Function: function,
 	}
 
+	// Calling a function with side effects causes our function to have side effects
+	if function.HasSideEffects {
+		state.function.HasSideEffects = true
+	}
+
 	bracketPos := 1
 	parameterStart := bracketPos + 1
 	state.tokenCursor += bracketPos
