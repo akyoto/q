@@ -95,9 +95,7 @@ func (state *State) IfStart(tokens []token.Token) error {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
-		return &errors.UnknownVariable{
-			VariableName: variableName,
-		}
+		return &errors.UnknownVariable{VariableName: variableName}
 	}
 
 	numberString := expression[len(expression)-1].Text()
@@ -211,24 +209,70 @@ func (state *State) ForStart(tokens []token.Token) error {
 		return errors.MissingRangeLimit
 	}
 
-	numberString := upperLimit[0].Text()
-	number, err := state.ParseInt(numberString)
+	state.tokenCursor++
+	state.assembler.AddLabel(labelStart)
+
+	if state.verbose {
+		log.Asm.Printf("%s:\n", labelStart)
+	}
+
+	err = state.CompareExpression(variable.Register, upperLimit)
 
 	if err != nil {
 		return err
 	}
 
-	state.assembler.AddLabel(labelStart)
-	state.assembler.CompareRegisterNumber(variable.Register.Name, uint64(number))
 	state.assembler.JumpIfEqual(labelEnd)
 
 	if state.verbose {
-		log.Asm.Printf("%s:\n", labelStart)
-		log.Asm.Printf("cmp %s, %d\n", variable.Register, uint64(number))
 		log.Asm.Printf("je %s\n", labelEnd)
 	}
 
 	return nil
+}
+
+// CompareExpression compares a register with the result of the expression.
+func (state *State) CompareExpression(register *register.Register, expression []token.Token) error {
+	fmt.Println(expression)
+	if len(expression) == 1 {
+		switch expression[0].Kind {
+		case token.Identifier:
+			variableName := expression[0].Text()
+			variable := state.scopes.Get(variableName)
+
+			if variable == nil {
+				return &errors.UnknownVariable{VariableName: variableName}
+			}
+
+			variable.AliveUntil = state.instrCursor + 1
+			state.assembler.CompareRegisterRegister(register.Name, variable.Register.Name)
+
+			if state.verbose {
+				log.Asm.Printf("cmp %s, %s\n", register, variable.Register)
+			}
+
+			return nil
+
+		case token.Number:
+			fmt.Println("NUM")
+			numberString := expression[0].Text()
+			number, err := state.ParseInt(numberString)
+
+			if err != nil {
+				return err
+			}
+
+			state.assembler.CompareRegisterNumber(register.Name, uint64(number))
+
+			if state.verbose {
+				log.Asm.Printf("cmp %s, %d\n", register, uint64(number))
+			}
+
+			return nil
+		}
+	}
+
+	return errors.NotImplemented
 }
 
 // ForEnd handles the end of for loops.
@@ -357,9 +401,7 @@ func (state *State) Call(tokens []token.Token) error {
 	lastToken := tokens[len(tokens)-1]
 
 	if lastToken.Kind != token.GroupEnd {
-		return &errors.MissingCharacter{
-			Character: ")",
-		}
+		return &errors.MissingCharacter{Character: ")"}
 	}
 
 	functionName := firstToken.Text()
@@ -482,15 +524,11 @@ func (state *State) Invalid(tokens []token.Token) error {
 	closingBrackets := token.Count(tokens, token.GroupEnd)
 
 	if openingBrackets < closingBrackets {
-		return &errors.MissingCharacter{
-			Character: "(",
-		}
+		return &errors.MissingCharacter{Character: "("}
 	}
 
 	if openingBrackets > closingBrackets {
-		return &errors.MissingCharacter{
-			Character: ")",
-		}
+		return &errors.MissingCharacter{Character: ")"}
 	}
 
 	return errors.InvalidInstruction
