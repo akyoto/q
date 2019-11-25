@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/log"
@@ -94,7 +95,9 @@ func (state *State) IfStart(tokens []token.Token) error {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
-		return &ErrUnknownVariable{variableName}
+		return &errors.UnknownVariable{
+			VariableName: variableName,
+		}
 	}
 
 	numberString := expression[len(expression)-1].Text()
@@ -178,10 +181,10 @@ func (state *State) ForStart(tokens []token.Token) error {
 	state.scopes.Push()
 	expression := tokens[1:]
 
-	rangePos := token.Index(tokens, token.Range)
+	rangePos := token.Index(expression, token.Range)
 
 	if rangePos == -1 {
-		return ErrMissingRange
+		return errors.MissingRange
 	}
 
 	assignment := expression[:rangePos]
@@ -202,8 +205,13 @@ func (state *State) ForStart(tokens []token.Token) error {
 	state.forLoop.labels = append(state.forLoop.labels, labelStart)
 	state.forLoop.variables = append(state.forLoop.variables, variable)
 
-	rangeExpression := expression[rangePos:]
-	numberString := rangeExpression[0].Text()
+	upperLimit := expression[rangePos+1:]
+
+	if len(upperLimit) == 0 {
+		return errors.MissingRangeLimit
+	}
+
+	numberString := upperLimit[0].Text()
 	number, err := state.ParseInt(numberString)
 
 	if err != nil {
@@ -291,7 +299,7 @@ func (state *State) Assignment(tokens []token.Token) error {
 	left := tokens[0]
 
 	if left.Kind != token.Identifier {
-		return ErrExpectedVariable
+		return errors.ExpectedVariable
 	}
 
 	variableName := left.Text()
@@ -313,17 +321,28 @@ func (state *State) Assignment(tokens []token.Token) error {
 		state.scopes.Add(variable)
 	}
 
+	state.tokenCursor++
+	operator := tokens[1]
+
+	if operator.Kind != token.Operator {
+		return errors.MissingAssignmentOperator
+	}
+
 	// Skip variable name and operator
-	expressionStart := 2
-	state.tokenCursor += expressionStart
-	value := tokens[expressionStart:]
-	err := state.TokensToRegister(value, variable.Register)
+	state.tokenCursor++
+	expression := tokens[2:]
+
+	if len(expression) == 0 {
+		return errors.MissingAssignmentExpression
+	}
+
+	err := state.TokensToRegister(expression, variable.Register)
 
 	if err != nil {
 		return err
 	}
 
-	state.tokenCursor += len(value)
+	state.tokenCursor += len(expression)
 	return nil
 }
 
@@ -332,13 +351,15 @@ func (state *State) Call(tokens []token.Token) error {
 	firstToken := tokens[0]
 
 	if firstToken.Kind != token.Identifier {
-		return ErrMissingFunctionName
+		return errors.MissingFunctionName
 	}
 
 	lastToken := tokens[len(tokens)-1]
 
 	if lastToken.Kind != token.GroupEnd {
-		return &ErrMissingCharacter{")"}
+		return &errors.MissingCharacter{
+			Character: ")",
+		}
 	}
 
 	functionName := firstToken.Text()
@@ -369,7 +390,7 @@ func (state *State) Call(tokens []token.Token) error {
 		switch t.Kind {
 		case token.Separator:
 			if pos == parameterStart {
-				return ErrMissingParameter
+				return errors.MissingParameter
 			}
 
 			parameterTokens := tokens[parameterStart:pos]
@@ -393,7 +414,11 @@ func (state *State) Call(tokens []token.Token) error {
 
 	// Parameter check
 	if !function.NoParameterCheck && len(call.Parameters) != len(call.Function.Parameters) {
-		return &ErrParameterCount{call}
+		return &errors.ParameterCount{
+			FunctionName:  call.Function.Name,
+			CountGiven:    len(call.Parameters),
+			CountRequired: len(call.Function.Parameters),
+		}
 	}
 
 	if isBuiltin {
@@ -457,14 +482,18 @@ func (state *State) Invalid(tokens []token.Token) error {
 	closingBrackets := token.Count(tokens, token.GroupEnd)
 
 	if openingBrackets < closingBrackets {
-		return &ErrMissingCharacter{"("}
+		return &errors.MissingCharacter{
+			Character: "(",
+		}
 	}
 
 	if openingBrackets > closingBrackets {
-		return &ErrMissingCharacter{")"}
+		return &errors.MissingCharacter{
+			Character: ")",
+		}
 	}
 
-	return ErrInvalidInstruction
+	return errors.InvalidInstruction
 }
 
 // BeforeCall pushes parameters into registers.
@@ -696,7 +725,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		}
 
 	default:
-		return ErrNotImplemented
+		return errors.NotImplemented
 	}
 
 	return nil
@@ -727,7 +756,7 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 		}
 
 	default:
-		return ErrNotImplemented
+		return errors.NotImplemented
 	}
 
 	return nil
@@ -738,7 +767,9 @@ func (state *State) ParseInt(numberString string) (int64, error) {
 	number, err := strconv.ParseInt(numberString, 10, 64)
 
 	if err != nil {
-		return 0, &ErrNotANumber{numberString}
+		return 0, &errors.NotANumber{
+			Expression: numberString,
+		}
 	}
 
 	return number, nil

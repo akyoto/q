@@ -7,7 +7,7 @@ import (
 )
 
 // FromTokens takes a list of tokens and generates instructions.
-func FromTokens(tokens []token.Token) []Instruction {
+func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 	instructions := make([]Instruction, 0, len(tokens)/2)
 	start := 0
 	instruction := Instruction{}
@@ -79,6 +79,28 @@ func FromTokens(tokens []token.Token) []Instruction {
 			instruction.Kind = Invalid
 			start = i + 1
 
+		case token.Identifier:
+			if instruction.Kind != Invalid {
+				continue
+			}
+
+			if i == len(tokens)-1 {
+				return instructions, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
+			}
+
+			nextToken := tokens[i+1]
+
+			if nextToken.Kind != token.Operator && nextToken.Kind != token.GroupStart {
+				remaining := tokens[i+1:]
+				newLinePos := token.Index(remaining, token.NewLine)
+
+				if newLinePos != -1 && remaining[newLinePos-1].Kind == token.GroupEnd {
+					return instructions, &Error{fmt.Sprintf("Missing opening bracket '(' after '%s'", t.Text()), i, true}
+				}
+
+				return instructions, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
+			}
+
 		case token.Keyword:
 			if instruction.Kind != Invalid {
 				continue
@@ -94,10 +116,18 @@ func FromTokens(tokens []token.Token) []Instruction {
 			case "return":
 				instruction.Kind = Return
 			default:
-				panic("Keyword not implemented")
+				return instructions, &Error{"Keyword not implemented", i, false}
 			}
 
 		case token.BlockStart:
+			switch instruction.Kind {
+			case IfStart, ForStart, LoopStart:
+				// OK.
+
+			default:
+				return instructions, &Error{fmt.Sprintf("Invalid block of type '%s'", instruction.Kind), i, false}
+			}
+
 			blocks = append(blocks, instruction.Kind)
 
 			instruction.Tokens = tokens[start:i]
@@ -121,7 +151,7 @@ func FromTokens(tokens []token.Token) []Instruction {
 				instruction.Kind = LoopEnd
 
 			default:
-				panic(fmt.Errorf("Not implemented: %v", block))
+				return instructions, &Error{fmt.Sprintf("Not implemented: %v", block), i, false}
 			}
 
 			instruction.Tokens = tokens[start:i]
@@ -141,5 +171,5 @@ func FromTokens(tokens []token.Token) []Instruction {
 		instructions = append(instructions, instruction)
 	}
 
-	return instructions
+	return instructions, nil
 }

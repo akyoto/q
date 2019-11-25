@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 )
 
@@ -23,14 +24,21 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return nil, err
 	}
 
+	tokens := function.Tokens()
+	instructions, instrErr := instruction.FromTokens(tokens)
+
+	if instrErr != nil {
+		return nil, function.Error(instrErr.Position, instrErr)
+	}
+
 	state := State{
 		assembler:    assembler,
 		scopes:       scopes,
 		registers:    registers,
 		environment:  environment,
 		function:     function,
-		tokens:       function.Tokens(),
-		instructions: function.Instructions(),
+		tokens:       tokens,
+		instructions: instructions,
 		optimize:     optimize,
 		verbose:      verbose,
 	}

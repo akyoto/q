@@ -3,6 +3,7 @@ package build
 import (
 	"fmt"
 
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -23,8 +24,8 @@ func NewError(err error, path string, tokens []token.Token) *Error {
 		lineStart = 0
 	)
 
-	for _, oldToken := range tokens {
-		if oldToken.Kind == token.NewLine {
+	for i, oldToken := range tokens {
+		if oldToken.Kind == token.NewLine && i != len(tokens)-1 {
 			lineCount++
 			lineStart = oldToken.Position
 		}
@@ -32,6 +33,12 @@ func NewError(err error, path string, tokens []token.Token) *Error {
 
 	cursorToken := tokens[len(tokens)-1]
 	column := cursorToken.Position - lineStart
+	positionable, ok := err.(errors.Positionable)
+
+	if ok && positionable.CursorRight() {
+		column += len(cursorToken.Bytes)
+	}
+
 	return &Error{path, lineCount, column, err}
 }
 

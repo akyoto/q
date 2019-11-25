@@ -13,12 +13,12 @@ func TestFromTokens(t *testing.T) {
 		Source   []byte
 		Expected []instruction.Instruction
 	}{
-		{[]byte("\na = 1\nb()\nloop\n{\na)\n}\n"), []instruction.Instruction{
+		{[]byte("\na = 1\nb()\nloop\n{\na()\n}\n"), []instruction.Instruction{
 			{instruction.Assignment, nil, 1},
 			{instruction.Call, nil, 5},
 			{instruction.LoopStart, nil, 9},
-			{instruction.Invalid, nil, 13},
-			{instruction.LoopEnd, nil, 16},
+			{instruction.Call, nil, 13},
+			{instruction.LoopEnd, nil, 17},
 		}},
 		{[]byte("if x > 1 {\nx = 2\n}\n"), []instruction.Instruction{
 			{instruction.IfStart, nil, 0},
@@ -29,6 +29,11 @@ func TestFromTokens(t *testing.T) {
 			{instruction.ForStart, nil, 0},
 			{instruction.ForEnd, nil, 7},
 		}},
+		{[]byte("for i = 0..2 {call()}\n"), []instruction.Instruction{
+			{instruction.ForStart, nil, 0},
+			{instruction.Call, nil, 7},
+			{instruction.ForEnd, nil, 10},
+		}},
 	}
 
 	for _, pattern := range usagePatterns {
@@ -36,7 +41,8 @@ func TestFromTokens(t *testing.T) {
 		processed := 0
 		tokens, processed = token.Tokenize(pattern.Source, tokens)
 		assert.Equal(t, processed, len(pattern.Source))
-		instructions := instruction.FromTokens(tokens)
+		instructions, err := instruction.FromTokens(tokens)
+		assert.Nil(t, err)
 		assert.Equal(t, len(instructions), len(pattern.Expected))
 
 		for index := range instructions {

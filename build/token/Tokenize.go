@@ -4,6 +4,21 @@ import (
 	"github.com/akyoto/q/build/spec"
 )
 
+// Pre-allocate these byte buffers so we can re-use them
+// instead of allocating a new buffer every time.
+var (
+	groupStartBytes = []byte{'('}
+	groupEndBytes   = []byte{')'}
+	blockStartBytes = []byte{'{'}
+	blockEndBytes   = []byte{'}'}
+	arrayStartBytes = []byte{'['}
+	arrayEndBytes   = []byte{']'}
+	separatorBytes  = []byte{','}
+	accessorBytes   = []byte{'.'}
+	rangeBytes      = []byte{'.', '.'}
+	newLineBytes    = []byte{'\n'}
+)
+
 // Tokenize processes the partial read and returns how many bytes were processed.
 func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 	var (
@@ -136,44 +151,44 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 		// Parentheses start
 		case c == '(':
-			token = Token{GroupStart, nil, i}
+			token = Token{GroupStart, groupStartBytes, i}
 
 		// Parentheses end
 		case c == ')':
-			token = Token{GroupEnd, nil, i}
+			token = Token{GroupEnd, groupEndBytes, i}
 
 		// Block start
 		case c == '{':
-			token = Token{BlockStart, nil, i}
+			token = Token{BlockStart, blockStartBytes, i}
 
 		// Block end
 		case c == '}':
-			token = Token{BlockEnd, nil, i}
+			token = Token{BlockEnd, blockEndBytes, i}
 
 		// Array start
 		case c == '[':
-			token = Token{ArrayStart, nil, i}
+			token = Token{ArrayStart, arrayStartBytes, i}
 
 		// Array end
 		case c == ']':
-			token = Token{ArrayEnd, nil, i}
+			token = Token{ArrayEnd, arrayEndBytes, i}
 
 		// Separator
 		case c == ',':
-			token = Token{Separator, nil, i}
+			token = Token{Separator, separatorBytes, i}
 
 		// Accessor
 		case c == '.':
 			if buffer[i+1] == '.' {
-				token = Token{Range, nil, i}
+				token = Token{Range, rangeBytes, i}
 				i++
 			} else {
-				token = Token{Accessor, nil, i}
+				token = Token{Accessor, accessorBytes, i}
 			}
 
 		// New line
 		case c == '\n':
-			token = Token{NewLine, nil, i}
+			token = Token{NewLine, newLineBytes, i}
 		}
 
 		// Handle token

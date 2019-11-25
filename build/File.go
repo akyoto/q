@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
 )
@@ -43,7 +44,17 @@ func (file *File) Tokenize() error {
 	file.tokens, processed = token.Tokenize(file.contents, file.tokens)
 
 	if processed != len(file.contents) {
-		return fmt.Errorf("Unknown expression: %s", string(file.contents[processed:]))
+		remaining := file.contents[processed:]
+		until := len(remaining)
+
+		for i, c := range remaining {
+			if c == '\n' {
+				until = i
+				break
+			}
+		}
+
+		return NewError(fmt.Errorf("Unknown expression: %s", string(remaining[:until])), file.path, file.tokens)
 	}
 
 	return nil
@@ -69,11 +80,11 @@ func (file *File) Scan(functions chan<- *Function) error {
 			functionName := t.Text()
 
 			if functionName == "func" || functionName == "fn" {
-				return NewError(ErrInvalidFunctionName, file.path, file.tokens[:index+1])
+				return NewError(errors.InvalidFunctionName, file.path, file.tokens[:index+1])
 			}
 
 			if index+1 >= len(file.tokens) || file.tokens[index+1].Kind != token.GroupStart {
-				return NewError(ErrParameterOpeningBracket, file.path, file.tokens[:index+2])
+				return NewError(errors.ParameterOpeningBracket, file.path, file.tokens[:index+2])
 			}
 
 			function = &Function{
@@ -88,7 +99,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		case token.BlockStart:
 			if groupLevel > 0 {
-				return NewError(&ErrMissingCharacter{")"}, file.path, file.tokens[:index+1])
+				return NewError(&errors.MissingCharacter{Character: ")"}, file.path, file.tokens[:index+1])
 			}
 
 			blockLevel++
@@ -156,7 +167,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		default:
 			if function == nil {
-				return NewError(ErrTopLevel, file.path, file.tokens[:index+1])
+				return NewError(errors.TopLevel, file.path, file.tokens[:index+1])
 			}
 		}
 	}

@@ -3,7 +3,6 @@ package build
 import (
 	"fmt"
 
-	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 )
@@ -24,11 +23,6 @@ type Function struct {
 // Tokens returns all tokens within the function body (excluding the braces '{' and '}').
 func (function *Function) Tokens() []token.Token {
 	return function.File.tokens[function.TokenStart:function.TokenEnd]
-}
-
-// Instructions returns all instructions within the function body.
-func (function *Function) Instructions() []instruction.Instruction {
-	return instruction.FromTokens(function.Tokens())
 }
 
 // Error creates an error inside the function.
