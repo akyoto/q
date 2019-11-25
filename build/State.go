@@ -87,6 +87,82 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	}
 }
 
+// CompareExpression compares a register with the result of the expression.
+// If the expression needs to be stored in a temporary register, it will return it.
+func (state *State) CompareExpression(register *register.Register, expression []token.Token, labelBeforeComparison string) (*register.Register, error) {
+	if len(expression) == 1 {
+		state.assembler.AddLabel(labelBeforeComparison)
+
+		if state.verbose {
+			log.Asm.Printf("%s:\n", labelBeforeComparison)
+		}
+
+		switch expression[0].Kind {
+		case token.Identifier:
+			variableName := expression[0].Text()
+			variable := state.scopes.Get(variableName)
+
+			if variable == nil {
+				return nil, &errors.UnknownVariable{VariableName: variableName}
+			}
+
+			variable.AliveUntil = state.instrCursor + 1
+			state.assembler.CompareRegisterRegister(register.Name, variable.Register.Name)
+
+			if state.verbose {
+				log.Asm.Printf("cmp %s, %s\n", register, variable.Register)
+			}
+
+			return nil, nil
+
+		case token.Number:
+			numberString := expression[0].Text()
+			number, err := state.ParseInt(numberString)
+
+			if err != nil {
+				return nil, err
+			}
+
+			state.assembler.CompareRegisterNumber(register.Name, uint64(number))
+
+			if state.verbose {
+				log.Asm.Printf("cmp %s, %d\n", register, uint64(number))
+			}
+
+			return nil, nil
+
+		default:
+			return nil, errors.InvalidExpression
+		}
+	}
+
+	temporary := state.registers.FindFreeRegister()
+
+	if temporary == nil {
+		return nil, errors.ExceededMaxVariables
+	}
+
+	err := state.TokensToRegister(expression, temporary)
+
+	if err != nil {
+		return nil, err
+	}
+
+	state.assembler.AddLabel(labelBeforeComparison)
+
+	if state.verbose {
+		log.Asm.Printf("%s:\n", labelBeforeComparison)
+	}
+
+	state.assembler.CompareRegisterRegister(register.Name, temporary.Name)
+
+	if state.verbose {
+		log.Asm.Printf("cmp %s, %s\n", register, temporary)
+	}
+
+	return temporary, nil
+}
+
 // IfStart handles the start of if conditions.
 func (state *State) IfStart(tokens []token.Token) error {
 	state.Expect(token.Keyword)
@@ -210,18 +286,13 @@ func (state *State) ForStart(tokens []token.Token) error {
 	}
 
 	state.tokenCursor++
-	state.assembler.AddLabel(labelStart)
-
-	if state.verbose {
-		log.Asm.Printf("%s:\n", labelStart)
-	}
-
-	err = state.CompareExpression(variable.Register, upperLimit)
+	temporary, err := state.CompareExpression(variable.Register, upperLimit, labelStart)
 
 	if err != nil {
 		return err
 	}
 
+	state.forLoop.temporaries = append(state.forLoop.temporaries, temporary)
 	state.assembler.JumpIfEqual(labelEnd)
 
 	if state.verbose {
@@ -231,59 +302,17 @@ func (state *State) ForStart(tokens []token.Token) error {
 	return nil
 }
 
-// CompareExpression compares a register with the result of the expression.
-func (state *State) CompareExpression(register *register.Register, expression []token.Token) error {
-	fmt.Println(expression)
-	if len(expression) == 1 {
-		switch expression[0].Kind {
-		case token.Identifier:
-			variableName := expression[0].Text()
-			variable := state.scopes.Get(variableName)
-
-			if variable == nil {
-				return &errors.UnknownVariable{VariableName: variableName}
-			}
-
-			variable.AliveUntil = state.instrCursor + 1
-			state.assembler.CompareRegisterRegister(register.Name, variable.Register.Name)
-
-			if state.verbose {
-				log.Asm.Printf("cmp %s, %s\n", register, variable.Register)
-			}
-
-			return nil
-
-		case token.Number:
-			fmt.Println("NUM")
-			numberString := expression[0].Text()
-			number, err := state.ParseInt(numberString)
-
-			if err != nil {
-				return err
-			}
-
-			state.assembler.CompareRegisterNumber(register.Name, uint64(number))
-
-			if state.verbose {
-				log.Asm.Printf("cmp %s, %d\n", register, uint64(number))
-			}
-
-			return nil
-		}
-	}
-
-	return errors.NotImplemented
-}
-
 // ForEnd handles the end of for loops.
 func (state *State) ForEnd() error {
 	state.scopes.Pop()
 
 	label := state.forLoop.labels[len(state.forLoop.labels)-1]
 	variable := state.forLoop.variables[len(state.forLoop.variables)-1]
+	temporary := state.forLoop.temporaries[len(state.forLoop.temporaries)-1]
 
 	state.forLoop.labels = state.forLoop.labels[:len(state.forLoop.labels)-1]
 	state.forLoop.variables = state.forLoop.variables[:len(state.forLoop.variables)-1]
+	state.forLoop.temporaries = state.forLoop.temporaries[:len(state.forLoop.temporaries)-1]
 
 	state.assembler.IncreaseRegister(variable.Register.Name)
 	state.assembler.Jump(label)
@@ -293,6 +322,10 @@ func (state *State) ForEnd() error {
 		log.Asm.Printf("inc %s\n", variable.Register)
 		log.Asm.Printf("jmp %s\n", label)
 		log.Asm.Printf("%s:\n", label+"_end")
+	}
+
+	if temporary != nil {
+		temporary.UsedBy = nil
 	}
 
 	return nil
@@ -353,7 +386,7 @@ func (state *State) Assignment(tokens []token.Token) error {
 		register := state.registers.FindFreeRegister()
 
 		if register == nil {
-			return fmt.Errorf("Exceeded maximum limit of %d variables", len(state.registers.Registers))
+			return errors.ExceededMaxVariables
 		}
 
 		variable = &Variable{
