@@ -28,6 +28,12 @@ func (function *Function) Tokens() []token.Token {
 
 // Error creates an error inside the function.
 func (function *Function) Error(position token.Position, err error) error {
+	metaError, hasMetaData := err.(*Error)
+
+	if hasMetaData {
+		return metaError
+	}
+
 	return NewError(err, function.File.path, function.File.tokens[:function.TokenStart+position+1])
 }
 

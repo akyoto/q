@@ -1,5 +1,5 @@
 main() {
-	for i = 0..3 {
+	for 0..3 {
 		print("Hello Loops")
 	}
 }

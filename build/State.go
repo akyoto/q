@@ -261,11 +261,30 @@ func (state *State) ForStart(tokens []token.Token) error {
 		return errors.MissingRange
 	}
 
-	assignment := expression[:rangePos]
-	variable, err := state.AssignVariable(assignment)
+	operatorPos := token.Index(expression, token.Operator)
+	var register *register.Register
 
-	if err != nil {
-		return err
+	if operatorPos == -1 {
+		register = state.registers.FindFreeRegister()
+
+		if register == nil {
+			return errors.ExceededMaxVariables
+		}
+
+		err := state.TokensToRegister(expression[:rangePos], register)
+
+		if err != nil {
+			return err
+		}
+	} else {
+		assignment := expression[:rangePos]
+		variable, err := state.AssignVariable(assignment)
+
+		if err != nil {
+			return err
+		}
+
+		register = variable.Register
 	}
 
 	state.forLoop.counter++
@@ -274,7 +293,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	labelEnd := fmt.Sprintf("for_%d_end", state.forLoop.counter)
 
 	state.forLoop.labels = append(state.forLoop.labels, labelStart)
-	state.forLoop.variables = append(state.forLoop.variables, variable)
+	state.forLoop.registers = append(state.forLoop.registers, register)
 
 	upperLimit := expression[rangePos+1:]
 
@@ -283,7 +302,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	}
 
 	state.tokenCursor++
-	temporary, err := state.CompareExpression(variable.Register, upperLimit, labelStart)
+	temporary, err := state.CompareExpression(register, upperLimit, labelStart)
 
 	if err != nil {
 		return err
@@ -301,25 +320,31 @@ func (state *State) ForStart(tokens []token.Token) error {
 
 // ForEnd handles the end of for loops.
 func (state *State) ForEnd() error {
-	state.scopes.Pop()
+	err := state.PopScope()
+
+	if err != nil {
+		return err
+	}
 
 	label := state.forLoop.labels[len(state.forLoop.labels)-1]
-	variable := state.forLoop.variables[len(state.forLoop.variables)-1]
+	register := state.forLoop.registers[len(state.forLoop.registers)-1]
 	temporary := state.forLoop.temporaries[len(state.forLoop.temporaries)-1]
 
 	state.forLoop.labels = state.forLoop.labels[:len(state.forLoop.labels)-1]
-	state.forLoop.variables = state.forLoop.variables[:len(state.forLoop.variables)-1]
+	state.forLoop.registers = state.forLoop.registers[:len(state.forLoop.registers)-1]
 	state.forLoop.temporaries = state.forLoop.temporaries[:len(state.forLoop.temporaries)-1]
 
-	state.assembler.IncreaseRegister(variable.Register.Name)
+	state.assembler.IncreaseRegister(register.Name)
 	state.assembler.Jump(label)
 	state.assembler.AddLabel(label + "_end")
 
 	if state.verbose {
-		log.Asm.Printf("inc %s\n", variable.Register)
+		log.Asm.Printf("inc %s\n", register)
 		log.Asm.Printf("jmp %s\n", label)
 		log.Asm.Printf("%s:\n", label+"_end")
 	}
+
+	register.UsedBy = nil
 
 	if temporary != nil {
 		temporary.UsedBy = nil
@@ -354,6 +379,17 @@ func (state *State) LoopEnd() error {
 		log.Asm.Printf("jmp %s\n", label)
 	}
 
+	return nil
+}
+
+// PopScope pops the last scope on the stack and returns
+// an error if there were any unused variables.
+func (state *State) PopScope() error {
+	for _, variable := range state.scopes.Unused() {
+		return state.function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
+	}
+
+	state.scopes.Pop()
 	return nil
 }
 

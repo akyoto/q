@@ -6,6 +6,6 @@ import "github.com/akyoto/q/build/register"
 type ForState struct {
 	counter     int
 	labels      []string
-	variables   []*Variable
+	registers   []*register.Register
 	temporaries []*register.Register
 }

@@ -35,9 +35,10 @@ func NewError(err error, path string, tokens []token.Token) *Error {
 
 	cursorToken := tokens[len(tokens)-1]
 	column := cursorToken.Position - lineStart
-	positionable, ok := err.(errors.Positionable)
 
-	if ok && positionable.CursorRight() {
+	cursorRight, ok := err.(errors.CursorRight)
+
+	if ok && cursorRight.CursorRight() {
 		column += len(cursorToken.Bytes)
 	}
 

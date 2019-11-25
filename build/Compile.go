@@ -1,9 +1,8 @@
 package build
 
 import (
-	"errors"
-
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 )
@@ -50,7 +49,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	}
 
 	for _, variable := range scopes.Unused() {
-		return nil, function.Errorf(variable.Position, "Variable '%s' has never been used", variable.Name)
+		return nil, function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
 	}
 
 	assembler.Return()
@@ -64,7 +63,7 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 		register := registers.FindFreeRegister()
 
 		if register == nil {
-			return errors.New("Exceeded maximum number of parameters")
+			return errors.ExceededMaxParameters
 		}
 
 		variable := &Variable{

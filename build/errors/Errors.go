@@ -1,6 +1,7 @@
 package errors
 
 var (
+	ExceededMaxParameters       = &Base{"Exceeded maximum number of parameters per function", false}
 	ExceededMaxVariables        = &Base{"Exceeded maximum limit of variables per function", false}
 	ExpectedVariable            = &Base{"Expected variable on the left side of the assignment", false}
 	InvalidExpression           = &Base{"Invalid expression", false}

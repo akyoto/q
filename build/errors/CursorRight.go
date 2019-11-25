@@ -1,5 +1,5 @@
 package errors
 
-type Positionable interface {
+type CursorRight interface {
 	CursorRight() bool
 }
