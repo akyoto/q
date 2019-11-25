@@ -104,6 +104,11 @@ func (expr *Expression) IsLeaf() bool {
 	return len(expr.Children) == 0
 }
 
+// IsFunctionCall returns true if the expression is a function call.
+func (expr *Expression) IsFunctionCall() bool {
+	return expr.Value.Kind == token.Operator && expr.Value.Bytes == nil
+}
+
 // String generates a textual representation of the expression.
 func (expr *Expression) String() string {
 	builder := strings.Builder{}

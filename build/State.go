@@ -705,6 +705,10 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		}
 	}
 
+	if register.UsedBy == nil {
+		register.UsedBy = singleToken
+	}
+
 	return nil
 }
 
@@ -735,7 +739,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 
 	// Function call argument registers
 	_ = expr.EachOperation(func(sub *expression.Expression) error {
-		if sub.Value.Kind == token.Operator && sub.Value.Bytes == nil {
+		if sub.IsFunctionCall() {
 			parameterCount = 0
 			left := sub.Children[0]
 			left.Register = finalRegister
@@ -754,8 +758,6 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		if left.Value.Kind != token.Separator {
 			left.Register = state.registers.CallRegisters[parameterCount]
 			sub.Register = left.Register
-			// left.Register.UsedBy = left
-
 			parameterCount++
 
 			node := left
@@ -768,8 +770,6 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 
 		if right.Value.Kind != token.Separator {
 			right.Register = state.registers.CallRegisters[parameterCount]
-			// right.Register.UsedBy = right
-
 			parameterCount++
 
 			node := right
@@ -786,7 +786,6 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 	err := expr.EachOperation(func(sub *expression.Expression) error {
 		left := sub.Children[0]
 		right := sub.Children[1]
-		operator := sub.Value.Text()
 
 		if left.Register == nil {
 			left.Register = state.registers.FindFreeRegister()
@@ -800,8 +799,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			}
 		}
 
-		// Function call
-		if operator == "" {
+		if sub.IsFunctionCall() {
 			functionName := left.Value.Text()
 			state.environment.Functions[functionName].Used = true
 			state.assembler.Call(functionName)
@@ -822,12 +820,18 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			}
 
 			returnValueRegister.UsedBy = nil
+
+			for _, callRegister := range state.registers.CallRegisters {
+				callRegister.UsedBy = nil
+			}
+
 			return nil
 		}
 
 		// Left operand
 		if left.IsLeaf() {
 			err := state.TokenToRegister(left.Value, sub.Register)
+			sub.Register.UsedBy = left
 
 			if err != nil {
 				return err
@@ -838,11 +842,17 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			if state.verbose {
 				state.log.Printf("mov %s, %s\n", sub.Register, left.Register)
 			}
+
+			left.Register.UsedBy = nil
 		}
+
+		operator := sub.Value.Text()
 
 		if operator == "," {
 			if right.IsLeaf() {
-				return state.TokenToRegister(right.Value, right.Register)
+				err := state.TokenToRegister(right.Value, right.Register)
+				right.Register.UsedBy = right
+				return err
 			}
 
 			return nil
@@ -891,6 +901,10 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 
 		return nil
 	})
+
+	if finalRegister.UsedBy == nil {
+		finalRegister.UsedBy = expr
+	}
 
 	return nil
 }
