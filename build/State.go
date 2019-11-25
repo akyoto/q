@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"sync/atomic"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/errors"
@@ -509,8 +510,8 @@ func (state *State) Call(tokens []token.Token) error {
 	}
 
 	// Calling a function with side effects causes our function to have side effects
-	if function.HasSideEffects {
-		state.function.HasSideEffects = true
+	if atomic.LoadInt32(&function.SideEffects) > 0 {
+		atomic.AddInt32(&state.function.SideEffects, 1)
 	}
 
 	bracketPos := 1

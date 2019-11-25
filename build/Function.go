@@ -17,7 +17,7 @@ type Function struct {
 	TokenEnd         token.Position
 	Used             bool
 	NoParameterCheck bool
-	HasSideEffects   bool
+	SideEffects      int32
 	parameterStart   token.Position
 }
 
