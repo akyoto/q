@@ -31,8 +31,10 @@ This will produce the `q` compiler in your current directory.
 * No classes or methods: There is just a) data and b) functions that can operate on data
 * No name shadowing, names never change their meaning
 * No side effects when importing a package
+* No backwards compatibility (we use a rather unique method to ensure everything works)
 * Fast compilation (a couple milliseconds should suffice for most programs)
 * Small binaries (a "Hello World" program produces a 247-byte binary)
+* High performance (should compete with C and Rust)
 * Linting embedded into the build process (detects common mistakes and suggests solutions)
 * Testing embedded into the language ("q test")
 * Formatting tools included ("q format")
@@ -40,13 +42,38 @@ This will produce the `q` compiler in your current directory.
 * Statically typed with type inference
 * User-friendly compiler messages
 
+## Todo
+
+* [x] Tokenizer
+* [x] Scanner
+* [x] Parallel function compiler
+* [x] Error messages
+* [x] Function calls
+* [x] Infinite loops via `loop`
+* [x] Simple `for` loops
+* [x] Simple `if` conditions
+* [x] `return` with no arguments
+* [x] Syscalls
+* [x] Linter: Unused variables
+* [x] Linter: Unused parameters
+* [ ] Function return values
+* [ ] Data structures
+* [ ] Stack allocation
+* [ ] Heap allocation
+* [ ] `match` statement
+* [ ] Error handling
+* [ ] Parallel execution
+* [ ] Lock-free data structures
+* [ ] Variable lifetime tracking
+* [ ] Multiple return values
+* [ ] Expression optimization
+* [ ] Assembly optimization
+* [ ] Linter: Ineffective assignment
+* [ ] ...and everything else you'd expect from a modern language.
+
 ## Architectures
 
 Currently **Linux x86-64** only. It produces 64-bit ELF binaries.
-
-## Editors
-
-There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables basic highlighting (copy into `$HOME/.vscode/extensions`).
 
 ## Assembly
 
@@ -58,6 +85,14 @@ You can view the produced assembly output via the `-v` verbose flag:
 
 Note that this intermediate text representation is only generated when the verbose flag is specified.
 Q uses its own binary assembler which avoids the intermediary text format during normal compilation.
+
+## Builtins
+
+There are currently 2 builtin functions, `syscall` and `print`. In the future we'd like to remove `print` so that `syscall` becomes the only builtin function.
+
+## Editors
+
+There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables basic highlighting (copy into `$HOME/.vscode/extensions`).
 
 ## How to contribute
 
