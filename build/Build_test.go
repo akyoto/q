@@ -26,7 +26,7 @@ func TestExamples(t *testing.T) {
 		{"procedures", "Procedure 1\nProcedure 2\nProcedure 3\n", 0},
 		{"syscalls", "Hello Syscalls", 0},
 		{"variables", "", 100},
-		{"loops", "Hello Loops\nHello Loops\nHello Loops\n", 0},
+		{"loops", "Hello\nHello\nHello\n", 0},
 	}
 
 	for _, example := range examples {
