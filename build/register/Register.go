@@ -1,9 +1,46 @@
 package register
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Register represents a single CPU register.
 type Register struct {
 	Name   string
-	UsedBy fmt.Stringer
+	usedBy fmt.Stringer
+}
+
+// Use marks the register as used by the given object.
+func (register *Register) Use(obj fmt.Stringer) {
+	if obj == nil {
+		panic("register.Use parameter cannot be nil!")
+	}
+
+	if register.usedBy != nil {
+		panic("Register already used by another object!")
+	}
+
+	register.usedBy = obj
+}
+
+// Free frees the register so that it can be used for new calculations.
+func (register *Register) Free() {
+	register.usedBy = nil
+}
+
+// IsFree returns true if the register is not in use.
+func (register *Register) IsFree() bool {
+	return register.usedBy == nil
+}
+
+// String returns a human-readable representation of the register.
+func (register *Register) String() string {
+	// return register.Name
+	usedBy := "?"
+
+	if register.usedBy != nil {
+		usedBy = register.usedBy.String()
+	}
+
+	return fmt.Sprintf("%s=%v", register.Name, usedBy)
 }

@@ -112,7 +112,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 			state.assembler.CompareRegisterRegister(register.Name, variable.Register.Name)
 
 			if state.verbose {
-				state.log.Printf("cmp %s, %s\n", register, variable.Register)
+				state.log.Printf("cmp %v, %v\n", register, variable.Register)
 			}
 
 			return nil, nil
@@ -128,7 +128,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 			state.assembler.CompareRegisterNumber(register.Name, uint64(number))
 
 			if state.verbose {
-				state.log.Printf("cmp %s, %d\n", register, uint64(number))
+				state.log.Printf("cmp %v, %d\n", register, uint64(number))
 			}
 
 			return nil, nil
@@ -159,7 +159,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 	state.assembler.CompareRegisterRegister(register.Name, temporary.Name)
 
 	if state.verbose {
-		state.log.Printf("cmp %s, %s\n", register, temporary)
+		state.log.Printf("cmp %v, %v\n", register, temporary)
 	}
 
 	return temporary, nil
@@ -341,15 +341,15 @@ func (state *State) ForEnd() error {
 	state.assembler.AddLabel(label + "_end")
 
 	if state.verbose {
-		state.log.Printf("inc %s\n", register)
+		state.log.Printf("inc %v\n", register)
 		state.log.Printf("jmp %s\n", label)
 		state.log.Printf("%s:\n", label+"_end")
 	}
 
-	register.UsedBy = nil
+	register.Free()
 
 	if temporary != nil {
-		temporary.UsedBy = nil
+		temporary.Free()
 	}
 
 	return nil
@@ -580,10 +580,10 @@ func (state *State) Call(tokens []token.Token) error {
 			state.assembler.Println(text)
 
 			if state.verbose {
-				state.log.Printf("mov %s, 1", state.registers.SyscallRegisters[0])
-				state.log.Printf("mov %s, 1", state.registers.SyscallRegisters[1])
-				state.log.Printf("mov %s, \"%s\"", state.registers.SyscallRegisters[2], text)
-				state.log.Printf("mov %s, %d", state.registers.SyscallRegisters[3], len(text)+1)
+				state.log.Printf("mov %v, 1", state.registers.SyscallRegisters[0])
+				state.log.Printf("mov %v, 1", state.registers.SyscallRegisters[1])
+				state.log.Printf("mov %v, \"%s\"", state.registers.SyscallRegisters[2], text)
+				state.log.Printf("mov %v, %d", state.registers.SyscallRegisters[3], len(text)+1)
 				state.log.Println("syscall")
 			}
 
@@ -679,7 +679,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		state.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
 
 		if state.verbose {
-			state.log.Printf("mov %s, %s\n", register, variable.Register)
+			state.log.Printf("mov %v, %v\n", register, variable.Register)
 		}
 
 	case token.Number:
@@ -693,7 +693,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		state.assembler.MoveRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
-			state.log.Printf("mov %s, %d\n", register, number)
+			state.log.Printf("mov %v, %d\n", register, number)
 		}
 
 	case token.Text:
@@ -701,12 +701,12 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		state.assembler.MoveRegisterAddress(register.Name, address)
 
 		if state.verbose {
-			state.log.Printf("mov %s, <%d>\n", register, address)
+			state.log.Printf("mov %v, <%d>\n", register, address)
 		}
 	}
 
-	if register.UsedBy == nil {
-		register.UsedBy = singleToken
+	if register.IsFree() {
+		register.Use(singleToken)
 	}
 
 	return nil
@@ -794,8 +794,8 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		if sub.Value.Kind != token.Separator {
 			sub.Register = left.Register
 
-			if sub.Register.UsedBy == nil {
-				sub.Register.UsedBy = sub
+			if sub.Register.IsFree() {
+				sub.Register.Use(sub)
 			}
 		}
 
@@ -808,30 +808,28 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 				state.log.Printf("call %s\n", functionName)
 			}
 
+			for _, callRegister := range state.registers.CallRegisters {
+				callRegister.Free()
+			}
+
 			returnValueRegister := state.registers.ReturnValueRegisters[0]
-			returnValueRegister.UsedBy = sub
+			returnValueRegister.Use(sub)
 
 			if sub.Register != returnValueRegister {
 				state.assembler.MoveRegisterRegister(sub.Register.Name, returnValueRegister.Name)
 
 				if state.verbose {
-					state.log.Printf("mov %s, %s\n", sub.Register, returnValueRegister)
+					state.log.Printf("mov %v, %v\n", sub.Register, returnValueRegister)
 				}
 			}
 
-			returnValueRegister.UsedBy = nil
-
-			for _, callRegister := range state.registers.CallRegisters {
-				callRegister.UsedBy = nil
-			}
-
+			returnValueRegister.Free()
 			return nil
 		}
 
 		// Left operand
 		if left.IsLeaf() {
 			err := state.TokenToRegister(left.Value, sub.Register)
-			sub.Register.UsedBy = left
 
 			if err != nil {
 				return err
@@ -840,10 +838,10 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			state.assembler.MoveRegisterRegister(sub.Register.Name, left.Register.Name)
 
 			if state.verbose {
-				state.log.Printf("mov %s, %s\n", sub.Register, left.Register)
+				state.log.Printf("mov %v, %v\n", sub.Register, left.Register)
 			}
 
-			left.Register.UsedBy = nil
+			left.Register.Free()
 		}
 
 		operator := sub.Value.Text()
@@ -851,7 +849,6 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		if operator == "," {
 			if right.IsLeaf() {
 				err := state.TokenToRegister(right.Value, right.Register)
-				right.Register.UsedBy = right
 				return err
 			}
 
@@ -884,7 +881,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		err := state.CalculateRegisterRegister(operator, sub.Register, right.Register)
 
 		if right.Register != nil {
-			right.Register.UsedBy = nil
+			right.Register.Free()
 		}
 
 		return err
@@ -896,14 +893,14 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 
 	_ = expr.EachOperation(func(expr *expression.Expression) error {
 		if expr.Register != nil && expr.Register != finalRegister {
-			expr.Register.UsedBy = nil
+			expr.Register.Free()
 		}
 
 		return nil
 	})
 
-	if finalRegister.UsedBy == nil {
-		finalRegister.UsedBy = expr
+	if finalRegister.IsFree() {
+		finalRegister.Use(expr)
 	}
 
 	return nil
@@ -923,7 +920,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 			state.assembler.IncreaseRegister(register.Name)
 
 			if state.verbose {
-				state.log.Printf("inc %s\n", register)
+				state.log.Printf("inc %v\n", register)
 			}
 
 			return nil
@@ -932,7 +929,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		state.assembler.AddRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
-			state.log.Printf("add %s, %d\n", register, number)
+			state.log.Printf("add %v, %d\n", register, number)
 		}
 
 	case "-":
@@ -940,7 +937,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 			state.assembler.DecreaseRegister(register.Name)
 
 			if state.verbose {
-				state.log.Printf("dec %s\n", register)
+				state.log.Printf("dec %v\n", register)
 			}
 
 			return nil
@@ -949,14 +946,14 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		state.assembler.SubRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
-			state.log.Printf("sub %s, %d\n", register, number)
+			state.log.Printf("sub %v, %d\n", register, number)
 		}
 
 	case "*":
 		state.assembler.MulRegisterNumber(register.Name, uint64(number))
 
 		if state.verbose {
-			state.log.Printf("imul %s, %d\n", register, number)
+			state.log.Printf("imul %v, %d\n", register, number)
 		}
 
 	case ",":
@@ -976,21 +973,21 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 		state.assembler.AddRegisterRegister(registerTo.Name, registerFrom.Name)
 
 		if state.verbose {
-			state.log.Printf("add %s, %s\n", registerTo, registerFrom)
+			state.log.Printf("add %v, %v\n", registerTo, registerFrom)
 		}
 
 	case "-":
 		state.assembler.SubRegisterRegister(registerTo.Name, registerFrom.Name)
 
 		if state.verbose {
-			state.log.Printf("sub %s, %s\n", registerTo, registerFrom)
+			state.log.Printf("sub %v, %v\n", registerTo, registerFrom)
 		}
 
 	case "*":
 		state.assembler.MulRegisterRegister(registerTo.Name, registerFrom.Name)
 
 		if state.verbose {
-			state.log.Printf("imul %s, %s\n", registerTo, registerFrom)
+			state.log.Printf("imul %v, %v\n", registerTo, registerFrom)
 		}
 
 	case ",":

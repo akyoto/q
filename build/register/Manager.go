@@ -59,7 +59,7 @@ func NewManager() *Manager {
 // and returns nil when all are currently occupied.
 func (manager *Manager) FindFreeRegister() *Register {
 	for _, register := range manager.Registers {
-		if register.UsedBy == nil {
+		if register.IsFree() {
 			return register
 		}
 	}

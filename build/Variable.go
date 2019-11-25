@@ -20,7 +20,7 @@ type Variable struct {
 // BindRegister binds the variable to a register.
 func (variable *Variable) BindRegister(register *register.Register) {
 	variable.Register = register
-	register.UsedBy = variable
+	register.Use(variable)
 }
 
 // String returns the string representation.
