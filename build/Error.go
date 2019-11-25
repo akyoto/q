@@ -2,6 +2,8 @@ package build
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
@@ -44,5 +46,16 @@ func NewError(err error, path string, tokens []token.Token) *Error {
 
 // Error generates the string representation.
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s:%d:%d: %s", e.Path, e.Line, e.Column, e.Err)
+	path := e.Path
+	cwd, err := os.Getwd()
+
+	if err == nil {
+		relativePath, err := filepath.Rel(cwd, e.Path)
+
+		if err == nil {
+			path = relativePath
+		}
+	}
+
+	return fmt.Sprintf("%s:%d:%d: %s", path, e.Line, e.Column, e.Err)
 }

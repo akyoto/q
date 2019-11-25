@@ -115,6 +115,8 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				instruction.Kind = LoopStart
 			case "return":
 				instruction.Kind = Return
+			case "mut":
+				instruction.Kind = Assignment
 			default:
 				return nil, &Error{"Keyword not implemented", i, false}
 			}

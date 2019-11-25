@@ -262,14 +262,11 @@ func (state *State) ForStart(tokens []token.Token) error {
 	}
 
 	assignment := expression[:rangePos]
-	err := state.Assignment(assignment)
+	variable, err := state.AssignVariable(assignment)
 
 	if err != nil {
 		return err
 	}
-
-	variableName := expression[0].Text()
-	variable := state.scopes.Get(variableName)
 
 	state.forLoop.counter++
 
@@ -373,10 +370,25 @@ func (state *State) Return(tokens []token.Token) error {
 
 // Assignment handles assignment instructions.
 func (state *State) Assignment(tokens []token.Token) error {
-	left := tokens[0]
+	_, err := state.AssignVariable(tokens)
+	return err
+}
+
+// AssignVariable handles assignment instructions and also returns the referenced variable.
+func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
+	cursor := 0
+	mutable := false
+	left := tokens[cursor]
+
+	if left.Kind == token.Keyword && left.Text() == "mut" {
+		mutable = true
+		cursor++
+		state.tokenCursor++
+		left = tokens[cursor]
+	}
 
 	if left.Kind != token.Identifier {
-		return errors.ExpectedVariable
+		return nil, errors.ExpectedVariable
 	}
 
 	variableName := left.Text()
@@ -386,41 +398,47 @@ func (state *State) Assignment(tokens []token.Token) error {
 		register := state.registers.FindFreeRegister()
 
 		if register == nil {
-			return errors.ExceededMaxVariables
+			return nil, errors.ExceededMaxVariables
 		}
 
 		variable = &Variable{
 			Name:     variableName,
 			Position: state.tokenCursor,
+			Mutable:  mutable,
 		}
 
 		variable.BindRegister(register)
 		state.scopes.Add(variable)
+	} else if !variable.Mutable {
+		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
 	}
 
+	// Operator
+	cursor++
 	state.tokenCursor++
-	operator := tokens[1]
+	operator := tokens[cursor]
 
 	if operator.Kind != token.Operator {
-		return errors.MissingAssignmentOperator
+		return variable, errors.MissingAssignmentOperator
 	}
 
-	// Skip variable name and operator
+	// Expression
+	cursor++
 	state.tokenCursor++
-	expression := tokens[2:]
+	expression := tokens[cursor:]
 
 	if len(expression) == 0 {
-		return errors.MissingAssignmentExpression
+		return variable, errors.MissingAssignmentExpression
 	}
 
 	err := state.TokensToRegister(expression, variable.Register)
 
 	if err != nil {
-		return err
+		return variable, err
 	}
 
 	state.tokenCursor += len(expression)
-	return nil
+	return variable, nil
 }
 
 // Call handles function calls.
