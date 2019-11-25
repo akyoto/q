@@ -724,79 +724,104 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 }
 
 // ExpressionToRegister moves the result of an expression into the given register.
-func (state *State) ExpressionToRegister(expr *expression.Expression, register *register.Register) error {
+func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegister *register.Register) error {
 	if expr.IsLeaf() {
-		return state.TokenToRegister(expr.Value, register)
+		return state.TokenToRegister(expr.Value, finalRegister)
 	}
 
 	expr.SortByRegisterCount()
-	tmp := expr
-
-	for len(tmp.Children) > 0 {
-		tmp.Children[0].Register = register
-		tmp = tmp.Children[0]
-	}
-
+	expr.Register = finalRegister
 	parameterCount := 0
+
+	// Function call argument registers
+	_ = expr.EachOperation(func(sub *expression.Expression) error {
+		if sub.Value.Kind == token.Operator && sub.Value.Bytes == nil {
+			parameterCount = 0
+			left := sub.Children[0]
+			left.Register = finalRegister
+			return nil
+		}
+
+		if sub.Value.Kind != token.Separator {
+			left := sub.Children[0]
+			left.Register = finalRegister
+			return nil
+		}
+
+		left := sub.Children[0]
+		right := sub.Children[1]
+
+		if left.Value.Kind != token.Separator {
+			left.Register = state.registers.CallRegisters[parameterCount]
+			sub.Register = left.Register
+			// left.Register.UsedBy = left
+
+			parameterCount++
+
+			node := left
+
+			for len(node.Children) > 0 {
+				node = node.Children[0]
+				node.Register = left.Register
+			}
+		}
+
+		if right.Value.Kind != token.Separator {
+			right.Register = state.registers.CallRegisters[parameterCount]
+			// right.Register.UsedBy = right
+
+			parameterCount++
+
+			node := right
+
+			for len(node.Children) > 0 {
+				node = node.Children[0]
+				node.Register = right.Register
+			}
+		}
+
+		return nil
+	})
 
 	err := expr.EachOperation(func(sub *expression.Expression) error {
 		left := sub.Children[0]
 		right := sub.Children[1]
 		operator := sub.Value.Text()
 
-		// Function call arguments
-		if operator == "," {
-			if left.IsLeaf() {
-				left.Register = state.registers.CallRegisters[parameterCount]
-				left.Register.UsedBy = left
-				sub.Register = left.Register
-				err := state.TokenToRegister(left.Value, left.Register)
-
-				if err != nil {
-					return err
-				}
-
-				parameterCount++
-			}
-
-			if right.IsLeaf() {
-				right.Register = state.registers.CallRegisters[parameterCount]
-				right.Register.UsedBy = right
-				err := state.TokenToRegister(right.Value, right.Register)
-
-				if err != nil {
-					return err
-				}
-
-				parameterCount++
-			}
-
-			return nil
-		}
-
 		if left.Register == nil {
 			left.Register = state.registers.FindFreeRegister()
 		}
 
-		sub.Register = left.Register
+		if sub.Value.Kind != token.Separator {
+			sub.Register = left.Register
 
-		if sub.Register.UsedBy == nil {
-			sub.Register.UsedBy = sub
+			if sub.Register.UsedBy == nil {
+				sub.Register.UsedBy = sub
+			}
 		}
 
 		// Function call
 		if operator == "" {
-			parameterCount = 0
-			state.assembler.Call(left.Value.Text())
-			state.registers.ReturnValueRegisters[0].UsedBy = sub
-			state.assembler.MoveRegisterRegister(left.Register.Name, state.registers.ReturnValueRegisters[0].Name)
-			state.environment.Functions[left.Value.Text()].Used = true
+			functionName := left.Value.Text()
+			state.environment.Functions[functionName].Used = true
+			state.assembler.Call(functionName)
 
 			if state.verbose {
-				state.log.Printf("call %s\n", left.Value.Text())
-				state.log.Printf("mov %s, %s\n", left.Register, state.registers.ReturnValueRegisters[0])
+				state.log.Printf("call %s\n", functionName)
 			}
 
+			returnValueRegister := state.registers.ReturnValueRegisters[0]
+			returnValueRegister.UsedBy = sub
+
+			if sub.Register != returnValueRegister {
+				state.assembler.MoveRegisterRegister(sub.Register.Name, returnValueRegister.Name)
+
+				if state.verbose {
+					state.log.Printf("mov %s, %s\n", sub.Register, returnValueRegister)
+				}
+			}
+
+			returnValueRegister.UsedBy = nil
 			return nil
 		}
 
@@ -813,6 +838,14 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 			if state.verbose {
 				state.log.Printf("mov %s, %s\n", sub.Register, left.Register)
 			}
+		}
+
+		if operator == "," {
+			if right.IsLeaf() {
+				return state.TokenToRegister(right.Value, right.Register)
+			}
+
+			return nil
 		}
 
 		// Right operand is a leaf node
@@ -852,7 +885,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 	}
 
 	_ = expr.EachOperation(func(expr *expression.Expression) error {
-		if expr.Register != register {
+		if expr.Register != nil && expr.Register != finalRegister {
 			expr.Register.UsedBy = nil
 		}
 
@@ -912,6 +945,9 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 			state.log.Printf("imul %s, %d\n", register, number)
 		}
 
+	case ",":
+		return nil
+
 	default:
 		return errors.NotImplemented
 	}
@@ -942,6 +978,9 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 		if state.verbose {
 			state.log.Printf("imul %s, %s\n", registerTo, registerFrom)
 		}
+
+	case ",":
+		return nil
 
 	default:
 		return errors.NotImplemented

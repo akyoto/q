@@ -62,6 +62,10 @@ func (expr *Expression) SortByRegisterCount() {
 		child.SortByRegisterCount()
 	}
 
+	if expr.Value.Bytes == nil || expr.Value.Bytes[0] == ',' {
+		return
+	}
+
 	left := expr.Children[0]
 	right := expr.Children[1]
 
