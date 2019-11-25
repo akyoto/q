@@ -8,7 +8,7 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
-func TestFromTokens(t *testing.T) {
+func TestExpressionFromTokens(t *testing.T) {
 	tests := []struct {
 		Name       string
 		Expression string

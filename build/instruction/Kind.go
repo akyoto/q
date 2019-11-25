@@ -38,20 +38,32 @@ const (
 // String returns the text representation.
 func (kind Kind) String() string {
 	switch kind {
-	case Invalid:
-		return "Invalid"
-
 	case Assignment:
 		return "Assignment"
 
 	case Call:
 		return "Call"
 
+	case IfStart:
+		return "IfStart"
+
+	case IfEnd:
+		return "IfEnd"
+
+	case ForStart:
+		return "ForStart"
+
+	case ForEnd:
+		return "ForEnd"
+
 	case LoopStart:
 		return "LoopStart"
 
 	case LoopEnd:
 		return "LoopEnd"
+
+	case Invalid:
+		return "Invalid"
 
 	default:
 		return "<undefined instruction>"

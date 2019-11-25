@@ -8,7 +8,7 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
-func TestFromTokens(t *testing.T) {
+func TestInstructionsFromTokens(t *testing.T) {
 	usagePatterns := []struct {
 		Source   []byte
 		Expected []instruction.Instruction
@@ -37,19 +37,23 @@ func TestFromTokens(t *testing.T) {
 	}
 
 	for _, pattern := range usagePatterns {
-		tokens := []token.Token{}
-		processed := 0
-		tokens, processed = token.Tokenize(pattern.Source, tokens)
-		assert.Equal(t, processed, len(pattern.Source))
-		instructions, err := instruction.FromTokens(tokens)
-		assert.Nil(t, err)
-		assert.Equal(t, len(instructions), len(pattern.Expected))
+		pattern := pattern
 
-		for index := range instructions {
-			t.Logf("[%d][%s] %s", index, instructions[index].Kind, instructions[index].Tokens)
-			assert.Equal(t, instructions[index].Kind, pattern.Expected[index].Kind)
-			assert.Equal(t, instructions[index].Position, pattern.Expected[index].Position)
-			assert.Equal(t, instructions[index].Kind.String(), pattern.Expected[index].Kind.String())
-		}
+		t.Run(string(pattern.Source), func(t *testing.T) {
+			tokens := []token.Token{}
+			processed := 0
+			tokens, processed = token.Tokenize(pattern.Source, tokens)
+			assert.Equal(t, processed, len(pattern.Source))
+			instructions, err := instruction.FromTokens(tokens)
+			assert.Nil(t, err)
+			assert.Equal(t, len(instructions), len(pattern.Expected))
+
+			for index := range instructions {
+				t.Logf("[%d]:%s: %s", index, instructions[index].Kind, instructions[index].Tokens)
+				assert.Equal(t, instructions[index].Kind, pattern.Expected[index].Kind)
+				assert.Equal(t, instructions[index].Position, pattern.Expected[index].Position)
+				assert.Equal(t, instructions[index].Kind.String(), pattern.Expected[index].Kind.String())
+			}
+		})
 	}
 }
