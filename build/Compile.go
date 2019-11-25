@@ -1,6 +1,10 @@
 package build
 
 import (
+	"fmt"
+	"log"
+	"os"
+
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/instruction"
@@ -30,6 +34,9 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return nil, function.Error(instrErr.Position, instrErr)
 	}
 
+	logPrefix := fmt.Sprintf("[%s] ", function.Name)
+	logger := log.New(os.Stdout, logPrefix, 0)
+
 	state := State{
 		assembler:    assembler,
 		scopes:       scopes,
@@ -38,6 +45,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		function:     function,
 		tokens:       tokens,
 		instructions: instructions,
+		log:          logger,
 		optimize:     optimize,
 		verbose:      verbose,
 	}

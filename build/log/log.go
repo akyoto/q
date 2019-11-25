@@ -9,9 +9,6 @@ var (
 	// Info is used for general info messages.
 	Info = log.New(os.Stdout, "", 0)
 
-	// Asm is used for assembler instructions.
-	Asm = Info
-
 	// Error is used for error messages.
 	Error = log.New(os.Stderr, "", 0)
 )
