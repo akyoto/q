@@ -92,7 +92,7 @@ There are currently 2 builtin functions, `syscall` and `print`. In the future we
 
 ## Editors
 
-There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables basic highlighting (copy into `$HOME/.vscode/extensions`).
+There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables syntax highlighting (copy into `$HOME/.vscode/extensions`).
 
 ## How to contribute
 
