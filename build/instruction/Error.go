@@ -1,6 +1,8 @@
 package instruction
 
-import "github.com/akyoto/q/build/token"
+import (
+	"github.com/akyoto/q/build/token"
+)
 
 type Error struct {
 	Message         string

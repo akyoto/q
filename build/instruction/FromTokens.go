@@ -85,7 +85,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 			}
 
 			if i == len(tokens)-1 {
-				return instructions, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
+				return nil, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
 			}
 
 			nextToken := tokens[i+1]
@@ -95,10 +95,10 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				newLinePos := token.Index(remaining, token.NewLine)
 
 				if newLinePos != -1 && remaining[newLinePos-1].Kind == token.GroupEnd {
-					return instructions, &Error{fmt.Sprintf("Missing opening bracket '(' after '%s'", t.Text()), i, true}
+					return nil, &Error{fmt.Sprintf("Missing opening bracket '(' after '%s'", t.Text()), i, true}
 				}
 
-				return instructions, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
+				return nil, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
 			}
 
 		case token.Keyword:
@@ -116,7 +116,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 			case "return":
 				instruction.Kind = Return
 			default:
-				return instructions, &Error{"Keyword not implemented", i, false}
+				return nil, &Error{"Keyword not implemented", i, false}
 			}
 
 		case token.BlockStart:
@@ -125,7 +125,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				// OK.
 
 			default:
-				return instructions, &Error{fmt.Sprintf("Invalid block of type '%s'", instruction.Kind), i, false}
+				return nil, &Error{fmt.Sprintf("Invalid block of type '%s'", instruction.Kind), i, false}
 			}
 
 			blocks = append(blocks, instruction.Kind)
@@ -151,7 +151,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				instruction.Kind = LoopEnd
 
 			default:
-				return instructions, &Error{fmt.Sprintf("Not implemented: %v", block), i, false}
+				return nil, &Error{fmt.Sprintf("Not implemented: %v", block), i, false}
 			}
 
 			instruction.Tokens = tokens[start:i]
