@@ -59,12 +59,12 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 // declareParameters declares the given parameters as variables inside the scope.
 // It also assigns a register to each variable.
 func declareParameters(function *Function, scopes *ScopeStack, registers *register.Manager) error {
-	for _, parameter := range function.Parameters {
-		register := registers.FindFreeRegister()
-
-		if register == nil {
+	for i, parameter := range function.Parameters {
+		if i >= len(registers.CallRegisters) {
 			return errors.ExceededMaxParameters
 		}
+
+		register := registers.CallRegisters[i]
 
 		variable := &Variable{
 			Name:     parameter.Name,

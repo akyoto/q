@@ -3,6 +3,7 @@ package register
 // Manager manages the allocation state of registers.
 type Manager struct {
 	Registers            []*Register
+	CallRegisters        []*Register
 	SyscallRegisters     []*Register
 	ReturnValueRegisters []*Register
 }
@@ -50,6 +51,7 @@ func NewManager() *Manager {
 		},
 	}
 
+	manager.CallRegisters = manager.SyscallRegisters
 	return manager
 }
 

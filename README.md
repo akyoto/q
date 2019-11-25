@@ -59,7 +59,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Mutable variables via `mut`
 * [x] Linter: Unused variables
 * [x] Linter: Unused parameters
-* [ ] Function return values
+* [x] Function return values
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation

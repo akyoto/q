@@ -16,16 +16,19 @@ type Expression struct {
 }
 
 // AddChild adds a child to the expression.
-func (expr *Expression) AddChild(t token.Token) {
+func (expr *Expression) AddChild(t token.Token) *Expression {
 	if expr.Value.Kind == token.Invalid {
 		expr.Value = t
-		return
+		return expr
 	}
 
-	expr.Children = append(expr.Children, &Expression{
+	child := &Expression{
 		Value:  t,
 		Parent: expr,
-	})
+	}
+
+	expr.Children = append(expr.Children, child)
+	return child
 }
 
 // EachOperation iterates the operations in the tree.

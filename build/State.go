@@ -396,6 +396,16 @@ func (state *State) PopScope() error {
 
 // Return handles return statements.
 func (state *State) Return(tokens []token.Token) error {
+	expression := tokens[1:]
+
+	if len(expression) > 0 {
+		err := state.TokensToRegister(expression, state.registers.ReturnValueRegisters[0])
+
+		if err != nil {
+			return err
+		}
+	}
+
 	state.assembler.Return()
 
 	if state.verbose {
@@ -595,7 +605,7 @@ func (state *State) Call(tokens []token.Token) error {
 		return nil
 	}
 
-	err := state.BeforeCall(&call, state.registers.SyscallRegisters)
+	err := state.BeforeCall(&call, state.registers.CallRegisters)
 
 	if err != nil {
 		return err
@@ -726,9 +736,42 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 		tmp = tmp.Children[0]
 	}
 
+	parameterCount := 0
+
 	err := expr.EachOperation(func(sub *expression.Expression) error {
 		left := sub.Children[0]
 		right := sub.Children[1]
+		operator := sub.Value.Text()
+
+		// Function call arguments
+		if operator == "," {
+			if left.IsLeaf() {
+				left.Register = state.registers.CallRegisters[parameterCount]
+				left.Register.UsedBy = left
+				sub.Register = left.Register
+				err := state.TokenToRegister(left.Value, left.Register)
+
+				if err != nil {
+					return err
+				}
+
+				parameterCount++
+			}
+
+			if right.IsLeaf() {
+				right.Register = state.registers.CallRegisters[parameterCount]
+				right.Register.UsedBy = right
+				err := state.TokenToRegister(right.Value, right.Register)
+
+				if err != nil {
+					return err
+				}
+
+				parameterCount++
+			}
+
+			return nil
+		}
 
 		if left.Register == nil {
 			left.Register = state.registers.FindFreeRegister()
@@ -738,6 +781,22 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 
 		if sub.Register.UsedBy == nil {
 			sub.Register.UsedBy = sub
+		}
+
+		// Function call
+		if operator == "" {
+			parameterCount = 0
+			state.assembler.Call(left.Value.Text())
+			state.registers.ReturnValueRegisters[0].UsedBy = sub
+			state.assembler.MoveRegisterRegister(left.Register.Name, state.registers.ReturnValueRegisters[0].Name)
+			state.environment.Functions[left.Value.Text()].Used = true
+
+			if state.verbose {
+				log.Asm.Printf("call %s\n", left.Value.Text())
+				log.Asm.Printf("mov %s, %s\n", left.Register, state.registers.ReturnValueRegisters[0])
+			}
+
+			return nil
 		}
 
 		// Left operand
@@ -754,9 +813,6 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, register *
 				log.Asm.Printf("mov %s, %s\n", sub.Register, left.Register)
 			}
 		}
-
-		// Operator
-		operator := sub.Value.Text()
 
 		// Right operand is a leaf node
 		if right.IsLeaf() {

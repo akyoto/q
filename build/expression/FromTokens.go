@@ -13,7 +13,25 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 
 	for index, t := range tokens {
 		switch t.Kind {
-		case token.Identifier, token.Number, token.Text:
+		case token.Identifier:
+			// Function calls
+			if index != len(tokens)-1 && tokens[index+1].Kind == token.GroupStart {
+				call := current.AddChild(token.Token{Kind: token.Operator, Bytes: nil})
+				call.AddChild(t)
+				current = call
+				continue
+			}
+
+			current.AddChild(t)
+
+			// In case an operator priority was enforced,
+			// we need to go back up to the original node.
+			if goUp {
+				current = current.Parent
+				goUp = false
+			}
+
+		case token.Number, token.Text:
 			current.AddChild(t)
 
 			// In case an operator priority was enforced,
@@ -46,7 +64,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			stack = stack[:len(stack)-1]
 			current = stack[len(stack)-1]
 
-		case token.Operator:
+		case token.Operator, token.Separator:
 			// Turn identifier into an operation
 			if current.IsLeaf() {
 				current.Children = append(current.Children, &Expression{
