@@ -17,22 +17,18 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			// Function calls
 			if index != len(tokens)-1 && tokens[index+1].Kind == token.GroupStart {
 				call := current.AddChild(token.Token{Kind: token.Operator, Bytes: nil})
-				call.Kind = Call
 				call.AddChild(t)
 				current = call
 				continue
 			}
 
-			child := current.AddChild(t)
-			child.Kind = Identifier
+			current.AddChild(t)
 
 		case token.Number:
-			child := current.AddChild(t)
-			child.Kind = Number
+			current.AddChild(t)
 
 		case token.Text:
-			child := current.AddChild(t)
-			child.Kind = Text
+			current.AddChild(t)
 
 		case token.GroupStart:
 			group := New()

@@ -10,7 +10,6 @@ import (
 
 // Expression is a binary tree with an operator on each node.
 type Expression struct {
-	Kind     Kind
 	Value    token.Token
 	Children []*Expression
 	Parent   *Expression
@@ -128,7 +127,6 @@ func (expr *Expression) Close() {
 		child.Close()
 	}
 
-	expr.Kind = Empty
 	expr.Value.Kind = token.Invalid
 	expr.Children = expr.Children[:0]
 	expr.Parent = nil
