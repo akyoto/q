@@ -21,7 +21,7 @@ type File struct {
 func NewFile(inputFile string) *File {
 	file := &File{
 		path:   inputFile,
-		tokens: make([]token.Token, 1, 4096),
+		tokens: make([]token.Token, 1, 8192),
 	}
 
 	file.tokens[0].Kind = token.NewLine
