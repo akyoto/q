@@ -692,7 +692,13 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 
 		if sub.IsFunctionCall() {
 			functionName := left.Value.Text()
-			state.environment.Functions[functionName].Used = true
+			function := state.environment.Functions[functionName]
+
+			if function == nil {
+				return state.UnknownFunctionError(functionName)
+			}
+
+			function.Used = true
 			state.assembler.Call(functionName)
 
 			for _, callRegister := range state.registers.Call {
