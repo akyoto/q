@@ -7,7 +7,7 @@ import (
 
 // FromTokens generates an expression tree from tokens.
 func FromTokens(tokens []token.Token) (*Expression, error) {
-	current := pool.Get().(*Expression)
+	current := New()
 	stack := []*Expression{current}
 	goUp := false
 
@@ -42,7 +42,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			}
 
 		case token.GroupStart:
-			group := pool.Get().(*Expression)
+			group := New()
 			group.Parent = current
 
 			current = group
@@ -66,7 +66,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		case token.Operator, token.Separator:
 			// Turn identifier into an operation
 			if current.IsLeaf() {
-				child := pool.Get().(*Expression)
+				child := New()
 				child.Value = current.Value
 				child.Parent = current
 
@@ -88,7 +88,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 					//                 subExpression
 					lastChild := current.Children[len(current.Children)-1]
 
-					subExpression := pool.Get().(*Expression)
+					subExpression := New()
 					subExpression.Value = t
 					subExpression.Children = []*Expression{lastChild}
 					subExpression.Parent = current
@@ -100,7 +100,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				}
 			}
 
-			newOperator := pool.Get().(*Expression)
+			newOperator := New()
 			newOperator.Value = t
 			newOperator.Children = []*Expression{current}
 			newOperator.Parent = current.Parent

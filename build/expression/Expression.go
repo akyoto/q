@@ -10,10 +10,16 @@ import (
 
 // Expression is a binary tree with an operator on each node.
 type Expression struct {
+	Kind     Kind
 	Value    token.Token
 	Children []*Expression
 	Parent   *Expression
 	Register *register.Register
+}
+
+// New creates a new expression.
+func New() *Expression {
+	return pool.Get().(*Expression)
 }
 
 // AddChild adds a child to the expression.
@@ -23,7 +29,7 @@ func (expr *Expression) AddChild(t token.Token) *Expression {
 		return expr
 	}
 
-	child := pool.Get().(*Expression)
+	child := New()
 	child.Value = t
 	child.Parent = expr
 
@@ -122,6 +128,7 @@ func (expr *Expression) Close() {
 		child.Close()
 	}
 
+	expr.Kind = Empty
 	expr.Value.Kind = token.Invalid
 	expr.Children = expr.Children[:0]
 	expr.Parent = nil
