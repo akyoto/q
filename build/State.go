@@ -237,9 +237,6 @@ func (state *State) ForStart(tokens []token.Token) error {
 	labelStart := fmt.Sprintf("for_%d", state.forLoop.counter)
 	labelEnd := fmt.Sprintf("for_%d_end", state.forLoop.counter)
 
-	state.forLoop.labels = append(state.forLoop.labels, labelStart)
-	state.forLoop.registers = append(state.forLoop.registers, register)
-
 	upperLimit := expression[rangePos+1:]
 
 	if len(upperLimit) == 0 {
@@ -253,8 +250,15 @@ func (state *State) ForStart(tokens []token.Token) error {
 		return err
 	}
 
-	state.forLoop.temporaries = append(state.forLoop.temporaries, temporary)
 	state.assembler.JumpIfEqual(labelEnd)
+
+	state.forLoop.stack = append(state.forLoop.stack, ForLoop{
+		labelStart: labelStart,
+		labelEnd:   labelEnd,
+		counter:    register,
+		limit:      temporary,
+	})
+
 	return nil
 }
 
@@ -266,21 +270,16 @@ func (state *State) ForEnd() error {
 		return err
 	}
 
-	label := state.forLoop.labels[len(state.forLoop.labels)-1]
-	register := state.forLoop.registers[len(state.forLoop.registers)-1]
-	temporary := state.forLoop.temporaries[len(state.forLoop.temporaries)-1]
+	loop := state.forLoop.stack[len(state.forLoop.stack)-1]
+	state.forLoop.stack = state.forLoop.stack[:len(state.forLoop.stack)-1]
 
-	state.forLoop.labels = state.forLoop.labels[:len(state.forLoop.labels)-1]
-	state.forLoop.registers = state.forLoop.registers[:len(state.forLoop.registers)-1]
-	state.forLoop.temporaries = state.forLoop.temporaries[:len(state.forLoop.temporaries)-1]
+	state.assembler.IncreaseRegister(loop.counter)
+	state.assembler.Jump(loop.labelStart)
+	state.assembler.AddLabel(loop.labelEnd)
+	loop.counter.Free()
 
-	state.assembler.IncreaseRegister(register)
-	state.assembler.Jump(label)
-	state.assembler.AddLabel(label + "_end")
-	register.Free()
-
-	if temporary != nil {
-		temporary.Free()
+	if loop.limit != nil {
+		loop.limit.Free()
 	}
 
 	return nil
