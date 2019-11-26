@@ -78,8 +78,8 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 
 			// Calculate priority
 			if index > 0 && tokens[index-1].Kind != token.GroupEnd && len(current.Children) >= 2 && current.LastChild().Value.Kind != token.Operator {
-				priority := spec.Operators[t.Text()]
-				lastPriority := spec.Operators[current.Value.Text()]
+				priority := spec.Operators[string(t.Bytes)].Priority
+				lastPriority := spec.Operators[string(current.Value.Bytes)].Priority
 
 				if priority > lastPriority {
 					// Expression: 1 + 2 * 3

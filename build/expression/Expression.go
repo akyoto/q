@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/akyoto/q/build/register"
+	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -62,7 +63,7 @@ func (expr *Expression) SortByRegisterCount() {
 		child.SortByRegisterCount()
 	}
 
-	if expr.Value.Bytes == nil || expr.Value.Bytes[0] == ',' {
+	if spec.Operators[string(expr.Value.Bytes)].OperandOrderImportant {
 		return
 	}
 

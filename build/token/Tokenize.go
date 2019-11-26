@@ -100,7 +100,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 			token = Token{Operator, buffer[processedBytes : i+1], processedBytes}
 
-			if spec.Operators[string(token.Bytes)] == 0 {
+			if spec.Operators[string(token.Bytes)] == nil {
 				return tokens, processedBytes
 			}
 

@@ -2,33 +2,42 @@ package spec
 
 // Operators defines the operators used in the language.
 // The number corresponds to the operator priority and can not be zero.
-var Operators = map[string]int{
-	",": 1,
+var Operators = map[string]*Operator{
+	// Parameters
+	",": {",", 1, true},
 
-	"=":   2,
-	"+=":  2,
-	"-=":  2,
-	"*=":  2,
-	"/=":  2,
-	">>=": 2,
-	"<<=": 2,
+	// Assignment
+	"=":   {"=", 2, true},
+	"+=":  {"+=", 2, true},
+	"-=":  {"-=", 2, true},
+	"*=":  {"*=", 2, true},
+	"/=":  {"/=", 2, true},
+	">>=": {">>=", 2, true},
+	"<<=": {"<<=", 2, true},
 
-	"||": 3,
+	// Logical OR
+	"||": {"||", 3, true},
 
-	"&&": 4,
+	// Logical AND
+	"&&": {"&&", 4, true},
 
-	"==": 5,
-	"!=": 5,
-	"<=": 5,
-	">=": 5,
+	// Comparison
+	"==": {"==", 5, false},
+	"!=": {"!=", 5, false},
+	"<=": {"<=", 5, true},
+	">=": {">=", 5, true},
 
-	"<": 6,
-	">": 6,
+	"<": {"<", 6, true},
+	">": {">", 6, true},
 
-	"+": 7,
-	"-": 7,
+	// Arithmetic operations
+	"+": {"+", 7, false},
+	"-": {"-", 7, false},
 
-	"*": 8,
-	"/": 8,
-	"%": 8,
+	"*": {"*", 8, false},
+	"/": {"/", 8, true},
+	"%": {"%", 8, true},
+
+	// Function calls use the empty operator
+	"": {"", 9, true},
 }
