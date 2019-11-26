@@ -17,29 +17,22 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			// Function calls
 			if index != len(tokens)-1 && tokens[index+1].Kind == token.GroupStart {
 				call := current.AddChild(token.Token{Kind: token.Operator, Bytes: nil})
+				call.Kind = Call
 				call.AddChild(t)
 				current = call
 				continue
 			}
 
-			current.AddChild(t)
+			child := current.AddChild(t)
+			child.Kind = Identifier
 
-			// In case an operator priority was enforced,
-			// we need to go back up to the original node.
-			if goUp {
-				current = current.Parent
-				goUp = false
-			}
+		case token.Number:
+			child := current.AddChild(t)
+			child.Kind = Number
 
-		case token.Number, token.Text:
-			current.AddChild(t)
-
-			// In case an operator priority was enforced,
-			// we need to go back up to the original node.
-			if goUp {
-				current = current.Parent
-				goUp = false
-			}
+		case token.Text:
+			child := current.AddChild(t)
+			child.Kind = Text
 
 		case token.GroupStart:
 			group := New()
@@ -108,6 +101,13 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			current.Parent = newOperator
 			current = newOperator
 			stack[len(stack)-1] = newOperator
+		}
+
+		// In case an operator priority was enforced,
+		// we need to go back up to the original node.
+		if goUp {
+			current = current.Parent
+			goUp = false
 		}
 	}
 
