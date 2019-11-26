@@ -8,6 +8,8 @@
 
 This is a **very early version** of a programming language I'm currently working on.
 
+It produces machine code and ELF binaries directly without using an external assembler or compiler.
+
 ## Installation
 
 ```shell
