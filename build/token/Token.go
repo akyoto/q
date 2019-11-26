@@ -16,12 +16,8 @@ func (t Token) Text() string {
 	return unsafe.BytesToString(t.Bytes)
 }
 
-// String includes the kind of token and the token text.
+// String might include the kind of token and the token text.
 // It is meant to be used for debugging via fmt.Print().
 func (t Token) String() string {
-	if len(t.Bytes) == 0 {
-		return t.Kind.String()
-	}
-
-	return t.Kind.String() + " " + t.Text()
+	return t.Text()
 }

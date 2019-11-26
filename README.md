@@ -86,9 +86,6 @@ You can view the produced assembly output via the `-v` verbose flag:
 ./q build -v examples/loops
 ```
 
-Note that this intermediate text representation is only generated when the verbose flag is specified.
-Q uses its own binary assembler which avoids the intermediary text format during normal compilation.
-
 ## Builtins
 
 There are currently 2 builtin functions, `syscall` and `print`. In the future we'd like to remove `print` so that `syscall` becomes the only builtin function.

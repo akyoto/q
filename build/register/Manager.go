@@ -2,10 +2,10 @@ package register
 
 // Manager manages the allocation state of registers.
 type Manager struct {
-	Registers            []*Register
-	CallRegisters        []*Register
-	SyscallRegisters     []*Register
-	ReturnValueRegisters []*Register
+	General     []*Register
+	Call        []*Register
+	Syscall     []*Register
+	ReturnValue []*Register
 }
 
 // NewManager creates a new register manager.
@@ -27,7 +27,7 @@ func NewManager() *Manager {
 	r15 := &Register{Name: "r15"}
 
 	manager := &Manager{
-		Registers: []*Register{
+		General: []*Register{
 			rbx,
 			rbp,
 			r12,
@@ -35,7 +35,7 @@ func NewManager() *Manager {
 			r14,
 			r15,
 		},
-		SyscallRegisters: []*Register{
+		Syscall: []*Register{
 			rax,
 			rdi,
 			rsi,
@@ -44,21 +44,21 @@ func NewManager() *Manager {
 			r8,
 			r9,
 		},
-		ReturnValueRegisters: []*Register{
+		ReturnValue: []*Register{
 			rax,
 			rcx,
 			r11,
 		},
 	}
 
-	manager.CallRegisters = manager.SyscallRegisters
+	manager.Call = manager.Syscall
 	return manager
 }
 
 // FindFreeRegister tries to find a free register
 // and returns nil when all are currently occupied.
 func (manager *Manager) FindFreeRegister() *Register {
-	for _, register := range manager.Registers {
+	for _, register := range manager.General {
 		if register.IsFree() {
 			return register
 		}
@@ -69,7 +69,7 @@ func (manager *Manager) FindFreeRegister() *Register {
 
 // RegisterByName returns the register with the given name.
 func (manager *Manager) RegisterByName(name string) *Register {
-	for _, register := range manager.Registers {
+	for _, register := range manager.General {
 		if register.Name == name {
 			return register
 		}

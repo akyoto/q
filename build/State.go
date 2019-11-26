@@ -7,7 +7,8 @@ import (
 	"strconv"
 	"sync/atomic"
 
-	"github.com/akyoto/asm"
+	"github.com/akyoto/asm/syscall"
+	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/instruction"
@@ -21,7 +22,7 @@ import (
 type State struct {
 	instructions []instruction.Instruction
 	tokens       []token.Token
-	assembler    *asm.Assembler
+	assembler    *assembler.Assembler
 	log          *log.Logger
 	scopes       *ScopeStack
 	registers    *register.Manager
@@ -32,7 +33,6 @@ type State struct {
 	loop         LoopState
 	forLoop      ForState
 	optimize     bool
-	verbose      bool
 }
 
 // CompileInstructions compiles all instructions.
@@ -95,10 +95,6 @@ func (state *State) CompareExpression(register *register.Register, expression []
 	if len(expression) == 1 {
 		state.assembler.AddLabel(labelBeforeComparison)
 
-		if state.verbose {
-			state.log.Printf("%s:\n", labelBeforeComparison)
-		}
-
 		switch expression[0].Kind {
 		case token.Identifier:
 			variableName := expression[0].Text()
@@ -109,11 +105,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 			}
 
 			variable.AliveUntil = state.instrCursor + 1
-			state.assembler.CompareRegisterRegister(register.Name, variable.Register.Name)
-
-			if state.verbose {
-				state.log.Printf("cmp %v, %v\n", register, variable.Register)
-			}
+			state.assembler.CompareRegisterRegister(register, variable.Register)
 
 			return nil, nil
 
@@ -125,12 +117,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 				return nil, err
 			}
 
-			state.assembler.CompareRegisterNumber(register.Name, uint64(number))
-
-			if state.verbose {
-				state.log.Printf("cmp %v, %d\n", register, uint64(number))
-			}
-
+			state.assembler.CompareRegisterNumber(register, uint64(number))
 			return nil, nil
 
 		default:
@@ -151,17 +138,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 	}
 
 	state.assembler.AddLabel(labelBeforeComparison)
-
-	if state.verbose {
-		state.log.Printf("%s:\n", labelBeforeComparison)
-	}
-
-	state.assembler.CompareRegisterRegister(register.Name, temporary.Name)
-
-	if state.verbose {
-		state.log.Printf("cmp %v, %v\n", register, temporary)
-	}
-
+	state.assembler.CompareRegisterRegister(register, temporary)
 	return temporary, nil
 }
 
@@ -184,56 +161,27 @@ func (state *State) IfStart(tokens []token.Token) error {
 	}
 
 	label := "if_1_end"
-	state.assembler.CompareRegisterNumber(variable.Register.Name, uint64(number))
-
-	if state.verbose {
-		state.log.Printf("cmp %s, %d\n", variable.Register.Name, number)
-	}
-
+	state.assembler.CompareRegisterNumber(variable.Register, uint64(number))
 	operator := expression[1].Text()
 
 	switch operator {
 	case ">=":
 		state.assembler.JumpIfLess(label)
 
-		if state.verbose {
-			state.log.Printf("jl %s\n", label)
-		}
-
 	case ">":
 		state.assembler.JumpIfLessOrEqual(label)
-
-		if state.verbose {
-			state.log.Printf("jle %s\n", label)
-		}
 
 	case "<=":
 		state.assembler.JumpIfGreater(label)
 
-		if state.verbose {
-			state.log.Printf("jg %s\n", label)
-		}
-
 	case "<":
 		state.assembler.JumpIfGreaterOrEqual(label)
-
-		if state.verbose {
-			state.log.Printf("jle %s\n", label)
-		}
 
 	case "==":
 		state.assembler.JumpIfNotEqual(label)
 
-		if state.verbose {
-			state.log.Printf("jne %s\n", label)
-		}
-
 	case "!=":
 		state.assembler.JumpIfEqual(label)
-
-		if state.verbose {
-			state.log.Printf("je %s\n", label)
-		}
 	}
 
 	return nil
@@ -243,11 +191,6 @@ func (state *State) IfStart(tokens []token.Token) error {
 func (state *State) IfEnd() error {
 	label := "if_1_end"
 	state.assembler.AddLabel(label)
-
-	if state.verbose {
-		state.log.Printf("%s:\n", label)
-	}
-
 	return nil
 }
 
@@ -312,11 +255,6 @@ func (state *State) ForStart(tokens []token.Token) error {
 
 	state.forLoop.temporaries = append(state.forLoop.temporaries, temporary)
 	state.assembler.JumpIfEqual(labelEnd)
-
-	if state.verbose {
-		state.log.Printf("je %s\n", labelEnd)
-	}
-
 	return nil
 }
 
@@ -336,16 +274,9 @@ func (state *State) ForEnd() error {
 	state.forLoop.registers = state.forLoop.registers[:len(state.forLoop.registers)-1]
 	state.forLoop.temporaries = state.forLoop.temporaries[:len(state.forLoop.temporaries)-1]
 
-	state.assembler.IncreaseRegister(register.Name)
+	state.assembler.IncreaseRegister(register)
 	state.assembler.Jump(label)
 	state.assembler.AddLabel(label + "_end")
-
-	if state.verbose {
-		state.log.Printf("inc %v\n", register)
-		state.log.Printf("jmp %s\n", label)
-		state.log.Printf("%s:\n", label+"_end")
-	}
-
 	register.Free()
 
 	if temporary != nil {
@@ -362,11 +293,6 @@ func (state *State) LoopStart() error {
 	label := fmt.Sprintf("loop_%d", state.loop.counter)
 	state.loop.labels = append(state.loop.labels, label)
 	state.assembler.AddLabel(label)
-
-	if state.verbose {
-		state.log.Printf("%s:\n", label)
-	}
-
 	return nil
 }
 
@@ -376,11 +302,6 @@ func (state *State) LoopEnd() error {
 	label := state.loop.labels[len(state.loop.labels)-1]
 	state.assembler.Jump(label)
 	state.loop.labels = state.loop.labels[:len(state.loop.labels)-1]
-
-	if state.verbose {
-		state.log.Printf("jmp %s\n", label)
-	}
-
 	return nil
 }
 
@@ -400,7 +321,7 @@ func (state *State) Return(tokens []token.Token) error {
 	expression := tokens[1:]
 
 	if len(expression) > 0 {
-		err := state.TokensToRegister(expression, state.registers.ReturnValueRegisters[0])
+		err := state.TokensToRegister(expression, state.registers.ReturnValue[0])
 
 		if err != nil {
 			return err
@@ -408,11 +329,6 @@ func (state *State) Return(tokens []token.Token) error {
 	}
 
 	state.assembler.Return()
-
-	if state.verbose {
-		state.log.Print("ret")
-	}
-
 	return nil
 }
 
@@ -576,48 +492,35 @@ func (state *State) Call(tokens []token.Token) error {
 				return fmt.Errorf("'%s' requires a text parameter instead of '%s'", call.Function.Name, parameter.Text())
 			}
 
-			text := parameter.Text()
-			state.assembler.Println(text)
-
-			if state.verbose {
-				state.log.Printf("mov %v, 1", state.registers.SyscallRegisters[0])
-				state.log.Printf("mov %v, 1", state.registers.SyscallRegisters[1])
-				state.log.Printf("mov %v, \"%s\"", state.registers.SyscallRegisters[2], text)
-				state.log.Printf("mov %v, %d", state.registers.SyscallRegisters[3], len(text)+1)
-				state.log.Println("syscall")
-			}
+			text := parameter.Text() + "\n"
+			address := state.assembler.AddString(text)
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[0], uint64(syscall.Write))
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
+			state.assembler.MoveRegisterAddress(state.registers.Syscall[2], address)
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[3], uint64(len(text)))
+			state.assembler.Syscall()
 
 		case "syscall":
-			err := state.BeforeCall(&call, state.registers.SyscallRegisters)
+			err := state.BeforeCall(&call, state.registers.Syscall)
 
 			if err != nil {
 				return err
 			}
 
 			state.assembler.Syscall()
-
-			if state.verbose {
-				state.log.Println("syscall")
-			}
-
 			state.AfterCall(&call)
 		}
 
 		return nil
 	}
 
-	err := state.BeforeCall(&call, state.registers.CallRegisters)
+	err := state.BeforeCall(&call, state.registers.Call)
 
 	if err != nil {
 		return err
 	}
 
 	state.assembler.Call(call.Function.Name)
-
-	if state.verbose {
-		state.log.Printf("call %s\n", call.Function.Name)
-	}
-
 	state.AfterCall(&call)
 	return nil
 }
@@ -676,11 +579,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 			return nil
 		}
 
-		state.assembler.MoveRegisterRegister(register.Name, variable.Register.Name)
-
-		if state.verbose {
-			state.log.Printf("mov %v, %v\n", register, variable.Register)
-		}
+		state.assembler.MoveRegisterRegister(register, variable.Register)
 
 	case token.Number:
 		numberString := singleToken.Text()
@@ -690,19 +589,11 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 			return err
 		}
 
-		state.assembler.MoveRegisterNumber(register.Name, uint64(number))
-
-		if state.verbose {
-			state.log.Printf("mov %v, %d\n", register, number)
-		}
+		state.assembler.MoveRegisterNumber(register, uint64(number))
 
 	case token.Text:
-		address := state.assembler.Strings.Add(singleToken.Text())
-		state.assembler.MoveRegisterAddress(register.Name, address)
-
-		if state.verbose {
-			state.log.Printf("mov %v, <%d>\n", register, address)
-		}
+		address := state.assembler.AddString(singleToken.Text())
+		state.assembler.MoveRegisterAddress(register, address)
 	}
 
 	if register.IsFree() {
@@ -756,7 +647,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		right := sub.Children[1]
 
 		if left.Value.Kind != token.Separator {
-			left.Register = state.registers.CallRegisters[parameterCount]
+			left.Register = state.registers.Call[parameterCount]
 			sub.Register = left.Register
 			parameterCount++
 
@@ -769,7 +660,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		}
 
 		if right.Value.Kind != token.Separator {
-			right.Register = state.registers.CallRegisters[parameterCount]
+			right.Register = state.registers.Call[parameterCount]
 			parameterCount++
 
 			node := right
@@ -804,23 +695,15 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			state.environment.Functions[functionName].Used = true
 			state.assembler.Call(functionName)
 
-			if state.verbose {
-				state.log.Printf("call %s\n", functionName)
-			}
-
-			for _, callRegister := range state.registers.CallRegisters {
+			for _, callRegister := range state.registers.Call {
 				callRegister.Free()
 			}
 
-			returnValueRegister := state.registers.ReturnValueRegisters[0]
+			returnValueRegister := state.registers.ReturnValue[0]
 			returnValueRegister.Use(sub)
 
 			if sub.Register != returnValueRegister {
-				state.assembler.MoveRegisterRegister(sub.Register.Name, returnValueRegister.Name)
-
-				if state.verbose {
-					state.log.Printf("mov %v, %v\n", sub.Register, returnValueRegister)
-				}
+				state.assembler.MoveRegisterRegister(sub.Register, returnValueRegister)
 			}
 
 			returnValueRegister.Free()
@@ -835,12 +718,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 				return err
 			}
 		} else if sub.Register != left.Register {
-			state.assembler.MoveRegisterRegister(sub.Register.Name, left.Register.Name)
-
-			if state.verbose {
-				state.log.Printf("mov %v, %v\n", sub.Register, left.Register)
-			}
-
+			state.assembler.MoveRegisterRegister(sub.Register, left.Register)
 			left.Register.Free()
 		}
 
@@ -917,44 +795,22 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 	switch operation {
 	case "+":
 		if number == 1 && state.optimize {
-			state.assembler.IncreaseRegister(register.Name)
-
-			if state.verbose {
-				state.log.Printf("inc %v\n", register)
-			}
-
+			state.assembler.IncreaseRegister(register)
 			return nil
 		}
 
-		state.assembler.AddRegisterNumber(register.Name, uint64(number))
-
-		if state.verbose {
-			state.log.Printf("add %v, %d\n", register, number)
-		}
+		state.assembler.AddRegisterNumber(register, uint64(number))
 
 	case "-":
 		if number == 1 && state.optimize {
-			state.assembler.DecreaseRegister(register.Name)
-
-			if state.verbose {
-				state.log.Printf("dec %v\n", register)
-			}
-
+			state.assembler.DecreaseRegister(register)
 			return nil
 		}
 
-		state.assembler.SubRegisterNumber(register.Name, uint64(number))
-
-		if state.verbose {
-			state.log.Printf("sub %v, %d\n", register, number)
-		}
+		state.assembler.SubRegisterNumber(register, uint64(number))
 
 	case "*":
-		state.assembler.MulRegisterNumber(register.Name, uint64(number))
-
-		if state.verbose {
-			state.log.Printf("imul %v, %d\n", register, number)
-		}
+		state.assembler.MulRegisterNumber(register, uint64(number))
 
 	case ",":
 		return nil
@@ -970,25 +826,13 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 func (state *State) CalculateRegisterRegister(operation string, registerTo *register.Register, registerFrom *register.Register) error {
 	switch operation {
 	case "+":
-		state.assembler.AddRegisterRegister(registerTo.Name, registerFrom.Name)
-
-		if state.verbose {
-			state.log.Printf("add %v, %v\n", registerTo, registerFrom)
-		}
+		state.assembler.AddRegisterRegister(registerTo, registerFrom)
 
 	case "-":
-		state.assembler.SubRegisterRegister(registerTo.Name, registerFrom.Name)
-
-		if state.verbose {
-			state.log.Printf("sub %v, %v\n", registerTo, registerFrom)
-		}
+		state.assembler.SubRegisterRegister(registerTo, registerFrom)
 
 	case "*":
-		state.assembler.MulRegisterRegister(registerTo.Name, registerFrom.Name)
-
-		if state.verbose {
-			state.log.Printf("imul %v, %v\n", registerTo, registerFrom)
-		}
+		state.assembler.MulRegisterRegister(registerTo, registerFrom)
 
 	case ",":
 		return nil
