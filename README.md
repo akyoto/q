@@ -49,21 +49,18 @@ This will produce the `q` compiler in your current directory.
 * [x] Parallel function compiler
 * [x] Error messages
 * [x] Function calls
-* [x] Infinite loops via `loop`
+* [x] Infinite `loop`
 * [x] Simple `for` loops
 * [x] Simple `if` conditions
-* [x] `return` with no arguments
 * [x] Syscalls
 * [x] Detect pure functions
-* [x] Immutable variables by default
+* [x] Immutable variables
 * [x] Mutable variables via `mut`
-* [x] Linter: Unused variables
-* [x] Linter: Unused parameters
 * [x] Function return values
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
-* [ ] `match` statement
+* [ ] `match` keyword
 * [ ] Error handling
 * [ ] Parallel execution
 * [ ] Lock-free data structures
@@ -71,8 +68,14 @@ This will produce the `q` compiler in your current directory.
 * [ ] Multiple return values
 * [ ] Expression optimization
 * [ ] Assembly optimization
-* [ ] Linter: Ineffective assignment
-* [ ] ...and everything else you'd expect from a modern language.
+* [ ] ...
+
+## Linter
+
+* [x] Unused variables
+* [x] Unused parameters
+* [ ] Ineffective assignment
+* [ ] ...
 
 ## Architectures
 
