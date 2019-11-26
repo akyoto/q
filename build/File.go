@@ -11,10 +11,11 @@ import (
 
 // File represents a single source file.
 type File struct {
-	contents []byte
-	tokens   []token.Token
-	path     string
-	verbose  bool
+	contents      []byte
+	tokens        []token.Token
+	path          string
+	functionCount int64
+	verbose       bool
 }
 
 // NewFile creates a new compiler for a single file.
@@ -97,6 +98,8 @@ func (file *File) Scan(functions chan<- *Function) error {
 				log.Info.Println("Function:", function.Name)
 			}
 
+			file.functionCount++
+
 		case token.BlockStart:
 			if groupLevel > 0 {
 				return NewError(&errors.MissingCharacter{Character: ")"}, file.path, file.tokens[:index+1])
@@ -178,4 +181,10 @@ func (file *File) Scan(functions chan<- *Function) error {
 // Tokens returns the complete list of tokens.
 func (file *File) Tokens() []token.Token {
 	return file.tokens
+}
+
+// Close frees up the memory.
+func (file *File) Close() {
+	file.tokens = nil
+	file.contents = nil
 }

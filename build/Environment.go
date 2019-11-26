@@ -2,6 +2,7 @@ package build
 
 import (
 	"sync"
+	"sync/atomic"
 )
 
 // Environment represents the global state.
@@ -29,7 +30,14 @@ func (env *Environment) Compile(optimize bool, verbose bool) (<-chan *Compilatio
 			wg.Add(1)
 
 			go func() {
-				defer wg.Done()
+				defer func() {
+					if atomic.AddInt64(&function.File.functionCount, -1) == 0 {
+						function.File.Close()
+					}
+
+					wg.Done()
+				}()
+
 				assembler, err := Compile(function, env, optimize, verbose)
 
 				if err != nil {
