@@ -1,7 +1,6 @@
 package build
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/akyoto/q/build/errors"
@@ -55,7 +54,11 @@ func (file *File) Tokenize() error {
 			}
 		}
 
-		return NewError(fmt.Errorf("Unknown expression: %s", string(remaining[:until])), file.path, file.tokens)
+		err = &errors.UnknownExpression{
+			Expression: string(remaining[:until]),
+		}
+
+		return NewError(err, file.path, file.tokens)
 	}
 
 	return nil

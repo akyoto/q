@@ -900,8 +900,13 @@ func (state *State) UnknownFunctionError(functionName string) error {
 	})
 
 	if similarity.JaroWinkler(functionName, knownFunctions[0]) > 0.9 {
-		return fmt.Errorf("Unknown function '%s', did you mean '%s'?", functionName, knownFunctions[0])
+		return &errors.UnknownFunction{
+			FunctionName: functionName,
+			CorrectName:  knownFunctions[0],
+		}
 	}
 
-	return fmt.Errorf("Unknown function '%s'", functionName)
+	return &errors.UnknownFunction{
+		FunctionName: functionName,
+	}
 }
