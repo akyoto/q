@@ -10,6 +10,7 @@ var (
 	MissingParameter            = &Base{"Missing parameter", false}
 	MissingFunctionName         = &Base{"Expected function name before '('", false}
 	MissingRange                = &Base{"Missing range expression in for loop", false}
+	MissingRangeStart           = &Base{"Missing starting value in range expression", false}
 	MissingRangeLimit           = &Base{"Missing upper limit in range expression", true}
 	MissingAssignmentOperator   = &Base{"Missing assignment operator", false}
 	MissingAssignmentExpression = &Base{"Missing assignment expression", false}

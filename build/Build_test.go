@@ -53,6 +53,7 @@ func TestBuildErrors(t *testing.T) {
 		{"testdata/unknown-expression.q", &errors.UnknownExpression{Expression: "\")"}},
 		{"testdata/for-missing-upper-limit.q", errors.MissingRangeLimit},
 		{"testdata/for-missing-range.q", errors.MissingRange},
+		{"testdata/for-missing-start-value.q", errors.MissingRangeStart},
 	}
 
 	for _, test := range tests {

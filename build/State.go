@@ -142,168 +142,6 @@ func (state *State) CompareExpression(register *register.Register, expression []
 	return temporary, nil
 }
 
-// IfStart handles the start of if conditions.
-func (state *State) IfStart(tokens []token.Token) error {
-	state.Expect(token.Keyword)
-	expression := tokens[1:]
-	variableName := expression[0].Text()
-	variable := state.scopes.Get(variableName)
-
-	if variable == nil {
-		return &errors.UnknownVariable{VariableName: variableName}
-	}
-
-	numberString := expression[len(expression)-1].Text()
-	number, err := state.ParseInt(numberString)
-
-	if err != nil {
-		return err
-	}
-
-	label := "if_1_end"
-	state.assembler.CompareRegisterNumber(variable.Register, uint64(number))
-	operator := expression[1].Text()
-
-	switch operator {
-	case ">=":
-		state.assembler.JumpIfLess(label)
-
-	case ">":
-		state.assembler.JumpIfLessOrEqual(label)
-
-	case "<=":
-		state.assembler.JumpIfGreater(label)
-
-	case "<":
-		state.assembler.JumpIfGreaterOrEqual(label)
-
-	case "==":
-		state.assembler.JumpIfNotEqual(label)
-
-	case "!=":
-		state.assembler.JumpIfEqual(label)
-	}
-
-	return nil
-}
-
-// IfEnd handles the end of if conditions.
-func (state *State) IfEnd() error {
-	label := "if_1_end"
-	state.assembler.AddLabel(label)
-	return nil
-}
-
-// ForStart handles the start of for loops.
-func (state *State) ForStart(tokens []token.Token) error {
-	state.Expect(token.Keyword)
-	state.scopes.Push()
-	expression := tokens[1:]
-
-	rangePos := token.Index(expression, token.Range)
-
-	if rangePos == -1 {
-		return errors.MissingRange
-	}
-
-	operatorPos := token.Index(expression, token.Operator)
-	var register *register.Register
-
-	if operatorPos == -1 {
-		register = state.registers.FindFreeRegister()
-
-		if register == nil {
-			return errors.ExceededMaxVariables
-		}
-
-		err := state.TokensToRegister(expression[:rangePos], register)
-
-		if err != nil {
-			return err
-		}
-	} else {
-		assignment := expression[:rangePos]
-		variable, err := state.AssignVariable(assignment)
-
-		if err != nil {
-			return err
-		}
-
-		register = variable.Register
-	}
-
-	state.forLoop.counter++
-
-	labelStart := fmt.Sprintf("for_%d", state.forLoop.counter)
-	labelEnd := fmt.Sprintf("for_%d_end", state.forLoop.counter)
-
-	upperLimit := expression[rangePos+1:]
-
-	if len(upperLimit) == 0 {
-		return errors.MissingRangeLimit
-	}
-
-	state.tokenCursor++
-	temporary, err := state.CompareExpression(register, upperLimit, labelStart)
-
-	if err != nil {
-		return err
-	}
-
-	state.assembler.JumpIfEqual(labelEnd)
-
-	state.forLoop.stack = append(state.forLoop.stack, ForLoop{
-		labelStart: labelStart,
-		labelEnd:   labelEnd,
-		counter:    register,
-		limit:      temporary,
-	})
-
-	return nil
-}
-
-// ForEnd handles the end of for loops.
-func (state *State) ForEnd() error {
-	err := state.PopScope()
-
-	if err != nil {
-		return err
-	}
-
-	loop := state.forLoop.stack[len(state.forLoop.stack)-1]
-	state.forLoop.stack = state.forLoop.stack[:len(state.forLoop.stack)-1]
-
-	state.assembler.IncreaseRegister(loop.counter)
-	state.assembler.Jump(loop.labelStart)
-	state.assembler.AddLabel(loop.labelEnd)
-	loop.counter.Free()
-
-	if loop.limit != nil {
-		loop.limit.Free()
-	}
-
-	return nil
-}
-
-// LoopStart handles the start of loops.
-func (state *State) LoopStart() error {
-	state.scopes.Push()
-	state.loop.counter++
-	label := fmt.Sprintf("loop_%d", state.loop.counter)
-	state.loop.labels = append(state.loop.labels, label)
-	state.assembler.AddLabel(label)
-	return nil
-}
-
-// LoopEnd handles the end of loops.
-func (state *State) LoopEnd() error {
-	state.scopes.Pop()
-	label := state.loop.labels[len(state.loop.labels)-1]
-	state.assembler.Jump(label)
-	state.loop.labels = state.loop.labels[:len(state.loop.labels)-1]
-	return nil
-}
-
 // PopScope pops the last scope on the stack and returns
 // an error if there were any unused variables.
 func (state *State) PopScope() error {
@@ -431,7 +269,7 @@ func (state *State) Call(tokens []token.Token) error {
 		return state.UnknownFunctionError(functionName)
 	}
 
-	call := FunctionCall{
+	call := Call{
 		Function: function,
 	}
 
@@ -541,7 +379,7 @@ func (state *State) Invalid(tokens []token.Token) error {
 }
 
 // BeforeCall pushes parameters into registers.
-func (state *State) BeforeCall(call *FunctionCall, registers []*register.Register) error {
+func (state *State) BeforeCall(call *Call, registers []*register.Register) error {
 	for index, tokens := range call.Parameters {
 		register := registers[index]
 		err := state.TokensToRegister(tokens, register)
@@ -555,7 +393,7 @@ func (state *State) BeforeCall(call *FunctionCall, registers []*register.Registe
 }
 
 // AfterCall restores saved registers from the stack.
-func (state *State) AfterCall(call *FunctionCall) {
+func (state *State) AfterCall(call *Call) {
 	call.Function.Used = true
 }
 
