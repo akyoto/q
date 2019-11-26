@@ -7,7 +7,7 @@ import (
 
 // FromTokens generates an expression tree from tokens.
 func FromTokens(tokens []token.Token) (*Expression, error) {
-	current := &Expression{}
+	current := pool.Get().(*Expression)
 	stack := []*Expression{current}
 	goUp := false
 
@@ -42,9 +42,8 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			}
 
 		case token.GroupStart:
-			group := &Expression{
-				Parent: current,
-			}
+			group := pool.Get().(*Expression)
+			group.Parent = current
 
 			current = group
 			stack = append(stack, group)
@@ -67,11 +66,11 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		case token.Operator, token.Separator:
 			// Turn identifier into an operation
 			if current.IsLeaf() {
-				current.Children = append(current.Children, &Expression{
-					Value:  current.Value,
-					Parent: current,
-				})
+				child := pool.Get().(*Expression)
+				child.Value = current.Value
+				child.Parent = current
 
+				current.Children = append(current.Children, child)
 				current.Value = t
 				continue
 			}
@@ -89,11 +88,10 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 					//                 subExpression
 					lastChild := current.Children[len(current.Children)-1]
 
-					subExpression := &Expression{
-						Value:    t,
-						Children: []*Expression{lastChild},
-						Parent:   current,
-					}
+					subExpression := pool.Get().(*Expression)
+					subExpression.Value = t
+					subExpression.Children = []*Expression{lastChild}
+					subExpression.Parent = current
 
 					current.Children[len(current.Children)-1] = subExpression
 					current = subExpression
@@ -102,11 +100,10 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				}
 			}
 
-			newOperator := &Expression{
-				Value:    t,
-				Children: []*Expression{current},
-				Parent:   current.Parent,
-			}
+			newOperator := pool.Get().(*Expression)
+			newOperator.Value = t
+			newOperator.Children = []*Expression{current}
+			newOperator.Parent = current.Parent
 
 			current.Parent = newOperator
 			current = newOperator

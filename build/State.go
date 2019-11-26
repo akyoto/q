@@ -615,7 +615,9 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 		return err
 	}
 
-	return state.ExpressionToRegister(expr, register)
+	err = state.ExpressionToRegister(expr, register)
+	expr.Close()
+	return err
 }
 
 // ExpressionToRegister moves the result of an expression into the given register.

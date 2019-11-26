@@ -72,6 +72,7 @@ func BenchmarkExpression(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_, _ = expression.FromTokens(tokens)
+		expr, _ := expression.FromTokens(tokens)
+		expr.Close()
 	}
 }

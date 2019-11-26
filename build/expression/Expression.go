@@ -23,10 +23,9 @@ func (expr *Expression) AddChild(t token.Token) *Expression {
 		return expr
 	}
 
-	child := &Expression{
-		Value:  t,
-		Parent: expr,
-	}
+	child := pool.Get().(*Expression)
+	child.Value = t
+	child.Parent = expr
 
 	expr.Children = append(expr.Children, child)
 	return child
@@ -115,6 +114,19 @@ func (expr *Expression) String() string {
 	builder := strings.Builder{}
 	expr.write(&builder)
 	return builder.String()
+}
+
+// Close puts the expression back into the memory pool.
+func (expr *Expression) Close() {
+	for _, child := range expr.Children {
+		child.Close()
+	}
+
+	expr.Value.Kind = token.Invalid
+	expr.Children = expr.Children[:0]
+	expr.Parent = nil
+	expr.Register = nil
+	pool.Put(expr)
 }
 
 // write generates a textual representation of the expression.
