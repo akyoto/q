@@ -26,13 +26,13 @@ func New() *Expression {
 }
 
 // AddChild adds a child to the expression.
-func (expr *Expression) AddChild(operand *Expression) {
-	if operand.Parent != nil {
-		operand.Parent.RemoveChild(operand)
+func (expr *Expression) AddChild(child *Expression) {
+	if child.Parent != nil {
+		child.Parent.RemoveChild(child)
 	}
 
-	operand.Parent = expr
-	expr.Children = append(expr.Children, operand)
+	child.Parent = expr
+	expr.Children = append(expr.Children, child)
 }
 
 // PrependChild adds a child to the expression at the start.
@@ -53,6 +53,11 @@ func (expr *Expression) RemoveChild(operand *Expression) {
 			return
 		}
 	}
+}
+
+// SetParent sets the parent of the expression.
+func (expr *Expression) SetParent(parent *Expression) {
+	parent.AddChild(expr)
 }
 
 // AddToken adds a token to the expression.

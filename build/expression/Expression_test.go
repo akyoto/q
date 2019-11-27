@@ -14,14 +14,14 @@ func TestExpressionFromTokens(t *testing.T) {
 		Expression string
 		Result     string
 	}{
-		// {"Empty", "", ""},
-		// {"Identity", "1", "1"},
-		// {"Basic calculation", "1+2", "(1+2)"},
-		// {"Same operator", "1+2+3", "((1+2)+3)"},
-		// {"Same operator 2", "1+2+3+4", "(((1+2)+3)+4)"},
-		// {"Different operator", "1+2-3", "((1+2)-3)"},
-		// {"Different operator 2", "1+2-3+4", "(((1+2)-3)+4)"},
-		// {"Different operator 3", "1+2-3+4-5", "((((1+2)-3)+4)-5)"},
+		{"Empty", "", ""},
+		{"Identity", "1", "1"},
+		{"Basic calculation", "1+2", "(1+2)"},
+		{"Same operator", "1+2+3", "((1+2)+3)"},
+		{"Same operator 2", "1+2+3+4", "(((1+2)+3)+4)"},
+		{"Different operator", "1+2-3", "((1+2)-3)"},
+		{"Different operator 2", "1+2-3+4", "(((1+2)-3)+4)"},
+		{"Different operator 3", "1+2-3+4-5", "((((1+2)-3)+4)-5)"},
 		// {"Grouping identity", "(1)", "1"},
 		// {"Grouping identity 2", "((1))", "1"},
 		// {"Grouping identity 3", "(((1)))", "1"},
@@ -38,9 +38,9 @@ func TestExpressionFromTokens(t *testing.T) {
 		// {"Two groups", "(1+2)*(3+4)", "((1+2)*(3+4))"},
 		// {"Two groups 2", "(1+2-3)*(3+4-5)", "(((1+2)-3)*((3+4)-5))"},
 		// {"Two groups 3", "(1+2)*(3+4-5)", "((1+2)*((3+4)-5))"},
-		// {"Operator priority", "1+2*3", "(1+(2*3))"},
-		// {"Operator priority 2", "1*2+3", "((1*2)+3)"},
-		// {"Operator priority 3", "1+2*3+4", "((1+(2*3))+4)"},
+		{"Operator priority", "1+2*3", "(1+(2*3))"},
+		{"Operator priority 2", "1*2+3", "((1*2)+3)"},
+		{"Operator priority 3", "1+2*3+4", "((1+(2*3))+4)"},
 		// {"Operator priority 4", "1+2*a()+4", "((1+(2*a()))+4)"},
 		// {"Operator priority 5", "1+2*(3+4)+5", "((1+(2*(3+4)))+5)"},
 		// {"Operator priority 6", "1+2*3*4", "(1+((2*3)*4))"},
@@ -80,6 +80,7 @@ func TestExpressionFromTokens(t *testing.T) {
 
 			tokens, processed := token.Tokenize(src, []token.Token{})
 			assert.Equal(t, processed, len(src))
+			tokens = tokens[:len(tokens)-1]
 
 			expr, err := expression.FromTokens(tokens)
 			assert.Nil(t, err)

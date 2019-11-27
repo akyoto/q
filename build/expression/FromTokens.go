@@ -9,20 +9,78 @@ import (
 
 // FromTokens generates an expression tree from tokens.
 func FromTokens(tokens []token.Token) (*Expression, error) {
-	fmt.Println("---", tokens, "---")
-	operands := []*Expression{}
-	operators := []token.Token{}
+	if len(tokens) == 1 {
+		return FromToken(tokens[0]), nil
+	}
+
+	fmt.Println("---")
 	groupLevel := 0
 	groupStart := 0
+	root := New()
+	current := root
+
+	onOperator := func(t token.Token) {
+		if current.Token.Kind != token.Operator {
+			current.Token = t
+			return
+		}
+
+		// Compare operator priority
+		oldOperator := current.Token.Text()
+		oldOperatorPriority := spec.Operators[oldOperator].Priority
+		newOperator := t.Text()
+		newOperatorPriority := spec.Operators[newOperator].Priority
+
+		if newOperatorPriority > oldOperatorPriority {
+			fmt.Println("HIGHER")
+			// Let's say we have the expression (1 + 2 * 3)
+			// At first, we encountered 1 + 2 and generated this tree:
+			//   + (current)
+			//  / \
+			// 1   2
+
+			// Now we encountered a higher priority operator.
+			// We need to take the last operand and replace it with the higher priority operation:
+			//   +
+			//  / \
+			// 1   * (current)
+			//    /
+			//   2
+
+			// Take the last child
+			lastChild := current.LastChild()
+
+			// Create a new expression for the higher priority operation
+			newOperation := New()
+			newOperation.Token = t
+			newOperation.AddChild(lastChild)
+			newOperation.SetParent(current)
+
+			// The new operator becomes the current expression until we added the second operand entirely.
+			current = newOperation
+			return
+		}
+
+		newOperation := New()
+		newOperation.Token = t
+		current.SetParent(newOperation)
+		current = newOperation
+		root = newOperation
+	}
+
+	onOperand := func(operand *Expression) {
+		current.AddChild(operand)
+	}
 
 	for i, t := range tokens {
 		switch t.Kind {
 		case token.GroupStart:
-			groupLevel++
-
-			if groupLevel == 1 {
+			if groupLevel == 0 {
 				groupStart = i + 1
 			}
+
+			groupLevel++
+			continue
 
 		case token.GroupEnd:
 			groupLevel--
@@ -34,92 +92,38 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 					return nil, err
 				}
 
-				operands = append(operands, operand)
+				onOperand(operand)
 			}
-		}
 
-		if groupLevel != 0 {
 			continue
+
+		default:
+			if groupLevel != 0 {
+				continue
+			}
 		}
 
 		switch t.Kind {
 		case token.Identifier:
-			operand := New()
-			operand.Token = t
-			operands = append(operands, operand)
+			operand := FromToken(t)
+			onOperand(operand)
 
 		case token.Number, token.Text:
-			operand := New()
-			operand.Token = t
-			operands = append(operands, operand)
+			operand := FromToken(t)
+			onOperand(operand)
 
 		case token.Operator:
-			operators = append(operators, t)
+			onOperator(t)
 		}
 	}
 
-	root := New()
-
-	if len(operands) == 0 {
-		return root, nil
-	}
-
-	if len(operators) == 0 {
-		return operands[0], nil
-	}
-
-	current := root
-	var lastOperator []byte
-
-	for i := len(operators) - 1; i >= 0; i-- {
-		operator := operators[i]
-		right := operands[i+1]
-
-		if lastOperator != nil {
-			rightOperatorPriority := spec.Operators[string(lastOperator)].Priority
-			leftOperatorPriority := spec.Operators[string(operator.Bytes)].Priority
-
-			if rightOperatorPriority > leftOperatorPriority {
-				parent := current.Parent
-
-				*current = *right
-
-				fmt.Println("current =", current)
-				fmt.Println("parent =", parent)
-				fmt.Println("root =", root)
-
-				current = New()
-
-				if root == parent {
-					root = current
-					fmt.Println("NEW ROOT", root)
-				} else if parent.Parent != nil {
-					parent.Parent.PrependChild(current)
-				}
-
-				right = parent
-			}
-		}
-
-		current.Token = operator
-		var left *Expression
-
-		if i == 0 {
-			left = operands[0]
-		} else {
-			left = New()
-		}
-
-		fmt.Println("current =", current, "in", current.Parent)
-		fmt.Println("left =", left)
-		fmt.Println("right =", right)
-		fmt.Println("operator =", operator)
-
-		current.AddChild(left)
-		current.AddChild(right)
-		current = left
-		lastOperator = operator.Bytes
-	}
-
+	fmt.Println("---")
 	return root, nil
+}
+
+// FromToken generates an expression for a single token.
+func FromToken(t token.Token) *Expression {
+	operand := New()
+	operand.Token = t
+	return operand
 }
