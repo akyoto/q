@@ -38,6 +38,6 @@ var Operators = map[string]*Operator{
 	"/": {"/", 8, true},
 	"%": {"%", 8, true},
 
-	// Function calls use the empty operator
-	"": {"", 9, true},
+	// Function calls
+	"()": {"()", 9, true},
 }

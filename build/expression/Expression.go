@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"bytes"
 	"strings"
 
 	"github.com/akyoto/q/build/register"
@@ -8,12 +9,15 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
+var functionCallToken = token.Token{Kind: token.Operator, Bytes: []byte{'(', ')'}}
+
 // Expression is a binary tree with an operator on each node.
 type Expression struct {
-	Value    token.Token
+	Token    token.Token
 	Children []*Expression
 	Parent   *Expression
 	Register *register.Register
+	Grouped  bool
 }
 
 // New creates a new expression.
@@ -21,17 +25,16 @@ func New() *Expression {
 	return pool.Get().(*Expression)
 }
 
-// AddChild adds a child to the expression.
-func (expr *Expression) AddChild(t token.Token) *Expression {
-	if expr.Value.Kind == token.Invalid {
-		expr.Value = t
+// AddToken adds a token to the expression.
+func (expr *Expression) AddToken(t token.Token) *Expression {
+	if expr.Token.Kind == token.Invalid {
+		expr.Token = t
 		return expr
 	}
 
 	child := New()
-	child.Value = t
+	child.Token = t
 	child.Parent = expr
-
 	expr.Children = append(expr.Children, child)
 	return child
 }
@@ -67,7 +70,7 @@ func (expr *Expression) SortByRegisterCount() {
 		child.SortByRegisterCount()
 	}
 
-	if spec.Operators[string(expr.Value.Bytes)].OperandOrderImportant {
+	if expr.Token.Kind == token.Operator && spec.Operators[string(expr.Token.Bytes)].OperandOrderImportant {
 		return
 	}
 
@@ -92,7 +95,7 @@ func (expr *Expression) RegisterCount() int {
 		count += child.RegisterCount()
 	}
 
-	if expr.Value.Kind == token.Operator && count == 0 {
+	if expr.Token.Kind == token.Operator && count == 0 {
 		count = 1
 	}
 
@@ -111,7 +114,20 @@ func (expr *Expression) IsLeaf() bool {
 
 // IsFunctionCall returns true if the expression is a function call.
 func (expr *Expression) IsFunctionCall() bool {
-	return expr.Value.Kind == token.Operator && expr.Value.Bytes == nil
+	return expr.Token.Kind == functionCallToken.Kind && bytes.Equal(expr.Token.Bytes, functionCallToken.Bytes)
+}
+
+// Close puts the expression back into the memory pool.
+func (expr *Expression) Close() {
+	for _, child := range expr.Children {
+		child.Close()
+	}
+
+	expr.Token.Kind = token.Invalid
+	expr.Children = expr.Children[:0]
+	expr.Parent = nil
+	expr.Register = nil
+	pool.Put(expr)
 }
 
 // String generates a textual representation of the expression.
@@ -121,33 +137,29 @@ func (expr *Expression) String() string {
 	return builder.String()
 }
 
-// Close puts the expression back into the memory pool.
-func (expr *Expression) Close() {
-	for _, child := range expr.Children {
-		child.Close()
-	}
-
-	expr.Value.Kind = token.Invalid
-	expr.Children = expr.Children[:0]
-	expr.Parent = nil
-	expr.Register = nil
-	pool.Put(expr)
-}
-
 // write generates a textual representation of the expression.
 func (expr *Expression) write(builder *strings.Builder) {
 	if len(expr.Children) == 0 {
-		builder.WriteString(expr.Value.Text())
+		builder.WriteString(expr.Token.Text())
 		return
+	}
+
+	children := expr.Children
+	operator := expr.Token.Text()
+
+	if expr.IsFunctionCall() {
+		builder.WriteString(children[0].Token.Text())
+		children = children[1:]
+		operator = ","
 	}
 
 	builder.WriteByte('(')
 
-	for index, operand := range expr.Children {
+	for index, operand := range children {
 		operand.write(builder)
 
-		if index != len(expr.Children)-1 {
-			builder.WriteString(expr.Value.Text())
+		if index != len(children)-1 || (len(children) == 1 && !expr.IsFunctionCall()) {
+			builder.WriteString(operator)
 		}
 	}
 

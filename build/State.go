@@ -460,77 +460,22 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 // ExpressionToRegister moves the result of an expression into the given register.
 func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegister *register.Register) error {
 	if expr.IsLeaf() {
-		return state.TokenToRegister(expr.Value, finalRegister)
+		return state.TokenToRegister(expr.Token, finalRegister)
 	}
 
 	expr.SortByRegisterCount()
 	expr.Register = finalRegister
-	parameterCount := 0
 
-	// Function call argument registers
+	// Assign final register to each left operand
 	_ = expr.EachOperation(func(sub *expression.Expression) error {
-		if sub.IsFunctionCall() {
-			parameterCount = 0
-			left := sub.Children[0]
-			left.Register = finalRegister
-			return nil
-		}
-
-		if sub.Value.Kind != token.Separator {
-			left := sub.Children[0]
-			left.Register = finalRegister
-			return nil
-		}
-
 		left := sub.Children[0]
-		right := sub.Children[1]
-
-		if left.Value.Kind != token.Separator {
-			left.Register = state.registers.Call[parameterCount]
-			sub.Register = left.Register
-			parameterCount++
-
-			node := left
-
-			for len(node.Children) > 0 {
-				node = node.Children[0]
-				node.Register = left.Register
-			}
-		}
-
-		if right.Value.Kind != token.Separator {
-			right.Register = state.registers.Call[parameterCount]
-			parameterCount++
-
-			node := right
-
-			for len(node.Children) > 0 {
-				node = node.Children[0]
-				node.Register = right.Register
-			}
-		}
-
+		left.Register = finalRegister
 		return nil
 	})
 
 	err := expr.EachOperation(func(sub *expression.Expression) error {
-		left := sub.Children[0]
-		right := sub.Children[1]
-
-		if left.Register == nil {
-			left.Register = state.registers.FindFreeRegister()
-		}
-
-		if sub.Value.Kind != token.Separator {
-			sub.Register = left.Register
-
-			if sub.Register.IsFree() {
-				sub.Register.Use(sub)
-			}
-		}
-
 		if sub.IsFunctionCall() {
-			functionName := left.Value.Text()
+			functionName := sub.Children[0].Token.Text()
 			function := state.environment.Functions[functionName]
 
 			if function == nil {
@@ -538,6 +483,18 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			}
 
 			function.Used = true
+
+			// Move parameters into registers
+			for i, parameter := range sub.Children[1:] {
+				register := state.registers.Call[i]
+				err := state.ExpressionToRegister(parameter, register)
+
+				if err != nil {
+					return err
+				}
+			}
+
+			// Call the function
 			state.assembler.Call(functionName)
 
 			for _, callRegister := range state.registers.Call {
@@ -547,6 +504,11 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			returnValueRegister := state.registers.ReturnValue[0]
 			returnValueRegister.Use(sub)
 
+			if sub.Register == nil {
+				sub.Register = state.registers.FindFreeRegister()
+			}
+
+			// Save return value in temporary register
 			if sub.Register != returnValueRegister {
 				state.assembler.MoveRegisterRegister(sub.Register, returnValueRegister)
 			}
@@ -555,9 +517,24 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			return nil
 		}
 
+		left := sub.Children[0]
+		right := sub.Children[1]
+
+		if left.Register == nil {
+			left.Register = state.registers.FindFreeRegister()
+		}
+
+		if sub.Token.Kind != token.Separator {
+			sub.Register = left.Register
+
+			if sub.Register.IsFree() {
+				sub.Register.Use(sub)
+			}
+		}
+
 		// Left operand
 		if left.IsLeaf() {
-			err := state.TokenToRegister(left.Value, sub.Register)
+			err := state.TokenToRegister(left.Token, sub.Register)
 
 			if err != nil {
 				return err
@@ -567,11 +544,11 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 			left.Register.Free()
 		}
 
-		operator := sub.Value.Text()
+		operator := sub.Token.Text()
 
 		if operator == "," {
 			if right.IsLeaf() {
-				err := state.TokenToRegister(right.Value, right.Register)
+				err := state.TokenToRegister(right.Token, right.Register)
 				return err
 			}
 
@@ -580,9 +557,9 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 
 		// Right operand is a leaf node
 		if right.IsLeaf() {
-			switch right.Value.Kind {
+			switch right.Token.Kind {
 			case token.Identifier:
-				variableName := right.Value.Text()
+				variableName := right.Token.Text()
 				variable := state.scopes.Get(variableName)
 
 				if variable == nil {
@@ -593,10 +570,10 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 				return state.CalculateRegisterRegister(operator, sub.Register, variable.Register)
 
 			case token.Number:
-				return state.CalculateRegisterNumber(operator, sub.Register, right.Value.Text())
+				return state.CalculateRegisterNumber(operator, sub.Register, right.Token.Text())
 
 			default:
-				return fmt.Errorf("Invalid operand %s", right.Value)
+				return fmt.Errorf("Invalid operand %s", right.Token)
 			}
 		}
 
@@ -614,6 +591,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		return err
 	}
 
+	// Free registers
 	_ = expr.EachOperation(func(expr *expression.Expression) error {
 		if expr.Register != nil && expr.Register != finalRegister {
 			expr.Register.Free()
@@ -622,6 +600,7 @@ func (state *State) ExpressionToRegister(expr *expression.Expression, finalRegis
 		return nil
 	})
 
+	// Mark final register as used if it's not marked already
 	if finalRegister.IsFree() {
 		finalRegister.Use(expr)
 	}
