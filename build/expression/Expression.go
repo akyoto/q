@@ -25,13 +25,38 @@ func New() *Expression {
 	return pool.Get().(*Expression)
 }
 
-// AddToken adds a token to the expression.
-func (expr *Expression) AddToken(t token.Token) *Expression {
-	if expr.Token.Kind == token.Invalid {
-		expr.Token = t
-		return expr
+// AddChild adds a child to the expression.
+func (expr *Expression) AddChild(operand *Expression) {
+	if operand.Parent != nil {
+		operand.Parent.RemoveChild(operand)
 	}
 
+	operand.Parent = expr
+	expr.Children = append(expr.Children, operand)
+}
+
+// PrependChild adds a child to the expression at the start.
+func (expr *Expression) PrependChild(operand *Expression) {
+	if operand.Parent != nil {
+		operand.Parent.RemoveChild(operand)
+	}
+
+	operand.Parent = expr
+	expr.Children = append([]*Expression{operand}, expr.Children...)
+}
+
+// RemoveChild removes a child from the expression.
+func (expr *Expression) RemoveChild(operand *Expression) {
+	for i, child := range expr.Children {
+		if child == operand {
+			expr.Children = append(expr.Children[:i], expr.Children[i+1:]...)
+			return
+		}
+	}
+}
+
+// AddToken adds a token to the expression.
+func (expr *Expression) AddToken(t token.Token) *Expression {
 	child := New()
 	child.Token = t
 	child.Parent = expr
