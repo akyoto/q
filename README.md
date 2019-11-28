@@ -34,12 +34,12 @@ This will produce the `q` compiler in your current directory.
 * No name shadowing, names never change their meaning
 * No side effects when importing a package
 * No backwards compatibility (we use a rather unique method to ensure everything works)
-* Fast compilation (a couple milliseconds should suffice for most programs)
-* Small binaries (a "Hello World" program produces a 247-byte binary)
-* High performance (should compete with C and Rust)
-* Linting embedded into the build process (detects common mistakes and suggests solutions)
-* Testing embedded into the language ("q test")
-* Formatting tools included ("q format")
+* Fast compilation (less than 1 millisecond for simple programs)
+* Small binaries ("Hello World" is 247 bytes)
+* High performance (compete with C and Rust)
+* Linting embedded (detects common mistakes)
+* Testing embedded ("q test")
+* Formatting tools included ("q fmt")
 * Packages should be highly reusable (not bound to predefined data structures)
 * Statically typed with type inference
 * User-friendly compiler messages
@@ -79,33 +79,41 @@ This will produce the `q` compiler in your current directory.
 * [ ] Ineffective assignment
 * [ ] ...
 
-## Architectures
+## Architecture
 
-Currently **Linux x86-64** only. It produces 64-bit ELF binaries.
+* [x] x86-64
+* [ ] WebAssembly
+* [ ] ARM
+* [ ] ...
 
-## Assembly
+## OS
 
-You can view the produced assembly output via the `-v` verbose flag:
+* [x] Linux
+* [ ] Mac
+* [ ] Windows
+* [ ] ...
+
+## FAQ
+
+### Can I view the produced assembly output?
+
+Yes, use the `-v` verbose flag:
 
 ```shell
-./q build -v examples/loops
+q build -v examples/loops
 ```
 
-## Builtins
+### Which builtins are available?
 
 There are currently 2 builtin functions, `syscall` and `print`. In the future we'd like to remove `print` so that `syscall` becomes the only builtin function.
 
-## Editors
+### Which editor can I use to edit Q code?
 
-There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables syntax highlighting (copy into `$HOME/.vscode/extensions`).
+There is a simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables syntax highlighting. Copy it into `$HOME/.vscode/extensions`.
 
-## Community
+### Is there a community for this project?
 
 There is a Discord channel and a Telegram group for [sponsors](https://github.com/sponsors/akyoto).
-
-## How to contribute
-
-* TODO.
 
 ## Style
 
