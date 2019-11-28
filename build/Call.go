@@ -38,6 +38,8 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 		callRegister := state.registers.Call[i]
 		err := callRegister.Use(parameter)
 
+		// If one of the call registers is already in use,
+		// move the current user of the register to another one.
 		if err != nil {
 			freeRegister := state.registers.FindFreeRegister()
 
@@ -52,12 +54,15 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 
 			if isVariable {
 				_ = variable.SetRegister(freeRegister)
+			} else {
+				panic("This should never happen")
 			}
 
 			callRegister.Free()
 			_ = callRegister.Use(parameter)
 		}
 
+		// Save the parameter in the call register
 		err = state.ExpressionToRegister(parameter, callRegister)
 
 		if err != nil {
