@@ -74,6 +74,9 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				nextCurrent = nil
 			}
 
+		case token.GroupStart:
+			// ...
+
 		case token.Operator:
 			if current.Token.Kind != token.Operator {
 				current.Token = t

@@ -17,7 +17,6 @@ type Expression struct {
 	Children []*Expression
 	Parent   *Expression
 	Register *register.Register
-	Grouped  bool
 }
 
 // New creates a new expression.
@@ -35,16 +34,6 @@ func (expr *Expression) AddChild(child *Expression) {
 	expr.Children = append(expr.Children, child)
 }
 
-// PrependChild adds a child to the expression at the start.
-func (expr *Expression) PrependChild(operand *Expression) {
-	if operand.Parent != nil {
-		operand.Parent.RemoveChild(operand)
-	}
-
-	operand.Parent = expr
-	expr.Children = append([]*Expression{operand}, expr.Children...)
-}
-
 // RemoveChild removes a child from the expression.
 func (expr *Expression) RemoveChild(operand *Expression) {
 	for i, child := range expr.Children {
@@ -60,13 +49,9 @@ func (expr *Expression) SetParent(parent *Expression) {
 	parent.AddChild(expr)
 }
 
-// AddToken adds a token to the expression.
-func (expr *Expression) AddToken(t token.Token) *Expression {
-	child := New()
-	child.Token = t
-	child.Parent = expr
-	expr.Children = append(expr.Children, child)
-	return child
+// IsEmpty tells you whether the expression is empty or not.
+func (expr *Expression) IsEmpty() bool {
+	return expr.Token.Kind == token.Invalid && len(expr.Children) == 0
 }
 
 // EachOperation iterates the operations in the tree.
