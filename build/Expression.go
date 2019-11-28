@@ -2,7 +2,9 @@ package build
 
 import (
 	"fmt"
+	"sync/atomic"
 
+	"github.com/akyoto/asm/syscall"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/register"
@@ -69,6 +71,89 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 	return err
 }
 
+// CallExpression executes a function call.
+func (state *State) CallExpression(expr *expression.Expression) error {
+	functionName := expr.Token.Text()
+	function := state.environment.Functions[functionName]
+	isBuiltin := false
+
+	if function == nil {
+		function = BuiltinFunctions[functionName]
+		isBuiltin = true
+	}
+
+	if function == nil {
+		return state.UnknownFunctionError(functionName)
+	}
+
+	function.Used = true
+	parameters := expr.Children
+
+	// Calling a function with side effects causes our function to have side effects
+	if atomic.LoadInt32(&function.SideEffects) > 0 {
+		atomic.AddInt32(&state.function.SideEffects, 1)
+	}
+
+	// Parameter check
+	if !function.NoParameterCheck && len(parameters) != len(function.Parameters) {
+		return &errors.ParameterCount{
+			FunctionName:  function.Name,
+			CountGiven:    len(parameters),
+			CountRequired: len(function.Parameters),
+		}
+	}
+
+	// print is a little special
+	if isBuiltin && functionName == "print" {
+		parameter := parameters[0]
+
+		if parameter.Token.Kind != token.Text {
+			return fmt.Errorf("'%s' requires a text parameter instead of '%s'", function.Name, parameter.Token.Text())
+		}
+
+		text := parameter.Token.Text() + "\n"
+		address := state.assembler.AddString(text)
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], uint64(syscall.Write))
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
+		state.assembler.MoveRegisterAddress(state.registers.Syscall[2], address)
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[3], uint64(len(text)))
+		state.assembler.Syscall()
+		return nil
+	}
+
+	// Call the function
+	err := state.BeforeCall(parameters)
+
+	if err != nil {
+		return err
+	}
+
+	if functionName == "syscall" {
+		state.assembler.Syscall()
+	} else {
+		state.assembler.Call(functionName)
+	}
+
+	state.AfterCall(function)
+
+	// Free the call registers
+	for _, callRegister := range state.registers.Call {
+		callRegister.Free()
+	}
+
+	// Mark return value register temporarily as used for better assembly output
+	returnValueRegister := state.registers.ReturnValue[0]
+	returnValueRegister.Use(expr)
+
+	// Save return value in temporary register
+	if expr.Register != returnValueRegister {
+		state.assembler.MoveRegisterRegister(expr.Register, returnValueRegister)
+		returnValueRegister.Free()
+	}
+
+	return nil
+}
+
 // ExpressionToRegister moves the result of an expression into the given register.
 func (state *State) ExpressionToRegister(root *expression.Expression, finalRegister *register.Register) error {
 	if root.IsLeaf() {
@@ -95,35 +180,6 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 	// Execute each operation starting from the bottom left
 	err := root.EachOperation(func(sub *expression.Expression) error {
 		if sub.IsFunctionCall {
-			functionName := sub.Token.Text()
-			function := state.environment.Functions[functionName]
-
-			if function == nil {
-				return state.UnknownFunctionError(functionName)
-			}
-
-			function.Used = true
-
-			// Move parameters into registers
-			for i, parameter := range sub.Children {
-				parameter.Register = state.registers.Call[i]
-				err := state.ExpressionToRegister(parameter, parameter.Register)
-
-				if err != nil {
-					return err
-				}
-			}
-
-			// Call the function
-			state.assembler.Call(functionName)
-
-			for _, callRegister := range state.registers.Call {
-				callRegister.Free()
-			}
-
-			returnValueRegister := state.registers.ReturnValue[0]
-			returnValueRegister.Use(sub)
-
 			// Allocate a temporary register if necessary
 			if sub.Register == nil {
 				sub.Register = state.registers.FindFreeRegister()
@@ -131,13 +187,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 				temporaryRegisters = append(temporaryRegisters, sub.Register)
 			}
 
-			// Save return value in temporary register
-			if sub.Register != returnValueRegister {
-				state.assembler.MoveRegisterRegister(sub.Register, returnValueRegister)
-				returnValueRegister.Free()
-			}
-
-			return nil
+			return state.CallExpression(sub)
 		}
 
 		left := sub.Children[0]
@@ -202,7 +252,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 	}
 
 	// Mark final register as used if it's not marked already
-	if finalRegister.IsFree() {
+	if finalRegister != nil && finalRegister.IsFree() {
 		finalRegister.Use(root)
 	}
 
