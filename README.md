@@ -96,6 +96,27 @@ This will produce the `q` compiler in your current directory.
 
 ## FAQ
 
+### How do I navigate the source code?
+
+There are 4 directories:
+
+* [benchmarks](https://github.com/akyoto/q/tree/master/examples) contains tests for compilation speed
+* [build](https://github.com/akyoto/q/tree/master/examples) contains the actual compiler source
+* [cli](https://github.com/akyoto/q/tree/master/cli) contains the command line interface
+* [examples](https://github.com/akyoto/q/tree/master/examples) contains a few examples that are also used in tests
+
+### How do I run the tests?
+
+```shell
+go test -v ./...
+```
+
+### How do I run the benchmarks?
+
+```shell
+go test -run=^$ -bench=. ./...
+```
+
 ### Can I view the produced assembly output?
 
 Yes, use the `-v` verbose flag:
@@ -104,13 +125,17 @@ Yes, use the `-v` verbose flag:
 q build -v examples/loops
 ```
 
-### Which builtins are available?
+### Which builtin functions are available?
 
 There are currently 2 builtin functions, `syscall` and `print`. In the future we'd like to remove `print` so that `syscall` becomes the only builtin function.
 
 ### Which editor can I use to edit Q code?
 
-There is a simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables syntax highlighting. Copy it into `$HOME/.vscode/extensions`.
+There is a simple [VS Code extension](https://github.com/akyoto/vscode-q) with syntax highlighting.
+
+```shell
+git clone https://github.com/akyoto/vscode-q ~/.vscode/extensions
+```
 
 ### Is there a community for this project?
 
