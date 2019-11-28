@@ -131,6 +131,7 @@ func (expr *Expression) Close() {
 	expr.Children = expr.Children[:0]
 	expr.Parent = nil
 	expr.Register = nil
+	expr.IsFunctionCall = false
 	pool.Put(expr)
 }
 
