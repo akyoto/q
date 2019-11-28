@@ -1,6 +1,8 @@
 package build
 
 import (
+	"sync/atomic"
+
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/token"
@@ -44,5 +46,5 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 
 // AfterCall restores saved registers from the stack.
 func (state *State) AfterCall(function *Function) {
-	function.Used = true
+	atomic.AddInt64(&function.CallCount, 1)
 }

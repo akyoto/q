@@ -15,7 +15,7 @@ type Function struct {
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
-	Used             bool
+	CallCount        int64
 	NoParameterCheck bool
 	SideEffects      int32
 	parameterStart   token.Position

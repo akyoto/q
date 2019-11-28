@@ -109,7 +109,7 @@ done:
 	}
 
 	for _, compiled := range results {
-		if !compiled.Function.Used && compiled.Function.Name != "main" {
+		if compiled.Function.CallCount == 0 && compiled.Function.Name != "main" {
 			continue
 		}
 

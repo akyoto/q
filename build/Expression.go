@@ -86,7 +86,6 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 		return state.UnknownFunctionError(functionName)
 	}
 
-	function.Used = true
 	parameters := expr.Children
 
 	// Calling a function with side effects causes our function to have side effects
