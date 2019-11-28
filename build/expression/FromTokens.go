@@ -1,8 +1,7 @@
 package expression
 
 import (
-	"fmt"
-
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 )
@@ -25,10 +24,14 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 	// after we receive the next operand.
 	var nextCurrent *Expression
 
+	// Last operand is saved for when we encounter a function call.
+	// We assume that the last operand was the function name.
+	// It is also used for the function call detection itself.
+	// We set this variable back to nil when we see an operator.
+	var lastOperand *Expression
+
 	// We iterate over all tokens and adjust the expression tree as we go.
 	for i, t := range tokens {
-		fmt.Printf("[%s] %v\n", t, current)
-
 		switch t.Kind {
 		case token.GroupStart:
 			if groupLevel == 0 {
@@ -42,12 +45,26 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			groupLevel--
 
 			if groupLevel == 0 {
+				// Function calls
+				if lastOperand != nil {
+					lastOperand.IsFunctionCall = true
+					parameters, err := multiExpressionList(tokens[groupPosition:i])
+
+					if err != nil {
+						return nil, err
+					}
+
+					lastOperand.Children = parameters
+					continue
+				}
+
 				operand, err := FromTokens(tokens[groupPosition:i])
 
 				if err != nil {
 					return nil, err
 				}
 
+				lastOperand = operand
 				current.AddChild(operand)
 
 				if nextCurrent != nil {
@@ -67,6 +84,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		switch t.Kind {
 		case token.Identifier, token.Number, token.Text:
 			operand := FromToken(t)
+			lastOperand = operand
 			current.AddChild(operand)
 
 			if nextCurrent != nil {
@@ -74,10 +92,9 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 				nextCurrent = nil
 			}
 
-		case token.GroupStart:
-			// ...
-
 		case token.Operator:
+			lastOperand = nil
+
 			if current.Token.Kind != token.Operator {
 				current.Token = t
 				continue
@@ -126,8 +143,6 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		}
 	}
 
-	fmt.Printf(" =  %v\n", current)
-
 	// Walk up the tree and return the top level node.
 	for current.Parent != nil {
 		current = current.Parent
@@ -139,6 +154,7 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 	if current.Token.Kind == token.Invalid && len(current.Children) == 1 {
 		current = current.Children[0]
 		current.Parent.Children = nil
+		current.Parent.Close()
 		current.Parent = nil
 	}
 
@@ -150,4 +166,56 @@ func FromToken(t token.Token) *Expression {
 	operand := New()
 	operand.Token = t
 	return operand
+}
+
+// multiExpressionList generates an expression for an argument list.
+// Expressions must be separated by the Separator token.
+func multiExpressionList(tokens []token.Token) ([]*Expression, error) {
+	var list []*Expression
+
+	parameterStart := 0
+	groupLevel := 0
+
+	for i, t := range tokens {
+		switch t.Kind {
+		case token.GroupStart, token.ArrayStart, token.BlockStart:
+			groupLevel++
+
+		case token.GroupEnd, token.ArrayEnd, token.BlockEnd:
+			groupLevel--
+
+		case token.Separator:
+			if groupLevel > 0 {
+				continue
+			}
+
+			if i == parameterStart {
+				return list, errors.MissingParameter
+			}
+
+			parameterTokens := tokens[parameterStart:i]
+			expression, err := FromTokens(parameterTokens)
+
+			if err != nil {
+				return list, err
+			}
+
+			list = append(list, expression)
+			parameterStart = i + 1
+		}
+	}
+
+	// Last parameter
+	if parameterStart != len(tokens) {
+		parameterTokens := tokens[parameterStart:]
+		expression, err := FromTokens(parameterTokens)
+
+		if err != nil {
+			return list, err
+		}
+
+		list = append(list, expression)
+	}
+
+	return list, nil
 }

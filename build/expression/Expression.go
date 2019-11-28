@@ -1,7 +1,6 @@
 package expression
 
 import (
-	"bytes"
 	"strings"
 
 	"github.com/akyoto/q/build/register"
@@ -13,10 +12,11 @@ var functionCallToken = token.Token{Kind: token.Operator, Bytes: []byte{'(', ')'
 
 // Expression is a binary tree with an operator on each node.
 type Expression struct {
-	Token    token.Token
-	Children []*Expression
-	Parent   *Expression
-	Register *register.Register
+	Token          token.Token
+	Children       []*Expression
+	Parent         *Expression
+	Register       *register.Register
+	IsFunctionCall bool
 }
 
 // New creates a new expression.
@@ -127,11 +127,6 @@ func (expr *Expression) IsLeaf() bool {
 	return len(expr.Children) == 0
 }
 
-// IsFunctionCall returns true if the expression is a function call.
-func (expr *Expression) IsFunctionCall() bool {
-	return expr.Token.Kind == functionCallToken.Kind && bytes.Equal(expr.Token.Bytes, functionCallToken.Bytes)
-}
-
 // Close puts the expression back into the memory pool.
 func (expr *Expression) Close() {
 	for _, child := range expr.Children {
@@ -154,7 +149,7 @@ func (expr *Expression) String() string {
 
 // write generates a textual representation of the expression.
 func (expr *Expression) write(builder *strings.Builder) {
-	if len(expr.Children) == 0 {
+	if !expr.IsFunctionCall && len(expr.Children) == 0 {
 		builder.WriteString(expr.Token.Text())
 		return
 	}
@@ -162,9 +157,8 @@ func (expr *Expression) write(builder *strings.Builder) {
 	children := expr.Children
 	operator := expr.Token.Text()
 
-	if expr.IsFunctionCall() {
-		builder.WriteString(children[0].Token.Text())
-		children = children[1:]
+	if expr.IsFunctionCall {
+		builder.WriteString(expr.Token.Text())
 		operator = ","
 	}
 
@@ -173,7 +167,7 @@ func (expr *Expression) write(builder *strings.Builder) {
 	for index, operand := range children {
 		operand.write(builder)
 
-		if index != len(children)-1 || (len(children) == 1 && !expr.IsFunctionCall()) {
+		if index != len(children)-1 || (len(children) == 1 && !expr.IsFunctionCall) {
 			builder.WriteString(operator)
 		}
 	}
