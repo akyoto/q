@@ -100,8 +100,8 @@ This will produce the `q` compiler in your current directory.
 
 There are 4 directories:
 
-* [benchmarks](https://github.com/akyoto/q/tree/master/examples) contains tests for compilation speed
-* [build](https://github.com/akyoto/q/tree/master/examples) contains the actual compiler source
+* [benchmarks](https://github.com/akyoto/q/tree/master/benchmarks) contains tests for compilation speed
+* [build](https://github.com/akyoto/q/tree/master/build) contains the actual compiler source
 * [cli](https://github.com/akyoto/q/tree/master/cli) contains the command line interface
 * [examples](https://github.com/akyoto/q/tree/master/examples) contains a few examples that are also used in tests
 
