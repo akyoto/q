@@ -99,6 +99,10 @@ There are currently 2 builtin functions, `syscall` and `print`. In the future we
 
 There is a very simple [VS Code extension](https://github.com/akyoto/vscode-q) that enables syntax highlighting (copy into `$HOME/.vscode/extensions`).
 
+## Community
+
+There is a Discord channel and a Telegram group for [sponsors](https://github.com/sponsors/akyoto).
+
 ## How to contribute
 
 * TODO.
