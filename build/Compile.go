@@ -83,7 +83,7 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 			Position: 0,
 		}
 
-		variable.BindRegister(register)
+		variable.SetRegister(register)
 		scopes.Add(variable)
 	}
 

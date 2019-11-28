@@ -24,7 +24,7 @@ func (state *State) IfStart(tokens []token.Token) error {
 	}
 
 	label := "if_1_end"
-	state.assembler.CompareRegisterNumber(variable.Register, uint64(number))
+	state.assembler.CompareRegisterNumber(variable.Register(), uint64(number))
 	operator := expression[1].Text()
 
 	switch operator {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
+	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -33,8 +34,26 @@ func (state *State) Call(tokens []token.Token) error {
 
 // BeforeCall pushes parameters into registers.
 func (state *State) BeforeCall(parameters []*expression.Expression) error {
-	for i, expr := range parameters {
-		err := state.ExpressionToRegister(expr, state.registers.Call[i])
+	for i, parameter := range parameters {
+		callRegister := state.registers.Call[i]
+		err := callRegister.Use(parameter)
+
+		if err != nil {
+			tmp := state.registers.FindFreeRegister()
+			state.assembler.MoveRegisterRegister(tmp, callRegister)
+
+			err := err.(*register.ErrAlreadyInUse)
+			variable, isVariable := err.UsedBy.(*Variable)
+
+			if isVariable {
+				variable.SetRegister(tmp)
+			}
+
+			callRegister.Free()
+			_ = callRegister.Use(parameter)
+		}
+
+		err = state.ExpressionToRegister(parameter, callRegister)
 
 		if err != nil {
 			return err

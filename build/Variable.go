@@ -13,14 +13,19 @@ type Variable struct {
 	Type       *spec.Type
 	AliveUntil instruction.Position
 	Position   token.Position
-	Register   *register.Register
 	Mutable    bool
+	register   *register.Register
 }
 
-// BindRegister binds the variable to a register.
-func (variable *Variable) BindRegister(register *register.Register) {
-	variable.Register = register
-	register.Use(variable)
+// Register returns the register the variable refers to.
+func (variable *Variable) Register() *register.Register {
+	return variable.register
+}
+
+// SetRegister binds the variable to a register.
+func (variable *Variable) SetRegister(register *register.Register) error {
+	variable.register = register
+	return register.Use(variable)
 }
 
 // String returns the string representation.

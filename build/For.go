@@ -63,7 +63,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 			return err
 		}
 
-		register = variable.Register
+		register = variable.Register()
 	}
 
 	state.forLoop.counter++

@@ -102,7 +102,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 			}
 
 			variable.AliveUntil = state.instrCursor + 1
-			state.assembler.CompareRegisterRegister(register, variable.Register)
+			state.assembler.CompareRegisterRegister(register, variable.Register())
 
 			return nil, nil
 
@@ -205,7 +205,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 			Mutable:  mutable,
 		}
 
-		variable.BindRegister(register)
+		variable.SetRegister(register)
 		state.scopes.Add(variable)
 	} else if !variable.Mutable {
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
@@ -229,7 +229,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return variable, errors.MissingAssignmentExpression
 	}
 
-	err := state.TokensToRegister(expression, variable.Register)
+	err := state.TokensToRegister(expression, variable.Register())
 
 	if err != nil {
 		return variable, err

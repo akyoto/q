@@ -11,16 +11,17 @@ type Register struct {
 }
 
 // Use marks the register as used by the given object.
-func (register *Register) Use(obj fmt.Stringer) {
+func (register *Register) Use(obj fmt.Stringer) error {
 	if obj == nil {
-		panic("register.Use parameter cannot be nil!")
+		panic("register.Use parameter cannot be nil")
 	}
 
 	if register.usedBy != nil {
-		panic("Register already used by another object!")
+		return &ErrAlreadyInUse{register, register.usedBy}
 	}
 
 	register.usedBy = obj
+	return nil
 }
 
 // Free frees the register so that it can be used for new calculations.
