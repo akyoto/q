@@ -8,8 +8,6 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
-var functionCallToken = token.Token{Kind: token.Operator, Bytes: []byte{'(', ')'}}
-
 // Expression is a binary tree with an operator on each node.
 type Expression struct {
 	Token          token.Token

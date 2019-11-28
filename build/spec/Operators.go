@@ -37,7 +37,4 @@ var Operators = map[string]*Operator{
 	"*": {"*", 8, false},
 	"/": {"/", 8, true},
 	"%": {"%", 8, true},
-
-	// Function calls
-	"()": {"()", 9, true},
 }
