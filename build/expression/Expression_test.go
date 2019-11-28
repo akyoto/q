@@ -71,6 +71,7 @@ func TestExpressionFromTokens(t *testing.T) {
 		{"Function calls 20", "a((b(1,2,bb())+c(3,4,cc(0)))*d(5,6,dd(0)),e(7+8,9-10*11,12,ee(0)))", "a(((b(1,2,bb())+c(3,4,cc(0)))*d(5,6,dd(0))),e((7+8),(9-(10*11)),12,ee(0)))"},
 		{"Function calls 21", "a(1-2*3)", "a((1-(2*3)))"},
 		{"Function calls 22", "1+2*a()+4", "((1+(2*a()))+4)"},
+		{"Function calls 23", "sum(a,b)*2+15*4", "((sum(a,b)*2)+(15*4))"},
 	}
 
 	for _, test := range tests {

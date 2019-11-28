@@ -59,10 +59,6 @@ func (expr *Expression) EachOperation(callBack func(*Expression) error) error {
 	}
 
 	for _, child := range expr.Children {
-		if child.IsLeaf() {
-			continue
-		}
-
 		err := child.EachOperation(callBack)
 
 		if err != nil {
@@ -83,7 +79,7 @@ func (expr *Expression) SortByRegisterCount() {
 		child.SortByRegisterCount()
 	}
 
-	if expr.Token.Kind == token.Operator && spec.Operators[string(expr.Token.Bytes)].OperandOrderImportant {
+	if expr.IsFunctionCall || (expr.Token.Kind == token.Operator && spec.Operators[string(expr.Token.Bytes)].OperandOrderImportant) {
 		return
 	}
 
@@ -122,7 +118,7 @@ func (expr *Expression) LastChild() *Expression {
 
 // IsLeaf returns true if the expression is a leaf node with no children.
 func (expr *Expression) IsLeaf() bool {
-	return len(expr.Children) == 0
+	return !expr.IsFunctionCall && len(expr.Children) == 0
 }
 
 // Close puts the expression back into the memory pool.
