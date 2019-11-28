@@ -40,7 +40,12 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 			// Allocate a temporary register if necessary
 			if sub.Register == nil {
 				sub.Register = state.registers.FindFreeRegister()
-				sub.Register.Use(sub)
+
+				if sub.Register == nil {
+					return errors.ExceededMaxVariables
+				}
+
+				_ = sub.Register.Use(sub)
 				temporaryRegisters = append(temporaryRegisters, sub.Register)
 			}
 
@@ -53,7 +58,12 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		// Allocate a temporary register if necessary
 		if left.Register == nil {
 			left.Register = state.registers.FindFreeRegister()
-			left.Register.Use(sub)
+
+			if left.Register == nil {
+				return errors.ExceededMaxVariables
+			}
+
+			_ = left.Register.Use(sub)
 			temporaryRegisters = append(temporaryRegisters, left.Register)
 		}
 
@@ -110,7 +120,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 
 	// Mark final register as used if it's not marked already
 	if finalRegister != nil && finalRegister.IsFree() {
-		finalRegister.Use(root)
+		_ = finalRegister.Use(root)
 	}
 
 	return nil
@@ -187,7 +197,11 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 
 	// Mark return value register temporarily as used for better assembly output
 	returnValueRegister := state.registers.ReturnValue[0]
-	returnValueRegister.Use(expr)
+	err = returnValueRegister.Use(expr)
+
+	if err != nil {
+		return err
+	}
 
 	// Save return value in temporary register
 	if expr.Register != returnValueRegister {
@@ -235,7 +249,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 	}
 
 	if register.IsFree() {
-		register.Use(singleToken)
+		return register.Use(singleToken)
 	}
 
 	return nil

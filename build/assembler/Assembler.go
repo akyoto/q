@@ -14,6 +14,7 @@ type Assembler struct {
 	logger       *log.Logger
 }
 
+// New creates a new assembler.
 func New(logger *log.Logger) *Assembler {
 	return &Assembler{
 		final:  asm.New(),
@@ -32,16 +33,19 @@ func (a *Assembler) AddString(text string) uint32 {
 }
 
 // Finalize generates the final assembly code.
-func (a *Assembler) Finalize(logger *log.Logger) *asm.Assembler {
+func (a *Assembler) Finalize() *asm.Assembler {
 	for _, instr := range a.instructions {
 		instr.Exec(a.final)
-
-		if logger != nil {
-			logger.Println(instr.String())
-		}
 	}
 
 	return a.final
+}
+
+// WriteTo generates the final assembly code.
+func (a *Assembler) WriteTo(logger *log.Logger) {
+	for _, instr := range a.instructions {
+		logger.Println(instr.String())
+	}
 }
 
 // lastInstruction returns the last added instruction.

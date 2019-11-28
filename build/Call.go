@@ -39,14 +39,19 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 		err := callRegister.Use(parameter)
 
 		if err != nil {
-			tmp := state.registers.FindFreeRegister()
-			state.assembler.MoveRegisterRegister(tmp, callRegister)
+			freeRegister := state.registers.FindFreeRegister()
+
+			if freeRegister == nil {
+				return errors.ExceededMaxVariables
+			}
+
+			state.assembler.MoveRegisterRegister(freeRegister, callRegister)
 
 			err := err.(*register.ErrAlreadyInUse)
 			variable, isVariable := err.UsedBy.(*Variable)
 
 			if isVariable {
-				variable.SetRegister(tmp)
+				_ = variable.SetRegister(freeRegister)
 			}
 
 			callRegister.Free()

@@ -193,9 +193,9 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
-		register := state.registers.FindFreeRegister()
+		freeRegister := state.registers.FindFreeRegister()
 
-		if register == nil {
+		if freeRegister == nil {
 			return nil, errors.ExceededMaxVariables
 		}
 
@@ -205,7 +205,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 			Mutable:  mutable,
 		}
 
-		variable.SetRegister(register)
+		_ = variable.SetRegister(freeRegister)
 		state.scopes.Add(variable)
 	} else if !variable.Mutable {
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}

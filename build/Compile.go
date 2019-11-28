@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/q/build/assembler"
@@ -11,6 +12,8 @@ import (
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 )
+
+var stdOutMutex sync.Mutex
 
 // Compile turns a function into machine code.
 // It is executed for all function bodies.
@@ -54,18 +57,31 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		optimize:     optimize,
 	}
 
+	// Show verbose output even if an error happened
+	defer func() {
+		if verbose {
+			stdOutMutex.Lock()
+			defer stdOutMutex.Unlock()
+
+			assembler.WriteTo(state.log)
+		}
+	}()
+
+	// Compile the function
 	err = state.CompileInstructions()
 
 	if err != nil {
 		return nil, function.Error(state.tokenCursor, err)
 	}
 
+	// Check for unused variables
 	for _, variable := range scopes.Unused() {
 		return nil, function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
 	}
 
+	// End with a return statement and generate the actual machine code
 	assembler.Return()
-	return assembler.Finalize(state.log), nil
+	return assembler.Finalize(), nil
 }
 
 // declareParameters declares the given parameters as variables inside the scope.
@@ -83,7 +99,7 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 			Position: 0,
 		}
 
-		variable.SetRegister(register)
+		_ = variable.SetRegister(register)
 		scopes.Add(variable)
 	}
 
