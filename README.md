@@ -50,6 +50,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Scanner
 * [x] Parallel function compiler
 * [x] Error messages
+* [x] Expression parser
 * [x] Function calls
 * [x] Infinite `loop`
 * [x] Simple `for` loops
@@ -58,7 +59,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Detect pure functions
 * [x] Immutable variables
 * [x] Mutable variables via `mut`
-* [x] Function return values
+* [x] `return` values
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
