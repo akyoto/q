@@ -13,70 +13,26 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		return FromToken(tokens[0]), nil
 	}
 
-	fmt.Println("---")
+	// Save the number of parentheses we encounter so we can
+	// notice the end of a new group when group level is 0.
 	groupLevel := 0
-	groupStart := 0
-	root := New()
-	current := root
+	groupPosition := 0
 
-	onOperator := func(t token.Token) {
-		if current.Token.Kind != token.Operator {
-			current.Token = t
-			return
-		}
+	// Create a root node and use it as our current expression.
+	current := New()
 
-		// Compare operator priority
-		oldOperator := current.Token.Text()
-		oldOperatorPriority := spec.Operators[oldOperator].Priority
-		newOperator := t.Text()
-		newOperatorPriority := spec.Operators[newOperator].Priority
+	// Next current is used for when we want to change the current node
+	// after we receive the next operand.
+	var nextCurrent *Expression
 
-		if newOperatorPriority > oldOperatorPriority {
-			fmt.Println("HIGHER")
-			// Let's say we have the expression (1 + 2 * 3)
-			// At first, we encountered 1 + 2 and generated this tree:
-			//   + (current)
-			//  / \
-			// 1   2
-
-			// Now we encountered a higher priority operator.
-			// We need to take the last operand and replace it with the higher priority operation:
-			//   +
-			//  / \
-			// 1   * (current)
-			//    /
-			//   2
-
-			// Take the last child
-			lastChild := current.LastChild()
-
-			// Create a new expression for the higher priority operation
-			newOperation := New()
-			newOperation.Token = t
-			newOperation.AddChild(lastChild)
-			newOperation.SetParent(current)
-
-			// The new operator becomes the current expression until we added the second operand entirely.
-			current = newOperation
-			return
-		}
-
-		newOperation := New()
-		newOperation.Token = t
-		current.SetParent(newOperation)
-		current = newOperation
-		root = newOperation
-	}
-
-	onOperand := func(operand *Expression) {
-		current.AddChild(operand)
-	}
-
+	// We iterate over all tokens and adjust the expression tree as we go.
 	for i, t := range tokens {
+		fmt.Printf("[%s] %v\n", t, current)
+
 		switch t.Kind {
 		case token.GroupStart:
 			if groupLevel == 0 {
-				groupStart = i + 1
+				groupPosition = i + 1
 			}
 
 			groupLevel++
@@ -86,13 +42,18 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 			groupLevel--
 
 			if groupLevel == 0 {
-				operand, err := FromTokens(tokens[groupStart:i])
+				operand, err := FromTokens(tokens[groupPosition:i])
 
 				if err != nil {
 					return nil, err
 				}
 
-				onOperand(operand)
+				current.AddChild(operand)
+
+				if nextCurrent != nil {
+					current = nextCurrent
+					nextCurrent = nil
+				}
 			}
 
 			continue
@@ -104,21 +65,81 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 		}
 
 		switch t.Kind {
-		case token.Identifier:
+		case token.Identifier, token.Number, token.Text:
 			operand := FromToken(t)
-			onOperand(operand)
+			current.AddChild(operand)
 
-		case token.Number, token.Text:
-			operand := FromToken(t)
-			onOperand(operand)
+			if nextCurrent != nil {
+				current = nextCurrent
+				nextCurrent = nil
+			}
 
 		case token.Operator:
-			onOperator(t)
+			if current.Token.Kind != token.Operator {
+				current.Token = t
+				continue
+			}
+
+			// Compare operator priority
+			oldOperator := current.Token.Text()
+			oldOperatorPriority := spec.Operators[oldOperator].Priority
+			newOperator := t.Text()
+			newOperatorPriority := spec.Operators[newOperator].Priority
+
+			if newOperatorPriority > oldOperatorPriority {
+				// Let's say we have the expression (1 + 2 * 3)
+				// At first, we encountered 1 + 2 and generated this tree:
+				//   + (current)
+				//  / \
+				// 1   2
+
+				// Now we encountered a higher priority operator.
+				// We need to take the last operand and replace it with the higher priority operation:
+				//   +
+				//  / \
+				// 1   * (current)
+				//    /
+				//   2
+
+				// Take the last child
+				lastChild := current.LastChild()
+
+				// Create a new expression for the higher priority operation
+				newOperation := New()
+				newOperation.Token = t
+				newOperation.AddChild(lastChild)
+				newOperation.SetParent(current)
+
+				// The new operator becomes the current expression until we added the second operand entirely.
+				nextCurrent = current
+				current = newOperation
+				continue
+			}
+
+			newOperation := New()
+			newOperation.Token = t
+			current.SetParent(newOperation)
+			current = newOperation
 		}
 	}
 
-	fmt.Println("---")
-	return root, nil
+	fmt.Printf(" =  %v\n", current)
+
+	// Walk up the tree and return the top level node.
+	for current.Parent != nil {
+		current = current.Parent
+	}
+
+	// If we only have 1 child in an invalid operation,
+	// replace the result with the child itself.
+	// This turns expressions like (123) into 123.
+	if current.Token.Kind == token.Invalid && len(current.Children) == 1 {
+		current = current.Children[0]
+		current.Parent.Children = nil
+		current.Parent = nil
+	}
+
+	return current, nil
 }
 
 // FromToken generates an expression for a single token.
