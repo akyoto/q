@@ -147,7 +147,7 @@ There are currently 2 builtin functions, `syscall` and `print`. In the future we
 There is a simple [VS Code extension](https://github.com/akyoto/vscode-q) with syntax highlighting.
 
 ```shell
-git clone https://github.com/akyoto/vscode-q ~/.vscode/extensions
+git clone https://github.com/akyoto/vscode-q ~/.vscode/extensions/vscode-q
 ```
 
 ### Is there a community for this project?
