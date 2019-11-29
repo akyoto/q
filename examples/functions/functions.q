@@ -1,9 +1,8 @@
 main() {
-	stdOut = 1
 	a = sum(1, 2)
 	b = sum(3, 4)
 	c = sum(a, b)
-	d = write(stdOut, "1234567890", c)
+	d = write(1, "1234567890", c)
 	exit(d)
 }
 

@@ -34,7 +34,13 @@ type State struct {
 
 // CompileInstructions compiles all instructions.
 func (state *State) CompileInstructions() error {
+	identifiers := state.identifiersLastUse()
+	lastKillPos := 0
+
 	for index, instr := range state.instructions {
+		state.killVariables(identifiers, lastKillPos, instr.Position)
+		lastKillPos = instr.Position
+
 		err := state.Instruction(instr, index)
 
 		if err != nil {

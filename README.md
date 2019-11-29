@@ -66,6 +66,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Detect pure functions
 * [x] Immutable variables
 * [x] Mutable variables via `mut`
+* [x] Variable lifetime tracking
 * [x] `return` values
 * [ ] Data structures
 * [ ] Stack allocation
@@ -76,7 +77,6 @@ This will produce the `q` compiler in your current directory.
 * [ ] Error handling
 * [ ] Parallel execution
 * [ ] Lock-free data structures
-* [ ] Variable lifetime tracking
 * [ ] Multiple return values
 * [ ] Expression optimization
 * [ ] Assembly optimization
