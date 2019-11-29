@@ -16,15 +16,18 @@ func (state *State) IfStart(tokens []token.Token) error {
 		return &errors.UnknownVariable{VariableName: variableName}
 	}
 
-	numberString := expression[len(expression)-1].Text()
-	number, err := state.ParseInt(numberString)
+	variable.AliveUntil = state.instrCursor + 1
+	temporary, err := state.CompareExpression(variable.Register(), expression[2:], "")
 
 	if err != nil {
 		return err
 	}
 
+	if temporary != nil {
+		temporary.Free()
+	}
+
 	endIf := "if_1_end"
-	state.assembler.CompareRegisterNumber(variable.Register(), uint64(number))
 	operator := expression[1].Text()
 
 	switch operator {

@@ -96,7 +96,9 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 // If the expression needs to be stored in a temporary register, it will return it.
 func (state *State) CompareExpression(register *register.Register, expression []token.Token, labelBeforeComparison string) (*register.Register, error) {
 	if len(expression) == 1 {
-		state.assembler.AddLabel(labelBeforeComparison)
+		if labelBeforeComparison != "" {
+			state.assembler.AddLabel(labelBeforeComparison)
+		}
 
 		switch expression[0].Kind {
 		case token.Identifier:
