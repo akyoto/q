@@ -44,6 +44,7 @@ This will produce the `q` compiler in your current directory.
 * Linting (detects common mistakes)
 * Testing ("q test")
 * Formatting ("q fmt")
+* Contracts (Eiffel-style)
 * Packages should be highly reusable
 * Statically typed with type inference
 * User-friendly compiler messages
