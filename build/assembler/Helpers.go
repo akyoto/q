@@ -56,6 +56,14 @@ func (a *Assembler) DecreaseRegister(destination *register.Register) {
 	a.doRegister1(DEC, destination)
 }
 
+func (a *Assembler) PushRegister(destination *register.Register) {
+	a.doRegister1(PUSH, destination)
+}
+
+func (a *Assembler) PopRegister(destination *register.Register) {
+	a.doRegister1(POP, destination)
+}
+
 func (a *Assembler) MoveRegisterRegister(destination *register.Register, source *register.Register) {
 	a.doRegister2(MOV, destination, source)
 }

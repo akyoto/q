@@ -125,6 +125,8 @@ func (state *State) Call(tokens []token.Token) error {
 
 // BeforeCall pushes parameters into registers.
 func (state *State) BeforeCall(parameters []*expression.Expression) error {
+	// state.assembler.PushRegister(state.registers.RegisterByName("rbx"))
+
 	for i, parameter := range parameters {
 		callRegister := state.registers.Call[i]
 		err := callRegister.Use(parameter)
@@ -167,4 +169,5 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 // AfterCall restores saved registers from the stack.
 func (state *State) AfterCall(function *Function) {
 	atomic.AddInt32(&function.CallCount, 1)
+	// state.assembler.PopRegister(state.registers.RegisterByName("rbx"))
 }
