@@ -12,11 +12,13 @@ var BuiltinFunctions = map[string]*Function{
 				Type: spec.Types["Text"],
 			},
 		},
+		IsBuiltin:   true,
 		SideEffects: 1,
 	},
 	"syscall": {
 		Name:             "syscall",
 		NoParameterCheck: true,
+		IsBuiltin:        true,
 		SideEffects:      1,
 	},
 }

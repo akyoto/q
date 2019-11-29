@@ -11,12 +11,6 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
-// Call represents a function call in the source code.
-type Call struct {
-	Function   *Function
-	Parameters [][]token.Token
-}
-
 // CallExpression executes a function call.
 func (state *State) CallExpression(expr *expression.Expression) error {
 	functionName := expr.Token.Text()
@@ -68,30 +62,16 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 
 	// Call the function
 	if functionName == "syscall" {
-		err := state.BeforeCall(parameters, nil)
+		pushRegisters, err := state.BeforeCall(function, parameters)
 
 		if err != nil {
 			return err
 		}
 
 		state.assembler.Syscall()
-		state.AfterCall(function, nil)
+		state.AfterCall(function, pushRegisters)
 	} else {
-		var pushRegisters []*register.Register
-
-		// Wait for function compilation to finish
-		function.Wait()
-		usedRegisterNames := function.UsedRegisterNames()
-
-		for registerName := range usedRegisterNames {
-			callModifiedRegister := state.registers.All.ByName(registerName)
-
-			if !callModifiedRegister.IsFree() {
-				pushRegisters = append(pushRegisters, callModifiedRegister)
-			}
-		}
-
-		err := state.BeforeCall(parameters, pushRegisters)
+		pushRegisters, err := state.BeforeCall(function, parameters)
 
 		if err != nil {
 			return err
@@ -144,11 +124,27 @@ func (state *State) Call(tokens []token.Token) error {
 }
 
 // BeforeCall pushes parameters into registers.
-func (state *State) BeforeCall(parameters []*expression.Expression, pushRegisters []*register.Register) error {
+func (state *State) BeforeCall(function *Function, parameters []*expression.Expression) ([]*register.Register, error) {
+	var pushRegisters []*register.Register
+
+	// Wait for function compilation to finish
+	function.Wait()
+
+	// Determine the registers we need to save
+	for registerName := range function.UsedRegisterNames() {
+		callModifiedRegister := state.registers.All.ByName(registerName)
+
+		if !callModifiedRegister.IsFree() {
+			pushRegisters = append(pushRegisters, callModifiedRegister)
+		}
+	}
+
+	// Save registers
 	for _, reg := range pushRegisters {
 		state.assembler.PushRegister(reg)
 	}
 
+	// Move parameters into registers
 	for i, parameter := range parameters {
 		callRegister := state.registers.Call[i]
 		err := callRegister.Use(parameter)
@@ -159,7 +155,7 @@ func (state *State) BeforeCall(parameters []*expression.Expression, pushRegister
 			freeRegister := state.registers.General.FindFree()
 
 			if freeRegister == nil {
-				return errors.ExceededMaxVariables
+				return pushRegisters, errors.ExceededMaxVariables
 			}
 
 			state.assembler.MoveRegisterRegister(freeRegister, callRegister)
@@ -181,11 +177,11 @@ func (state *State) BeforeCall(parameters []*expression.Expression, pushRegister
 		err = state.ExpressionToRegister(parameter, callRegister)
 
 		if err != nil {
-			return err
+			return pushRegisters, err
 		}
 	}
 
-	return nil
+	return pushRegisters, nil
 }
 
 // AfterCall restores saved registers from the stack.

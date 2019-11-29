@@ -17,6 +17,7 @@ type Function struct {
 	TokenStart       token.Position
 	TokenEnd         token.Position
 	NoParameterCheck bool
+	IsBuiltin        bool
 	SideEffects      int32
 	CallCount        int32
 	assembler        *assembler.Assembler
@@ -47,11 +48,33 @@ func (function *Function) Errorf(position token.Position, message string, args .
 
 // UsedRegisterNames returns the names of used registers.
 func (function *Function) UsedRegisterNames() map[string]struct{} {
+	if function.IsBuiltin && function.Name == "syscall" {
+		// return map[string]struct{}{
+		// 	// Parameters
+		// 	"rax": {},
+		// 	"rdi": {},
+		// 	"rsi": {},
+		// 	"rdx": {},
+		// 	"r10": {},
+		// 	"r8":  {},
+		// 	"r9":  {},
+
+		// 	// Clobbered registers
+		// 	"rcx": {},
+		// 	"r11": {},
+		// }
+		return nil
+	}
+
 	return function.assembler.UsedRegisterNames()
 }
 
 // Wait will block until the compilation finishes.
 func (function *Function) Wait() {
+	if function.IsBuiltin {
+		return
+	}
+
 	<-function.Finished
 }
 
