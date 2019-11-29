@@ -63,6 +63,8 @@ This will produce the `q` compiler in your current directory.
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
+* [ ] `require` for input validation
+* [ ] `ensure` for output validation
 * [ ] `match` keyword
 * [ ] Error handling
 * [ ] Parallel execution
@@ -124,6 +126,10 @@ Yes, use the `-v` verbose flag:
 ```shell
 q build -v examples/loops
 ```
+
+### Is the syntax final?
+
+No, the syntax will be changed in the future.
 
 ### Which builtin functions are available?
 
