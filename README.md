@@ -27,24 +27,30 @@ This will produce the `q` compiler in your current directory.
 
 ## Goals
 
+### No...
+
 * No binary dependencies (not even libc)
 * No compiler dependencies (no LLVM, no GCC, ...)
 * No global state (all mutable variables are local)
 * No classes or methods: There is just a) data and b) functions that can operate on data
 * No name shadowing, names never change their meaning
 * No side effects when importing a package
-* No backwards compatibility (we use a rather unique method to ensure everything works)
+
+### Yes...
+
 * Fast compilation (less than 1 millisecond for simple programs)
 * Small binaries ("Hello World" is 247 bytes)
 * High performance (compete with C and Rust)
-* Linting embedded (detects common mistakes)
-* Testing embedded ("q test")
-* Formatting tools included ("q fmt")
-* Packages should be highly reusable (not bound to predefined data structures)
+* Linting (detects common mistakes)
+* Testing ("q test")
+* Formatting ("q fmt")
+* Packages should be highly reusable
 * Statically typed with type inference
 * User-friendly compiler messages
 
 ## Todo
+
+### Compiler
 
 * [x] Tokenizer
 * [x] Scanner
@@ -75,21 +81,21 @@ This will produce the `q` compiler in your current directory.
 * [ ] Assembly optimization
 * [ ] ...
 
-## Linter
+### Linter
 
 * [x] Unused variables
 * [x] Unused parameters
 * [ ] Ineffective assignment
 * [ ] ...
 
-## Architecture
+### Architecture
 
 * [x] x86-64
 * [ ] WebAssembly
 * [ ] ARM
 * [ ] ...
 
-## OS
+### OS
 
 * [x] Linux
 * [ ] Mac
