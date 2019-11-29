@@ -77,7 +77,20 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 		state.assembler.Syscall()
 		state.AfterCall(function, nil)
 	} else {
-		pushRegisters := state.registers.All.InUse()
+		var pushRegisters []*register.Register
+
+		// Wait for function compilation to finish
+		function.Wait()
+		usedRegisterNames := function.UsedRegisterNames()
+
+		for registerName := range usedRegisterNames {
+			callModifiedRegister := state.registers.All.ByName(registerName)
+
+			if !callModifiedRegister.IsFree() {
+				pushRegisters = append(pushRegisters, callModifiedRegister)
+			}
+		}
+
 		err := state.BeforeCall(parameters, pushRegisters)
 
 		if err != nil {

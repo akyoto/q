@@ -9,16 +9,18 @@ import (
 
 // Assembler produces machine code.
 type Assembler struct {
-	instructions []instruction
-	final        *asm.Assembler
-	logger       *log.Logger
+	instructions      []instruction
+	final             *asm.Assembler
+	logger            *log.Logger
+	usedRegisterNames map[string]struct{}
 }
 
 // New creates a new assembler.
 func New(logger *log.Logger) *Assembler {
 	return &Assembler{
-		final:  asm.New(),
-		logger: logger,
+		final:             asm.New(),
+		logger:            logger,
+		usedRegisterNames: make(map[string]struct{}),
 	}
 }
 
@@ -39,6 +41,11 @@ func (a *Assembler) Finalize() *asm.Assembler {
 	}
 
 	return a.final
+}
+
+// UsedRegisterNames returns the names of used registers.
+func (a *Assembler) UsedRegisterNames() map[string]struct{} {
+	return a.usedRegisterNames
 }
 
 // WriteTo generates the final assembly code.
@@ -71,6 +78,7 @@ func (a *Assembler) doRegister1(mnemonic string, destination *register.Register)
 	}
 
 	a.instructions = append(a.instructions, instr)
+	a.usedRegisterNames[destination.Name] = struct{}{}
 }
 
 // doRegister2 adds an instruction using 2 registers.
@@ -84,6 +92,8 @@ func (a *Assembler) doRegister2(mnemonic string, destination *register.Register,
 	}
 
 	a.instructions = append(a.instructions, instr)
+	a.usedRegisterNames[destination.Name] = struct{}{}
+	a.usedRegisterNames[source.Name] = struct{}{}
 }
 
 // doRegisterNumber adds an instruction using a register and a number.
@@ -96,6 +106,7 @@ func (a *Assembler) doRegisterNumber(mnemonic string, destination *register.Regi
 	}
 
 	a.instructions = append(a.instructions, instr)
+	a.usedRegisterNames[destination.Name] = struct{}{}
 }
 
 // doRegisterAddress adds an instruction using a register and a section address.
@@ -108,6 +119,7 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 	}
 
 	a.instructions = append(a.instructions, instr)
+	a.usedRegisterNames[destination.Name] = struct{}{}
 }
 
 // doLabel adds an instruction with a label operand.

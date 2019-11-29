@@ -94,6 +94,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 			function = &Function{
 				Name:           functionName,
 				File:           file,
+				Finished:       make(chan struct{}),
 				parameterStart: index + 2,
 			}
 

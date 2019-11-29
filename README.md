@@ -71,11 +71,12 @@ This will produce the `q` compiler in your current directory.
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
+* [ ] Cyclic function calls
 * [ ] `require` for input validation
 * [ ] `ensure` for output validation
 * [ ] `match` keyword
 * [ ] Error handling
-* [ ] Parallel execution
+* [ ] Parallelism
 * [ ] Lock-free data structures
 * [ ] Multiple return values
 * [ ] Expression optimization

@@ -18,6 +18,8 @@ var stdOutMutex sync.Mutex
 // Compile turns a function into machine code.
 // It is executed for all function bodies.
 func Compile(function *Function, environment *Environment, optimize bool, verbose bool) (*asm.Assembler, error) {
+	defer close(function.Finished)
+
 	scopes := &ScopeStack{}
 	scopes.Push()
 
@@ -45,6 +47,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	assembler := assembler.New(logger)
 	assembler.AddLabel(function.Name)
+	function.assembler = assembler
 
 	state := State{
 		assembler:    assembler,

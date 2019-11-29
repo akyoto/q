@@ -3,6 +3,7 @@ package build
 import (
 	"fmt"
 
+	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 )
@@ -18,6 +19,8 @@ type Function struct {
 	NoParameterCheck bool
 	SideEffects      int32
 	CallCount        int32
+	assembler        *assembler.Assembler
+	Finished         chan struct{}
 	parameterStart   token.Position
 }
 
@@ -40,6 +43,16 @@ func (function *Function) Error(position token.Position, err error) error {
 // Errorf creates a formatted error inside the function.
 func (function *Function) Errorf(position token.Position, message string, args ...interface{}) error {
 	return function.Error(position, fmt.Errorf(message, args...))
+}
+
+// UsedRegisterNames returns the names of used registers.
+func (function *Function) UsedRegisterNames() map[string]struct{} {
+	return function.assembler.UsedRegisterNames()
+}
+
+// Wait will block until the compilation finishes.
+func (function *Function) Wait() {
+	<-function.Finished
 }
 
 // String returns the function name.

@@ -57,6 +57,7 @@ func syntaxCheck(inputFile string) error {
 
 	function := &build.Function{
 		File:       file,
+		Finished:   make(chan struct{}),
 		TokenStart: 0,
 		TokenEnd:   len(file.Tokens()),
 	}
