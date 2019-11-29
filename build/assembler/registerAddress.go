@@ -11,17 +11,22 @@ import (
 type registerAddress struct {
 	Mnemonic    string
 	Destination *register.Register
+	UsedBy      fmt.Stringer
 	Address     uint32
-	cached      string
+	size        byte
 }
 
 // Exec writes the instruction to the final assembler.
 func (instr *registerAddress) Exec(a *asm.Assembler) {
+	start := a.Len()
+
 	//nolint:gocritic
 	switch instr.Mnemonic {
 	case MOV:
 		a.MoveRegisterAddress(instr.Destination.Name, instr.Address)
 	}
+
+	instr.size = byte(a.Len() - start)
 }
 
 // Name returns the mnemonic.
@@ -29,11 +34,13 @@ func (instr *registerAddress) Name() string {
 	return instr.Mnemonic
 }
 
+// Size returns the number of bytes consumed for the instruction.
+func (instr *registerAddress) Size() byte {
+	return instr.size
+}
+
 // String implements the string serialization.
 func (instr *registerAddress) String() string {
-	if instr.cached != "" {
-		return instr.cached
-	}
-
-	return fmt.Sprintf("%s %v, <%v>", instr.Mnemonic, instr.Destination, instr.Address)
+	instr.Destination.ForceUse(instr.UsedBy)
+	return fmt.Sprintf("[%d] %s %v, <%v>", instr.size, instr.Mnemonic, instr.Destination, instr.Address)
 }

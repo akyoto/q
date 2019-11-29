@@ -21,7 +21,12 @@ func (instr *addLabel) Name() string {
 	return ""
 }
 
+// Size returns the number of bytes consumed for the instruction.
+func (instr *addLabel) Size() byte {
+	return 0
+}
+
 // String implements the string serialization.
 func (instr *addLabel) String() string {
-	return fmt.Sprintf("%s:", instr.Label)
+	return fmt.Sprintf("[0] %s:", instr.Label)
 }

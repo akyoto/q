@@ -24,6 +24,16 @@ func (register *Register) Use(obj fmt.Stringer) error {
 	return nil
 }
 
+// ForceUse marks the register as used by the given object and cannot fail.
+func (register *Register) ForceUse(obj fmt.Stringer) {
+	register.usedBy = obj
+}
+
+// User returns the user of the register.
+func (register *Register) User() fmt.Stringer {
+	return register.usedBy
+}
+
 // Free frees the register so that it can be used for new calculations.
 func (register *Register) Free() {
 	register.usedBy = nil

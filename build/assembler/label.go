@@ -10,10 +10,13 @@ import (
 type label struct {
 	Mnemonic string
 	Label    string
+	size     byte
 }
 
 // Exec writes the instruction to the final assembler.
 func (instr *label) Exec(a *asm.Assembler) {
+	start := a.Len()
+
 	switch instr.Mnemonic {
 	case CALL:
 		a.Call(instr.Label)
@@ -39,6 +42,8 @@ func (instr *label) Exec(a *asm.Assembler) {
 	case JMP:
 		a.Jump(instr.Label)
 	}
+
+	instr.size = byte(a.Len() - start)
 }
 
 // Name returns the mnemonic.
@@ -46,7 +51,12 @@ func (instr *label) Name() string {
 	return instr.Mnemonic
 }
 
+// Size returns the number of bytes consumed for the instruction.
+func (instr *label) Size() byte {
+	return instr.size
+}
+
 // String implements the string serialization.
 func (instr *label) String() string {
-	return fmt.Sprintf("%s %s", instr.Mnemonic, instr.Label)
+	return fmt.Sprintf("[%d] %s %s", instr.size, instr.Mnemonic, instr.Label)
 }

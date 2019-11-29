@@ -41,3 +41,8 @@ func (function *Function) Error(position token.Position, err error) error {
 func (function *Function) Errorf(position token.Position, message string, args ...interface{}) error {
 	return function.Error(position, fmt.Errorf(message, args...))
 }
+
+// String returns the function name.
+func (function *Function) String() string {
+	return function.Name
+}

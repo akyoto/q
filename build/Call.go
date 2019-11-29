@@ -58,28 +58,35 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 
 		text := parameter.Token.Text() + "\n"
 		address := state.assembler.AddString(text)
-		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], uint64(syscall.Write))
-		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
-		state.assembler.MoveRegisterAddress(state.registers.Syscall[2], address)
-		state.assembler.MoveRegisterNumber(state.registers.Syscall[3], uint64(len(text)))
+		state.assembler.MoveRegisterNumber(state.registers.Call[0], uint64(syscall.Write))
+		state.assembler.MoveRegisterNumber(state.registers.Call[1], 1)
+		state.assembler.MoveRegisterAddress(state.registers.Call[2], address)
+		state.assembler.MoveRegisterNumber(state.registers.Call[3], uint64(len(text)))
 		state.assembler.Syscall()
 		return nil
 	}
 
 	// Call the function
-	err := state.BeforeCall(parameters)
-
-	if err != nil {
-		return err
-	}
-
 	if functionName == "syscall" {
-		state.assembler.Syscall()
-	} else {
-		state.assembler.Call(functionName)
-	}
+		err := state.BeforeCall(parameters, nil)
 
-	state.AfterCall(function)
+		if err != nil {
+			return err
+		}
+
+		state.assembler.Syscall()
+		state.AfterCall(function, nil)
+	} else {
+		pushRegisters := state.registers.All.InUse()
+		err := state.BeforeCall(parameters, pushRegisters)
+
+		if err != nil {
+			return err
+		}
+
+		state.assembler.Call(functionName)
+		state.AfterCall(function, pushRegisters)
+	}
 
 	// Free the call registers
 	for _, callRegister := range state.registers.Call {
@@ -88,7 +95,7 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 
 	// Mark return value register temporarily as used for better assembly output
 	returnValueRegister := state.registers.ReturnValue[0]
-	err = returnValueRegister.Use(expr)
+	err := returnValueRegister.Use(expr)
 
 	if err != nil {
 		return err
@@ -124,8 +131,10 @@ func (state *State) Call(tokens []token.Token) error {
 }
 
 // BeforeCall pushes parameters into registers.
-func (state *State) BeforeCall(parameters []*expression.Expression) error {
-	// state.assembler.PushRegister(state.registers.RegisterByName("rbx"))
+func (state *State) BeforeCall(parameters []*expression.Expression, pushRegisters []*register.Register) error {
+	for _, reg := range pushRegisters {
+		state.assembler.PushRegister(reg)
+	}
 
 	for i, parameter := range parameters {
 		callRegister := state.registers.Call[i]
@@ -134,7 +143,7 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 		// If one of the call registers is already in use,
 		// move the current user of the register to another one.
 		if err != nil {
-			freeRegister := state.registers.FindFreeRegister()
+			freeRegister := state.registers.General.FindFree()
 
 			if freeRegister == nil {
 				return errors.ExceededMaxVariables
@@ -167,7 +176,10 @@ func (state *State) BeforeCall(parameters []*expression.Expression) error {
 }
 
 // AfterCall restores saved registers from the stack.
-func (state *State) AfterCall(function *Function) {
+func (state *State) AfterCall(function *Function, pushedRegisters []*register.Register) {
 	atomic.AddInt32(&function.CallCount, 1)
-	// state.assembler.PopRegister(state.registers.RegisterByName("rbx"))
+
+	for i := len(pushedRegisters) - 1; i >= 0; i-- {
+		state.assembler.PopRegister(pushedRegisters[i])
+	}
 }

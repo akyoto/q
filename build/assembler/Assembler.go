@@ -59,7 +59,7 @@ func (a *Assembler) lastInstruction() instruction {
 
 // do adds an instruction without any operands.
 func (a *Assembler) do(mnemonic string) {
-	a.instructions = append(a.instructions, &standalone{mnemonic})
+	a.instructions = append(a.instructions, &standalone{mnemonic, 0})
 }
 
 // doRegister1 adds an instruction with a single register operand.
@@ -67,10 +67,7 @@ func (a *Assembler) doRegister1(mnemonic string, destination *register.Register)
 	instr := &register1{
 		Mnemonic:    mnemonic,
 		Destination: destination,
-	}
-
-	if a.logger != nil {
-		instr.cached = instr.String()
+		UsedBy:      destination.User(),
 	}
 
 	a.instructions = append(a.instructions, instr)
@@ -82,10 +79,8 @@ func (a *Assembler) doRegister2(mnemonic string, destination *register.Register,
 		Mnemonic:    mnemonic,
 		Destination: destination,
 		Source:      source,
-	}
-
-	if a.logger != nil {
-		instr.cached = instr.String()
+		UsedBy1:     destination.User(),
+		UsedBy2:     source.User(),
 	}
 
 	a.instructions = append(a.instructions, instr)
@@ -97,10 +92,7 @@ func (a *Assembler) doRegisterNumber(mnemonic string, destination *register.Regi
 		Mnemonic:    mnemonic,
 		Destination: destination,
 		Number:      number,
-	}
-
-	if a.logger != nil {
-		instr.cached = instr.String()
+		UsedBy:      destination.User(),
 	}
 
 	a.instructions = append(a.instructions, instr)
@@ -112,10 +104,7 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 		Mnemonic:    mnemonic,
 		Destination: destination,
 		Address:     address,
-	}
-
-	if a.logger != nil {
-		instr.cached = instr.String()
+		UsedBy:      destination.User(),
 	}
 
 	a.instructions = append(a.instructions, instr)
@@ -123,5 +112,5 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 
 // doLabel adds an instruction with a label operand.
 func (a *Assembler) doLabel(mnemonic string, labelName string) {
-	a.instructions = append(a.instructions, &label{mnemonic, labelName})
+	a.instructions = append(a.instructions, &label{mnemonic, labelName, 0})
 }

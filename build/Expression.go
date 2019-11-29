@@ -9,6 +9,35 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
+// EvaluateTokens evaluates the token expression and stores the result in a register.
+func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, error) {
+	freeRegister := state.registers.General.FindFree()
+
+	if freeRegister == nil {
+		return nil, errors.ExceededMaxVariables
+	}
+
+	err := state.TokensToRegister(tokens, freeRegister)
+	return freeRegister, err
+}
+
+// TokensToRegister moves the result of a token expression into the given register.
+func (state *State) TokensToRegister(tokens []token.Token, register *register.Register) error {
+	if len(tokens) == 1 {
+		return state.TokenToRegister(tokens[0], register)
+	}
+
+	expr, err := expression.FromTokens(tokens)
+
+	if err != nil {
+		return err
+	}
+
+	err = state.ExpressionToRegister(expr, register)
+	expr.Close()
+	return err
+}
+
 // ExpressionToRegister moves the result of an expression into the given register.
 func (state *State) ExpressionToRegister(root *expression.Expression, finalRegister *register.Register) error {
 	if root.IsLeaf() {
@@ -40,7 +69,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		if sub.IsFunctionCall {
 			// Allocate a temporary register if necessary
 			if sub.Register == nil && sub.Parent != nil {
-				sub.Register = state.registers.FindFreeRegister()
+				sub.Register = state.registers.General.FindFree()
 
 				if sub.Register == nil {
 					return errors.ExceededMaxVariables
@@ -58,7 +87,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 
 		// Allocate a temporary register if necessary
 		if left.Register == nil {
-			left.Register = state.registers.FindFreeRegister()
+			left.Register = state.registers.General.FindFree()
 
 			if left.Register == nil {
 				return errors.ExceededMaxVariables
@@ -168,23 +197,6 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 	}
 
 	return nil
-}
-
-// TokensToRegister moves the result of a token expression into the given register.
-func (state *State) TokensToRegister(tokens []token.Token, register *register.Register) error {
-	if len(tokens) == 1 {
-		return state.TokenToRegister(tokens[0], register)
-	}
-
-	expr, err := expression.FromTokens(tokens)
-
-	if err != nil {
-		return err
-	}
-
-	err = state.ExpressionToRegister(expr, register)
-	expr.Close()
-	return err
 }
 
 // CalculateRegisterNumber performs an operation on a register and a number.

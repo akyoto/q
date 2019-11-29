@@ -28,6 +28,13 @@ func (variable *Variable) SetRegister(register *register.Register) error {
 	return register.Use(variable)
 }
 
+// ForceSetRegister binds the variable to a register regardless whether it's used or not.
+func (variable *Variable) ForceSetRegister(register *register.Register) {
+	variable.register = register
+	register.Free()
+	_ = register.Use(variable)
+}
+
 // String returns the string representation.
 func (variable *Variable) String() string {
 	return variable.Name

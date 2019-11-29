@@ -44,7 +44,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 			return errors.MissingRangeStart
 		}
 
-		register = state.registers.FindFreeRegister()
+		register = state.registers.General.FindFree()
 
 		if register == nil {
 			return errors.ExceededMaxVariables

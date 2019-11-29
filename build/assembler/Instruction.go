@@ -6,4 +6,5 @@ type instruction interface {
 	Exec(*asm.Assembler)
 	Name() string
 	String() string
+	Size() byte
 }

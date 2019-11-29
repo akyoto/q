@@ -1,12 +1,12 @@
 package build
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"sync"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/color"
 	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/instruction"
@@ -38,7 +38,8 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	var logger *log.Logger
 
 	if verbose {
-		logPrefix := fmt.Sprintf("[%s] ", function.Name)
+		faint := color.New(color.Faint)
+		logPrefix := faint.Sprintf("%s", function.Name)
 		logger = log.New(os.Stdout, logPrefix, 0)
 	}
 
@@ -64,6 +65,8 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 			defer stdOutMutex.Unlock()
 
 			assembler.WriteTo(state.log)
+			state.log.SetPrefix("")
+			state.log.Println()
 		}
 	}()
 
@@ -81,7 +84,8 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	// End with a return statement and generate the actual machine code
 	assembler.Return()
-	return assembler.Finalize(), nil
+	finalCode := assembler.Finalize()
+	return finalCode, nil
 }
 
 // declareParameters declares the given parameters as variables inside the scope.

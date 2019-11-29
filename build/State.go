@@ -128,7 +128,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 		}
 	}
 
-	temporary := state.registers.FindFreeRegister()
+	temporary := state.registers.General.FindFree()
 
 	if temporary == nil {
 		return nil, errors.ExceededMaxVariables
@@ -170,79 +170,6 @@ func (state *State) Return(tokens []token.Token) error {
 
 	state.assembler.Return()
 	return nil
-}
-
-// Assignment handles assignment instructions.
-func (state *State) Assignment(tokens []token.Token) error {
-	_, err := state.AssignVariable(tokens)
-	return err
-}
-
-// AssignVariable handles assignment instructions and also returns the referenced variable.
-func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
-	cursor := 0
-	mutable := false
-	left := tokens[cursor]
-
-	if left.Kind == token.Keyword && left.Text() == "mut" {
-		mutable = true
-		cursor++
-		state.tokenCursor++
-		left = tokens[cursor]
-	}
-
-	if left.Kind != token.Identifier {
-		return nil, errors.ExpectedVariable
-	}
-
-	variableName := left.Text()
-	variable := state.scopes.Get(variableName)
-
-	if variable == nil {
-		freeRegister := state.registers.FindFreeRegister()
-
-		if freeRegister == nil {
-			return nil, errors.ExceededMaxVariables
-		}
-
-		variable = &Variable{
-			Name:     variableName,
-			Position: state.tokenCursor,
-			Mutable:  mutable,
-		}
-
-		_ = variable.SetRegister(freeRegister)
-		state.scopes.Add(variable)
-	} else if !variable.Mutable {
-		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
-	}
-
-	// Operator
-	cursor++
-	state.tokenCursor++
-	operator := tokens[cursor]
-
-	if operator.Kind != token.Operator {
-		return variable, errors.MissingAssignmentOperator
-	}
-
-	// Expression
-	cursor++
-	state.tokenCursor++
-	expression := tokens[cursor:]
-
-	if len(expression) == 0 {
-		return variable, errors.MissingAssignmentExpression
-	}
-
-	err := state.TokensToRegister(expression, variable.Register())
-
-	if err != nil {
-		return variable, err
-	}
-
-	state.tokenCursor += len(expression)
-	return variable, nil
 }
 
 // Invalid handles invalid instructions.

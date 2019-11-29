@@ -2,10 +2,10 @@ package register
 
 // Manager manages the allocation state of registers.
 type Manager struct {
-	General     []*Register
-	Call        []*Register
-	Syscall     []*Register
-	ReturnValue []*Register
+	All         List
+	General     List
+	Call        List
+	ReturnValue List
 }
 
 // NewManager creates a new register manager.
@@ -27,7 +27,24 @@ func NewManager() *Manager {
 	r15 := &Register{Name: "r15"}
 
 	manager := &Manager{
-		General: []*Register{
+		All: List{
+			rax,
+			rbx,
+			rcx,
+			rdx,
+			rdi,
+			rsi,
+			rbp,
+			r8,
+			r9,
+			r10,
+			r11,
+			r12,
+			r13,
+			r14,
+			r15,
+		},
+		General: List{
 			rbx,
 			rbp,
 			r12,
@@ -35,7 +52,7 @@ func NewManager() *Manager {
 			r14,
 			r15,
 		},
-		Syscall: []*Register{
+		Call: List{
 			rax,
 			rdi,
 			rsi,
@@ -44,36 +61,12 @@ func NewManager() *Manager {
 			r8,
 			r9,
 		},
-		ReturnValue: []*Register{
+		ReturnValue: List{
 			rax,
 			rcx,
 			r11,
 		},
 	}
 
-	manager.Call = manager.Syscall
 	return manager
-}
-
-// FindFreeRegister tries to find a free register
-// and returns nil when all are currently occupied.
-func (manager *Manager) FindFreeRegister() *Register {
-	for _, register := range manager.General {
-		if register.IsFree() {
-			return register
-		}
-	}
-
-	return nil
-}
-
-// RegisterByName returns the register with the given name.
-func (manager *Manager) RegisterByName(name string) *Register {
-	for _, register := range manager.General {
-		if register.Name == name {
-			return register
-		}
-	}
-
-	return nil
 }

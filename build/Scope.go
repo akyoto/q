@@ -30,6 +30,17 @@ func (stack *ScopeStack) Get(variableName string) *Variable {
 	return nil
 }
 
+// Each executes a function on each variable.
+func (stack *ScopeStack) Each(callBack func(*Variable)) {
+	for index := len(stack.scopes) - 1; index >= 0; index-- {
+		scope := stack.scopes[index]
+
+		for _, variable := range scope {
+			callBack(variable)
+		}
+	}
+}
+
 // Push pushes a new scope to the top of the stack.
 func (stack *ScopeStack) Push() {
 	stack.scopes = append(stack.scopes, Scope{})
