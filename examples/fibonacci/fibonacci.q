@@ -1,13 +1,15 @@
 main() {
-	n = 100000
+	n = 11
 
 	mut a = 0
 	mut b = 0
 	mut c = 1
 
-	for 0..n {
+	for 1..n {
 		a = b
 		b = c
 		c = a + b
 	}
+
+	syscall(60, c)
 }

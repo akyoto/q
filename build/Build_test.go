@@ -29,6 +29,7 @@ func TestExamples(t *testing.T) {
 		{"syscalls", "123456789\n", 0},
 		{"variables", "", 100},
 		{"loops", "Hello\nHello\nHello\n", 0},
+		{"fibonacci", "", 89},
 	}
 
 	for _, example := range examples {
