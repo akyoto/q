@@ -32,12 +32,19 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
+		register := state.registers.General.FindFree()
+
+		if register == nil {
+			return nil, errors.ExceededMaxVariables
+		}
+
 		variable = &Variable{
 			Name:     variableName,
 			Position: state.tokenCursor,
 			Mutable:  mutable,
 		}
 
+		variable.ForceSetRegister(register)
 		state.scopes.Add(variable)
 	} else if !variable.Mutable {
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
@@ -61,13 +68,12 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return variable, errors.MissingAssignmentExpression
 	}
 
-	reg, err := state.EvaluateTokens(value)
+	err := state.TokensToRegister(value, variable.Register())
 
 	if err != nil {
 		return variable, err
 	}
 
-	variable.ForceSetRegister(reg)
 	state.tokenCursor += len(value)
 	return variable, nil
 }
