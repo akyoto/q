@@ -58,7 +58,7 @@ func (file *File) Tokenize() error {
 			Expression: string(remaining[:until]),
 		}
 
-		return NewError(err, file.path, file.tokens)
+		return NewError(err, file.path, file.tokens, nil)
 	}
 
 	return nil
@@ -84,11 +84,11 @@ func (file *File) Scan(functions chan<- *Function) error {
 			functionName := t.Text()
 
 			if functionName == "func" || functionName == "fn" {
-				return NewError(errors.InvalidFunctionName, file.path, file.tokens[:index+1])
+				return NewError(errors.InvalidFunctionName, file.path, file.tokens[:index+1], nil)
 			}
 
 			if index+1 >= len(file.tokens) || file.tokens[index+1].Kind != token.GroupStart {
-				return NewError(errors.ParameterOpeningBracket, file.path, file.tokens[:index+2])
+				return NewError(errors.ParameterOpeningBracket, file.path, file.tokens[:index+2], nil)
 			}
 
 			function = &Function{
@@ -106,7 +106,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		case token.BlockStart:
 			if groupLevel > 0 {
-				return NewError(&errors.MissingCharacter{Character: ")"}, file.path, file.tokens[:index+1])
+				return NewError(&errors.MissingCharacter{Character: ")"}, file.path, file.tokens[:index+1], nil)
 			}
 
 			blockLevel++
@@ -146,7 +146,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 				parameter := file.tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
-				function.Parameters = append(function.Parameters, Variable{
+				function.Parameters = append(function.Parameters, &Variable{
 					Name: parameterName.Text(),
 				})
 
@@ -162,7 +162,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 				parameter := file.tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
-				function.Parameters = append(function.Parameters, Variable{
+				function.Parameters = append(function.Parameters, &Variable{
 					Name: parameterName.Text(),
 				})
 
@@ -174,7 +174,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		default:
 			if function == nil {
-				return NewError(errors.TopLevel, file.path, file.tokens[:index+1])
+				return NewError(errors.TopLevel, file.path, file.tokens[:index+1], nil)
 			}
 		}
 	}

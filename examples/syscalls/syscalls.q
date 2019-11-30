@@ -1,10 +1,12 @@
 main() {
+	fileName = "test.txt"
 	contents = "123456789\n"
 	length = 10
 
-	file = open("test.txt")
+	file = open(fileName)
 	bytesWritten = write(file, contents, length)
 	close(file)
+	unlink(fileName)
 
 	write(1, contents, length)
 
@@ -17,6 +19,10 @@ main() {
 
 open(fileName) {
 	return syscall(2, fileName, 66, 438)
+}
+
+unlink(fileName) {
+	return syscall(87, fileName)
 }
 
 write(fd, msg, length) {

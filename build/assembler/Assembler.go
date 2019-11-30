@@ -11,16 +11,16 @@ import (
 type Assembler struct {
 	instructions      []instruction
 	final             *asm.Assembler
-	logger            *log.Logger
 	usedRegisterNames map[string]struct{}
+	verbose           bool
 }
 
 // New creates a new assembler.
-func New(logger *log.Logger) *Assembler {
+func New(verbose bool) *Assembler {
 	return &Assembler{
 		final:             asm.New(),
-		logger:            logger,
 		usedRegisterNames: make(map[string]struct{}),
+		verbose:           verbose,
 	}
 }
 
@@ -74,11 +74,14 @@ func (a *Assembler) doRegister1(mnemonic string, destination *register.Register)
 	instr := &register1{
 		Mnemonic:    mnemonic,
 		Destination: destination,
-		UsedBy:      destination.User(),
+	}
+
+	if a.verbose {
+		instr.UsedBy = destination.UserString()
 	}
 
 	a.instructions = append(a.instructions, instr)
-	a.usedRegisterNames[destination.Name] = struct{}{}
+	a.usedRegisterNames[destination.Name] = nothing
 }
 
 // doRegister2 adds an instruction using 2 registers.
@@ -87,13 +90,16 @@ func (a *Assembler) doRegister2(mnemonic string, destination *register.Register,
 		Mnemonic:    mnemonic,
 		Destination: destination,
 		Source:      source,
-		UsedBy1:     destination.User(),
-		UsedBy2:     source.User(),
+	}
+
+	if a.verbose {
+		instr.UsedBy1 = destination.UserString()
+		instr.UsedBy2 = source.UserString()
 	}
 
 	a.instructions = append(a.instructions, instr)
-	a.usedRegisterNames[destination.Name] = struct{}{}
-	a.usedRegisterNames[source.Name] = struct{}{}
+	a.usedRegisterNames[destination.Name] = nothing
+	a.usedRegisterNames[source.Name] = nothing
 }
 
 // doRegisterNumber adds an instruction using a register and a number.
@@ -102,11 +108,14 @@ func (a *Assembler) doRegisterNumber(mnemonic string, destination *register.Regi
 		Mnemonic:    mnemonic,
 		Destination: destination,
 		Number:      number,
-		UsedBy:      destination.User(),
+	}
+
+	if a.verbose {
+		instr.UsedBy = destination.UserString()
 	}
 
 	a.instructions = append(a.instructions, instr)
-	a.usedRegisterNames[destination.Name] = struct{}{}
+	a.usedRegisterNames[destination.Name] = nothing
 }
 
 // doRegisterAddress adds an instruction using a register and a section address.
@@ -115,11 +124,14 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 		Mnemonic:    mnemonic,
 		Destination: destination,
 		Address:     address,
-		UsedBy:      destination.User(),
+	}
+
+	if a.verbose {
+		instr.UsedBy = destination.UserString()
 	}
 
 	a.instructions = append(a.instructions, instr)
-	a.usedRegisterNames[destination.Name] = struct{}{}
+	a.usedRegisterNames[destination.Name] = nothing
 }
 
 // doLabel adds an instruction with a label operand.

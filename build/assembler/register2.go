@@ -12,8 +12,8 @@ type register2 struct {
 	Mnemonic    string
 	Destination *register.Register
 	Source      *register.Register
-	UsedBy1     fmt.Stringer
-	UsedBy2     fmt.Stringer
+	UsedBy1     string
+	UsedBy2     string
 	size        byte
 }
 
@@ -53,7 +53,5 @@ func (instr *register2) Size() byte {
 
 // String implements the string serialization.
 func (instr *register2) String() string {
-	instr.Destination.ForceUse(instr.UsedBy1)
-	instr.Source.ForceUse(instr.UsedBy2)
-	return fmt.Sprintf("[%d] %s %v, %v", instr.size, instr.Mnemonic, instr.Destination, instr.Source)
+	return fmt.Sprintf("[%d] %s %v, %v", instr.size, instr.Mnemonic, instr.Destination.StringWithUser(instr.UsedBy1), instr.Source.StringWithUser(instr.UsedBy2))
 }

@@ -227,9 +227,6 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 	case "*":
 		state.assembler.MulRegisterNumber(register, uint64(number))
 
-	case ",":
-		return nil
-
 	default:
 		return errors.NotImplemented
 	}
@@ -248,9 +245,6 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 
 	case "*":
 		state.assembler.MulRegisterRegister(registerTo, registerFrom)
-
-	case ",":
-		return nil
 
 	default:
 		return errors.NotImplemented

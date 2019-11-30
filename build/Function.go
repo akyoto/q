@@ -11,7 +11,7 @@ import (
 // Function represents a function.
 type Function struct {
 	Name             string
-	Parameters       []Variable
+	Parameters       []*Variable
 	ReturnTypes      []spec.Type
 	File             *File
 	TokenStart       token.Position
@@ -38,7 +38,7 @@ func (function *Function) Error(position token.Position, err error) error {
 		return metaError
 	}
 
-	return NewError(err, function.File.path, function.File.tokens[:function.TokenStart+position+1])
+	return NewError(err, function.File.path, function.File.tokens[:function.TokenStart+position+1], function)
 }
 
 // Errorf creates a formatted error inside the function.
@@ -48,7 +48,7 @@ func (function *Function) Errorf(position token.Position, message string, args .
 
 // UsedRegisterNames returns the names of used registers.
 func (function *Function) UsedRegisterNames() map[string]struct{} {
-	if function.IsBuiltin && function.Name == "syscall" {
+	if function.IsBuiltin {
 		// return map[string]struct{}{
 		// 	// Parameters
 		// 	"rax": {},

@@ -41,11 +41,11 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	if verbose {
 		faint := color.New(color.Faint)
-		logPrefix := faint.Sprintf("%s", function.Name)
+		logPrefix := faint.Sprintf("%s ", function.Name)
 		logger = log.New(os.Stdout, logPrefix, 0)
 	}
 
-	assembler := assembler.New(logger)
+	assembler := assembler.New(verbose)
 	assembler.AddLabel(function.Name)
 	function.assembler = assembler
 

@@ -2,6 +2,8 @@ package register
 
 import (
 	"fmt"
+
+	"github.com/akyoto/color"
 )
 
 // Register represents a single CPU register.
@@ -34,6 +36,16 @@ func (register *Register) User() fmt.Stringer {
 	return register.usedBy
 }
 
+// UserString returns the user as a string.
+// If the user is nil, it returns "?".
+func (register *Register) UserString() string {
+	if register.usedBy != nil {
+		return register.usedBy.String()
+	}
+
+	return "?"
+}
+
 // Free frees the register so that it can be used for new calculations.
 func (register *Register) Free() {
 	register.usedBy = nil
@@ -46,12 +58,10 @@ func (register *Register) IsFree() bool {
 
 // String returns a human-readable representation of the register.
 func (register *Register) String() string {
-	// return register.Name
-	usedBy := "?"
+	return register.StringWithUser(register.UserString())
+}
 
-	if register.usedBy != nil {
-		usedBy = register.usedBy.String()
-	}
-
-	return fmt.Sprintf("%s=%v", register.Name, usedBy)
+// StringWithUser returns a human-readable representation of the register.
+func (register *Register) StringWithUser(usedBy string) string {
+	return fmt.Sprintf("%s%s%v", register.Name, color.New(color.Faint).Sprint("="), color.GreenString(usedBy))
 }

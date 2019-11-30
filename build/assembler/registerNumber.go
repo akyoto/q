@@ -12,7 +12,7 @@ type registerNumber struct {
 	Mnemonic    string
 	Destination *register.Register
 	Number      uint64
-	UsedBy      fmt.Stringer
+	UsedBy      string
 	size        byte
 }
 
@@ -52,6 +52,5 @@ func (instr *registerNumber) Size() byte {
 
 // String implements the string serialization.
 func (instr *registerNumber) String() string {
-	instr.Destination.ForceUse(instr.UsedBy)
-	return fmt.Sprintf("[%d] %s %v, %d", instr.size, instr.Mnemonic, instr.Destination, instr.Number)
+	return fmt.Sprintf("[%d] %s %v, %d", instr.size, instr.Mnemonic, instr.Destination.StringWithUser(instr.UsedBy), instr.Number)
 }

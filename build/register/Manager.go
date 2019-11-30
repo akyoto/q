@@ -5,6 +5,7 @@ type Manager struct {
 	All         List
 	General     List
 	Call        List
+	Syscall     List
 	ReturnValue List
 }
 
@@ -53,6 +54,14 @@ func NewManager() *Manager {
 			r15,
 		},
 		Call: List{
+			rdi,
+			rsi,
+			rdx,
+			r10,
+			r8,
+			r9,
+		},
+		Syscall: List{
 			rax,
 			rdi,
 			rsi,
