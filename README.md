@@ -68,6 +68,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Mutable variables via `mut`
 * [x] Variable lifetime tracking
 * [x] `return` values
+* [ ] `import` packages
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
