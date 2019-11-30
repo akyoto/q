@@ -124,7 +124,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 					return fmt.Errorf("Unknown variable %s", variableName)
 				}
 
-				variable.AliveUntil = state.instrCursor + 1
+				state.UseVariable(variable)
 				return state.CalculateRegisterRegister(operator, sub.Register, variable.Register())
 
 			case token.Number:
@@ -168,7 +168,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 			return fmt.Errorf("Unknown variable %s", variableName)
 		}
 
-		variable.AliveUntil = state.instrCursor + 1
+		state.UseVariable(variable)
 
 		// Moving a variable into its own register is pointless
 		if variable.Register() == register {

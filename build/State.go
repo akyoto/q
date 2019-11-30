@@ -109,7 +109,7 @@ func (state *State) CompareExpression(register *register.Register, expression []
 				return nil, &errors.UnknownVariable{VariableName: variableName}
 			}
 
-			variable.AliveUntil = state.instrCursor + 1
+			state.UseVariable(variable)
 			state.assembler.CompareRegisterRegister(register, variable.Register())
 
 			return nil, nil
@@ -172,6 +172,12 @@ func (state *State) Return(tokens []token.Token) error {
 
 	state.assembler.Return()
 	return nil
+}
+
+// UseVariable marks the variable as used and should always
+// be called when the variable value is required.
+func (state *State) UseVariable(variable *Variable) {
+	variable.AliveUntil = state.instrCursor + 1
 }
 
 // Invalid handles invalid instructions.

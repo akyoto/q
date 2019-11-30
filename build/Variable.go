@@ -34,6 +34,11 @@ func (variable *Variable) ForceSetRegister(register *register.Register) {
 	register.ForceUse(variable)
 }
 
+// Used tells you if the variable was used or not.
+func (variable *Variable) Used() bool {
+	return variable.AliveUntil != 0
+}
+
 // String returns the string representation.
 func (variable *Variable) String() string {
 	return variable.Name

@@ -16,7 +16,7 @@ func (state *State) IfStart(tokens []token.Token) error {
 		return &errors.UnknownVariable{VariableName: variableName}
 	}
 
-	variable.AliveUntil = state.instrCursor + 1
+	state.UseVariable(variable)
 	temporary, err := state.CompareExpression(variable.Register(), expression[2:], "")
 
 	if err != nil {

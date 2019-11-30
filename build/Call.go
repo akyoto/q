@@ -158,7 +158,7 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 			variable := state.scopes.Get(parameter.Token.Text())
 
 			if variable != nil && variable.Register() == callRegister {
-				variable.AliveUntil = state.instrCursor + 1
+				state.UseVariable(variable)
 				continue
 			}
 		}
