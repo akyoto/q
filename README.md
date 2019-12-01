@@ -109,12 +109,11 @@ This will produce the `q` compiler in your current directory.
 
 ### How do I navigate the source code?
 
-There are 4 directories:
-
 * [benchmarks](https://github.com/akyoto/q/tree/master/benchmarks) contains tests for compilation speed
 * [build](https://github.com/akyoto/q/tree/master/build) contains the actual compiler source
 * [cli](https://github.com/akyoto/q/tree/master/cli) contains the command line interface
 * [examples](https://github.com/akyoto/q/tree/master/examples) contains a few examples that are also used in tests
+* [lib](https://github.com/akyoto/q/tree/master/lib) contains the standard library
 
 ### How do I run the tests?
 
