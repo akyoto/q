@@ -1,12 +1,34 @@
 main() {
-	a = sum(1, 2)
-	b = sum(3, 4)
-	c = sum(a, b)
-	write(1, "123456789\n", c)
+	a = add(1, 2)
+	b = add(3, 4)
+	c = add(a, b)
+	show(c)
+
+	d = sub(50, 10)
+	e = sub(40, 10)
+	f = sub(d, e)
+	show(f)
+
+	g = mul(1, 1)
+	h = mul(2, 5)
+	i = mul(g, h)
+	show(i)
 }
 
-sum(a, b) {
+add(a, b) {
 	return a + b
+}
+
+sub(a, b) {
+	return a - b
+}
+
+mul(a, b) {
+	return a * b
+}
+
+show(num) {
+	write(1, "123456789\n", num)
 }
 
 write(fd, msg, length) {
