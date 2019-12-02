@@ -10,8 +10,6 @@ main() {
 	sys.close(file)
 	sys.unlink(fileName)
 
-	sys.rmdir("abc")
-
 	if bytesWritten != length {
 		sys.exit(1)
 	}
