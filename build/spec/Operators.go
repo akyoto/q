@@ -37,4 +37,7 @@ var Operators = map[string]*Operator{
 	"*": {"*", 8, false},
 	"/": {"/", 8, true},
 	"%": {"%", 8, true},
+
+	// Package and field access
+	".": {".", 9, true},
 }

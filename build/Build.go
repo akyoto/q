@@ -43,7 +43,7 @@ func New(directory string) (*Build, error) {
 
 // Run parses the input files and generates an executable binary.
 func (build *Build) Run() error {
-	err := build.Environment.ImportDirectory(build.Path)
+	err := build.Environment.ImportDirectory(build.Path, "")
 
 	if err != nil {
 		return err

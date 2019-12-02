@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/log"
@@ -203,16 +204,26 @@ begin:
 				}
 
 				index++
+				importPath := strings.Builder{}
+				importPath.WriteString(stdLib)
+				importPath.WriteByte('/')
 
 				for ; index < len(tokens); index++ {
 					t = tokens[index]
 
 					switch t.Kind {
-					case token.Text:
-						directory := filepath.Join(stdLib, t.Text())
-						imports <- directory
+					case token.Identifier:
+						importPath.WriteString(t.Text())
+
+					case token.Operator:
+						if t.Text() != "." {
+							return NewError(&errors.InvalidCharacter{Character: t.Text()}, file.path, tokens[:index+1], function)
+						}
+
+						importPath.WriteByte('/')
 
 					case token.NewLine:
+						imports <- importPath.String()
 						index++
 						goto begin
 					}

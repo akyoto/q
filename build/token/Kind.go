@@ -28,9 +28,6 @@ const (
 	// Separator represents a comma.
 	Separator
 
-	// Accessor represents '.'.
-	Accessor
-
 	// Range represents '..'.
 	Range
 
@@ -76,9 +73,6 @@ func (kind Kind) String() string {
 
 	case Separator:
 		return "Separator"
-
-	case Accessor:
-		return "Accessor"
 
 	case Range:
 		return "Range"

@@ -11,6 +11,23 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
+// Call handles function calls.
+func (state *State) Call(tokens []token.Token) error {
+	firstToken := tokens[0]
+
+	if firstToken.Kind != token.Identifier {
+		return errors.MissingFunctionName
+	}
+
+	lastToken := tokens[len(tokens)-1]
+
+	if lastToken.Kind != token.GroupEnd {
+		return &errors.MissingCharacter{Character: ")"}
+	}
+
+	return state.TokensToRegister(tokens, nil)
+}
+
 // CallExpression executes a function call.
 func (state *State) CallExpression(expr *expression.Expression) error {
 	functionName := expr.Token.Text()
@@ -99,23 +116,6 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 	}
 
 	return nil
-}
-
-// Call handles function calls.
-func (state *State) Call(tokens []token.Token) error {
-	firstToken := tokens[0]
-
-	if firstToken.Kind != token.Identifier {
-		return errors.MissingFunctionName
-	}
-
-	lastToken := tokens[len(tokens)-1]
-
-	if lastToken.Kind != token.GroupEnd {
-		return &errors.MissingCharacter{Character: ")"}
-	}
-
-	return state.TokensToRegister(tokens, nil)
 }
 
 // BeforeCall pushes parameters into registers.

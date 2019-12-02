@@ -1,6 +1,8 @@
 package build
 
 import (
+	"os"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 )
@@ -18,7 +20,13 @@ func NewEnvironment() *Environment {
 }
 
 // ImportDirectory imports a directory to the environment.
-func (env *Environment) ImportDirectory(directory string) error {
+func (env *Environment) ImportDirectory(directory string, prefix string) error {
+	_, err := os.Stat(directory)
+
+	if err != nil {
+		return err
+	}
+
 	files, fileSystemErrors := FindSourceFiles(directory)
 	functions, imports, tokenizeErrors := FindFunctions(files)
 
@@ -39,7 +47,7 @@ func (env *Environment) ImportDirectory(directory string) error {
 				continue
 			}
 
-			err := env.ImportDirectory(directory)
+			err := env.ImportDirectory(directory, filepath.Base(directory)+".")
 
 			if err != nil {
 				return err
@@ -50,6 +58,7 @@ func (env *Environment) ImportDirectory(directory string) error {
 				return nil
 			}
 
+			function.Name = prefix + function.Name
 			env.Functions[function.Name] = function
 		}
 	}

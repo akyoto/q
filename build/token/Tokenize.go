@@ -183,7 +183,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 				token = Token{Range, rangeBytes, i}
 				i++
 			} else {
-				token = Token{Accessor, accessorBytes, i}
+				token = Token{Operator, accessorBytes, i}
 			}
 
 		// New line

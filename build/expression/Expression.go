@@ -116,6 +116,13 @@ func (expr *Expression) LastChild() *Expression {
 	return expr.Children[len(expr.Children)-1]
 }
 
+// Replace replaces the expression with the given expression.
+func (expr *Expression) Replace(other *Expression) {
+	parent := expr.Parent
+	*expr = *other
+	expr.Parent = parent
+}
+
 // IsLeaf returns true if the expression is a leaf node with no children.
 func (expr *Expression) IsLeaf() bool {
 	return !expr.IsFunctionCall && len(expr.Children) == 0

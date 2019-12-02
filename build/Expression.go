@@ -44,6 +44,8 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		return state.TokenToRegister(root.Token, finalRegister)
 	}
 
+	resolveAccessors(root)
+
 	// Save the temporary registers so we can easily free them later
 	var temporaryRegisters []*register.Register
 
@@ -69,6 +71,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		if sub.IsFunctionCall {
 			// Allocate a temporary register if necessary
 			if sub.Register == nil && sub.Parent != nil {
+				fmt.Println("TEMPORARY", sub.Token, sub.Parent.Token)
 				sub.Register = state.registers.General.FindFree()
 
 				if sub.Register == nil {
@@ -251,4 +254,26 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 	}
 
 	return nil
+}
+
+// resolveAccessors combines the children in the dot operator to a single function name.
+func resolveAccessors(root *expression.Expression) {
+	for _, child := range root.Children {
+		resolveAccessors(child)
+	}
+
+	resolveAccessor(root)
+}
+
+// resolveAccessor combines the children in the dot operator to a single function name.
+func resolveAccessor(root *expression.Expression) {
+	if root.Token.Text() != "." {
+		return
+	}
+
+	pkg := root.Children[0]
+	newName := append(pkg.Token.Bytes, '.')
+	newName = append(newName, root.Children[1].Token.Bytes...)
+	root.Children[1].Token.Bytes = newName
+	root.Replace(root.Children[1])
 }

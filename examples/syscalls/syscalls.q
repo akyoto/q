@@ -1,19 +1,17 @@
-import "fs"
-import "process"
+import fs
+import process
 
 main() {
 	fileName = "test.txt"
 	contents = "123456789\n"
 	length = 10
 
-	file = open(fileName)
-	bytesWritten = write(file, contents, length)
-	close(file)
-	unlink(fileName)
+	file = fs.open(fileName)
+	bytesWritten = fs.write(file, contents, length)
+	fs.close(file)
+	fs.unlink(fileName)
 
 	if bytesWritten != length {
-		exit(1)
+		process.exit(1)
 	}
-
-	exit(0)
 }
