@@ -1,3 +1,5 @@
+import process
+
 main() {
 	n = 11
 
@@ -11,5 +13,5 @@ main() {
 		c = a + b
 	}
 
-	syscall(60, c)
+	process.exit(c)
 }

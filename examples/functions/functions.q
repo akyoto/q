@@ -1,3 +1,5 @@
+import sys
+
 main() {
 	a = add(1, 2)
 	b = add(3, 4)
@@ -28,9 +30,5 @@ mul(a, b) {
 }
 
 show(num) {
-	write(1, "123456789\n", num)
-}
-
-write(fd, msg, length) {
-	return syscall(1, fd, msg, length)
+	sys.write(1, "123456789\n", num)
 }
