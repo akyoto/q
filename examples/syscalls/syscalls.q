@@ -1,4 +1,5 @@
-import "sys"
+import "fs"
+import "process"
 
 main() {
 	fileName = "test.txt"
