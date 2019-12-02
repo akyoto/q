@@ -2,6 +2,8 @@ package build
 
 import (
 	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/log"
@@ -13,6 +15,7 @@ type File struct {
 	contents      []byte
 	tokens        []token.Token
 	path          string
+	imports       []string
 	functionCount int64
 	verbose       bool
 }
@@ -65,16 +68,21 @@ func (file *File) Tokenize() error {
 }
 
 // Scan scans the input file.
-func (file *File) Scan(functions chan<- *Function) error {
+func (file *File) Scan(imports chan<- string, functions chan<- *Function) error {
 	var (
 		function   *Function
-		groupLevel = 0
-		blockLevel = 0
-		index      token.Position
+		groupLevel                = 0
+		blockLevel                = 0
+		tokens                    = file.tokens
+		index      token.Position = 0
 		t          token.Token
+		qRoot      string
 	)
 
-	for index, t = range file.tokens {
+begin:
+	for ; index < len(tokens); index++ {
+		t = tokens[index]
+
 		switch t.Kind {
 		case token.Identifier:
 			if function != nil {
@@ -84,11 +92,11 @@ func (file *File) Scan(functions chan<- *Function) error {
 			functionName := t.Text()
 
 			if functionName == "func" || functionName == "fn" {
-				return NewError(errors.InvalidFunctionName, file.path, file.tokens[:index+1], nil)
+				return NewError(errors.InvalidFunctionName, file.path, tokens[:index+1], function)
 			}
 
-			if index+1 >= len(file.tokens) || file.tokens[index+1].Kind != token.GroupStart {
-				return NewError(errors.ParameterOpeningBracket, file.path, file.tokens[:index+2], nil)
+			if index+1 >= len(tokens) || tokens[index+1].Kind != token.GroupStart {
+				return NewError(errors.ParameterOpeningBracket, file.path, tokens[:index+2], function)
 			}
 
 			function = &Function{
@@ -106,7 +114,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 
 		case token.BlockStart:
 			if groupLevel > 0 {
-				return NewError(&errors.MissingCharacter{Character: ")"}, file.path, file.tokens[:index+1], nil)
+				return NewError(&errors.MissingCharacter{Character: ")"}, file.path, tokens[:index+1], function)
 			}
 
 			blockLevel++
@@ -143,7 +151,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 			}
 
 			if function.parameterStart < index {
-				parameter := file.tokens[function.parameterStart:index]
+				parameter := tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
 				function.Parameters = append(function.Parameters, &Variable{
@@ -159,7 +167,7 @@ func (file *File) Scan(functions chan<- *Function) error {
 			}
 
 			if function.parameterStart < index {
-				parameter := file.tokens[function.parameterStart:index]
+				parameter := tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
 				function.Parameters = append(function.Parameters, &Variable{
@@ -172,9 +180,53 @@ func (file *File) Scan(functions chan<- *Function) error {
 		case token.NewLine:
 			// OK.
 
+		case token.Keyword:
+			if t.Text() == "import" {
+				compiler, err := os.Executable()
+
+				if err != nil {
+					return err
+				}
+
+				qRoot = filepath.Dir(compiler)
+				stdLib := filepath.Join(qRoot, "lib")
+				_, err = os.Stat(stdLib)
+
+				// Fix stdLib path for tests inside the "build" directory
+				if err != nil {
+					qRoot, err = os.Getwd()
+
+					if err != nil {
+						return err
+					}
+
+					stdLib = filepath.Join(qRoot, "..", "lib")
+				}
+
+				index++
+
+				for ; index < len(tokens); index++ {
+					t = tokens[index]
+
+					switch t.Kind {
+					case token.Text:
+						directory := filepath.Join(stdLib, t.Text())
+						imports <- directory
+
+					case token.NewLine:
+						index++
+						goto begin
+					}
+				}
+			}
+
+			if function == nil {
+				return NewError(errors.TopLevel, file.path, tokens[:index+1], function)
+			}
+
 		default:
 			if function == nil {
-				return NewError(errors.TopLevel, file.path, file.tokens[:index+1], nil)
+				return NewError(errors.TopLevel, file.path, tokens[:index+1], function)
 			}
 		}
 	}

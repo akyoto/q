@@ -4,7 +4,7 @@ package spec
 // The number corresponds to the operator priority and can not be zero.
 var Operators = map[string]*Operator{
 	// Parameters
-	",": {",", 1, true},
+	// ",": {",", 1, true},
 
 	// Assignment
 	"=":   {"=", 2, true},

@@ -5,8 +5,9 @@ import (
 )
 
 // FindFunctions scans the files for functions.
-func FindFunctions(files <-chan *File) (<-chan *Function, <-chan error) {
-	functions := make(chan *Function)
+func FindFunctions(files <-chan *File) (<-chan *Function, <-chan string, <-chan error) {
+	functions := make(chan *Function, 8)
+	imports := make(chan string)
 	errors := make(chan error)
 
 	go func() {
@@ -25,7 +26,7 @@ func FindFunctions(files <-chan *File) (<-chan *Function, <-chan error) {
 					return
 				}
 
-				err = file.Scan(functions)
+				err = file.Scan(imports, functions)
 
 				if err != nil {
 					errors <- err
@@ -36,8 +37,9 @@ func FindFunctions(files <-chan *File) (<-chan *Function, <-chan error) {
 
 		wg.Wait()
 		close(functions)
+		close(imports)
 		close(errors)
 	}()
 
-	return functions, errors
+	return functions, imports, errors
 }

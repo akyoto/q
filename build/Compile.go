@@ -5,7 +5,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/akyoto/asm"
 	"github.com/akyoto/color"
 	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/errors"
@@ -17,7 +16,7 @@ var stdOutMutex sync.Mutex
 
 // Compile turns a function into machine code.
 // It is executed for all function bodies.
-func Compile(function *Function, environment *Environment, optimize bool, verbose bool) (*asm.Assembler, error) {
+func Compile(function *Function, environment *Environment, optimize bool, verbose bool) error {
 	defer close(function.Finished)
 
 	scopes := &ScopeStack{}
@@ -27,14 +26,14 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	err := declareParameters(function, scopes, registers)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	tokens := function.Tokens()
 	instructions, instrErr := instruction.FromTokens(tokens)
 
 	if instrErr != nil {
-		return nil, function.Error(instrErr.Position, instrErr)
+		return function.Error(instrErr.Position, instrErr)
 	}
 
 	var logger *log.Logger
@@ -77,18 +76,17 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	err = state.CompileInstructions()
 
 	if err != nil {
-		return nil, function.Error(state.tokenCursor, err)
+		return function.Error(state.tokenCursor, err)
 	}
 
 	// Check for unused variables
 	for _, variable := range scopes.Unused() {
-		return nil, function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
+		return function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
 	}
 
 	// End with a return statement and generate the actual machine code
 	assembler.Return()
-	finalCode := assembler.Finalize()
-	return finalCode, nil
+	return nil
 }
 
 // declareParameters declares the given parameters as variables inside the scope.

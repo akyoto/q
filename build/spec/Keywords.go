@@ -5,6 +5,7 @@ var Keywords = map[string]bool{
 	"if":      true,
 	"ensure":  true,
 	"for":     true,
+	"import":  true,
 	"loop":    true,
 	"mut":     true,
 	"require": true,

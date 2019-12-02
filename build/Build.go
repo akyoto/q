@@ -43,31 +43,12 @@ func New(directory string) (*Build, error) {
 
 // Run parses the input files and generates an executable binary.
 func (build *Build) Run() error {
-	files, fileSystemErrors := FindSourceFiles(build.Path)
-	functions, tokenizeErrors := FindFunctions(files)
+	err := build.Environment.ImportDirectory(build.Path)
 
-	for {
-		select {
-		case err, ok := <-fileSystemErrors:
-			if ok {
-				return err
-			}
-
-		case err, ok := <-tokenizeErrors:
-			if ok {
-				return err
-			}
-
-		case function, ok := <-functions:
-			if !ok {
-				goto done
-			}
-
-			build.Environment.Functions[function.Name] = function
-		}
+	if err != nil {
+		return err
 	}
 
-done:
 	return build.Compile()
 }
 
@@ -79,7 +60,7 @@ func (build *Build) Compile() error {
 		return errors.New("Function 'main' has not been defined")
 	}
 
-	var results []*CompilationResult
+	var results []*Function
 	resultsChannel, errors := build.Environment.Compile(build.Optimize, build.Verbose)
 
 	// Generate machine code
@@ -108,13 +89,13 @@ done:
 		return nil
 	}
 
-	for _, compiled := range results {
-		if compiled.Function.CallCount == 0 && compiled.Function.Name != "main" {
+	for _, function := range results {
+		if function.CallCount == 0 && function.Name != "main" {
 			continue
 		}
 
 		// Merge function code into the main executable
-		main.Merge(compiled.Assembler)
+		main.Merge(function.assembler.Finalize())
 	}
 
 	for _, err := range main.Verify() {
