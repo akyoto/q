@@ -15,7 +15,6 @@ type File struct {
 	contents      []byte
 	tokens        []token.Token
 	path          string
-	imports       []string
 	functionCount int64
 	verbose       bool
 }
