@@ -1,4 +1,4 @@
-import process
+import sys
 
 main() {
 	n = 11
@@ -13,5 +13,5 @@ main() {
 		c = a + b
 	}
 
-	process.exit(c)
+	sys.exit(c)
 }

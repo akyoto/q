@@ -1,5 +1,4 @@
 import sys
-import process
 
 main() {
 	fileName = "test.txt"
@@ -11,7 +10,9 @@ main() {
 	sys.close(file)
 	sys.unlink(fileName)
 
+	sys.rmdir("abc")
+
 	if bytesWritten != length {
-		process.exit(1)
+		sys.exit(1)
 	}
 }
