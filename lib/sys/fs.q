@@ -1,7 +1,3 @@
-write(fd, msg, length) {
-	return syscall(1, fd, msg, length)
-}
-
 open(fileName, flags, mode) {
 	return syscall(2, fileName, flags, mode)
 }
