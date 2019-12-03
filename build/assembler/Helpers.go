@@ -73,6 +73,14 @@ func (a *Assembler) PopRegister(destination *register.Register) {
 	a.doRegister1(POP, destination)
 }
 
+func (a *Assembler) DivRegister(destination *register.Register) {
+	a.doRegister1(DIV, destination)
+}
+
+func (a *Assembler) SignExtendToDX(destination *register.Register) {
+	a.doRegister1(CDQ, destination)
+}
+
 func (a *Assembler) MoveRegisterRegister(destination *register.Register, source *register.Register) {
 	a.doRegister2(MOV, destination, source)
 }

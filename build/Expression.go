@@ -137,7 +137,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 				return state.CalculateRegisterRegister(operator, sub.Register, variable.Register())
 
 			case token.Number:
-				return state.CalculateRegisterNumber(operator, sub.Register, right.Token.Text())
+				return state.CalculateRegisterNumber(operator, sub.Register, right)
 
 			default:
 				return fmt.Errorf("Invalid operand %s", right.Token)
@@ -209,8 +209,8 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 }
 
 // CalculateRegisterNumber performs an operation on a register and a number.
-func (state *State) CalculateRegisterNumber(operation string, register *register.Register, operand string) error {
-	number, err := state.ParseInt(operand)
+func (state *State) CalculateRegisterNumber(operation string, register *register.Register, operand *expression.Expression) error {
+	number, err := state.ParseInt(operand.Token.Text())
 
 	if err != nil {
 		return err
@@ -236,6 +236,23 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 	case "*":
 		state.assembler.MulRegisterNumber(register, uint64(number))
 
+	case "/":
+		temporary := state.registers.General.FindFree()
+
+		if temporary == nil {
+			return errors.ExceededMaxVariables
+		}
+
+		temporary.ForceUse(operand)
+		state.assembler.MoveRegisterNumber(temporary, uint64(number))
+		err := state.CalculateRegisterRegister("/", register, temporary)
+
+		if err != nil {
+			return err
+		}
+
+		temporary.Free()
+
 	default:
 		return errors.NotImplemented
 	}
@@ -255,11 +272,57 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 	case "*":
 		state.assembler.MulRegisterRegister(registerTo, registerFrom)
 
+	case "/":
+		rax := state.registers.All.ByName("rax")
+		rdx := state.registers.All.ByName("rdx")
+
+		if rax != registerTo {
+			err := state.TryFreeRegister(rax)
+
+			if err != nil {
+				return err
+			}
+
+			state.assembler.MoveRegisterRegister(rax, registerTo)
+		}
+
+		err := state.TryFreeRegister(rdx)
+
+		if err != nil {
+			return err
+		}
+
+		state.assembler.SignExtendToDX(rax)
+		state.assembler.DivRegister(registerFrom)
+		state.assembler.MoveRegisterRegister(registerTo, rax)
+
 	default:
 		return errors.NotImplemented
 	}
 
 	return nil
+}
+
+// TryFreeRegister tries to free a register by moving its current user to another register.
+func (state *State) TryFreeRegister(reg *register.Register) error {
+	if reg.IsFree() {
+		return nil
+	}
+
+	freeRegister := state.registers.General.FindFree()
+
+	if freeRegister == nil {
+		return errors.ExceededMaxVariables
+	}
+
+	state.assembler.MoveRegisterRegister(freeRegister, reg)
+	variable, isVariable := reg.User().(*Variable)
+
+	if !isVariable {
+		return fmt.Errorf("User of register '%s' is not a variable", reg)
+	}
+
+	return variable.SetRegister(freeRegister)
 }
 
 // ResolveAccessors combines the children in the dot operator to a single function name.

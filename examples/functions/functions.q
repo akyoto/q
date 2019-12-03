@@ -15,6 +15,11 @@ main() {
 	h = mul(2, 5)
 	i = mul(g, h)
 	show(i)
+
+	j = div(1000, 10)
+	k = div(100, 10)
+	l = div(j, k)
+	show(l)
 }
 
 add(a, b) {
@@ -27,6 +32,10 @@ sub(a, b) {
 
 mul(a, b) {
 	return a * b
+}
+
+div(a, b) {
+	return a / b
 }
 
 show(num) {

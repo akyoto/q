@@ -26,7 +26,7 @@ func TestExamples(t *testing.T) {
 		{"hello", "Hello\n", 0},
 		{"fibonacci", "", 89},
 		{"files", "", 0},
-		{"functions", "123456789\n123456789\n123456789\n", 0},
+		{"functions", "123456789\n123456789\n123456789\n123456789\n", 0},
 		{"loops", "Hello\nHello\nHello\n\nH\nHe\nHel\nHell\nHello\n", 0},
 	}
 

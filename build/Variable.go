@@ -26,14 +26,17 @@ func (variable *Variable) Register() *register.Register {
 
 // SetRegister binds the variable to a register.
 func (variable *Variable) SetRegister(register *register.Register) error {
+	if variable.register != nil {
+		variable.register.Free()
+	}
+
 	variable.register = register
 	return register.Use(variable)
 }
 
 // ForceSetRegister binds the variable to a register regardless whether it's used or not.
 func (variable *Variable) ForceSetRegister(register *register.Register) {
-	variable.register = register
-	register.ForceUse(variable)
+	_ = variable.SetRegister(register)
 }
 
 // Used tells you if the variable was used or not.

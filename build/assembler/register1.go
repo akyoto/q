@@ -26,6 +26,12 @@ func (instr *register1) Exec(a *asm.Assembler) {
 	case DEC:
 		a.DecreaseRegister(instr.Destination.Name)
 
+	case DIV:
+		a.DivRegister(instr.Destination.Name)
+
+	case CDQ:
+		a.SignExtendToDX(instr.Destination.Name)
+
 	case PUSH:
 		a.PushRegister(instr.Destination.Name)
 
