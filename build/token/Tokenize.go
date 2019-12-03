@@ -1,6 +1,7 @@
 package token
 
 import (
+	"bytes"
 	"github.com/akyoto/q/build/spec"
 )
 
@@ -78,6 +79,27 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			}
 
 			token = Token{Number, buffer[processedBytes : i+1], processedBytes}
+
+		case c == '#':
+			processedBytes = i
+
+			for {
+				i++
+
+				if i >= len(buffer) {
+					return tokens, processedBytes
+				}
+
+				c = buffer[i]
+
+				if c == '\n' {
+					i--
+					break
+				}
+			}
+
+			trimmed := bytes.TrimSpace(buffer[processedBytes+1 : i+1])
+			token = Token{Comment, trimmed, processedBytes}
 
 		// Operators
 		case c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>' || c == '!':

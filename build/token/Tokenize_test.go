@@ -47,6 +47,10 @@ func TestTokenize(t *testing.T) {
 			{token.BlockEnd, []byte{'}'}, 29},
 			{token.NewLine, []byte{'\n'}, 30},
 		}},
+		{[]byte("# A comment.\n"), []token.Token{
+			{token.Comment, []byte("A comment."), 0},
+			{token.NewLine, []byte{'\n'}, 12},
+		}},
 	}
 
 	for _, pattern := range usagePatterns {
@@ -54,9 +58,12 @@ func TestTokenize(t *testing.T) {
 		processed := 0
 		tokens, processed = token.Tokenize(pattern.Source, tokens)
 		assert.Equal(t, processed, len(pattern.Source))
-		assert.DeepEqual(t, tokens, pattern.Expected)
 
 		for index := range tokens {
+			assert.Equal(t, tokens[index].Kind, pattern.Expected[index].Kind)
+			assert.DeepEqual(t, tokens[index].Bytes, pattern.Expected[index].Bytes)
+			assert.Equal(t, tokens[index].Position, pattern.Expected[index].Position)
+			assert.Equal(t, tokens[index].Text(), pattern.Expected[index].Text())
 			assert.Equal(t, tokens[index].Kind.String(), pattern.Expected[index].Kind.String())
 		}
 	}

@@ -178,9 +178,6 @@ begin:
 				function.parameterStart = index + 1
 			}
 
-		case token.NewLine:
-			// OK.
-
 		case token.Keyword:
 			if t.Text() == "import" {
 				stdLib, err := stdLibPath()
@@ -231,6 +228,12 @@ begin:
 			if function == nil {
 				return NewError(errors.TopLevel, file.path, tokens[:index+1], function)
 			}
+
+		case token.NewLine:
+			// OK.
+
+		case token.Comment:
+			// OK.
 
 		default:
 			if function == nil {

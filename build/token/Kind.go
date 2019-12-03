@@ -31,6 +31,9 @@ const (
 	// Range represents '..'.
 	Range
 
+	// Comment represents a comment.
+	Comment
+
 	// GroupStart represents '('.
 	GroupStart
 
@@ -76,6 +79,9 @@ func (kind Kind) String() string {
 
 	case Range:
 		return "Range"
+
+	case Comment:
+		return "Comment"
 
 	case GroupStart:
 		return "GroupStart"

@@ -33,6 +33,9 @@ const (
 
 	// Return represents the return statement.
 	Return
+
+	// Comment represents a comment.
+	Comment
 )
 
 // String returns the text representation.

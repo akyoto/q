@@ -22,6 +22,12 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				continue
 			}
 
+			if instruction.Kind == Comment {
+				instruction.Kind = Invalid
+				start = i + 1
+				continue
+			}
+
 			if instruction.Kind != Assignment && instruction.Kind != Return && instruction.Kind != Invalid {
 				continue
 			}
@@ -164,6 +170,9 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 			start = i + 1
 
 			blocks = blocks[:len(blocks)-1]
+
+		case token.Comment:
+			instruction.Kind = Comment
 		}
 	}
 
