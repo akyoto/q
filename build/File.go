@@ -1,10 +1,10 @@
 package build
 
 import (
+	"fmt"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strings"
+	"sync/atomic"
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/log"
@@ -17,14 +17,16 @@ type File struct {
 	tokens        []token.Token
 	path          string
 	functionCount int64
+	imports       map[string]*Import
 	verbose       bool
 }
 
 // NewFile creates a new compiler for a single file.
 func NewFile(inputFile string) *File {
 	file := &File{
-		path:   inputFile,
-		tokens: make([]token.Token, 1, 8192),
+		path:    inputFile,
+		tokens:  make([]token.Token, 1, 8192),
+		imports: make(map[string]*Import),
 	}
 
 	file.tokens[0].Kind = token.NewLine
@@ -68,7 +70,7 @@ func (file *File) Tokenize() error {
 }
 
 // Scan scans the input file.
-func (file *File) Scan(imports chan<- string, functions chan<- *Function) error {
+func (file *File) Scan(imports chan<- *Import, functions chan<- *Function) error {
 	var (
 		function   *Function
 		groupLevel                = 0
@@ -76,7 +78,6 @@ func (file *File) Scan(imports chan<- string, functions chan<- *Function) error 
 		tokens                    = file.tokens
 		index      token.Position = 0
 		t          token.Token
-		qRoot      string
 	)
 
 begin:
@@ -182,37 +183,25 @@ begin:
 
 		case token.Keyword:
 			if t.Text() == "import" {
-				compiler, err := os.Executable()
+				stdLib, err := stdLibPath()
 
 				if err != nil {
 					return err
 				}
 
-				qRoot = filepath.Dir(compiler)
-				stdLib := filepath.Join(qRoot, "lib")
-				_, err = os.Stat(stdLib)
-
-				// Fix stdLib path for tests inside the "build" directory
-				if err != nil {
-					qRoot, err = os.Getwd()
-
-					if err != nil {
-						return err
-					}
-
-					stdLib = filepath.Join(qRoot, "..", "lib")
-				}
-
-				index++
+				position := index
+				fullImportPath := strings.Builder{}
+				fullImportPath.WriteString(stdLib)
+				fullImportPath.WriteByte('/')
 				importPath := strings.Builder{}
-				importPath.WriteString(stdLib)
-				importPath.WriteByte('/')
+				index++
 
 				for ; index < len(tokens); index++ {
 					t = tokens[index]
 
 					switch t.Kind {
 					case token.Identifier:
+						fullImportPath.WriteString(t.Text())
 						importPath.WriteString(t.Text())
 
 					case token.Operator:
@@ -220,10 +209,19 @@ begin:
 							return NewError(&errors.InvalidCharacter{Character: t.Text()}, file.path, tokens[:index+1], function)
 						}
 
-						importPath.WriteByte('/')
+						fullImportPath.WriteByte('/')
+						importPath.WriteByte('.')
 
 					case token.NewLine:
-						imports <- importPath.String()
+						imp := &Import{
+							Path:     importPath.String(),
+							FullPath: fullImportPath.String(),
+							Position: position,
+							Used:     0,
+						}
+
+						file.imports[imp.Path] = imp
+						imports <- imp
 						index++
 						goto begin
 					}
@@ -250,7 +248,14 @@ func (file *File) Tokens() []token.Token {
 }
 
 // Close frees up the memory.
-func (file *File) Close() {
+func (file *File) Close() error {
+	for _, imp := range file.imports {
+		if atomic.LoadInt32(&imp.Used) == 0 {
+			return NewError(fmt.Errorf("Import '%s' has never been used", imp.Path), file.path, file.tokens[:imp.Position+1], nil)
+		}
+	}
+
 	file.tokens = nil
 	file.contents = nil
+	return nil
 }

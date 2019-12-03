@@ -9,12 +9,14 @@ import (
 
 // Environment represents the global state.
 type Environment struct {
+	Packages  map[string]bool
 	Functions map[string]*Function
 }
 
 // NewEnvironment creates a new build environment.
 func NewEnvironment() *Environment {
 	return &Environment{
+		Packages:  map[string]bool{},
 		Functions: map[string]*Function{},
 	}
 }
@@ -42,12 +44,17 @@ func (env *Environment) ImportDirectory(directory string, prefix string) error {
 				return err
 			}
 
-		case directory, ok := <-imports:
+		case imp, ok := <-imports:
 			if !ok {
 				continue
 			}
 
-			err := env.ImportDirectory(directory, filepath.Base(directory)+".")
+			if env.Packages[imp.Path] {
+				continue
+			}
+
+			env.Packages[imp.Path] = true
+			err := env.ImportDirectory(imp.FullPath, filepath.Base(imp.FullPath)+".")
 
 			if err != nil {
 				return err
@@ -77,19 +84,21 @@ func (env *Environment) Compile(optimize bool, verbose bool) (<-chan *Function, 
 			wg.Add(1)
 
 			go func() {
-				defer func() {
-					if atomic.AddInt64(&function.File.functionCount, -1) == 0 {
-						function.File.Close()
-					}
-
-					wg.Done()
-				}()
-
+				defer wg.Done()
 				err := Compile(function, env, optimize, verbose)
 
 				if err != nil {
 					errors <- err
 					return
+				}
+
+				if atomic.AddInt64(&function.File.functionCount, -1) == 0 {
+					err := function.File.Close()
+
+					if err != nil {
+						errors <- err
+						return
+					}
 				}
 
 				results <- function

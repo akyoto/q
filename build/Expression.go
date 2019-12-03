@@ -2,6 +2,7 @@ package build
 
 import (
 	"fmt"
+	"sync/atomic"
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
@@ -44,7 +45,12 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		return state.TokenToRegister(root.Token, finalRegister)
 	}
 
-	resolveAccessors(root)
+	// Resolve package access
+	err := state.ResolveAccessors(root)
+
+	if err != nil {
+		return err
+	}
 
 	// Save the temporary registers so we can easily free them later
 	var temporaryRegisters []*register.Register
@@ -67,7 +73,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 	}
 
 	// Execute each operation starting from the bottom left
-	err := root.EachOperation(func(sub *expression.Expression) error {
+	err = root.EachOperation(func(sub *expression.Expression) error {
 		if sub.IsFunctionCall {
 			// Allocate a temporary register if necessary
 			if sub.Register == nil && sub.Parent != nil {
@@ -256,24 +262,37 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 	return nil
 }
 
-// resolveAccessors combines the children in the dot operator to a single function name.
-func resolveAccessors(root *expression.Expression) {
+// ResolveAccessors combines the children in the dot operator to a single function name.
+func (state *State) ResolveAccessors(root *expression.Expression) error {
 	for _, child := range root.Children {
-		resolveAccessors(child)
+		err := state.ResolveAccessors(child)
+
+		if err != nil {
+			return err
+		}
 	}
 
-	resolveAccessor(root)
+	return state.ResolveAccessor(root)
 }
 
-// resolveAccessor combines the children in the dot operator to a single function name.
-func resolveAccessor(root *expression.Expression) {
+// ResolveAccessor combines the children in the dot operator to a single function name.
+func (state *State) ResolveAccessor(root *expression.Expression) error {
 	if root.Token.Text() != "." {
-		return
+		return nil
 	}
 
 	pkg := root.Children[0]
+	pkgName := pkg.Token.Text()
+	imp := state.function.File.imports[pkgName]
+
+	if imp == nil {
+		return fmt.Errorf("Package '%s' has not been imported", pkgName)
+	}
+
+	atomic.AddInt32(&imp.Used, 1)
 	newName := append(pkg.Token.Bytes, '.')
 	newName = append(newName, root.Children[1].Token.Bytes...)
 	root.Children[1].Token.Bytes = newName
 	root.Replace(root.Children[1])
+	return nil
 }

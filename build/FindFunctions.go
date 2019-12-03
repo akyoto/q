@@ -5,9 +5,9 @@ import (
 )
 
 // FindFunctions scans the files for functions.
-func FindFunctions(files <-chan *File) (<-chan *Function, <-chan string, <-chan error) {
+func FindFunctions(files <-chan *File) (<-chan *Function, <-chan *Import, <-chan error) {
 	functions := make(chan *Function, 16)
-	imports := make(chan string)
+	imports := make(chan *Import)
 	errors := make(chan error)
 
 	go func() {
