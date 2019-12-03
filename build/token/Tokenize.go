@@ -2,6 +2,7 @@ package token
 
 import (
 	"bytes"
+
 	"github.com/akyoto/q/build/spec"
 )
 
