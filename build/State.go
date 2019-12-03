@@ -178,6 +178,7 @@ func (state *State) Return(tokens []token.Token) error {
 // be called when the variable value is required.
 func (state *State) UseVariable(variable *Variable) {
 	variable.AliveUntil = state.instrCursor + 1
+	variable.LastAssignUsed = true
 }
 
 // Invalid handles invalid instructions.

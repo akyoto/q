@@ -9,12 +9,14 @@ import (
 
 // Variable represents both local variables and function parameters.
 type Variable struct {
-	Name       string
-	Type       *spec.Type
-	AliveUntil instruction.Position
-	Position   token.Position
-	Mutable    bool
-	register   *register.Register
+	Name           string
+	Type           *spec.Type
+	AliveUntil     instruction.Position
+	Position       token.Position
+	LastAssign     token.Position
+	LastAssignUsed bool
+	Mutable        bool
+	register       *register.Register
 }
 
 // Register returns the register the variable refers to.

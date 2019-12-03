@@ -31,7 +31,8 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	variableName := left.Text()
 	variable := state.scopes.Get(variableName)
 
-	if variable == nil {
+	switch {
+	case variable == nil:
 		register := state.registers.General.FindFree()
 
 		if register == nil {
@@ -39,15 +40,26 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		}
 
 		variable = &Variable{
-			Name:     variableName,
-			Position: state.tokenCursor,
-			Mutable:  mutable,
+			Name:           variableName,
+			Position:       state.tokenCursor,
+			LastAssign:     state.tokenCursor,
+			LastAssignUsed: true,
+			Mutable:        mutable,
 		}
 
 		variable.ForceSetRegister(register)
 		state.scopes.Add(variable)
-	} else if !variable.Mutable {
+
+	case !variable.Mutable:
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
+
+	case !variable.LastAssignUsed:
+		state.tokenCursor = variable.LastAssign
+		return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}
+
+	default:
+		variable.LastAssign = state.tokenCursor
+		variable.LastAssignUsed = false
 	}
 
 	// Operator

@@ -88,7 +88,8 @@ This will produce the `q` compiler in your current directory.
 
 * [x] Unused variables
 * [x] Unused parameters
-* [ ] Ineffective assignment
+* [x] Unused imports
+* [x] Ineffective assignments
 * [ ] ...
 
 ### Architecture
