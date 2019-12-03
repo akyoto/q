@@ -57,6 +57,15 @@ func (a *Assembler) DecreaseRegister(destination *register.Register) {
 }
 
 func (a *Assembler) PushRegister(destination *register.Register) {
+	lastInstr := a.lastInstruction()
+
+	// If the last instruction popped the same register,
+	// it is nearly equivalent to not popping the register in the first place.
+	if lastInstr != nil && lastInstr.Name() == POP && lastInstr.(*register1).Destination == destination {
+		a.removeLastInstruction()
+		return
+	}
+
 	a.doRegister1(PUSH, destination)
 }
 
