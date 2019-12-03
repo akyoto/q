@@ -84,7 +84,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
 	}
 
-	// End with a return statement and generate the actual machine code
+	// End with a return statement
 	assembler.Return()
 	return nil
 }

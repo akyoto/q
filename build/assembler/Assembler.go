@@ -18,6 +18,7 @@ type Assembler struct {
 // New creates a new assembler.
 func New(verbose bool) *Assembler {
 	return &Assembler{
+		instructions:      make([]instruction, 0, 8),
 		final:             asm.New(),
 		usedRegisterNames: make(map[string]struct{}),
 		verbose:           verbose,
