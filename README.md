@@ -87,6 +87,36 @@ This will produce the `q` compiler in your current directory.
 * [ ] Assembly optimization
 * [ ] ...
 
+### Operators
+
+* [x] `+`
+* [x] `-`
+* [x] `*`
+* [x] `/`
+* [x] `=`
+* [x] `==`
+* [x] `!=`
+* [x] `<`
+* [x] `<=`
+* [x] `>`
+* [x] `>=`
+* [ ] `%`
+* [ ] `<<`
+* [ ] `>>`
+* [ ] `&&`
+* [ ] `||`
+* [ ] `&`
+* [ ] `|`
+* [ ] `+=`
+* [ ] `-=`
+* [ ] `*=`
+* [ ] `/=`
+* [ ] `&=`
+* [ ] `|=`
+* [ ] `<<=`
+* [ ] `>>=`
+* [ ] ...
+
 ### Linter
 
 * [x] Unused variables
