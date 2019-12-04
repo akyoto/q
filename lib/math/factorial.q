@@ -1,6 +1,6 @@
 factorial(n) {
 	require n >= 0
-	ensure _ >= 0
+	ensure _ >= 1
 
 	mut x = 1
 
