@@ -72,12 +72,15 @@ This will produce the `q` compiler in your current directory.
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
-* [ ] Cyclic function calls
+* [ ] Type system
+* [ ] Type operator: `|` (`User | Error`)
 * [ ] `require` for input validation
 * [ ] `ensure` for output validation
 * [ ] `match` keyword
+* [ ] `import` external packages
 * [ ] Error handling
-* [ ] Parallelism
+* [ ] Cyclic function calls
+* [ ] Multi-threading
 * [ ] Lock-free data structures
 * [ ] Multiple return values
 * [ ] Expression optimization
@@ -95,15 +98,16 @@ This will produce the `q` compiler in your current directory.
 ### Architecture
 
 * [x] x86-64
-* [ ] WebAssembly
+* [ ] WASM
 * [ ] ARM
 * [ ] ...
 
-### OS
+### Platform
 
 * [x] Linux
 * [ ] Mac
 * [ ] Windows
+* [ ] Browser
 * [ ] ...
 
 ## FAQ
