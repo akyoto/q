@@ -84,6 +84,12 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	case instruction.Return:
 		return state.Return(instr.Tokens)
 
+	case instruction.Require:
+		return state.Require(instr.Tokens)
+
+	case instruction.Ensure:
+		return state.Ensure(instr.Tokens)
+
 	case instruction.Invalid:
 		return state.Invalid(instr.Tokens)
 
@@ -155,22 +161,6 @@ func (state *State) PopScope() error {
 	}
 
 	state.scopes.Pop()
-	return nil
-}
-
-// Return handles return statements.
-func (state *State) Return(tokens []token.Token) error {
-	expression := tokens[1:]
-
-	if len(expression) > 0 {
-		err := state.TokensToRegister(expression, state.registers.ReturnValue[0])
-
-		if err != nil {
-			return err
-		}
-	}
-
-	state.assembler.Return()
 	return nil
 }
 

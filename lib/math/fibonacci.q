@@ -1,7 +1,6 @@
-import sys
-
-main() {
-	n = 11
+fibonacci(n) {
+	require n >= 0
+	ensure _ >= 0
 
 	mut a = 0
 	mut b = 0
@@ -13,5 +12,5 @@ main() {
 		c = a + b
 	}
 
-	sys.exit(b)
+	return b
 }

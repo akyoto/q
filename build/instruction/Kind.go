@@ -34,6 +34,12 @@ const (
 	// Return represents the return statement.
 	Return
 
+	// Require represents the require statement.
+	Require
+
+	// Ensure represents the ensure statement.
+	Ensure
+
 	// Comment represents a comment.
 	Comment
 )

@@ -22,22 +22,19 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				continue
 			}
 
-			if instruction.Kind == Comment {
+			switch instruction.Kind {
+			case Comment:
 				instruction.Kind = Invalid
 				start = i + 1
-				continue
+
+			case Return, Require, Ensure, Assignment, Invalid:
+				instruction.Tokens = tokens[start:i]
+				instruction.Position = start
+				instructions = append(instructions, instruction)
+
+				instruction.Kind = Invalid
+				start = i + 1
 			}
-
-			if instruction.Kind != Assignment && instruction.Kind != Return && instruction.Kind != Invalid {
-				continue
-			}
-
-			instruction.Tokens = tokens[start:i]
-			instruction.Position = start
-			instructions = append(instructions, instruction)
-
-			instruction.Kind = Invalid
-			start = i + 1
 
 		case token.Operator:
 			if instruction.Kind != Invalid {
@@ -121,6 +118,10 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				instruction.Kind = LoopStart
 			case "return":
 				instruction.Kind = Return
+			case "require":
+				instruction.Kind = Require
+			case "ensure":
+				instruction.Kind = Ensure
 			case "mut":
 				instruction.Kind = Assignment
 			default:
