@@ -13,7 +13,7 @@ import (
 func Main() int {
 	var (
 		verbose   = false
-		optimize  = true
+		optimize  = false
 		directory = "."
 	)
 
@@ -33,8 +33,11 @@ func Main() int {
 		argument := os.Args[i]
 
 		switch argument {
-		case "-v":
+		case "-v", "--verbose":
 			verbose = true
+
+		case "-O", "--optimize":
+			optimize = true
 
 		default:
 			directory = argument

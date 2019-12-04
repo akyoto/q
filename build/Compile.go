@@ -57,7 +57,11 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		tokens:       tokens,
 		instructions: instructions,
 		log:          logger,
-		optimize:     optimize,
+	}
+
+	if optimize {
+		state.useIncDec = true
+		state.ignoreContracts = true
 	}
 
 	// Show verbose output even if an error happened

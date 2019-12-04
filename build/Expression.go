@@ -218,7 +218,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 
 	switch operation {
 	case "+":
-		if number == 1 && state.optimize {
+		if number == 1 && state.useIncDec {
 			state.assembler.IncreaseRegister(register)
 			return nil
 		}
@@ -226,7 +226,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		state.assembler.AddRegisterNumber(register, uint64(number))
 
 	case "-":
-		if number == 1 && state.optimize {
+		if number == 1 && state.useIncDec {
 			state.assembler.DecreaseRegister(register)
 			return nil
 		}

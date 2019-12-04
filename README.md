@@ -148,12 +148,20 @@ go test -v ./...
 go test -run=^$ -bench=. ./...
 ```
 
-### Can I view the produced assembly output?
+### How do I view the produced assembly output?
 
-Yes, use the `-v` verbose flag:
+Use `-v` or `--verbose`:
 
 ```shell
 q build -v examples/loops
+```
+
+### How can I make a performance optimized build?
+
+Use `-O` or `--optimize`:
+
+```shell
+q build -O examples/loops
 ```
 
 ### Is the syntax final?

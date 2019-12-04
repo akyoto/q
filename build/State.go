@@ -17,19 +17,20 @@ import (
 // State encapsulates a compiler's state.
 // Every compilation requires a fresh state.
 type State struct {
-	instructions []instruction.Instruction
-	tokens       []token.Token
-	assembler    *assembler.Assembler
-	log          *log.Logger
-	scopes       *ScopeStack
-	registers    *register.Manager
-	function     *Function
-	environment  *Environment
-	tokenCursor  token.Position
-	instrCursor  instruction.Position
-	loop         LoopState
-	forLoop      ForState
-	optimize     bool
+	instructions    []instruction.Instruction
+	tokens          []token.Token
+	assembler       *assembler.Assembler
+	log             *log.Logger
+	scopes          *ScopeStack
+	registers       *register.Manager
+	function        *Function
+	environment     *Environment
+	tokenCursor     token.Position
+	instrCursor     instruction.Position
+	loop            LoopState
+	forLoop         ForState
+	ignoreContracts bool
+	useIncDec       bool
 }
 
 // CompileInstructions compiles all instructions.
