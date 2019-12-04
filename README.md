@@ -75,6 +75,7 @@ This will produce the `q` compiler in your current directory.
 * [ ] Heap allocation
 * [ ] Type system
 * [ ] Type operator: `|` (`User | Error`)
+* [ ] Hexadecimal, octal and binary literals
 * [ ] `require` for input validation
 * [ ] `ensure` for output validation
 * [ ] `match` keyword
