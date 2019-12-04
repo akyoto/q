@@ -2,11 +2,14 @@ package build
 
 import (
 	"errors"
+	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
+	"github.com/akyoto/color"
 )
 
 // Build describes a compiler build.
@@ -64,9 +67,9 @@ func (build *Build) Compile() error {
 	resultsChannel, errors := build.Environment.Compile(build.Optimize, build.Verbose)
 
 	// Generate machine code
-	main := asm.New()
-	main.Call("main")
-	main.Exit(0)
+	finalCode := asm.New()
+	finalCode.Call("main")
+	finalCode.Exit(0)
 
 	for {
 		select {
@@ -89,20 +92,35 @@ done:
 		return nil
 	}
 
+	stdOutMutex := sync.Mutex{}
+
 	for _, function := range results {
-		if function.CallCount == 0 && function.Name != "main" {
+		if function.CallCount == 0 {
 			continue
 		}
 
-		// Merge function code into the main executable
-		main.Merge(function.assembler.Finalize())
+		// Merge function code into the main finalCode
+		finalCode.Merge(function.assembler.Finalize())
+
+		// Show assembler code of used functions
+		if build.Verbose {
+			faint := color.New(color.Faint)
+			logPrefix := faint.Sprintf("%s ", function.Name)
+			logger := log.New(os.Stdout, logPrefix, 0)
+
+			stdOutMutex.Lock()
+			function.assembler.WriteTo(logger)
+			logger.SetPrefix("")
+			logger.Println()
+			stdOutMutex.Unlock()
+		}
 	}
 
-	for _, err := range main.Verify() {
+	for _, err := range finalCode.Verify() {
 		return err
 	}
 
-	return writeToDisk(main, build.ExecutablePath)
+	return writeToDisk(finalCode, build.ExecutablePath)
 }
 
 // writeToDisk writes the executable file to disk.

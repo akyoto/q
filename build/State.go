@@ -2,7 +2,6 @@ package build
 
 import (
 	"fmt"
-	"log"
 	"sort"
 	"strconv"
 
@@ -17,10 +16,10 @@ import (
 // State encapsulates a compiler's state.
 // Every compilation requires a fresh state.
 type State struct {
-	instructions    []instruction.Instruction
-	tokens          []token.Token
-	assembler       *assembler.Assembler
-	log             *log.Logger
+	instructions []instruction.Instruction
+	tokens       []token.Token
+	assembler    *assembler.Assembler
+
 	scopes          *ScopeStack
 	registers       *register.Manager
 	function        *Function

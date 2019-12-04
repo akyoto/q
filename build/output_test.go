@@ -60,6 +60,7 @@ func syntaxCheck(inputFile string) error {
 		Finished:   make(chan struct{}),
 		TokenStart: 0,
 		TokenEnd:   len(file.Tokens()),
+		CallCount:  1,
 	}
 
 	return build.Compile(function, build.NewEnvironment(), false, false)

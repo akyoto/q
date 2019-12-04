@@ -107,6 +107,10 @@ begin:
 				parameterStart: index + 2,
 			}
 
+			if functionName == "main" {
+				function.CallCount = 1
+			}
+
 			if file.verbose {
 				log.Info.Println("Function:", function.Name)
 			}
