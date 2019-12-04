@@ -41,10 +41,10 @@ This will produce the `q` compiler in your current directory.
 * Fast compilation (less than 1 millisecond for simple programs)
 * Small binaries ("Hello World" is 247 bytes)
 * High performance (compete with C and Rust)
-* Linting (detects common mistakes)
-* Testing ("q test")
-* Formatting ("q fmt")
-* Contracts (Eiffel-style)
+* Contracts (reduce bugs at run time)
+* Testing (reduce bugs at test time)
+* Linting (reduce bugs at compile time)
+* Format source code
 * Packages should be highly reusable
 * Statically typed with type inference
 * User-friendly compiler messages
