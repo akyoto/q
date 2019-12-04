@@ -1,6 +1,7 @@
 import sys
 
 main() {
+	# Calculate n'th fibonacci number
 	n = 11
 
 	mut a = 0

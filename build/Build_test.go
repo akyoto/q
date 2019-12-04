@@ -23,7 +23,6 @@ func TestExamples(t *testing.T) {
 		ExpectedOutput   string
 		ExpectedExitCode int
 	}{
-		{"comments", "", 0},
 		{"hello", "Hello\n", 0},
 		{"fibonacci", "", 89},
 		{"files", "", 0},

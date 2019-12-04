@@ -1,5 +1,6 @@
 import sys
 
+# main is the entry point for our program.
 main() {
 	a = add(1, 2)
 	b = add(3, 4)
@@ -22,22 +23,29 @@ main() {
 	show(l)
 }
 
+# add adds two numbers.
 add(a, b) {
 	return a + b
 }
 
+# sub subtracts two numbers.
 sub(a, b) {
 	return a - b
 }
 
+# mul multiplies two numbers.
 mul(a, b) {
 	return a * b
 }
 
+# div divides two numbers.
 div(a, b) {
 	return a / b
 }
 
+# show shows a number on the console.
+# Printing integers to the console isn't implemented yet,
+# so we need to use some hacks to check the contents of integers.
 show(num) {
 	sys.write(1, "123456789\n", num)
 }
