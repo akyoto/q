@@ -69,6 +69,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Variable lifetime tracking
 * [x] `return` values
 * [x] `import` standard packages
+* [x] Exclude unused functions
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
