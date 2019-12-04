@@ -38,7 +38,7 @@ This will produce the `q` compiler in your current directory.
 
 ### Yes...
 
-* Fast compilation (less than 1 millisecond for simple programs)
+* Fast compilation (<1 ms for simple programs)
 * Small binaries ("Hello World" is 247 bytes)
 * High performance (compete with C and Rust)
 * Contracts (reduce bugs at run time)
