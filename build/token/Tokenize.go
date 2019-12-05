@@ -18,6 +18,7 @@ var (
 	separatorBytes  = []byte{','}
 	accessorBytes   = []byte{'.'}
 	rangeBytes      = []byte{'.', '.'}
+	questionBytes   = []byte{'?'}
 	newLineBytes    = []byte{'\n'}
 )
 
@@ -208,6 +209,10 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			} else {
 				token = Token{Operator, accessorBytes, i}
 			}
+
+		// Question
+		case c == '?':
+			token = Token{Question, questionBytes, i}
 
 		// New line
 		case c == '\n':

@@ -31,6 +31,9 @@ const (
 	// Range represents '..'.
 	Range
 
+	// Question represents '?'.
+	Question
+
 	// Comment represents a comment.
 	Comment
 
@@ -79,6 +82,9 @@ func (kind Kind) String() string {
 
 	case Range:
 		return "Range"
+
+	case Question:
+		return "Question"
 
 	case Comment:
 		return "Comment"

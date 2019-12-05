@@ -7,6 +7,7 @@ import (
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
+	"github.com/akyoto/q/build/token"
 )
 
 // Compile turns a function into machine code.
@@ -18,13 +19,14 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	scopes.Push()
 
 	registers := register.NewManager()
-	err := declareParameters(function, scopes, registers)
+	tokens := function.Tokens()
+	identifierLifeTime := IdentifierLifeTimeMap(tokens)
+	err := declareParameters(function, scopes, registers, identifierLifeTime)
 
 	if err != nil {
 		return err
 	}
 
-	tokens := function.Tokens()
 	instructions, instrErr := instruction.FromTokens(tokens)
 
 	if instrErr != nil {
@@ -36,13 +38,14 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	function.assembler = assembler
 
 	state := State{
-		assembler:    assembler,
-		scopes:       scopes,
-		registers:    registers,
-		environment:  environment,
-		function:     function,
-		tokens:       tokens,
-		instructions: instructions,
+		assembler:          assembler,
+		scopes:             scopes,
+		registers:          registers,
+		environment:        environment,
+		function:           function,
+		tokens:             tokens,
+		instructions:       instructions,
+		identifierLifeTime: identifierLifeTime,
 	}
 
 	if optimize {
@@ -79,7 +82,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 // declareParameters declares the given parameters as variables inside the scope.
 // It also assigns a register to each variable.
-func declareParameters(function *Function, scopes *ScopeStack, registers *register.Manager) error {
+func declareParameters(function *Function, scopes *ScopeStack, registers *register.Manager, identifierLifeTime map[string]token.Position) error {
 	for i, parameter := range function.Parameters {
 		if i >= len(registers.Call) {
 			return errors.ExceededMaxParameters
@@ -88,8 +91,9 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 		register := registers.Call[i]
 
 		variable := &Variable{
-			Name:     parameter.Name,
-			Position: 0,
+			Name:       parameter.Name,
+			Position:   0,
+			AliveUntil: identifierLifeTime[parameter.Name],
 		}
 
 		_ = variable.SetRegister(register)

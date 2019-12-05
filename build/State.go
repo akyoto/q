@@ -16,16 +16,16 @@ import (
 // State encapsulates a compiler's state.
 // Every compilation requires a fresh state.
 type State struct {
-	instructions []instruction.Instruction
-	tokens       []token.Token
-	assembler    *assembler.Assembler
-
-	scopes      *ScopeStack
-	registers   *register.Manager
-	function    *Function
-	environment *Environment
-	tokenCursor token.Position
-	instrCursor instruction.Position
+	instructions       []instruction.Instruction
+	tokens             []token.Token
+	assembler          *assembler.Assembler
+	scopes             *ScopeStack
+	registers          *register.Manager
+	function           *Function
+	environment        *Environment
+	tokenCursor        token.Position
+	instrCursor        instruction.Position
+	identifierLifeTime map[string]token.Position
 
 	// Keywords
 	forState     ForState
@@ -40,11 +40,10 @@ type State struct {
 
 // CompileInstructions compiles all instructions.
 func (state *State) CompileInstructions() error {
-	identifiers := state.identifiersLastUse()
 	lastKillPos := 0
 
 	for index, instr := range state.instructions {
-		state.killVariables(identifiers, lastKillPos, instr.Position)
+		state.KillVariables(lastKillPos, instr.Position)
 		lastKillPos = instr.Position
 
 		err := state.Instruction(instr, index)
@@ -176,7 +175,7 @@ func (state *State) PopScope() error {
 // UseVariable marks the variable as used and should always
 // be called when the variable value is required.
 func (state *State) UseVariable(variable *Variable) {
-	variable.AliveUntil = state.instrCursor + 1
+	variable.Used = true
 	variable.LastAssignUsed = true
 }
 

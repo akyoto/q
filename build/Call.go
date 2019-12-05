@@ -114,6 +114,7 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 
 // BeforeCall pushes parameters into registers.
 func (state *State) BeforeCall(function *Function, parameters []*expression.Expression) (register.List, register.List, error) {
+	// nolint:prealloc
 	var pushRegisters []*register.Register
 
 	// Wait for function compilation to finish
@@ -123,9 +124,18 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 	for registerName := range function.UsedRegisterNames() {
 		callModifiedRegister := state.registers.All.ByName(registerName)
 
-		if !callModifiedRegister.IsFree() {
-			pushRegisters = append(pushRegisters, callModifiedRegister)
+		if callModifiedRegister.IsFree() {
+			continue
 		}
+
+		variable := callModifiedRegister.User().(*Variable)
+
+		// Don't push variables that are going to die after this instruction
+		if variable.AliveUntil < state.InstructionEndPosition() {
+			continue
+		}
+
+		pushRegisters = append(pushRegisters, callModifiedRegister)
 	}
 
 	// Save registers

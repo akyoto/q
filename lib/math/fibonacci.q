@@ -2,7 +2,7 @@ fibonacci(n) {
 	require n >= 0
 	ensure _ >= 0
 
-	mut a = 0
+	mut a = ?
 	mut b = 0
 	mut c = 1
 

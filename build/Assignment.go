@@ -43,8 +43,9 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 			Name:           variableName,
 			Position:       state.tokenCursor,
 			LastAssign:     state.tokenCursor,
-			LastAssignUsed: true,
+			LastAssignUsed: false,
 			Mutable:        mutable,
+			AliveUntil:     state.identifierLifeTime[variableName],
 		}
 
 		variable.ForceSetRegister(register)
@@ -78,6 +79,12 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 
 	if len(value) == 0 {
 		return variable, errors.MissingAssignmentExpression
+	}
+
+	if len(value) == 1 && value[0].Kind == token.Question {
+		variable.LastAssignUsed = true
+		state.tokenCursor += len(value)
+		return variable, nil
 	}
 
 	err := state.TokensToRegister(value, variable.Register())

@@ -1,7 +1,6 @@
 package build
 
 import (
-	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
@@ -11,10 +10,11 @@ import (
 type Variable struct {
 	Name           string
 	Type           *spec.Type
-	AliveUntil     instruction.Position
+	AliveUntil     token.Position
 	Position       token.Position
 	LastAssign     token.Position
 	LastAssignUsed bool
+	Used           bool
 	Mutable        bool
 	register       *register.Register
 }
@@ -37,11 +37,6 @@ func (variable *Variable) SetRegister(register *register.Register) error {
 // ForceSetRegister binds the variable to a register regardless whether it's used or not.
 func (variable *Variable) ForceSetRegister(register *register.Register) {
 	_ = variable.SetRegister(register)
-}
-
-// Used tells you if the variable was used or not.
-func (variable *Variable) Used() bool {
-	return variable.AliveUntil != 0
 }
 
 // String returns the string representation.

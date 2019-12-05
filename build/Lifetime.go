@@ -4,14 +4,13 @@ import (
 	"github.com/akyoto/q/build/token"
 )
 
-// identifiersLastUse returns a map of variable names
+// IdentifierLifeTimeMap returns a map of variable names
 // mapped to the position they were last used.
-func (state *State) identifiersLastUse() map[string]token.Position {
-	// scopeLevel := 0
+func IdentifierLifeTimeMap(tokens []token.Token) map[string]token.Position {
 	identifiers := map[string]token.Position{}
 
-	for i := len(state.tokens) - 1; i >= 0; i-- {
-		t := state.tokens[i]
+	for i := len(tokens) - 1; i >= 0; i-- {
+		t := tokens[i]
 
 		if t.Kind != token.Identifier {
 			continue
@@ -30,20 +29,21 @@ func (state *State) identifiersLastUse() map[string]token.Position {
 	return identifiers
 }
 
-// killVariables frees the registers of all variables that die in the given token range.
-func (state *State) killVariables(identifiers map[string]token.Position, from int, until int) {
-	for identifier, deathPos := range identifiers {
-		if deathPos < from || deathPos >= until {
-			continue
+// KillVariables frees the registers of all variables that die in the given token range.
+func (state *State) KillVariables(from int, until int) {
+	state.scopes.Each(func(variable *Variable) {
+		if variable.AliveUntil < from || variable.AliveUntil >= until {
+			return
 		}
 
-		variable := state.scopes.Get(identifier)
+		variable.Register().Free()
+		// fmt.Println(variable, "died at", state.tokens[:variable.AliveUntil+1])
+		delete(state.identifierLifeTime, variable.Name)
+	})
+}
 
-		if variable != nil {
-			variable.Register().Free()
-			// fmt.Println(variable, "died at", state.tokens[:deathPos+1])
-		}
-
-		delete(identifiers, identifier)
-	}
+// InstructionEndPosition returns the token position of the next instruction.
+func (state *State) InstructionEndPosition() token.Position {
+	instr := state.instructions[state.instrCursor]
+	return instr.Position + len(instr.Tokens)
 }
