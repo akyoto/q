@@ -70,14 +70,14 @@ This will produce the `q` compiler in your current directory.
 * [x] `return` values
 * [x] `import` standard packages
 * [x] Exclude unused functions
+* [x] `require` for input validation
+* [ ] `ensure` for output validation
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
 * [ ] Type system
 * [ ] Type operator: `|` (`User | Error`)
 * [ ] Hexadecimal, octal and binary literals
-* [ ] `require` for input validation
-* [ ] `ensure` for output validation
 * [ ] `match` keyword
 * [ ] `import` external packages
 * [ ] Error handling

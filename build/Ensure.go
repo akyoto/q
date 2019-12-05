@@ -1,7 +1,6 @@
 package build
 
 import (
-	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -12,13 +11,6 @@ func (state *State) Ensure(tokens []token.Token) error {
 	}
 
 	state.Expect(token.Keyword)
-	condition := tokens[1:]
-	expr, err := expression.FromTokens(condition)
-
-	if err != nil {
-		return err
-	}
-
-	state.function.Ensure = append(state.function.Ensure, expr)
+	// condition := tokens[1:]
 	return nil
 }

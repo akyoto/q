@@ -67,13 +67,7 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 			return fmt.Errorf("'%s' requires a text parameter instead of '%s'", function.Name, parameter.Token.Text())
 		}
 
-		text := parameter.Token.Text() + "\n"
-		address := state.assembler.AddString(text)
-		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], uint64(syscall.Write))
-		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
-		state.assembler.MoveRegisterAddress(state.registers.Syscall[2], address)
-		state.assembler.MoveRegisterNumber(state.registers.Syscall[3], uint64(len(text)))
-		state.assembler.Syscall()
+		state.printLn(parameter.Token.Text())
 		return nil
 	}
 
@@ -210,4 +204,15 @@ func (state *State) AfterCall(function *Function, pushedRegisters []*register.Re
 	for _, callRegister := range callRegisters {
 		callRegister.Free()
 	}
+}
+
+// printLn adds instructions to print a message to the console.
+func (state *State) printLn(text string) {
+	text += "\n"
+	address := state.assembler.AddString(text)
+	state.assembler.MoveRegisterNumber(state.registers.Syscall[0], uint64(syscall.Write))
+	state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
+	state.assembler.MoveRegisterAddress(state.registers.Syscall[2], address)
+	state.assembler.MoveRegisterNumber(state.registers.Syscall[3], uint64(len(text)))
+	state.assembler.Syscall()
 }

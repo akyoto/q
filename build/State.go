@@ -20,14 +20,20 @@ type State struct {
 	tokens       []token.Token
 	assembler    *assembler.Assembler
 
-	scopes          *ScopeStack
-	registers       *register.Manager
-	function        *Function
-	environment     *Environment
-	tokenCursor     token.Position
-	instrCursor     instruction.Position
-	loop            LoopState
-	forLoop         ForState
+	scopes      *ScopeStack
+	registers   *register.Manager
+	function    *Function
+	environment *Environment
+	tokenCursor token.Position
+	instrCursor instruction.Position
+
+	// Keywords
+	forState     ForState
+	ifState      IfState
+	loopState    LoopState
+	requireState RequireState
+
+	// Optimization flags
 	ignoreContracts bool
 	useIncDec       bool
 }
@@ -98,9 +104,9 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	}
 }
 
-// CompareExpression compares a register with the result of the expression.
+// CompareRegisterExpression compares a register with the result of the expression.
 // If the expression needs to be stored in a temporary register, it will return it.
-func (state *State) CompareExpression(register *register.Register, expression []token.Token, labelBeforeComparison string) (*register.Register, error) {
+func (state *State) CompareRegisterExpression(register *register.Register, expression []token.Token, labelBeforeComparison string) (*register.Register, error) {
 	if len(expression) == 1 {
 		if labelBeforeComparison != "" {
 			state.assembler.AddLabel(labelBeforeComparison)
@@ -148,7 +154,10 @@ func (state *State) CompareExpression(register *register.Register, expression []
 		return nil, err
 	}
 
-	state.assembler.AddLabel(labelBeforeComparison)
+	if labelBeforeComparison != "" {
+		state.assembler.AddLabel(labelBeforeComparison)
+	}
+
 	state.assembler.CompareRegisterRegister(register, temporary)
 	return temporary, nil
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/akyoto/q/build/assembler"
-	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 )
@@ -21,8 +20,6 @@ type Function struct {
 	IsBuiltin        bool
 	SideEffects      int32
 	CallCount        int32
-	Require          []*expression.Expression
-	Ensure           []*expression.Expression
 	assembler        *assembler.Assembler
 	Finished         chan struct{}
 	parameterStart   token.Position

@@ -1,6 +1,8 @@
 package build
 
 import (
+	"fmt"
+
 	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/instruction"
@@ -62,6 +64,16 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	// End with a return statement
 	assembler.Return()
+
+	// Contract failures
+	for _, requirement := range state.requireState.list {
+		assembler.AddLabel(requirement.failLabel)
+		state.printLn(fmt.Sprintf("%s: require %v", state.function.Name, requirement.condition))
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], 60)
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
+		state.assembler.Syscall()
+	}
+
 	return nil
 }
 

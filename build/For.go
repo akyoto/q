@@ -66,10 +66,10 @@ func (state *State) ForStart(tokens []token.Token) error {
 		register = variable.Register()
 	}
 
-	state.forLoop.counter++
+	state.forState.counter++
 
-	labelStart := fmt.Sprintf("for_%d", state.forLoop.counter)
-	labelEnd := fmt.Sprintf("for_%d_end", state.forLoop.counter)
+	labelStart := fmt.Sprintf("for_%d", state.forState.counter)
+	labelEnd := fmt.Sprintf("for_%d_end", state.forState.counter)
 
 	upperLimit := expression[rangePos+1:]
 
@@ -78,7 +78,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	}
 
 	state.tokenCursor++
-	temporary, err := state.CompareExpression(register, upperLimit, labelStart)
+	temporary, err := state.CompareRegisterExpression(register, upperLimit, labelStart)
 
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 
 	state.assembler.JumpIfEqual(labelEnd)
 
-	state.forLoop.stack = append(state.forLoop.stack, ForLoop{
+	state.forState.stack = append(state.forState.stack, ForLoop{
 		labelStart: labelStart,
 		labelEnd:   labelEnd,
 		counter:    register,
@@ -104,8 +104,8 @@ func (state *State) ForEnd() error {
 		return err
 	}
 
-	loop := state.forLoop.stack[len(state.forLoop.stack)-1]
-	state.forLoop.stack = state.forLoop.stack[:len(state.forLoop.stack)-1]
+	loop := state.forState.stack[len(state.forState.stack)-1]
+	state.forState.stack = state.forState.stack[:len(state.forState.stack)-1]
 
 	state.assembler.IncreaseRegister(loop.counter)
 	state.assembler.Jump(loop.labelStart)
