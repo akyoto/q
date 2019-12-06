@@ -46,10 +46,10 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		tokens:             tokens,
 		instructions:       instructions,
 		identifierLifeTime: identifierLifeTime,
+		ignoreContracts:    false,
 	}
 
 	if optimize {
-		state.useIncDec = true
 		state.ignoreContracts = true
 	}
 
@@ -76,6 +76,9 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
 		state.assembler.Syscall()
 	}
+
+	// Optimize assembly code
+	state.assembler.Optimize()
 
 	return nil
 }

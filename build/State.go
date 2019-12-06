@@ -35,7 +35,6 @@ type State struct {
 
 	// Optimization flags
 	ignoreContracts bool
-	useIncDec       bool
 }
 
 // CompileInstructions compiles all instructions.
