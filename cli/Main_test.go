@@ -27,6 +27,7 @@ func TestCLI(t *testing.T) {
 		{[]string{"q", "build", "../examples/hello/hello.q"}, 2},
 		{[]string{"q", "build", "../examples/hello"}, 0},
 		{[]string{"q", "build", "-v", "../examples/hello"}, 0},
+		{[]string{"q", "build", "-O", "../examples/hello"}, 0},
 		// {[]string{"q", "build", "../build/testdata"}, 1},
 	}
 
