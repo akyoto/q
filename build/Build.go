@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
@@ -92,10 +91,12 @@ done:
 		return nil
 	}
 
-	stdOutMutex := sync.Mutex{}
-
 	for _, function := range results {
 		if function.CallCount == 0 {
+			continue
+		}
+
+		if function.Name != "main" && function.CanInline() {
 			continue
 		}
 
@@ -107,12 +108,9 @@ done:
 			faint := color.New(color.Faint)
 			logPrefix := faint.Sprintf("%s ", function.Name)
 			logger := log.New(os.Stdout, logPrefix, 0)
-
-			stdOutMutex.Lock()
 			function.assembler.WriteTo(logger)
 			logger.SetPrefix("")
 			logger.Println()
-			stdOutMutex.Unlock()
 		}
 	}
 

@@ -69,7 +69,9 @@ This will produce the `q` compiler in your current directory.
 * [x] Variable lifetime tracking
 * [x] `return` values
 * [x] `import` standard packages
+* [x] Assembly optimizer
 * [x] Exclude unused functions
+* [x] Function call inlining
 * [x] `require` for input validation
 * [ ] `ensure` for output validation
 * [ ] Data structures
@@ -86,7 +88,6 @@ This will produce the `q` compiler in your current directory.
 * [ ] Lock-free data structures
 * [ ] Multiple return values
 * [ ] Expression optimization
-* [ ] Assembly optimization
 * [ ] ...
 
 ### Operators

@@ -88,7 +88,15 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 			return err
 		}
 
-		state.assembler.Call(functionName)
+		// Inline the function call if it's a little function
+		if function.CanInline() {
+			// Remove the starting label and the last return statement
+			inlinedInstructions := function.assembler.Instructions[1 : len(function.assembler.Instructions)-1]
+			state.function.assembler.Instructions = append(state.function.assembler.Instructions, inlinedInstructions...)
+		} else {
+			state.assembler.Call(functionName)
+		}
+
 		state.AfterCall(function, pushRegisters, callRegisters)
 	}
 

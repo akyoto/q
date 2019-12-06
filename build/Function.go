@@ -41,6 +41,11 @@ func (function *Function) Error(position token.Position, err error) error {
 	return NewError(err, function.File.path, function.File.tokens[:function.TokenStart+position+1], function)
 }
 
+// CanInline returns true if the function call can be inlined.
+func (function *Function) CanInline() bool {
+	return len(function.assembler.Instructions) <= 4
+}
+
 // Errorf creates a formatted error inside the function.
 func (function *Function) Errorf(position token.Position, message string, args ...interface{}) error {
 	return function.Error(position, fmt.Errorf(message, args...))

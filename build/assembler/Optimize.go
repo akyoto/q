@@ -51,7 +51,17 @@ func (a *Assembler) Optimize() {
 				reg2, ok := checkInstr.(*register2)
 
 				if ok {
-					if reg2.Source == source || (reg2.Destination == source && reg2.Mnemonic != MOV) {
+					if reg2.Source == source {
+						canOptimize = false
+						break
+					}
+
+					if reg2.Destination == source {
+						// Overwriting the register means it's safe to optimize
+						if reg2.Mnemonic == MOV {
+							break
+						}
+
 						canOptimize = false
 						break
 					}
