@@ -32,6 +32,7 @@ type State struct {
 	ifState      IfState
 	loopState    LoopState
 	requireState RequireState
+	ensureState  EnsureState
 
 	// Optimization flags
 	ignoreContracts bool

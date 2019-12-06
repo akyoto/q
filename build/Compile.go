@@ -67,13 +67,41 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return err
 	}
 
-	// End with a return statement
+	// Return
+	if state.ensureState.counter > 0 {
+		assembler.AddLabel("return")
+
+		underscore := &Variable{Name: "_"}
+		underscore.ForceSetRegister(registers.ReturnValue[0])
+		state.scopes.Push()
+		state.scopes.Add(underscore)
+
+		for _, ensure := range state.ensureState.list {
+			err := state.Condition(ensure.condition, ensure.failLabel)
+
+			if err != nil {
+				return err
+			}
+		}
+
+		registers.ReturnValue[0].Free()
+	}
+
 	assembler.Return()
 
-	// Contract failures
+	// Contract require failures
 	for _, requirement := range state.requireState.list {
 		assembler.AddLabel(requirement.failLabel)
 		state.printLn(fmt.Sprintf("%s: require %v", state.function.Name, requirement.condition))
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], 60)
+		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
+		state.assembler.Syscall()
+	}
+
+	// Contract ensure failures
+	for _, ensure := range state.ensureState.list {
+		assembler.AddLabel(ensure.failLabel)
+		state.printLn(fmt.Sprintf("%s: ensure %v", state.function.Name, ensure.condition))
 		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], 60)
 		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
 		state.assembler.Syscall()

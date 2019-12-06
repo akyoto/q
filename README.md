@@ -69,11 +69,12 @@ This will produce the `q` compiler in your current directory.
 * [x] Variable lifetime tracking
 * [x] `return` values
 * [x] `import` standard packages
+* [x] `require` for input validation
+* [x] `ensure` for output validation
 * [x] Assembly optimizer
 * [x] Exclude unused functions
 * [x] Function call inlining
-* [x] `require` for input validation
-* [ ] `ensure` for output validation
+* [x] Disable contracts via `-O` flag
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
@@ -152,19 +153,17 @@ go test -run=^$ -bench=. ./...
 
 ### How do I view the produced assembly output?
 
-Use `-v` or `--verbose`:
-
 ```shell
 q build -v examples/loops
 ```
 
 ### How can I make a performance optimized build?
 
-Use `-O` or `--optimize`:
-
 ```shell
 q build -O examples/loops
 ```
+
+This will disable all `require` and `ensure` checks.
 
 ### Is the syntax final?
 

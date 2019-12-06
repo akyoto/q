@@ -15,6 +15,11 @@ func (state *State) Return(tokens []token.Token) error {
 		}
 	}
 
-	state.assembler.Return()
+	if state.ensureState.counter == 0 {
+		state.assembler.Return()
+		return nil
+	}
+
+	state.assembler.Jump("return")
 	return nil
 }

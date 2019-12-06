@@ -27,6 +27,12 @@ func New(verbose bool) *Assembler {
 
 // AddLabel adds an instruction that adds a label.
 func (a *Assembler) AddLabel(labelName string) {
+	jump, isJump := a.lastInstruction().(*label)
+
+	if isJump && jump.Label == labelName {
+		a.removeLastInstruction()
+	}
+
 	a.Instructions = append(a.Instructions, &addLabel{labelName})
 }
 
@@ -63,6 +69,15 @@ func (a *Assembler) lastInstruction() instruction {
 	}
 
 	return a.Instructions[len(a.Instructions)-1]
+}
+
+// removeLastInstruction removes the last added instruction.
+func (a *Assembler) removeLastInstruction() {
+	if len(a.Instructions) == 0 {
+		return
+	}
+
+	a.Instructions = a.Instructions[:len(a.Instructions)-1]
 }
 
 // do adds an instruction without any operands.

@@ -37,7 +37,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 		switch {
 		// Identifiers
-		case (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'):
+		case (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_':
 			processedBytes = i
 
 			for {
@@ -49,7 +49,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 
 				c = buffer[i]
 
-				if (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') {
+				if (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') && c != '_' {
 					i--
 					break
 				}
