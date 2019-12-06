@@ -1,6 +1,6 @@
 import sys
 
-new(length) {
+allocate(length) {
 	return sys.mmap(0, length, 3, 290)
 }
 
