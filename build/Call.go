@@ -30,7 +30,9 @@ func (state *State) Call(tokens []token.Token) error {
 
 // CallExpression executes a function call.
 func (state *State) CallExpression(expr *expression.Expression) error {
+	parameters := expr.Children
 	functionName := expr.Token.Text()
+	functionName = PolymorphName(functionName, len(parameters))
 	function := state.environment.Functions[functionName]
 	isBuiltin := false
 
@@ -42,8 +44,6 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 	if function == nil {
 		return state.UnknownFunctionError(functionName)
 	}
-
-	parameters := expr.Children
 
 	// Calling a function with side effects causes our function to have side effects
 	if atomic.LoadInt32(&function.SideEffects) > 0 {

@@ -18,6 +18,32 @@ close(fd) {
 	return syscall(3, fd)
 }
 
+mmap(address, length, protection, flags) {
+	ensure _ > -4096
+	return syscall(9, address, length, protection, flags)
+}
+
+# mmap(address, length, protection, flags, fd, offset) {
+# 	ensure _ > -4096
+# 	return syscall(9, address, length, protection, flags, fd, offset)
+# }
+
+munmap(address, length) {
+	ensure _ > -4096
+	ensure _ <= 0
+	return syscall(11, address, length)
+}
+
+clone(flags, stackPointer) {
+	ensure _ > -4096
+	return syscall(56, flags, stackPointer)
+}
+
+# clone(flags, stackPointer, parentThreadID, childThreadID) {
+# 	ensure _ > -4096
+# 	return syscall(56, flags, stackPointer, parentThreadID, childThreadID)
+# }
+
 exit(code) {
 	require code >= 0
 	require code <= 125

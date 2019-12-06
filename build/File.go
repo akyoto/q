@@ -138,6 +138,7 @@ begin:
 			}
 
 			function.TokenEnd = index
+			function.Name = PolymorphName(function.Name, len(function.Parameters))
 			functions <- function
 			function = nil
 
