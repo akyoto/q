@@ -75,6 +75,12 @@ func (state *State) IfFalseJump(operator string, label string) {
 
 // IfEnd handles the end of if conditions.
 func (state *State) IfEnd() error {
+	err := state.PopScope(false)
+
+	if err != nil {
+		return err
+	}
+
 	label := state.ifState.labels[len(state.ifState.labels)-1]
 	state.ifState.labels = state.ifState.labels[:len(state.ifState.labels)-1]
 	state.assembler.AddLabel(label)

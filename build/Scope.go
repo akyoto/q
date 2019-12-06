@@ -1,6 +1,11 @@
 package build
 
-import "sort"
+import (
+	"sort"
+
+	"github.com/akyoto/q/build/errors"
+	"github.com/akyoto/q/build/token"
+)
 
 // Scope represents a map of variables.
 type Scope map[string]*Variable
@@ -8,6 +13,12 @@ type Scope map[string]*Variable
 // ScopeStack represents a list of scopes.
 type ScopeStack struct {
 	scopes []Scope
+}
+
+// ScopeError represents a scope error.
+type ScopeError struct {
+	Err      error
+	Position token.Position
 }
 
 // Add adds a variable.
@@ -51,24 +62,41 @@ func (stack *ScopeStack) Pop() {
 	stack.scopes = stack.scopes[:len(stack.scopes)-1]
 }
 
-// Unused returns a list of unused variables at the top of the stack.
-func (stack *ScopeStack) Unused() []*Variable {
-	var unused []*Variable
+// Errors returns a list of errors at the top of the stack.
+func (stack *ScopeStack) Errors(isLoop bool) []*ScopeError {
+	var scopeErrors []*ScopeError
 	scope := stack.scopes[len(stack.scopes)-1]
 
 	for _, variable := range scope {
 		if !variable.Used {
-			unused = append(unused, variable)
+			scopeErrors = append(scopeErrors, &ScopeError{
+				Position: variable.Position,
+				Err:      &errors.UnusedVariable{VariableName: variable.Name},
+			})
+		}
+
+		if !variable.LastAssignUsed {
+			scopeErrors = append(scopeErrors, &ScopeError{
+				Position: variable.LastAssign,
+				Err:      &errors.IneffectiveAssignment{VariableName: variable.Name},
+			})
+		}
+
+		if variable.Mutable && variable.LastAssign == variable.Position {
+			scopeErrors = append(scopeErrors, &ScopeError{
+				Position: variable.Position,
+				Err:      &errors.UnmodifiedMutable{VariableName: variable.Name},
+			})
 		}
 	}
 
-	if len(unused) == 0 {
+	if len(scopeErrors) == 0 {
 		return nil
 	}
 
-	sort.Slice(unused, func(a int, b int) bool {
-		return unused[a].Position < unused[b].Position
+	sort.Slice(scopeErrors, func(a int, b int) bool {
+		return scopeErrors[a].Position < scopeErrors[b].Position
 	})
 
-	return unused
+	return scopeErrors
 }

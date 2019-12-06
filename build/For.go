@@ -98,7 +98,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 
 // ForEnd handles the end of for loops.
 func (state *State) ForEnd() error {
-	err := state.PopScope()
+	err := state.PopScope(true)
 
 	if err != nil {
 		return err

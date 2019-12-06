@@ -60,7 +60,11 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 
 	default:
 		variable.LastAssign = state.tokenCursor
-		variable.LastAssignUsed = false
+
+		// Currently we can't prove that the value hasn't been used inside a loop.
+		if !state.InLoop() {
+			variable.LastAssignUsed = false
+		}
 	}
 
 	// Operator

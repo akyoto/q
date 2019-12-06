@@ -60,9 +60,11 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return function.Error(state.tokenCursor, err)
 	}
 
-	// Check for unused variables
-	for _, variable := range scopes.Unused() {
-		return function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
+	// Check for mistakes in variable usage
+	err = state.PopScope(false)
+
+	if err != nil {
+		return err
 	}
 
 	// End with a return statement

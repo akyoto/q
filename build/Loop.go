@@ -20,7 +20,12 @@ func (state *State) LoopStart() error {
 
 // LoopEnd handles the end of loops.
 func (state *State) LoopEnd() error {
-	state.scopes.Pop()
+	err := state.PopScope(true)
+
+	if err != nil {
+		return err
+	}
+
 	label := state.loopState.labels[len(state.loopState.labels)-1]
 	state.assembler.Jump(label)
 	state.loopState.labels = state.loopState.labels[:len(state.loopState.labels)-1]

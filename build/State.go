@@ -162,9 +162,9 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 
 // PopScope pops the last scope on the stack and returns
 // an error if there were any unused variables.
-func (state *State) PopScope() error {
-	for _, variable := range state.scopes.Unused() {
-		return state.function.Error(variable.Position, &errors.UnusedVariable{VariableName: variable.Name})
+func (state *State) PopScope(isLoop bool) error {
+	for _, scopeError := range state.scopes.Errors(isLoop) {
+		return state.function.Error(scopeError.Position, scopeError.Err)
 	}
 
 	state.scopes.Pop()
@@ -176,6 +176,11 @@ func (state *State) PopScope() error {
 func (state *State) UseVariable(variable *Variable) {
 	variable.Used = true
 	variable.LastAssignUsed = true
+}
+
+// InLoop returns true if we're currently in a loop body.
+func (state *State) InLoop() bool {
+	return len(state.forState.stack) > 0 || len(state.loopState.labels) > 0
 }
 
 // Invalid handles invalid instructions.

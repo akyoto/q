@@ -109,6 +109,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Unused variables
 * [x] Unused parameters
 * [x] Unused imports
+* [x] Unmodified mutable variables
 * [x] Ineffective assignments
 * [ ] ...
 
