@@ -39,7 +39,7 @@ func (variable *Variable) ForceSetRegister(register *register.Register) {
 	_ = variable.SetRegister(register)
 }
 
-// String returns the string representation.
+// String returns the name of the variable.
 func (variable *Variable) String() string {
 	return variable.Name
 }

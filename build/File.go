@@ -159,7 +159,7 @@ begin:
 				parameter := tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
-				function.Parameters = append(function.Parameters, &Variable{
+				function.Parameters = append(function.Parameters, &Parameter{
 					Name: parameterName.Text(),
 				})
 
@@ -175,7 +175,7 @@ begin:
 				parameter := tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
-				function.Parameters = append(function.Parameters, &Variable{
+				function.Parameters = append(function.Parameters, &Parameter{
 					Name: parameterName.Text(),
 				})
 

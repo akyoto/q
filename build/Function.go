@@ -11,7 +11,7 @@ import (
 // Function represents a function.
 type Function struct {
 	Name             string
-	Parameters       []*Variable
+	Parameters       []*Parameter
 	ReturnTypes      []spec.Type
 	File             *File
 	TokenStart       token.Position

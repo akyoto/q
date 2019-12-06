@@ -11,7 +11,7 @@ const (
 var BuiltinFunctions = map[string]*Function{
 	BuiltinPrint: {
 		Name: BuiltinPrint,
-		Parameters: []*Variable{
+		Parameters: []*Parameter{
 			{
 				Name: "text",
 				Type: spec.Types["Text"],
@@ -22,7 +22,7 @@ var BuiltinFunctions = map[string]*Function{
 	},
 	BuiltinSyscall: {
 		Name: BuiltinSyscall,
-		Parameters: []*Variable{
+		Parameters: []*Parameter{
 			{Name: "syscall number"},
 			{Name: "param1"},
 			{Name: "param2"},
