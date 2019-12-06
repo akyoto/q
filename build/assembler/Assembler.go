@@ -65,15 +65,6 @@ func (a *Assembler) lastInstruction() instruction {
 	return a.Instructions[len(a.Instructions)-1]
 }
 
-// removeLastInstruction removes the last added instruction.
-func (a *Assembler) removeLastInstruction() {
-	if len(a.Instructions) == 0 {
-		return
-	}
-
-	a.Instructions = a.Instructions[:len(a.Instructions)-1]
-}
-
 // do adds an instruction without any operands.
 func (a *Assembler) do(mnemonic string) {
 	a.Instructions = append(a.Instructions, &standalone{mnemonic, 0})

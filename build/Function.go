@@ -46,6 +46,13 @@ func (function *Function) CanInline() bool {
 	return len(function.assembler.Instructions) <= 4
 }
 
+// InlineInto adds the assembler instructions to another function.
+// It excludes the starting label and the last return statement.
+func (function *Function) InlineInto(other *Function) {
+	inlinedInstructions := function.assembler.Instructions[1 : len(function.assembler.Instructions)-1]
+	other.assembler.Instructions = append(other.assembler.Instructions, inlinedInstructions...)
+}
+
 // Errorf creates a formatted error inside the function.
 func (function *Function) Errorf(position token.Position, message string, args ...interface{}) error {
 	return function.Error(position, fmt.Errorf(message, args...))
