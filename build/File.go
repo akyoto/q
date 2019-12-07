@@ -25,11 +25,9 @@ type File struct {
 func NewFile(inputFile string) *File {
 	file := &File{
 		path:    inputFile,
-		tokens:  make([]token.Token, 1, 128),
 		imports: make(map[string]*Import),
 	}
 
-	file.tokens[0].Kind = token.NewLine
 	return file
 }
 
@@ -46,7 +44,12 @@ func (file *File) Tokenize() error {
 		return err
 	}
 
-	file.tokens, processed = token.Tokenize(file.contents, file.tokens)
+	// Dividing the file length by 2 is a good approximation
+	// of the number of tokens in the file.
+	tokens := make([]token.Token, 1, len(file.contents)/2)
+	tokens[0].Kind = token.NewLine
+
+	file.tokens, processed = token.Tokenize(file.contents, tokens)
 
 	if processed != len(file.contents) {
 		remaining := file.contents[processed:]
