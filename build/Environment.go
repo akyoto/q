@@ -9,16 +9,26 @@ import (
 
 // Environment represents the global state.
 type Environment struct {
-	Packages  map[string]bool
-	Functions map[string]*Function
+	Packages        map[string]bool
+	Functions       map[string]*Function
+	StandardLibrary string
 }
 
 // NewEnvironment creates a new build environment.
-func NewEnvironment() *Environment {
-	return &Environment{
-		Packages:  map[string]bool{},
-		Functions: map[string]*Function{},
+func NewEnvironment() (*Environment, error) {
+	stdLib, err := FindStandardLibrary()
+
+	if err != nil {
+		return nil, err
 	}
+
+	environment := &Environment{
+		Packages:        map[string]bool{},
+		Functions:       map[string]*Function{},
+		StandardLibrary: stdLib,
+	}
+
+	return environment, nil
 }
 
 // ImportDirectory imports a directory to the environment.
@@ -30,7 +40,7 @@ func (env *Environment) ImportDirectory(directory string, prefix string) error {
 	}
 
 	files, fileSystemErrors := FindSourceFiles(directory)
-	functions, imports, tokenizeErrors := FindFunctions(files)
+	functions, imports, tokenizeErrors := FindFunctions(files, env.StandardLibrary)
 
 	for {
 		select {

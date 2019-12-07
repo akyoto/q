@@ -63,5 +63,11 @@ func syntaxCheck(inputFile string) error {
 		CallCount:  1,
 	}
 
-	return build.Compile(function, build.NewEnvironment(), false, false)
+	env, err := build.NewEnvironment()
+
+	if err != nil {
+		return err
+	}
+
+	return build.Compile(function, env, false, false)
 }

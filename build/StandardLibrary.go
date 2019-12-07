@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 )
 
-// stdLibPath returns the path to the standard library.
-func stdLibPath() (string, error) {
+// FindStandardLibrary returns the path to the standard library.
+func FindStandardLibrary() (string, error) {
 	compiler, err := os.Executable()
 
 	if err != nil {

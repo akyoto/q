@@ -13,12 +13,13 @@ import (
 
 // File represents a single source file.
 type File struct {
-	contents      []byte
-	tokens        []token.Token
-	path          string
-	functionCount int64
-	imports       map[string]*Import
-	verbose       bool
+	contents        []byte
+	tokens          []token.Token
+	path            string
+	functionCount   int64
+	imports         map[string]*Import
+	standardLibrary string
+	verbose         bool
 }
 
 // NewFile creates a new compiler for a single file.
@@ -199,15 +200,9 @@ begin:
 
 		case token.Keyword:
 			if t.Text() == "import" {
-				stdLib, err := stdLibPath()
-
-				if err != nil {
-					return err
-				}
-
 				position := index
 				fullImportPath := strings.Builder{}
-				fullImportPath.WriteString(stdLib)
+				fullImportPath.WriteString(file.standardLibrary)
 				fullImportPath.WriteByte('/')
 				importPath := strings.Builder{}
 				index++

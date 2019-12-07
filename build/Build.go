@@ -31,13 +31,18 @@ func New(directory string) (*Build, error) {
 	}
 
 	executableName := filepath.Base(directory)
+	environment, err := NewEnvironment()
+
+	if err != nil {
+		return nil, err
+	}
 
 	build := &Build{
 		Path:            directory,
 		ExecutableName:  executableName,
 		ExecutablePath:  filepath.Join(directory, executableName),
 		WriteExecutable: true,
-		Environment:     NewEnvironment(),
+		Environment:     environment,
 	}
 
 	return build, nil
