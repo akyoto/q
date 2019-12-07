@@ -11,7 +11,8 @@ func BenchmarkCompiler(b *testing.B) {
 		"empty",
 		"calc",
 		"calls",
-		"single-import",
+		"import-1",
+		"import-2",
 	}
 
 	for _, directory := range directories {

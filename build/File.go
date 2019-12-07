@@ -25,7 +25,7 @@ type File struct {
 func NewFile(inputFile string) *File {
 	file := &File{
 		path:    inputFile,
-		tokens:  make([]token.Token, 1, 8192),
+		tokens:  make([]token.Token, 1, 128),
 		imports: make(map[string]*Import),
 	}
 
