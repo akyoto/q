@@ -11,6 +11,7 @@ type Variable struct {
 	Name           string
 	Type           *spec.Type
 	AliveUntil     token.Position
+	KeepAlive      int
 	Position       token.Position
 	LastAssign     token.Position
 	LastAssignUsed bool

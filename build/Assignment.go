@@ -56,6 +56,10 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
 	}
 
+	if isNewVariable {
+		defer state.scopes.Add(variable)
+	}
+
 	// Operator
 	cursor++
 	state.tokenCursor++
@@ -98,7 +102,6 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		variable.LastAssignUsed = false
 	}
 
-	state.scopes.Add(variable)
 	state.tokenCursor += len(value)
 	return variable, nil
 }

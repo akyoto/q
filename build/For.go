@@ -16,10 +16,11 @@ type ForState struct {
 
 // ForLoop represents a for loop.
 type ForLoop struct {
-	labelStart string
-	labelEnd   string
-	counter    *register.Register
-	limit      *register.Register
+	labelStart    string
+	labelEnd      string
+	counter       *register.Register
+	limit         *register.Register
+	limitVariable *Variable
 }
 
 // ForStart handles the start of for loops.
@@ -84,15 +85,24 @@ func (state *State) ForStart(tokens []token.Token) error {
 		return err
 	}
 
-	state.assembler.JumpIfEqual(labelEnd)
-
-	state.forState.stack = append(state.forState.stack, ForLoop{
+	forLoop := ForLoop{
 		labelStart: labelStart,
 		labelEnd:   labelEnd,
 		counter:    register,
 		limit:      temporary,
-	})
+	}
 
+	// If we use an existing variable without a temporary register,
+	// extend the variable lifetime until the end of the for loop.
+	if temporary == nil && len(upperLimit) == 1 && upperLimit[0].Kind == token.Identifier {
+		variableName := upperLimit[0].Text()
+		variable := state.scopes.Get(variableName)
+		variable.KeepAlive++
+		forLoop.limitVariable = variable
+	}
+
+	state.assembler.JumpIfEqual(labelEnd)
+	state.forState.stack = append(state.forState.stack, forLoop)
 	return nil
 }
 
@@ -114,6 +124,14 @@ func (state *State) ForEnd() error {
 
 	if loop.limit != nil {
 		loop.limit.Free()
+	}
+
+	if loop.limitVariable != nil {
+		loop.limitVariable.KeepAlive--
+
+		if loop.limitVariable.AliveUntil < state.tokenCursor {
+			loop.limitVariable.AliveUntil = state.tokenCursor
+		}
 	}
 
 	return nil

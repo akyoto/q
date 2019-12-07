@@ -36,8 +36,12 @@ func (state *State) KillVariables(from int, until int) {
 			return
 		}
 
-		variable.Register().Free()
+		if variable.KeepAlive > 0 {
+			return
+		}
+
 		// fmt.Println(variable, "died at", state.tokens[:variable.AliveUntil+1])
+		variable.Register().Free()
 		delete(state.identifierLifeTime, variable.Name)
 	})
 }
