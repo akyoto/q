@@ -6,6 +6,7 @@ import "github.com/akyoto/q/build/token"
 type Import struct {
 	Path     string
 	FullPath string
+	BaseName string
 	Position token.Position
 	Used     int32
 }

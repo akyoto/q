@@ -95,7 +95,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 
 			if nextToken.Kind != token.Operator && nextToken.Kind != token.GroupStart {
 				remaining := tokens[i+1:]
-				newLinePos := token.Index(remaining, token.NewLine)
+				newLinePos := token.IndexKind(remaining, token.NewLine)
 
 				if newLinePos != -1 && remaining[newLinePos-1].Kind == token.GroupEnd {
 					return nil, &Error{fmt.Sprintf("Missing opening bracket '(' after '%s'", t.Text()), i, true}

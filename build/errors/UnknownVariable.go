@@ -4,9 +4,9 @@ import "fmt"
 
 // UnknownVariable represents unknown variables.
 type UnknownVariable struct {
-	VariableName string
+	Name string
 }
 
 func (err *UnknownVariable) Error() string {
-	return fmt.Sprintf("Unknown variable: '%s'", err.VariableName)
+	return fmt.Sprintf("Unknown variable: '%s'", err.Name)
 }

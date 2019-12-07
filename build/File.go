@@ -200,6 +200,7 @@ begin:
 
 		case token.Keyword:
 			if t.Text() == "import" {
+				var baseName string
 				position := index
 				fullImportPath := strings.Builder{}
 				fullImportPath.WriteString(file.standardLibrary)
@@ -212,8 +213,9 @@ begin:
 
 					switch t.Kind {
 					case token.Identifier:
-						fullImportPath.WriteString(t.Text())
-						importPath.WriteString(t.Text())
+						baseName = t.Text()
+						fullImportPath.WriteString(baseName)
+						importPath.WriteString(baseName)
 
 					case token.Operator:
 						if t.Text() != "." {
@@ -227,11 +229,18 @@ begin:
 						imp := &Import{
 							Path:     importPath.String(),
 							FullPath: fullImportPath.String(),
+							BaseName: baseName,
 							Position: position,
 							Used:     0,
 						}
 
-						file.imports[imp.Path] = imp
+						otherImport, exists := file.imports[baseName]
+
+						if exists {
+							return NewError(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}, file.path, tokens[:index+1], function)
+						}
+
+						file.imports[baseName] = imp
 						imports <- imp
 						index++
 						goto begin

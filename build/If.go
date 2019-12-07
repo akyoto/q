@@ -31,7 +31,7 @@ func (state *State) Condition(condition []token.Token, elseLabel string) error {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
-		return &errors.UnknownVariable{VariableName: variableName}
+		return &errors.UnknownVariable{Name: variableName}
 	}
 
 	state.UseVariable(variable)

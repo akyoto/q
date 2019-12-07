@@ -30,6 +30,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 
 	variableName := left.Text()
 	variable := state.scopes.Get(variableName)
+	isNewVariable := false
 
 	switch {
 	case variable == nil:
@@ -49,22 +50,10 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		}
 
 		variable.ForceSetRegister(register)
-		state.scopes.Add(variable)
+		isNewVariable = true
 
 	case !variable.Mutable:
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
-
-	case !variable.LastAssignUsed:
-		state.tokenCursor = variable.LastAssign
-		return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}
-
-	default:
-		variable.LastAssign = state.tokenCursor
-
-		// Currently we can't prove that the value hasn't been used inside a loop.
-		if !state.InLoop() {
-			variable.LastAssignUsed = false
-		}
 	}
 
 	// Operator
@@ -97,6 +86,19 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return variable, err
 	}
 
+	if !isNewVariable && !variable.LastAssignUsed {
+		state.tokenCursor = variable.LastAssign
+		return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}
+	}
+
+	variable.LastAssign = state.tokenCursor
+
+	// Currently we can't prove that the value hasn't been used inside a loop.
+	if !state.InLoop() {
+		variable.LastAssignUsed = false
+	}
+
+	state.scopes.Add(variable)
 	state.tokenCursor += len(value)
 	return variable, nil
 }

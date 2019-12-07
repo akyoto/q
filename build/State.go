@@ -117,7 +117,7 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 			variable := state.scopes.Get(variableName)
 
 			if variable == nil {
-				return nil, &errors.UnknownVariable{VariableName: variableName}
+				return nil, &errors.UnknownVariable{Name: variableName}
 			}
 
 			state.UseVariable(variable)
@@ -247,14 +247,42 @@ func (state *State) UnknownFunctionError(functionName string) error {
 		return aSimilarity > bSimilarity
 	})
 
-	if similarity.JaroWinkler(functionName, knownFunctions[0]) > 0.9 {
-		return &errors.UnknownFunction{
-			FunctionName: functionName,
-			CorrectName:  knownFunctions[0],
-		}
+	if similarity.JaroWinkler(functionName, knownFunctions[0]) < 0.9 {
+		return &errors.UnknownFunction{Name: functionName}
 	}
 
 	return &errors.UnknownFunction{
-		FunctionName: functionName,
+		Name:        functionName,
+		CorrectName: knownFunctions[0],
+	}
+}
+
+// UnknownPackageError produces an unknown package error
+// and tries to guess which package the user was trying to type.
+func (state *State) UnknownPackageError(pkgName string) error {
+	if len(state.function.File.imports) == 0 {
+		return &errors.UnknownPackage{Name: pkgName}
+	}
+
+	knownPackages := make([]string, 0, len(state.function.File.imports))
+
+	for imp := range state.function.File.imports {
+		knownPackages = append(knownPackages, imp)
+	}
+
+	// Suggest a package name based on the similarity to known functions
+	sort.Slice(knownPackages, func(a, b int) bool {
+		aSimilarity := similarity.JaroWinkler(pkgName, knownPackages[a])
+		bSimilarity := similarity.JaroWinkler(pkgName, knownPackages[b])
+		return aSimilarity > bSimilarity
+	})
+
+	if similarity.JaroWinkler(pkgName, knownPackages[0]) < 0.9 {
+		return &errors.UnknownPackage{Name: pkgName}
+	}
+
+	return &errors.UnknownPackage{
+		Name:        pkgName,
+		CorrectName: knownPackages[0],
 	}
 }

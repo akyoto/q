@@ -2,7 +2,6 @@ package build
 
 import (
 	"os"
-	"path/filepath"
 	"sync"
 	"sync/atomic"
 )
@@ -64,7 +63,7 @@ func (env *Environment) ImportDirectory(directory string, prefix string) error {
 			}
 
 			env.Packages[imp.Path] = true
-			err := env.ImportDirectory(imp.FullPath, filepath.Base(imp.FullPath)+".")
+			err := env.ImportDirectory(imp.FullPath, imp.Path+".")
 
 			if err != nil {
 				return err

@@ -28,13 +28,13 @@ func (state *State) ForStart(tokens []token.Token) error {
 	state.scopes.Push()
 	expression := tokens[1:]
 
-	rangePos := token.Index(expression, token.Range)
+	rangePos := token.IndexKind(expression, token.Range)
 
 	if rangePos == -1 {
 		return errors.MissingRange
 	}
 
-	operatorPos := token.Index(expression, token.Operator)
+	operatorPos := token.IndexKind(expression, token.Operator)
 	var register *register.Register
 
 	if operatorPos == -1 {

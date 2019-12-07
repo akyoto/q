@@ -8,6 +8,7 @@ import (
 	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/stringutils/unsafe"
 )
 
 // EvaluateTokens evaluates the token expression and stores the result in a register.
@@ -174,7 +175,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		variable := state.scopes.Get(variableName)
 
 		if variable == nil {
-			return fmt.Errorf("Unknown variable %s", variableName)
+			return &errors.UnknownVariable{Name: variableName}
 		}
 
 		state.UseVariable(variable)
@@ -349,11 +350,11 @@ func (state *State) ResolveAccessor(root *expression.Expression) error {
 	imp := state.function.File.imports[pkgName]
 
 	if imp == nil {
-		return fmt.Errorf("Package '%s' has not been imported", pkgName)
+		return state.UnknownPackageError(pkgName)
 	}
 
 	atomic.AddInt32(&imp.Used, 1)
-	newName := append(pkg.Token.Bytes, '.')
+	newName := append(unsafe.StringToBytes(imp.Path), '.')
 	newName = append(newName, root.Children[1].Token.Bytes...)
 	root.Children[1].Token.Bytes = newName
 	root.Replace(root.Children[1])
