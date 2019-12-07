@@ -6,8 +6,3 @@ writeFile(fileName, contents, length) {
 	sys.write(file, contents, length)
 	sys.close(file)
 }
-
-deleteFile(fileName) {
-	#require fileName != ""
-	sys.unlink(fileName)
-}

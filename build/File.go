@@ -51,6 +51,12 @@ func (file *File) Tokenize() error {
 
 	file.tokens, processed = token.Tokenize(file.contents, tokens)
 
+	// Warn about missing final newline.
+	if file.contents[len(file.contents)-1] != '\n' {
+		return NewError(errors.MissingEndingNewline, file.path, file.tokens, nil)
+	}
+
+	// If we didn't process everything, there's some error in the tokenization.
 	if processed != len(file.contents) {
 		remaining := file.contents[processed:]
 		until := len(remaining)
@@ -79,6 +85,7 @@ func (file *File) Scan(imports chan<- *Import, functions chan<- *Function) error
 		groupLevel                = 0
 		blockLevel                = 0
 		tokens                    = file.tokens
+		newlines                  = 0
 		index      token.Position = 0
 		t          token.Token
 	)
@@ -86,6 +93,10 @@ func (file *File) Scan(imports chan<- *Import, functions chan<- *Function) error
 begin:
 	for ; index < len(tokens); index++ {
 		t = tokens[index]
+
+		if t.Kind != token.NewLine {
+			newlines = 0
+		}
 
 		switch t.Kind {
 		case token.Identifier:
@@ -238,7 +249,11 @@ begin:
 			}
 
 		case token.NewLine:
-			// OK.
+			newlines++
+
+			if newlines == 3 {
+				return NewError(errors.UnnecessaryNewlines, file.path, tokens[:index+1], function)
+			}
 
 		case token.Comment:
 			// OK.

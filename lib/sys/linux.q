@@ -36,11 +36,6 @@ mmap(address, length, protection, flags) {
 	return syscall(9, address, length, protection, flags)
 }
 
-# mmap(address, length, protection, flags, fd, offset) {
-# 	ensure _ > -4096
-# 	return syscall(9, address, length, protection, flags, fd, offset)
-# }
-
 munmap(address, length) {
 	require address != 0
 	require length > 0
@@ -55,11 +50,6 @@ clone(flags, stackPointer) {
 
 	return syscall(56, flags, stackPointer)
 }
-
-# clone(flags, stackPointer, parentThreadID, childThreadID) {
-# 	ensure _ > -4096
-# 	return syscall(56, flags, stackPointer, parentThreadID, childThreadID)
-# }
 
 exit(code) {
 	require code >= 0

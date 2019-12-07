@@ -8,7 +8,3 @@ create() {
 	# *start = threadFunc
 	sys.clone(stack, 2147585792)
 }
-
-threadFunc() {
-
-}
