@@ -80,6 +80,10 @@ func (a *Assembler) MoveRegisterNumber(destination *register.Register, number ui
 	a.doRegisterNumber(MOV, destination, number)
 }
 
+func (a *Assembler) MoveMemoryNumber(destination *register.Register, byteCount byte, number uint64) {
+	a.doMemoryNumber(MOV, destination, byteCount, number)
+}
+
 func (a *Assembler) MoveRegisterAddress(destination *register.Register, address uint32) {
 	a.doRegisterAddress(MOV, destination, address)
 }

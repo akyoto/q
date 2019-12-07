@@ -5,6 +5,7 @@ import "github.com/akyoto/q/build/spec"
 const (
 	BuiltinSyscall = "syscall"
 	BuiltinPrint   = "print"
+	BuiltinMemnum  = "memnum"
 )
 
 // BuiltinFunctions defines the builtin functions.
@@ -15,6 +16,25 @@ var BuiltinFunctions = map[string]*Function{
 			{
 				Name: "text",
 				Type: spec.Types["Text"],
+			},
+		},
+		IsBuiltin:   true,
+		SideEffects: 1,
+	},
+	BuiltinMemnum: {
+		Name: BuiltinMemnum,
+		Parameters: []*Parameter{
+			{
+				Name: "ptr",
+				Type: spec.Types["pointer"],
+			},
+			{
+				Name: "value",
+				Type: spec.Types["int"],
+			},
+			{
+				Name: "byteCount",
+				Type: spec.Types["int"],
 			},
 		},
 		IsBuiltin:   true,

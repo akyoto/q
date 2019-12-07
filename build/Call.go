@@ -2,6 +2,7 @@ package build
 
 import (
 	"fmt"
+	"strconv"
 	"sync/atomic"
 
 	"github.com/akyoto/asm/syscall"
@@ -59,16 +60,31 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 		}
 	}
 
-	// print is a little special
-	if isBuiltin && functionName == "print" {
-		parameter := parameters[0]
+	if isBuiltin {
+		switch functionName {
+		case BuiltinPrint:
+			parameter := parameters[0]
 
-		if parameter.Token.Kind != token.Text {
-			return fmt.Errorf("'%s' requires a text parameter instead of '%s'", function.Name, parameter.Token.Text())
+			if parameter.Token.Kind != token.Text {
+				return fmt.Errorf("'%s' requires a text parameter instead of '%s'", function.Name, parameter.Token.Text())
+			}
+
+			state.printLn(parameter.Token.Text())
+			return nil
+
+		case BuiltinMemnum:
+			variableName := parameters[0].Token.Text()
+			valueString := parameters[1].Token.Text()
+			byteCountString := parameters[2].Token.Text()
+
+			variable := state.scopes.Get(variableName)
+			value, _ := strconv.Atoi(valueString)
+			byteCount, _ := strconv.Atoi(byteCountString)
+
+			state.UseVariable(variable)
+			state.assembler.MoveMemoryNumber(variable.Register(), byte(byteCount), uint64(value))
+			return nil
 		}
-
-		state.printLn(parameter.Token.Text())
-		return nil
 	}
 
 	// Call the function
