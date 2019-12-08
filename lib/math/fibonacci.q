@@ -1,4 +1,4 @@
-fibonacci(n Int) Int {
+fibonacci(n Int) -> Int {
 	require n >= 0
 	ensure _ >= 0
 

@@ -1,4 +1,4 @@
-f1() Int {
+f1() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -6,7 +6,7 @@ f1() Int {
 	return a + b + c + d
 }
 
-f2() Int {
+f2() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -14,7 +14,7 @@ f2() Int {
 	return a + b + c + d
 }
 
-f3() Int {
+f3() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -22,7 +22,7 @@ f3() Int {
 	return a + b + c + d
 }
 
-f4() Int {
+f4() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -30,7 +30,7 @@ f4() Int {
 	return a + b + c + d
 }
 
-f5() Int {
+f5() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -38,7 +38,7 @@ f5() Int {
 	return a + b + c + d
 }
 
-f6() Int {
+f6() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -46,7 +46,7 @@ f6() Int {
 	return a + b + c + d
 }
 
-f7() Int {
+f7() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -54,7 +54,7 @@ f7() Int {
 	return a + b + c + d
 }
 
-f8() Int {
+f8() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -62,7 +62,7 @@ f8() Int {
 	return a + b + c + d
 }
 
-f9() Int {
+f9() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -70,7 +70,7 @@ f9() Int {
 	return a + b + c + d
 }
 
-f10() Int {
+f10() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -78,7 +78,7 @@ f10() Int {
 	return a + b + c + d
 }
 
-f11() Int {
+f11() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -86,7 +86,7 @@ f11() Int {
 	return a + b + c + d
 }
 
-f12() Int {
+f12() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -94,7 +94,7 @@ f12() Int {
 	return a + b + c + d
 }
 
-f13() Int {
+f13() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -102,7 +102,7 @@ f13() Int {
 	return a + b + c + d
 }
 
-f14() Int {
+f14() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -110,7 +110,7 @@ f14() Int {
 	return a + b + c + d
 }
 
-f15() Int {
+f15() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -118,7 +118,7 @@ f15() Int {
 	return a + b + c + d
 }
 
-f16() Int {
+f16() -> Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)

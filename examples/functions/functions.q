@@ -24,22 +24,22 @@ main() {
 }
 
 # add adds two numbers.
-add(a Int, b Int) Int {
+add(a Int, b Int) -> Int {
 	return a + b
 }
 
 # sub subtracts two numbers.
-sub(a Int, b Int) Int {
+sub(a Int, b Int) -> Int {
 	return a - b
 }
 
 # mul multiplies two numbers.
-mul(a Int, b Int) Int {
+mul(a Int, b Int) -> Int {
 	return a * b
 }
 
 # div divides two numbers.
-div(a Int, b Int) Int {
+div(a Int, b Int) -> Int {
 	return a / b
 }
 

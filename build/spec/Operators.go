@@ -15,29 +15,33 @@ var Operators = map[string]*Operator{
 	">>=": {">>=", 2, true},
 	"<<=": {"<<=", 2, true},
 
+	// Send and receive
+	"->": {"->", 3, true},
+	"<-": {"->", 3, true},
+
 	// Logical OR
-	"||": {"||", 3, true},
+	"||": {"||", 4, true},
 
 	// Logical AND
-	"&&": {"&&", 4, true},
+	"&&": {"&&", 5, true},
 
 	// Comparison
-	"==": {"==", 5, false},
-	"!=": {"!=", 5, false},
-	"<=": {"<=", 5, true},
-	">=": {">=", 5, true},
+	"==": {"==", 6, false},
+	"!=": {"!=", 6, false},
+	"<=": {"<=", 6, true},
+	">=": {">=", 6, true},
 
-	"<": {"<", 6, true},
-	">": {">", 6, true},
+	"<": {"<", 7, true},
+	">": {">", 7, true},
 
 	// Arithmetic operations
-	"+": {"+", 7, false},
-	"-": {"-", 7, false},
+	"+": {"+", 8, false},
+	"-": {"-", 8, false},
 
-	"*": {"*", 8, false},
-	"/": {"/", 8, true},
-	"%": {"%", 8, true},
+	"*": {"*", 9, false},
+	"/": {"/", 9, true},
+	"%": {"%", 9, true},
 
 	// Package and field access
-	".": {".", 9, true},
+	".": {".", 10, true},
 }
