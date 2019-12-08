@@ -31,18 +31,6 @@ begin:
 		switch t.Kind {
 		case token.Identifier:
 			if function != nil {
-				// Return type
-				if groupLevel == 0 && function.TokenStart == 0 {
-					typeName := t.Text()
-					typ := file.environment.Types[typeName]
-
-					if typ == nil {
-						return NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index+1], function)
-					}
-
-					function.ReturnTypes = append(function.ReturnTypes, typ)
-				}
-
 				continue
 			}
 
@@ -208,6 +196,28 @@ begin:
 			if function == nil {
 				return NewError(errors.TopLevel, file.path, tokens[:index+1], function)
 			}
+
+		case token.Operator:
+			if groupLevel != 0 || function == nil || function.TokenStart != 0 || t.Text() != "->" {
+				continue
+			}
+
+			// Return type
+			index++
+			t = tokens[index]
+
+			if t.Kind != token.Identifier {
+				return NewError(errors.MissingReturnType, file.path, tokens[:index+1], function)
+			}
+
+			typeName := t.Text()
+			typ := file.environment.Types[typeName]
+
+			if typ == nil {
+				return NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index+1], function)
+			}
+
+			function.ReturnTypes = append(function.ReturnTypes, typ)
 
 		case token.NewLine:
 			newlines++

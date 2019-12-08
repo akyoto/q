@@ -28,6 +28,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return nil, errors.ExpectedVariable
 	}
 
+	assignPos := state.tokenCursor
 	variableName := left.Text()
 	variable := state.scopes.Get(variableName)
 	isNewVariable := false
@@ -42,8 +43,8 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 
 		variable = &Variable{
 			Name:           variableName,
-			Position:       state.tokenCursor,
-			LastAssign:     state.tokenCursor,
+			Position:       assignPos,
+			LastAssign:     assignPos,
 			LastAssignUsed: false,
 			Mutable:        mutable,
 			AliveUntil:     state.identifierLifeTime[variableName],
@@ -90,12 +91,14 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	}
 
 	// Check for ineffective assignmentss
-	if !isNewVariable && !variable.LastAssignUsed {
-		state.tokenCursor = variable.LastAssign
-		return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}
-	}
+	if !isNewVariable {
+		if !variable.LastAssignUsed {
+			state.tokenCursor = variable.LastAssign
+			return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}
+		}
 
-	variable.LastAssign = state.tokenCursor
+		variable.LastAssign = assignPos
+	}
 
 	// Currently we can't prove that the value hasn't been used inside a loop.
 	if !state.InLoop() {

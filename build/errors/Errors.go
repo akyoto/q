@@ -15,9 +15,11 @@ var (
 	MissingRange                = &Base{"Missing range expression in for loop", false}
 	MissingRangeStart           = &Base{"Missing starting value in range expression", false}
 	MissingRangeLimit           = &Base{"Missing upper limit in range expression", true}
+	MissingReturnType           = &Base{"Missing function return type", false}
 	MissingType                 = &Base{"Missing type", false}
 	NotImplemented              = &Base{"Not implemented", false}
 	ParameterOpeningBracket     = &Base{"Missing opening bracket '(' after the function name", false}
+	ReturnWithoutFunctionType   = &Base{"Returning a value in a function without a return type", false}
 	TopLevel                    = &Base{"Only function definitions are allowed at the top level", false}
 	UnnecessaryNewlines         = &Base{"More than 2 successive empty lines", false}
 )

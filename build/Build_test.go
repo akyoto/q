@@ -46,15 +46,17 @@ func TestBuildErrors(t *testing.T) {
 		File          string
 		ExpectedError error
 	}{
-		{"testdata/missing-opening-bracket.q", &errors.MissingCharacter{Character: "("}},
-		{"testdata/missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
-		{"testdata/unused-variable.q", &errors.UnusedVariable{VariableName: "a"}},
-		{"testdata/unknown-function.q", &errors.UnknownFunction{Name: "z"}},
-		{"testdata/unknown-function-suggestion.q", &errors.UnknownFunction{Name: "prin", CorrectName: "print"}},
-		{"testdata/unknown-expression.q", &errors.UnknownExpression{Expression: "\")"}},
 		{"testdata/for-missing-upper-limit.q", errors.MissingRangeLimit},
 		{"testdata/for-missing-range.q", errors.MissingRange},
 		{"testdata/for-missing-start-value.q", errors.MissingRangeStart},
+		{"testdata/ineffective-assignment.q", &errors.IneffectiveAssignment{VariableName: "a"}},
+		{"testdata/missing-opening-bracket.q", &errors.MissingCharacter{Character: "("}},
+		{"testdata/missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
+		{"testdata/unused-variable.q", &errors.UnusedVariable{VariableName: "a"}},
+		{"testdata/unused-mutable.q", &errors.UnmodifiedMutable{VariableName: "a"}},
+		{"testdata/unknown-function.q", &errors.UnknownFunction{Name: "z"}},
+		{"testdata/unknown-function-suggestion.q", &errors.UnknownFunction{Name: "prin", CorrectName: "print"}},
+		{"testdata/unknown-expression.q", &errors.UnknownExpression{Expression: "\")"}},
 	}
 
 	for _, test := range tests {
