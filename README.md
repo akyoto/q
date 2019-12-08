@@ -89,6 +89,7 @@ This will produce the `q` compiler in your current directory.
 * [ ] Lock-free data structures
 * [ ] Multiple return values
 * [ ] Expression optimization
+* [ ] Rewrite compiler in Q
 * [ ] ...
 
 ### Operators
@@ -111,6 +112,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Unused parameters
 * [x] Unused imports
 * [x] Unmodified mutable variables
+* [x] Unnecessary newlines
 * [x] Ineffective assignments
 * [ ] ...
 
