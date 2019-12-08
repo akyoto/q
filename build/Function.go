@@ -11,7 +11,7 @@ import (
 type Function struct {
 	Name             string
 	Parameters       []*Parameter
-	ReturnTypes      []Type
+	ReturnTypes      []*Type
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position

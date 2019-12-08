@@ -78,7 +78,6 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		if sub.IsFunctionCall {
 			// Allocate a temporary register if necessary
 			if sub.Register == nil && sub.Parent != nil {
-				fmt.Println("TEMPORARY", sub.Token, sub.Parent.Token)
 				sub.Register = state.registers.General.FindFree()
 
 				if sub.Register == nil {

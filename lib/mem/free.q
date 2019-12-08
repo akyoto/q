@@ -1,5 +1,5 @@
 import sys
 
-free(pointer, length) {
+free(pointer Pointer, length Int) Int {
 	return sys.munmap(pointer, length)
 }

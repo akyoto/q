@@ -26,13 +26,21 @@ func NewEnvironment() (*Environment, error) {
 		Packages:  map[string]bool{},
 		Functions: map[string]*Function{},
 		Types: map[string]*Type{
-			"int64": {Name: "int64", Size: 8},
-			"int32": {Name: "int32", Size: 4},
-			"int16": {Name: "int16", Size: 2},
-			"int8":  {Name: "int8", Size: 1},
+			"Int64":   {Name: "Int64", Size: 8},
+			"Int32":   {Name: "Int32", Size: 4},
+			"Int16":   {Name: "Int16", Size: 2},
+			"Int8":    {Name: "Int8", Size: 1},
+			"Float64": {Name: "Float64", Size: 8},
+			"Float32": {Name: "Float32", Size: 4},
 		},
 		StandardLibrary: stdLib,
 	}
+
+	environment.Types["Int"] = environment.Types["Int64"]
+	environment.Types["Float"] = environment.Types["Float64"]
+	environment.Types["Byte"] = environment.Types["Int8"]
+	environment.Types["Pointer"] = environment.Types["Int64"]
+	environment.Types["Text"] = environment.Types["Pointer"]
 
 	return environment, nil
 }
@@ -46,7 +54,7 @@ func (env *Environment) ImportDirectory(directory string, prefix string) error {
 	}
 
 	files, fileSystemErrors := FindSourceFiles(directory)
-	functions, imports, tokenizeErrors := FindFunctions(files, env.StandardLibrary)
+	functions, imports, tokenizeErrors := FindFunctions(files, env)
 
 	for {
 		select {

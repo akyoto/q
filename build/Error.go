@@ -22,9 +22,13 @@ type Error struct {
 // The error message is clickable in popular editors and leads you
 // directly to the faulty file at the given line and position.
 func NewError(err error, path string, tokens []token.Token, function *Function) *Error {
+	if len(tokens) == 0 {
+		return &Error{path, 1, 1, function, err}
+	}
+
 	var (
-		lineCount = 0
-		lineStart = 0
+		lineCount = 1
+		lineStart = -1
 	)
 
 	for i, oldToken := range tokens {

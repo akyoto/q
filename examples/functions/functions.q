@@ -24,28 +24,28 @@ main() {
 }
 
 # add adds two numbers.
-add(a, b) {
+add(a Int, b Int) Int {
 	return a + b
 }
 
 # sub subtracts two numbers.
-sub(a, b) {
+sub(a Int, b Int) Int {
 	return a - b
 }
 
 # mul multiplies two numbers.
-mul(a, b) {
+mul(a Int, b Int) Int {
 	return a * b
 }
 
 # div divides two numbers.
-div(a, b) {
+div(a Int, b Int) Int {
 	return a / b
 }
 
 # show shows a number on the console.
 # Printing integers to the console isn't implemented yet,
 # so we need to use some hacks to check the contents of integers.
-show(num) {
+show(num Int) {
 	sys.write(1, "123456789\n", num)
 }

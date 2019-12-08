@@ -1,6 +1,6 @@
 import sys
 
-deleteFile(fileName) {
+deleteFile(fileName Text) {
 	#require fileName != ""
 	sys.unlink(fileName)
 }

@@ -5,7 +5,7 @@ import (
 )
 
 // FindFunctions scans the files for functions.
-func FindFunctions(files <-chan *File, stdLib string) (<-chan *Function, <-chan *Import, <-chan error) {
+func FindFunctions(files <-chan *File, env *Environment) (<-chan *Function, <-chan *Import, <-chan error) {
 	functions := make(chan *Function, 16)
 	imports := make(chan *Import)
 	errors := make(chan error)
@@ -15,7 +15,7 @@ func FindFunctions(files <-chan *File, stdLib string) (<-chan *Function, <-chan 
 
 		for file := range files {
 			file := file
-			file.standardLibrary = stdLib
+			file.environment = env
 			wg.Add(1)
 
 			go func() {

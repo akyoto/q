@@ -43,4 +43,5 @@ func (variable *Variable) ForceSetRegister(register *register.Register) {
 // String returns the name of the variable.
 func (variable *Variable) String() string {
 	return variable.Name
+	// return fmt.Sprintf("%s %s", variable.Name, variable.Type.Name)
 }
