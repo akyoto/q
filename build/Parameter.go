@@ -1,11 +1,9 @@
 package build
 
-import "github.com/akyoto/q/build/spec"
-
 // Parameter represents a function parameter.
 type Parameter struct {
 	Name    string
-	Type    *spec.Type
+	Type    *Type
 	Mutable bool
 }
 

@@ -53,5 +53,5 @@ func (instr *register2) Size() byte {
 
 // String implements the string serialization.
 func (instr *register2) String() string {
-	return fmt.Sprintf("[%d] %s %v, %v", instr.size, instr.Mnemonic, instr.Destination.StringWithUser(instr.UsedBy1), instr.Source.StringWithUser(instr.UsedBy2))
+	return fmt.Sprintf("[%d]   %s %v, %v", instr.size, mnemonicColor.Sprint(instr.Mnemonic), instr.Destination.StringWithUser(instr.UsedBy1), instr.Source.StringWithUser(instr.UsedBy2))
 }

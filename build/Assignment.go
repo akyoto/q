@@ -50,14 +50,11 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		}
 
 		variable.ForceSetRegister(register)
+		defer state.scopes.Add(variable)
 		isNewVariable = true
 
 	case !variable.Mutable:
 		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
-	}
-
-	if isNewVariable {
-		defer state.scopes.Add(variable)
 	}
 
 	// Operator
@@ -78,18 +75,21 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return variable, errors.MissingAssignmentExpression
 	}
 
+	// A question token indicates an unknown value.
 	if len(value) == 1 && value[0].Kind == token.Question {
 		variable.LastAssignUsed = true
 		state.tokenCursor += len(value)
 		return variable, nil
 	}
 
+	// Move result of expression to register
 	err := state.TokensToRegister(value, variable.Register())
 
 	if err != nil {
 		return variable, err
 	}
 
+	// Check for ineffective assignmentss
 	if !isNewVariable && !variable.LastAssignUsed {
 		state.tokenCursor = variable.LastAssign
 		return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}

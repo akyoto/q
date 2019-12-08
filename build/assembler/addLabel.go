@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/color"
 )
 
 // addLabel is used for instructions that add a addLabel.
@@ -28,5 +29,6 @@ func (instr *addLabel) Size() byte {
 
 // String implements the string serialization.
 func (instr *addLabel) String() string {
-	return fmt.Sprintf("[0] %s:", instr.Label)
+	faint := color.New(color.Faint)
+	return fmt.Sprintf("[0] %s:", faint.Sprint(instr.Label))
 }

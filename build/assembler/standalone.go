@@ -42,5 +42,5 @@ func (instr *standalone) Size() byte {
 
 // String implements the string serialization.
 func (instr *standalone) String() string {
-	return fmt.Sprintf("[%d] %s", instr.size, instr.Mnemonic)
+	return fmt.Sprintf("[%d]   %s", instr.size, mnemonicColor.Sprint(instr.Mnemonic))
 }

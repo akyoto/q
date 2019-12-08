@@ -12,15 +12,15 @@ import (
 )
 
 // EvaluateTokens evaluates the token expression and stores the result in a register.
-func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, error) {
+func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, *Type, error) {
 	freeRegister := state.registers.General.FindFree()
 
 	if freeRegister == nil {
-		return nil, errors.ExceededMaxVariables
+		return nil, nil, errors.ExceededMaxVariables
 	}
 
 	err := state.TokensToRegister(tokens, freeRegister)
-	return freeRegister, err
+	return freeRegister, nil, err
 }
 
 // TokensToRegister moves the result of a token expression into the given register.
@@ -200,10 +200,6 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 	case token.Text:
 		address := state.assembler.AddString(singleToken.Text())
 		state.assembler.MoveRegisterAddress(register, address)
-	}
-
-	if register.IsFree() {
-		return register.Use(singleToken)
 	}
 
 	return nil

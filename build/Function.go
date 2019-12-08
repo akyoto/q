@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/akyoto/q/build/assembler"
-	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -12,7 +11,7 @@ import (
 type Function struct {
 	Name             string
 	Parameters       []*Parameter
-	ReturnTypes      []spec.Type
+	ReturnTypes      []Type
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
@@ -49,6 +48,8 @@ func (function *Function) CanInline() bool {
 // InlineInto adds the assembler instructions to another function.
 // It excludes the starting label and the last return statement.
 func (function *Function) InlineInto(other *Function) {
+	// NOTE: We should re-set the register pointers for these instructions
+	// because the assembly optimizer relies on pointer equality checks.
 	inlinedInstructions := function.assembler.Instructions[1 : len(function.assembler.Instructions)-1]
 	other.assembler.Instructions = append(other.assembler.Instructions, inlinedInstructions...)
 }

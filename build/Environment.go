@@ -10,6 +10,7 @@ import (
 type Environment struct {
 	Packages        map[string]bool
 	Functions       map[string]*Function
+	Types           map[string]*Type
 	StandardLibrary string
 }
 
@@ -22,8 +23,14 @@ func NewEnvironment() (*Environment, error) {
 	}
 
 	environment := &Environment{
-		Packages:        map[string]bool{},
-		Functions:       map[string]*Function{},
+		Packages:  map[string]bool{},
+		Functions: map[string]*Function{},
+		Types: map[string]*Type{
+			"int64": {Name: "int64", Size: 8},
+			"int32": {Name: "int32", Size: 4},
+			"int16": {Name: "int16", Size: 2},
+			"int8":  {Name: "int8", Size: 1},
+		},
 		StandardLibrary: stdLib,
 	}
 

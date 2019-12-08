@@ -2,13 +2,12 @@ package build
 
 import (
 	"errors"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/akyoto/asm"
 	"github.com/akyoto/asm/elf"
-	"github.com/akyoto/color"
+	"github.com/akyoto/q/build/log"
 )
 
 // Build describes a compiler build.
@@ -110,12 +109,8 @@ done:
 
 		// Show assembler code of used functions
 		if build.Verbose {
-			faint := color.New(color.Faint)
-			logPrefix := faint.Sprintf("%s ", function.Name)
-			logger := log.New(os.Stdout, logPrefix, 0)
-			function.assembler.WriteTo(logger)
-			logger.SetPrefix("")
-			logger.Println()
+			function.assembler.WriteTo(log.Info)
+			log.Info.Println()
 		}
 	}
 

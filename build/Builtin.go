@@ -1,7 +1,5 @@
 package build
 
-import "github.com/akyoto/q/build/spec"
-
 const (
 	BuiltinSyscall = "syscall"
 	BuiltinPrint   = "print"
@@ -13,10 +11,7 @@ var BuiltinFunctions = map[string]*Function{
 	BuiltinPrint: {
 		Name: BuiltinPrint,
 		Parameters: []*Parameter{
-			{
-				Name: "text",
-				Type: spec.Types["Text"],
-			},
+			{Name: "text"},
 		},
 		IsBuiltin:   true,
 		SideEffects: 1,
@@ -24,18 +19,9 @@ var BuiltinFunctions = map[string]*Function{
 	BuiltinMemnum: {
 		Name: BuiltinMemnum,
 		Parameters: []*Parameter{
-			{
-				Name: "ptr",
-				Type: spec.Types["pointer"],
-			},
-			{
-				Name: "value",
-				Type: spec.Types["int"],
-			},
-			{
-				Name: "byteCount",
-				Type: spec.Types["int"],
-			},
+			{Name: "ptr"},
+			{Name: "value"},
+			{Name: "byteCount"},
 		},
 		IsBuiltin:   true,
 		SideEffects: 1,

@@ -51,6 +51,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 			return errors.ExceededMaxVariables
 		}
 
+		register.ForceUse(token.List(expression))
 		err := state.TokensToRegister(start, register)
 
 		if err != nil {

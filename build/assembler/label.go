@@ -58,5 +58,5 @@ func (instr *label) Size() byte {
 
 // String implements the string serialization.
 func (instr *label) String() string {
-	return fmt.Sprintf("[%d] %s %s", instr.size, instr.Mnemonic, instr.Label)
+	return fmt.Sprintf("[%d]   %s %s", instr.size, mnemonicColor.Sprint(instr.Mnemonic), instr.Label)
 }
