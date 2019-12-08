@@ -1,1 +1,3 @@
-z("Hello")
+main() {
+	z("Hello")
+}

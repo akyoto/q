@@ -55,7 +55,11 @@ func (env *Environment) ImportDirectory(directory string, prefix string) error {
 
 	files, fileSystemErrors := FindSourceFiles(directory)
 	functions, imports, tokenizeErrors := FindFunctions(files, env)
+	return env.Import(prefix, functions, imports, fileSystemErrors, tokenizeErrors)
+}
 
+// Import imports the given functions and imports to the environment.
+func (env *Environment) Import(prefix string, functions <-chan *Function, imports <-chan *Import, fileSystemErrors <-chan error, tokenizeErrors <-chan error) error {
 	for {
 		select {
 		case err, ok := <-fileSystemErrors:

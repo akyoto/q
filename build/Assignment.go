@@ -94,7 +94,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	if !isNewVariable {
 		if !variable.LastAssignUsed {
 			state.tokenCursor = variable.LastAssign
-			return variable, &errors.IneffectiveAssignment{VariableName: variable.Name}
+			return variable, &errors.IneffectiveAssignment{Name: variable.Name}
 		}
 
 		variable.LastAssign = assignPos

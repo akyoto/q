@@ -49,14 +49,16 @@ func TestBuildErrors(t *testing.T) {
 		{"testdata/for-missing-upper-limit.q", errors.MissingRangeLimit},
 		{"testdata/for-missing-range.q", errors.MissingRange},
 		{"testdata/for-missing-start-value.q", errors.MissingRangeStart},
-		{"testdata/ineffective-assignment.q", &errors.IneffectiveAssignment{VariableName: "a"}},
+		{"testdata/ineffective-assignment.q", &errors.IneffectiveAssignment{Name: "a"}},
 		{"testdata/missing-opening-bracket.q", &errors.MissingCharacter{Character: "("}},
 		{"testdata/missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
-		{"testdata/unused-variable.q", &errors.UnusedVariable{VariableName: "a"}},
-		{"testdata/unused-mutable.q", &errors.UnmodifiedMutable{VariableName: "a"}},
+		{"testdata/unnecessary-newlines.q", errors.UnnecessaryNewlines},
+		{"testdata/unused-variable.q", &errors.UnusedVariable{Name: "a"}},
+		{"testdata/unused-mutable.q", &errors.UnmodifiedMutable{Name: "a"}},
 		{"testdata/unknown-function.q", &errors.UnknownFunction{Name: "z"}},
 		{"testdata/unknown-function-suggestion.q", &errors.UnknownFunction{Name: "prin", CorrectName: "print"}},
 		{"testdata/unknown-expression.q", &errors.UnknownExpression{Expression: "\")"}},
+		{"testdata/unused-parameter.q", &errors.UnusedVariable{Name: "b"}},
 	}
 
 	for _, test := range tests {
@@ -65,7 +67,7 @@ func TestBuildErrors(t *testing.T) {
 		name = strings.TrimSuffix(name, ".q")
 
 		t.Run(name, func(t *testing.T) {
-			err := syntaxCheck(test.File)
+			err := check(test.File)
 			assert.NotNil(t, err)
 			assert.Contains(t, err.Error(), test.ExpectedError.Error())
 		})

@@ -1,2 +1,4 @@
-mut a = 1
-b = a
+main() {
+	mut a = 1
+	b = a
+}

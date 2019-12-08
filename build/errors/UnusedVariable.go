@@ -6,9 +6,9 @@ import (
 
 // UnusedVariable represents unused variables.
 type UnusedVariable struct {
-	VariableName string
+	Name string
 }
 
 func (err *UnusedVariable) Error() string {
-	return fmt.Sprintf("Variable '%s' has never been used", err.VariableName)
+	return fmt.Sprintf("Variable '%s' has never been used", err.Name)
 }

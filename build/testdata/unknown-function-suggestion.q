@@ -1,1 +1,3 @@
-prin("Hello")
+main() {
+	prin("Hello")
+}

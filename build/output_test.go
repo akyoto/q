@@ -3,6 +3,7 @@ package build_test
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/akyoto/assert"
@@ -46,28 +47,24 @@ func assertOutput(t *testing.T, path string, expectedOutput string, expectedExit
 	})
 }
 
-// syntaxCheck treats the file as if it as function body and returns syntax errors.
-func syntaxCheck(inputFile string) error {
-	file := build.NewFile(inputFile)
-	err := file.Tokenize()
+// check creates a build with a single file.
+func check(inputFile string) error {
+	compiler, err := build.New(filepath.Dir(inputFile))
 
 	if err != nil {
 		return err
 	}
 
-	function := &build.Function{
-		File:       file,
-		Finished:   make(chan struct{}),
-		TokenStart: 0,
-		TokenEnd:   len(file.Tokens()),
-		CallCount:  1,
-	}
+	files := make(chan *build.File, 1)
+	files <- build.NewFile(inputFile)
+	close(files)
 
-	env, err := build.NewEnvironment()
+	functions, imports, errors := build.FindFunctions(files, compiler.Environment)
+	err = compiler.Environment.Import("", functions, imports, make(chan error), errors)
 
 	if err != nil {
 		return err
 	}
 
-	return build.Compile(function, env, false, false)
+	return compiler.Compile()
 }
