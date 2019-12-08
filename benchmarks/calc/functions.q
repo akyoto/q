@@ -1,4 +1,4 @@
-f1() {
+f1() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -6,7 +6,7 @@ f1() {
 	return a + b + c + d
 }
 
-f2() {
+f2() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -14,7 +14,7 @@ f2() {
 	return a + b + c + d
 }
 
-f3() {
+f3() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -22,7 +22,7 @@ f3() {
 	return a + b + c + d
 }
 
-f4() {
+f4() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -30,7 +30,7 @@ f4() {
 	return a + b + c + d
 }
 
-f5() {
+f5() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -38,7 +38,7 @@ f5() {
 	return a + b + c + d
 }
 
-f6() {
+f6() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -46,7 +46,7 @@ f6() {
 	return a + b + c + d
 }
 
-f7() {
+f7() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -54,7 +54,7 @@ f7() {
 	return a + b + c + d
 }
 
-f8() {
+f8() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -62,7 +62,7 @@ f8() {
 	return a + b + c + d
 }
 
-f9() {
+f9() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -70,7 +70,7 @@ f9() {
 	return a + b + c + d
 }
 
-f10() {
+f10() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -78,7 +78,7 @@ f10() {
 	return a + b + c + d
 }
 
-f11() {
+f11() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -86,7 +86,7 @@ f11() {
 	return a + b + c + d
 }
 
-f12() {
+f12() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -94,7 +94,7 @@ f12() {
 	return a + b + c + d
 }
 
-f13() {
+f13() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -102,7 +102,7 @@ f13() {
 	return a + b + c + d
 }
 
-f14() {
+f14() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -110,7 +110,7 @@ f14() {
 	return a + b + c + d
 }
 
-f15() {
+f15() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)
@@ -118,7 +118,7 @@ f15() {
 	return a + b + c + d
 }
 
-f16() {
+f16() Int {
 	a = sum(1, 2)
 	b = sum(1, 2)
 	c = sum(1, 2)

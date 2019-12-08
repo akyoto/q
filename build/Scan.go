@@ -135,6 +135,11 @@ begin:
 
 			parameter := tokens[function.parameterStart:index]
 			parameterName := parameter[0]
+
+			if len(parameter) == 1 {
+				return NewError(errors.MissingType, file.path, tokens[:function.parameterStart+1], function)
+			}
+
 			typeName := parameter[1].Text()
 			typ := file.environment.Types[typeName]
 

@@ -1,3 +1,3 @@
-sum(a, b) {
+sum(a Int, b Int) Int {
 	return a + b
 }
