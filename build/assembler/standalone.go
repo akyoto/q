@@ -35,6 +35,11 @@ func (instr *standalone) Name() string {
 	return instr.Mnemonic
 }
 
+// SetName sets the mnemonic.
+func (instr *standalone) SetName(mnemonic string) {
+	instr.Mnemonic = mnemonic
+}
+
 // Size returns the number of bytes consumed for the instruction.
 func (instr *standalone) Size() byte {
 	return instr.size

@@ -34,6 +34,11 @@ func (instr *registerAddress) Name() string {
 	return instr.Mnemonic
 }
 
+// SetName sets the mnemonic.
+func (instr *registerAddress) SetName(mnemonic string) {
+	instr.Mnemonic = mnemonic
+}
+
 // Size returns the number of bytes consumed for the instruction.
 func (instr *registerAddress) Size() byte {
 	return instr.size

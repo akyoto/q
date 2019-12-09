@@ -22,6 +22,11 @@ func (instr *addLabel) Name() string {
 	return ""
 }
 
+// SetName sets the mnemonic.
+func (instr *addLabel) SetName(mnemonic string) {
+	// Not applicable.
+}
+
 // Size returns the number of bytes consumed for the instruction.
 func (instr *addLabel) Size() byte {
 	return 0

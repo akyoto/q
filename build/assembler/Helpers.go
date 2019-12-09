@@ -5,8 +5,18 @@ import "github.com/akyoto/q/build/register"
 func (a *Assembler) Return() {
 	lastInstr := a.lastInstruction()
 
-	if lastInstr != nil && lastInstr.Name() == RET {
-		return
+	if lastInstr != nil {
+		// Avoid double return
+		if lastInstr.Name() == RET {
+			return
+		}
+
+		// If the previous instruction was a call,
+		// change it to a jump.
+		// if lastInstr.Name() == CALL {
+		// 	lastInstr.SetName(JMP)
+		// 	return
+		// }
 	}
 
 	a.do(RET)
