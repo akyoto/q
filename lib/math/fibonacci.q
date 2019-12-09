@@ -2,7 +2,6 @@ fibonacci(n Int) -> Int {
 	require n >= 0
 	ensure _ >= 0
 
-	mut a = ?
 	mut b = 0
 	mut c = 1
 
