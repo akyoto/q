@@ -6,3 +6,8 @@ writeFile(fileName Text, contents Text, length Int) {
 	sys.write(file, contents, length)
 	sys.close(file)
 }
+
+deleteFile(fileName Text) {
+	#expect fileName != ""
+	sys.unlink(fileName)
+}

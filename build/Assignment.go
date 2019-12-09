@@ -115,7 +115,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return variable, &errors.InvalidType{Type: typ.String(), Expected: variable.Type.String()}
 	}
 
-	// Check for ineffective assignmentss
+	// Check for ineffective assignments
 	if !isNewVariable {
 		if !variable.LastAssignUsed {
 			state.tokenCursor = variable.LastAssign
