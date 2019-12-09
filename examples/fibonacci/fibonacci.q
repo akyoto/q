@@ -2,13 +2,13 @@ import sys
 
 main() {
 	# Calculate n'th fibonacci number
-	n = 11
+	n := 11
 
 	mut b = 0
 	mut c = 1
 
 	for 0..n {
-		a = b
+		a := b
 		b = c
 		c = a + b
 	}

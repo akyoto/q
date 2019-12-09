@@ -61,7 +61,9 @@ func TestBuildErrors(t *testing.T) {
 		{"testdata/unknown-function.q", &errors.UnknownFunction{Name: "z"}},
 		{"testdata/unknown-function-suggestion.q", &errors.UnknownFunction{Name: "prin", CorrectName: "print"}},
 		{"testdata/unknown-expression.q", &errors.UnknownExpression{Expression: "\")"}},
+		{"testdata/unknown-variable.q", &errors.UnknownVariable{Name: "a"}},
 		{"testdata/unused-parameter.q", &errors.UnusedVariable{Name: "b"}},
+		{"testdata/variable-already-exists.q", &errors.VariableAlreadyExists{Name: "a"}},
 	}
 
 	for _, test := range tests {

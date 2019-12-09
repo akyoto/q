@@ -6,7 +6,7 @@ fibonacci(n Int) -> Int {
 	mut c = 1
 
 	for 0..n {
-		a = b
+		a := b
 		b = c
 		c = a + b
 	}

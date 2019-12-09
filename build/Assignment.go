@@ -1,6 +1,7 @@
 package build
 
 import (
+	"fmt"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
 )
@@ -15,10 +16,12 @@ func (state *State) Assignment(tokens []token.Token) error {
 func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	cursor := 0
 	mutable := false
+	isNewVariable := false
 	left := tokens[cursor]
 
 	if left.Kind == token.Keyword && left.Text() == "mut" {
 		mutable = true
+		isNewVariable = true
 		cursor++
 		state.tokenCursor++
 		left = tokens[cursor]
@@ -28,13 +31,29 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		return nil, errors.ExpectedVariable
 	}
 
+	operator := tokens[cursor+1]
+
+	if operator.Kind != token.Operator {
+		return nil, errors.MissingAssignmentOperator
+	}
+
+	if operator.Text() == ":=" {
+		if mutable {
+			return nil, fmt.Errorf("Use a normal '=' operator if the variable is mutable")
+		}
+
+		isNewVariable = true
+	}
+
 	assignPos := state.tokenCursor
 	variableName := left.Text()
 	variable := state.scopes.Get(variableName)
-	isNewVariable := false
 
-	switch {
-	case variable == nil:
+	if isNewVariable {
+		if variable != nil {
+			return variable, &errors.VariableAlreadyExists{Name: variable.Name}
+		}
+
 		register := state.registers.General.FindFree()
 
 		if register == nil {
@@ -52,20 +71,19 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 
 		variable.ForceSetRegister(register)
 		defer state.scopes.Add(variable)
-		isNewVariable = true
+	} else {
+		if variable == nil {
+			return nil, &errors.UnknownVariable{Name: variableName}
+		}
 
-	case !variable.Mutable:
-		return variable, &errors.ImmutableVariable{VariableName: variable.Name}
+		if !variable.Mutable {
+			return variable, &errors.ImmutableVariable{Name: variable.Name}
+		}
 	}
 
-	// Operator
+	// Skip operator
 	cursor++
 	state.tokenCursor++
-	operator := tokens[cursor]
-
-	if operator.Kind != token.Operator {
-		return variable, errors.MissingAssignmentOperator
-	}
 
 	// Expression
 	cursor++

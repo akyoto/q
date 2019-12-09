@@ -41,7 +41,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				continue
 			}
 
-			if t.Text() != "=" {
+			if t.Text() != "=" && t.Text() != ":=" {
 				continue
 			}
 
