@@ -1,7 +1,6 @@
 package build
 
 import (
-	"os"
 	"sync"
 	"sync/atomic"
 
@@ -36,12 +35,6 @@ func NewEnvironment() (*Environment, error) {
 
 // ImportDirectory imports a directory to the environment.
 func (env *Environment) ImportDirectory(directory string, prefix string) error {
-	_, err := os.Stat(directory)
-
-	if err != nil {
-		return err
-	}
-
 	files, fileSystemErrors := FindSourceFiles(directory)
 	functions, imports, tokenizeErrors := FindFunctions(files, env)
 	return env.Import(prefix, functions, imports, fileSystemErrors, tokenizeErrors)

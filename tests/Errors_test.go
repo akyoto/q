@@ -1,47 +1,14 @@
 package build_test
 
 import (
-	"io/ioutil"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/akyoto/assert"
 	"github.com/akyoto/q/build/errors"
-	"github.com/akyoto/q/build/log"
 )
 
-func TestMain(m *testing.M) {
-	log.Info.SetOutput(ioutil.Discard)
-	log.Error.SetOutput(ioutil.Discard)
-	os.Exit(m.Run())
-}
-
-func TestExamples(t *testing.T) {
-	examples := []struct {
-		Name             string
-		ExpectedOutput   string
-		ExpectedExitCode int
-	}{
-		{"hello", "Hello\n", 0},
-		{"contracts", "f: expect [n < 10]\n", 1},
-		{"fibonacci", "", 89},
-		{"files", "", 0},
-		{"functions", "123456789\n123456789\n123456789\n123456789\n", 0},
-		{"loops", "Hello\nHello\nHello\n\nH\nHe\nHel\nHell\nHello\n", 0},
-		{"memory", "ABCD\n", 0},
-	}
-
-	for _, example := range examples {
-		example := example
-
-		t.Run(example.Name, func(t *testing.T) {
-			assertOutput(t, "../examples/"+example.Name, example.ExpectedOutput, example.ExpectedExitCode)
-		})
-	}
-}
-
-func TestBuildErrors(t *testing.T) {
+func TestErrors(t *testing.T) {
 	tests := []struct {
 		File          string
 		ExpectedError error
@@ -54,6 +21,7 @@ func TestBuildErrors(t *testing.T) {
 		{"testdata/missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
 		{"testdata/missing-return-type.q", errors.MissingReturnType},
 		{"testdata/missing-type.q", &errors.MissingType{Of: "length"}},
+		{"testdata/package-doesnt-exist.q", &errors.PackageDoesntExist{ImportPath: "non.existing.package"}},
 		{"testdata/return-without-type.q", errors.ReturnWithoutFunctionType},
 		{"testdata/unnecessary-newlines.q", errors.UnnecessaryNewlines},
 		{"testdata/unused-variable.q", &errors.UnusedVariable{Name: "a"}},

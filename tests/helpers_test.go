@@ -10,9 +10,9 @@ import (
 	"github.com/akyoto/q/build"
 )
 
-// assertOutput builds and runs the program to
+// run builds and runs the program to
 // check if the output matches the expected output.
-func assertOutput(t *testing.T, path string, expectedOutput string, expectedExitCode int) {
+func run(t *testing.T, path string, expectedOutput string, expectedExitCode int) {
 	build, err := build.New(path)
 	assert.Nil(t, err)
 	assert.True(t, len(build.ExecutablePath) > 0)

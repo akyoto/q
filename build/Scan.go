@@ -1,6 +1,7 @@
 package build
 
 import (
+	"os"
 	"strings"
 
 	"github.com/akyoto/q/build/errors"
@@ -194,7 +195,13 @@ begin:
 						otherImport, exists := file.imports[baseName]
 
 						if exists {
-							return NewError(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}, file.path, tokens[:index+1], function)
+							return NewError(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}, file.path, tokens[:index], function)
+						}
+
+						stat, err := os.Stat(imp.FullPath)
+
+						if err != nil || !stat.IsDir() {
+							return NewError(&errors.PackageDoesntExist{ImportPath: imp.Path, FilePath: imp.FullPath}, file.path, tokens[:imp.Position+2], function)
 						}
 
 						file.imports[baseName] = imp
