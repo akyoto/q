@@ -24,7 +24,7 @@ func TestExamples(t *testing.T) {
 		ExpectedExitCode int
 	}{
 		{"hello", "Hello\n", 0},
-		{"contracts", "f: require [n < 10]\n", 1},
+		{"contracts", "f: expect [n < 10]\n", 1},
 		{"fibonacci", "", 89},
 		{"files", "", 0},
 		{"functions", "123456789\n123456789\n123456789\n123456789\n", 0},

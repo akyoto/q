@@ -1,6 +1,6 @@
 import sys
 
 deleteFile(fileName Text) {
-	#require fileName != ""
+	#expect fileName != ""
 	sys.unlink(fileName)
 }

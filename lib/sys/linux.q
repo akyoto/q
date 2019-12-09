@@ -1,16 +1,16 @@
 read(fd Int, buffer Pointer, length Int) -> Int {
-	require fd >= 0
-	require buffer != 0
-	require length >= 0
+	expect fd >= 0
+	expect buffer != 0
+	expect length >= 0
 	ensure _ > -4096
 
 	return syscall(0, fd, buffer, length)
 }
 
 write(fd Int, buffer Pointer, length Int) -> Int {
-	require fd >= 0
-	require buffer != 0
-	require length >= 0
+	expect fd >= 0
+	expect buffer != 0
+	expect length >= 0
 	ensure _ > -4096
 
 	return syscall(1, fd, buffer, length)
@@ -23,22 +23,22 @@ open(fileName Text, flags Int, mode Int) -> Int {
 }
 
 close(fd Int) -> Int {
-	require fd >= 0
+	expect fd >= 0
 	ensure _ > -4096
 
 	return syscall(3, fd)
 }
 
 mmap(address Int, length Int, protection Int, flags Int) -> Int {
-	require length > 0
+	expect length > 0
 	ensure _ > -4096
 
 	return syscall(9, address, length, protection, flags)
 }
 
 munmap(address Pointer, length Int) -> Int {
-	require address != 0
-	require length > 0
+	expect address != 0
+	expect length > 0
 	ensure _ > -4096
 	ensure _ <= 0
 
@@ -52,22 +52,22 @@ clone(flags Int, stackPointer Pointer) -> Int {
 }
 
 exit(code Int) {
-	require code >= 0
-	require code <= 125
+	expect code >= 0
+	expect code <= 125
 
 	syscall(60, code)
 }
 
 getcwd(buffer Pointer, length Int) -> Int {
-	require buffer != 0
-	require length >= 0
+	expect buffer != 0
+	expect length >= 0
 	ensure _ > -4096
 
 	return syscall(79, buffer, length)
 }
 
 chdir(path Text) -> Int {
-	require path != 0
+	expect path != 0
 	ensure _ > -4096
 
 	return syscall(80, path)

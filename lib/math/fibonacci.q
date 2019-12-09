@@ -1,5 +1,5 @@
 fibonacci(n Int) -> Int {
-	require n >= 0
+	expect n >= 0
 	ensure _ >= 0
 
 	mut b = 0

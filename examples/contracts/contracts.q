@@ -3,6 +3,6 @@ main() {
 }
 
 f(n Int) {
-	require n < 10
+	expect n < 10
 	print("Requirements fulfilled! 🎉🎉🎉")
 }

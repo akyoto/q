@@ -24,7 +24,7 @@ func (state *State) Ensure(tokens []token.Token) error {
 		return nil
 	}
 
-	state.Expect(token.Keyword)
+	state.Skip(token.Keyword)
 	condition := tokens[1:]
 
 	state.ensureState.counter++

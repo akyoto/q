@@ -1,5 +1,5 @@
 factorial(n Int) -> Int {
-	require n >= 0
+	expect n >= 0
 	ensure _ >= 1
 
 	mut x = 1

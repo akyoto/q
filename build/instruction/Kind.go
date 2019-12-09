@@ -34,8 +34,8 @@ const (
 	// Return represents the return statement.
 	Return
 
-	// Require represents the require statement.
-	Require
+	// Expect represents the expect statement.
+	Expect
 
 	// Ensure represents the ensure statement.
 	Ensure
@@ -70,6 +70,12 @@ func (kind Kind) String() string {
 
 	case LoopEnd:
 		return "LoopEnd"
+
+	case Expect:
+		return "Expect"
+
+	case Ensure:
+		return "Ensure"
 
 	case Invalid:
 		return "Invalid"

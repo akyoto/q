@@ -28,11 +28,11 @@ type State struct {
 	identifierLifeTime map[string]token.Position
 
 	// Keywords
-	forState     ForState
-	ifState      IfState
-	loopState    LoopState
-	requireState RequireState
-	ensureState  EnsureState
+	forState    ForState
+	ifState     IfState
+	loopState   LoopState
+	expectState ExpectState
+	ensureState EnsureState
 
 	// Optimization flags
 	ignoreContracts bool
@@ -89,8 +89,8 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 	case instruction.Return:
 		return state.Return(instr.Tokens)
 
-	case instruction.Require:
-		return state.Require(instr.Tokens)
+	case instruction.Expect:
+		return state.Expect(instr.Tokens)
 
 	case instruction.Ensure:
 		return state.Ensure(instr.Tokens)
@@ -213,10 +213,10 @@ func (state *State) ParseInt(numberString string) (int64, error) {
 	return number, nil
 }
 
-// Expect asserts that the token at the current cursor position has the given kind.
+// Skip asserts that the token at the current cursor position has the given kind.
 // If the comparison was successful, it will increment the cursor and return the token.
 // If the expectation is not met, it will panic.
-func (state *State) Expect(expectedKind token.Kind) token.Token {
+func (state *State) Skip(expectedKind token.Kind) token.Token {
 	actual := state.tokens[state.tokenCursor]
 
 	if actual.Kind != expectedKind {

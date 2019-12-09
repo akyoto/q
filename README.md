@@ -69,7 +69,7 @@ This will produce the `q` compiler in your current directory.
 * [x] Variable lifetime tracking
 * [x] `return` values
 * [x] `import` standard packages
-* [x] `require` for input validation
+* [x] `expect` for input validation
 * [x] `ensure` for output validation
 * [x] Assembly optimizer
 * [x] Exclude unused functions
@@ -165,7 +165,7 @@ q build -v examples/loops
 q build -O examples/loops
 ```
 
-This will disable all `require` and `ensure` checks.
+This will disable all `expect` and `ensure` checks.
 
 ### Is the syntax final?
 

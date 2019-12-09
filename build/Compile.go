@@ -89,10 +89,10 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	assembler.Return()
 
-	// Contract require failures
-	for _, requirement := range state.requireState.list {
-		assembler.AddLabel(requirement.failLabel)
-		state.printLn(fmt.Sprintf("%s: require %v", state.function.Name, requirement.condition))
+	// Contract expect failures
+	for _, expect := range state.expectState.list {
+		assembler.AddLabel(expect.failLabel)
+		state.printLn(fmt.Sprintf("%s: expect %v", state.function.Name, expect.condition))
 		state.assembler.MoveRegisterNumber(state.registers.Syscall[0], 60)
 		state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 1)
 		state.assembler.Syscall()

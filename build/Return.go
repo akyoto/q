@@ -7,7 +7,7 @@ import (
 
 // Return handles return statements.
 func (state *State) Return(tokens []token.Token) error {
-	state.Expect(token.Keyword)
+	state.Skip(token.Keyword)
 	expression := tokens[1:]
 
 	if len(expression) > 0 {

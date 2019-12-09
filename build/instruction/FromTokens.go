@@ -27,7 +27,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				instruction.Kind = Invalid
 				start = i + 1
 
-			case Return, Require, Ensure, Assignment, Invalid:
+			case Return, Expect, Ensure, Assignment, Invalid:
 				instruction.Tokens = tokens[start:i]
 				instruction.Position = start
 				instructions = append(instructions, instruction)
@@ -118,8 +118,8 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				instruction.Kind = LoopStart
 			case "return":
 				instruction.Kind = Return
-			case "require":
-				instruction.Kind = Require
+			case "expect":
+				instruction.Kind = Expect
 			case "ensure":
 				instruction.Kind = Ensure
 			case "mut":

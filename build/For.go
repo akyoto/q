@@ -26,7 +26,7 @@ type ForLoop struct {
 
 // ForStart handles the start of for loops.
 func (state *State) ForStart(tokens []token.Token) error {
-	state.Expect(token.Keyword)
+	state.Skip(token.Keyword)
 	state.scopes.Push()
 	expression := tokens[1:]
 
