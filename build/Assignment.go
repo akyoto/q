@@ -2,6 +2,7 @@ package build
 
 import (
 	"fmt"
+
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
 )
