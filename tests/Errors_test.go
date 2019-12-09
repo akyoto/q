@@ -40,7 +40,7 @@ func TestErrors(t *testing.T) {
 		name = strings.TrimSuffix(name, ".q")
 
 		t.Run(name, func(t *testing.T) {
-			err := check(test.File)
+			err := Check(test.File)
 			assert.NotNil(t, err)
 			assert.Contains(t, err.Error(), test.ExpectedError.Error())
 		})

@@ -142,28 +142,16 @@ This will produce the `q` compiler in your current directory.
 * [lib](https://github.com/akyoto/q/tree/master/lib) contains the standard library
 * [tests](https://github.com/akyoto/q/tree/master/tests) contains the compiler tests
 
-### How do I run the tests?
-
-```shell
-go test -v ./...
-```
-
-### How do I run the benchmarks?
-
-```shell
-go test -run=^$ -bench=. ./...
-```
-
 ### How do I view the produced assembly output?
 
 ```shell
-q build -v examples/loops
+./q build -v examples/loops
 ```
 
 ### How can I make a performance optimized build?
 
 ```shell
-q build -O examples/loops
+./q build -O examples/loops
 ```
 
 This will disable all `expect` and `ensure` checks.
@@ -187,6 +175,18 @@ git clone https://github.com/akyoto/vscode-q ~/.vscode/extensions/vscode-q
 ### Is there a community for this project?
 
 There is a Discord channel and a Telegram group for [sponsors](https://github.com/sponsors/akyoto).
+
+### How do I run the tests?
+
+```shell
+go test -v ./...
+```
+
+### How do I run the benchmarks?
+
+```shell
+go test -run=^$ -bench=. ./benchmarks
+```
 
 ## Style
 

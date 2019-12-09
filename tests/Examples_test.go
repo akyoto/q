@@ -23,7 +23,7 @@ func TestExamples(t *testing.T) {
 		example := example
 
 		t.Run(example.Name, func(t *testing.T) {
-			run(t, "../examples/"+example.Name, example.ExpectedOutput, example.ExpectedExitCode)
+			Run(t, "../examples/"+example.Name, example.ExpectedOutput, example.ExpectedExitCode)
 		})
 	}
 }
