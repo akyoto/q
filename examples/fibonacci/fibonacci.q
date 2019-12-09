@@ -4,7 +4,6 @@ main() {
 	# Calculate n'th fibonacci number
 	n = 11
 
-	mut a = ?
 	mut b = 0
 	mut c = 1
 

@@ -6,6 +6,7 @@ import (
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // ForState handles the state of for loop compilation.
@@ -52,10 +53,14 @@ func (state *State) ForStart(tokens []token.Token) error {
 		}
 
 		register.ForceUse(token.List(expression))
-		err := state.TokensToRegister(start, register)
+		typ, err := state.TokensToRegister(start, register)
 
 		if err != nil {
 			return err
+		}
+
+		if typ != types.Int {
+			return &errors.InvalidType{Type: typ.String(), Expected: types.Int.String()}
 		}
 	} else {
 		assignment := expression[:rangePos]

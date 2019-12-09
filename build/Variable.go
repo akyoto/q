@@ -3,12 +3,13 @@ package build
 import (
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // Variable represents both local variables and function parameters.
 type Variable struct {
 	Name           string
-	Type           *Type
+	Type           *types.Type
 	AliveUntil     token.Position
 	KeepAlive      int
 	Position       token.Position

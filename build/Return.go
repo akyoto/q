@@ -15,10 +15,14 @@ func (state *State) Return(tokens []token.Token) error {
 			return errors.ReturnWithoutFunctionType
 		}
 
-		err := state.TokensToRegister(expression, state.registers.ReturnValue[0])
+		typ, err := state.TokensToRegister(expression, state.registers.ReturnValue[0])
 
 		if err != nil {
 			return err
+		}
+
+		if typ != state.function.ReturnTypes[0] {
+			return &errors.InvalidType{Type: typ.String(), Expected: state.function.ReturnTypes[0].String()}
 		}
 	} else if len(state.function.ReturnTypes) > 0 {
 		return &errors.MissingReturnValue{ReturnType: state.function.ReturnTypes[0].Name}

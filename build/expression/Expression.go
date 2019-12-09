@@ -6,6 +6,7 @@ import (
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // Expression is a binary tree with an operator on each node.
@@ -14,6 +15,7 @@ type Expression struct {
 	Children       []*Expression
 	Parent         *Expression
 	Register       *register.Register
+	Type           *types.Type
 	IsFunctionCall bool
 }
 
@@ -138,6 +140,7 @@ func (expr *Expression) Close() {
 	expr.Children = expr.Children[:0]
 	expr.Parent = nil
 	expr.Register = nil
+	expr.Type = nil
 	expr.IsFunctionCall = false
 	pool.Put(expr)
 }

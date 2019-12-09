@@ -26,7 +26,8 @@ func (state *State) Call(tokens []token.Token) error {
 		return &errors.MissingCharacter{Character: ")"}
 	}
 
-	return state.TokensToRegister(tokens, nil)
+	_, err := state.TokensToRegister(tokens, nil)
+	return err
 }
 
 // CallExpression executes a function call.
@@ -131,6 +132,10 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 		returnValueRegister.Free()
 	}
 
+	if function.HasReturnValue() {
+		expr.Type = function.ReturnTypes[0]
+	}
+
 	return nil
 }
 
@@ -195,7 +200,7 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 			freeRegister := state.registers.General.FindFree()
 
 			if freeRegister == nil {
-				return pushRegisters, callRegisters, errors.ExceededMaxVariables
+				return nil, nil, errors.ExceededMaxVariables
 			}
 
 			state.assembler.MoveRegisterRegister(freeRegister, callRegister)
@@ -213,10 +218,18 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 		_ = callRegister.Use(function.Parameters[i])
 
 		// Save the parameter in the call register
-		err := state.ExpressionToRegister(parameter, callRegister)
+		typ, err := state.ExpressionToRegister(parameter, callRegister)
 
 		if err != nil {
-			return pushRegisters, callRegisters, err
+			return nil, nil, err
+		}
+
+		if typ != function.Parameters[i].Type {
+			return nil, nil, &errors.InvalidType{
+				Type:          typ.String(),
+				Expected:      function.Parameters[i].Type.String(),
+				ParameterName: function.Parameters[i].Name,
+			}
 		}
 	}
 

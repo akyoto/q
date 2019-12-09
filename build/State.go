@@ -147,7 +147,7 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 		return nil, errors.ExceededMaxVariables
 	}
 
-	err := state.TokensToRegister(expression, temporary)
+	_, err := state.TokensToRegister(expression, temporary)
 
 	if err != nil {
 		return nil, err

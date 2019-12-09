@@ -125,6 +125,7 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 
 		variable := &Variable{
 			Name:       parameter.Name,
+			Type:       parameter.Type,
 			Position:   0,
 			AliveUntil: identifierLifeTime[parameter.Name],
 		}

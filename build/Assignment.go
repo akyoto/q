@@ -84,10 +84,16 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 	}
 
 	// Move result of expression to register
-	err := state.TokensToRegister(value, variable.Register())
+	typ, err := state.TokensToRegister(value, variable.Register())
 
 	if err != nil {
 		return variable, err
+	}
+
+	if isNewVariable {
+		variable.Type = typ
+	} else if typ != variable.Type {
+		return variable, &errors.InvalidType{Type: typ.String(), Expected: variable.Type.String()}
 	}
 
 	// Check for ineffective assignmentss

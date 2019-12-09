@@ -104,8 +104,20 @@ begin:
 				parameter := tokens[function.parameterStart:index]
 				parameterName := parameter[0]
 
+				if len(parameter) == 1 {
+					return NewError(&errors.MissingType{Of: parameterName.Text()}, file.path, tokens[:function.parameterStart+1], function)
+				}
+
+				typeName := parameter[1].Text()
+				typ := file.environment.Types[typeName]
+
+				if typ == nil {
+					return NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index], function)
+				}
+
 				function.Parameters = append(function.Parameters, &Parameter{
 					Name:     parameterName.Text(),
+					Type:     typ,
 					Position: function.parameterStart,
 				})
 
@@ -125,7 +137,7 @@ begin:
 			parameterName := parameter[0]
 
 			if len(parameter) == 1 {
-				return NewError(errors.MissingType, file.path, tokens[:function.parameterStart+1], function)
+				return NewError(&errors.MissingType{Of: parameterName.Text()}, file.path, tokens[:function.parameterStart+1], function)
 			}
 
 			typeName := parameter[1].Text()

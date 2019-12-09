@@ -5,13 +5,14 @@ import (
 
 	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // Function represents a function.
 type Function struct {
 	Name             string
 	Parameters       []*Parameter
-	ReturnTypes      []*Type
+	ReturnTypes      []*types.Type
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
@@ -52,6 +53,11 @@ func (function *Function) InlineInto(other *Function) {
 	// because the assembly optimizer relies on pointer equality checks.
 	inlinedInstructions := function.assembler.Instructions[1 : len(function.assembler.Instructions)-1]
 	other.assembler.Instructions = append(other.assembler.Instructions, inlinedInstructions...)
+}
+
+// HasReturnValue returns true if the function has a return value.
+func (function *Function) HasReturnValue() bool {
+	return len(function.ReturnTypes) > 0
 }
 
 // Errorf creates a formatted error inside the function.

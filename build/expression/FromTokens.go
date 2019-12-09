@@ -4,6 +4,7 @@ import (
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // FromTokens generates an expression tree from tokens.
@@ -165,6 +166,15 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 func FromToken(t token.Token) *Expression {
 	operand := New()
 	operand.Token = t
+
+	switch t.Kind {
+	case token.Number:
+		operand.Type = types.Int
+
+	case token.Text:
+		operand.Type = types.Text
+	}
+
 	return operand
 }
 

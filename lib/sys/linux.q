@@ -51,7 +51,7 @@ clone(flags Int, stackPointer Pointer) -> Int {
 	return syscall(56, flags, stackPointer)
 }
 
-exit(code Byte) {
+exit(code Int) {
 	require code >= 0
 	require code <= 125
 

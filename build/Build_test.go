@@ -52,6 +52,7 @@ func TestBuildErrors(t *testing.T) {
 		{"testdata/ineffective-assignment.q", &errors.IneffectiveAssignment{Name: "a"}},
 		{"testdata/missing-opening-bracket.q", &errors.MissingCharacter{Character: "("}},
 		{"testdata/missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
+		{"testdata/missing-type.q", &errors.MissingType{Of: "length"}},
 		{"testdata/unnecessary-newlines.q", errors.UnnecessaryNewlines},
 		{"testdata/unused-variable.q", &errors.UnusedVariable{Name: "a"}},
 		{"testdata/unused-mutable.q", &errors.UnmodifiedMutable{Name: "a"}},

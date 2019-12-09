@@ -8,23 +8,24 @@ import (
 	"github.com/akyoto/q/build/expression"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 	"github.com/akyoto/stringutils/unsafe"
 )
 
 // EvaluateTokens evaluates the token expression and stores the result in a register.
-func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, *Type, error) {
+func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, *types.Type, error) {
 	freeRegister := state.registers.General.FindFree()
 
 	if freeRegister == nil {
 		return nil, nil, errors.ExceededMaxVariables
 	}
 
-	err := state.TokensToRegister(tokens, freeRegister)
-	return freeRegister, nil, err
+	typ, err := state.TokensToRegister(tokens, freeRegister)
+	return freeRegister, typ, err
 }
 
 // TokensToRegister moves the result of a token expression into the given register.
-func (state *State) TokensToRegister(tokens []token.Token, register *register.Register) error {
+func (state *State) TokensToRegister(tokens []token.Token, register *register.Register) (*types.Type, error) {
 	if len(tokens) == 1 {
 		return state.TokenToRegister(tokens[0], register)
 	}
@@ -32,16 +33,16 @@ func (state *State) TokensToRegister(tokens []token.Token, register *register.Re
 	expr, err := expression.FromTokens(tokens)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = state.ExpressionToRegister(expr, register)
+	typ, err := state.ExpressionToRegister(expr, register)
 	expr.Close()
-	return err
+	return typ, err
 }
 
 // ExpressionToRegister moves the result of an expression into the given register.
-func (state *State) ExpressionToRegister(root *expression.Expression, finalRegister *register.Register) error {
+func (state *State) ExpressionToRegister(root *expression.Expression, finalRegister *register.Register) (*types.Type, error) {
 	if root.IsLeaf() {
 		return state.TokenToRegister(root.Token, finalRegister)
 	}
@@ -50,7 +51,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 	err := state.ResolveAccessors(root)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Save the temporary registers so we can easily free them later
@@ -110,14 +111,20 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 
 		// Left operand
 		if left.IsLeaf() {
-			err := state.TokenToRegister(left.Token, sub.Register)
+			typ, err := state.TokenToRegister(left.Token, sub.Register)
 
 			if err != nil {
 				return err
 			}
+
+			left.Type = typ
 		} else if sub.Register != left.Register {
 			state.assembler.MoveRegisterRegister(sub.Register, left.Register)
 			left.Register.Free()
+		}
+
+		if sub.Type == nil {
+			sub.Type = left.Type
 		}
 
 		operator := sub.Token.Text()
@@ -134,9 +141,11 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 				}
 
 				state.UseVariable(variable)
+				right.Type = variable.Type
 				return state.CalculateRegisterRegister(operator, sub.Register, variable.Register())
 
 			case token.Number:
+				right.Type = types.Int
 				return state.CalculateRegisterNumber(operator, sub.Register, right)
 
 			default:
@@ -149,7 +158,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Free temporary registers
@@ -162,46 +171,49 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		_ = finalRegister.Use(root)
 	}
 
-	return nil
+	return root.Type, nil
 }
 
 // TokenToRegister moves a token into a register.
 // It only works with identifiers, numbers and texts.
-func (state *State) TokenToRegister(singleToken token.Token, register *register.Register) error {
+func (state *State) TokenToRegister(singleToken token.Token, register *register.Register) (*types.Type, error) {
 	switch singleToken.Kind {
 	case token.Identifier:
 		variableName := singleToken.Text()
 		variable := state.scopes.Get(variableName)
 
 		if variable == nil {
-			return &errors.UnknownVariable{Name: variableName}
+			return nil, &errors.UnknownVariable{Name: variableName}
 		}
 
 		state.UseVariable(variable)
 
 		// Moving a variable into its own register is pointless
 		if variable.Register() == register {
-			return nil
+			return nil, nil
 		}
 
 		state.assembler.MoveRegisterRegister(register, variable.Register())
+		return variable.Type, nil
 
 	case token.Number:
 		numberString := singleToken.Text()
 		number, err := state.ParseInt(numberString)
 
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		state.assembler.MoveRegisterNumber(register, uint64(number))
+		return types.Int, nil
 
 	case token.Text:
 		address := state.assembler.AddString(singleToken.Text())
 		state.assembler.MoveRegisterAddress(register, address)
+		return types.Text, nil
 	}
 
-	return nil
+	return nil, errors.NotImplemented
 }
 
 // CalculateRegisterNumber performs an operation on a register and a number.

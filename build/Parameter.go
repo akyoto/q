@@ -1,11 +1,14 @@
 package build
 
-import "github.com/akyoto/q/build/token"
+import (
+	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
+)
 
 // Parameter represents a function parameter.
 type Parameter struct {
 	Name     string
-	Type     *Type
+	Type     *types.Type
 	Mutable  bool
 	Position token.Position
 }

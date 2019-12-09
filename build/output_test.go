@@ -36,7 +36,7 @@ func assertOutput(t *testing.T, path string, expectedOutput string, expectedExit
 			exitError, ok := err.(*exec.ExitError)
 
 			if !ok {
-				panic(err)
+				t.Fatal(err)
 			}
 
 			exitCode = exitError.ExitCode()

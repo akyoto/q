@@ -4,43 +4,32 @@ import (
 	"os"
 	"sync"
 	"sync/atomic"
+
+	"github.com/akyoto/q/build/types"
 )
 
 // Environment represents the global state.
 type Environment struct {
 	Packages        map[string]bool
 	Functions       map[string]*Function
-	Types           map[string]*Type
+	Types           map[string]*types.Type
 	StandardLibrary string
 }
 
 // NewEnvironment creates a new build environment.
 func NewEnvironment() (*Environment, error) {
-	stdLib, err := FindStandardLibrary()
+	standardLibrary, err := FindStandardLibrary()
 
 	if err != nil {
 		return nil, err
 	}
 
 	environment := &Environment{
-		Packages:  map[string]bool{},
-		Functions: map[string]*Function{},
-		Types: map[string]*Type{
-			"Int64":   {Name: "Int64", Size: 8},
-			"Int32":   {Name: "Int32", Size: 4},
-			"Int16":   {Name: "Int16", Size: 2},
-			"Int8":    {Name: "Int8", Size: 1},
-			"Float64": {Name: "Float64", Size: 8},
-			"Float32": {Name: "Float32", Size: 4},
-		},
-		StandardLibrary: stdLib,
+		Packages:        map[string]bool{},
+		Functions:       map[string]*Function{},
+		Types:           types.Default,
+		StandardLibrary: standardLibrary,
 	}
-
-	environment.Types["Int"] = environment.Types["Int64"]
-	environment.Types["Float"] = environment.Types["Float64"]
-	environment.Types["Byte"] = environment.Types["Int8"]
-	environment.Types["Pointer"] = environment.Types["Int64"]
-	environment.Types["Text"] = environment.Types["Pointer"]
 
 	return environment, nil
 }
