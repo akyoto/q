@@ -73,17 +73,19 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 			state.printLn(parameter.Token.Text())
 			return nil
 
-		case BuiltinMemnum:
+		case BuiltinStore:
 			variableName := parameters[0].Token.Text()
-			valueString := parameters[1].Token.Text()
+			offsetString := parameters[1].Token.Text()
 			byteCountString := parameters[2].Token.Text()
+			valueString := parameters[3].Token.Text()
 
 			variable := state.scopes.Get(variableName)
-			value, _ := strconv.Atoi(valueString)
+			offset, _ := strconv.Atoi(offsetString)
 			byteCount, _ := strconv.Atoi(byteCountString)
+			value, _ := strconv.Atoi(valueString)
 
 			state.UseVariable(variable)
-			state.assembler.MoveMemoryNumber(variable.Register(), byte(byteCount), uint64(value))
+			state.assembler.StoreNumber(variable.Register(), byte(offset), byte(byteCount), uint64(value))
 			return nil
 		}
 	}

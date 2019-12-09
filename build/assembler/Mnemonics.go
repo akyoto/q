@@ -23,4 +23,8 @@ const (
 	PUSH    = "push"
 	POP     = "pop"
 	CPUID   = "cpuid"
+
+	// Artificial
+	STORE = "store"
+	LOAD  = "load"
 )

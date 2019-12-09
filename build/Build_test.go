@@ -29,7 +29,7 @@ func TestExamples(t *testing.T) {
 		{"files", "", 0},
 		{"functions", "123456789\n123456789\n123456789\n123456789\n", 0},
 		{"loops", "Hello\nHello\nHello\n\nH\nHe\nHel\nHell\nHello\n", 0},
-		{"memory", "", 0},
+		{"memory", "ABCD\n", 0},
 	}
 
 	for _, example := range examples {

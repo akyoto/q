@@ -151,10 +151,11 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 }
 
 // doMemoryNumber adds an instruction using a memory address and a number.
-func (a *Assembler) doMemoryNumber(mnemonic string, destination *register.Register, byteCount byte, number uint64) {
+func (a *Assembler) doMemoryNumber(mnemonic string, destination *register.Register, offset byte, byteCount byte, number uint64) {
 	instr := &memoryNumber{
 		Mnemonic:    mnemonic,
 		Destination: destination,
+		Offset:      offset,
 		ByteCount:   byteCount,
 		Number:      number,
 	}

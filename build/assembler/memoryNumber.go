@@ -13,6 +13,7 @@ type memoryNumber struct {
 	Destination *register.Register
 	Number      uint64
 	UsedBy      string
+	Offset      byte
 	ByteCount   byte
 	size        byte
 }
@@ -22,8 +23,8 @@ func (instr *memoryNumber) Exec(a *asm.Assembler) {
 	start := a.Len()
 
 	switch instr.Mnemonic {
-	case MOV:
-		a.MoveMemoryNumber(instr.Destination.Name, instr.ByteCount, instr.Number)
+	case STORE:
+		a.StoreNumber(instr.Destination.Name, instr.Offset, instr.ByteCount, instr.Number)
 
 	default:
 		panic("This should never happen!")

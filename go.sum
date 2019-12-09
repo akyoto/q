@@ -1,5 +1,5 @@
-github.com/akyoto/asm v0.4.5 h1:BIft8atBtQhytZ3LhGhN6G5fpRbVuH4hZhK5vbms11E=
-github.com/akyoto/asm v0.4.5/go.mod h1:cCOva58eM6v26RK9qw7CXPQ4XxT0w5IbhBQDjTHPx+g=
+github.com/akyoto/asm v0.4.6 h1:E+6SXqBMCRkgwGng+UWj9sXFlhcAXrscKdYQvwCgjrs=
+github.com/akyoto/asm v0.4.6/go.mod h1:cCOva58eM6v26RK9qw7CXPQ4XxT0w5IbhBQDjTHPx+g=
 github.com/akyoto/assert v0.2.4 h1:n0FwcNH5dMYq3I8Iu7MOR1WWGkkGH8ao84nvCRJmsbs=
 github.com/akyoto/assert v0.2.4/go.mod h1:SoqVayyOmM/YSBnwOxJHCt4BCocoIrgeceWtJV701C0=
 github.com/akyoto/color v1.8.11 h1:uCQi+uRyngo1cJhJSv28PQmduGFiOAGNF6F9MFoRDek=
