@@ -24,6 +24,16 @@ func Main() int {
 
 	command := os.Args[1]
 
+	if command == "help" || command == "--help" {
+		Help()
+		return 0
+	}
+
+	if command == "system" {
+		System()
+		return 0
+	}
+
 	if command != "build" {
 		Help()
 		return 2
