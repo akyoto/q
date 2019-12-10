@@ -1,9 +1,10 @@
 package build
 
 import (
+	"errors"
 	"os"
+	"path"
 	"path/filepath"
-	"strings"
 )
 
 // FindStandardLibrary returns the path to the standard library.
@@ -18,20 +19,30 @@ func FindStandardLibrary() (string, error) {
 	stdLib := filepath.Join(qRoot, "lib")
 	_, err = os.Stat(stdLib)
 
-	// Fix stdLib path for tests and benchmarks
-	if os.IsNotExist(err) {
-		qRoot, err = os.Getwd()
-
-		if err != nil {
-			return "", err
-		}
-
-		// A little hacky, but it works
-		qPos := strings.LastIndex(qRoot, "/q")
-		qRoot = qRoot[:qPos+2]
-
-		return filepath.Join(qRoot, "lib"), nil
+	if !os.IsNotExist(err) {
+		return stdLib, err
 	}
 
-	return stdLib, err
+	// Go up from current directory until we find a lib directory
+	qRoot, err = os.Getwd()
+
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		stdLib = path.Join(qRoot, "lib")
+		stat, err := os.Stat(stdLib)
+
+		if !os.IsNotExist(err) && stat != nil && stat.IsDir() {
+			return stdLib, err
+		}
+
+		if qRoot == "/" {
+			return "", errors.New("Standard library not found")
+		}
+
+		// Go up one level
+		qRoot = path.Clean(path.Join(qRoot, ".."))
+	}
 }
