@@ -45,10 +45,10 @@ We'll also say goodbye to the following:
 
 Productivity is nice but bugs in your code are not. We'll use:
 
-* Contracts (reduce bugs at run time)
-* Tests (reduce bugs at test time)
-* Linters (reduce bugs at compile time)
 * Type system (reduce bugs at compile time)
+* Linters (reduce bugs at compile time)
+* Tests (reduce bugs at test time)
+* Contracts (reduce bugs at run time)
 
 Quality of life features:
 
