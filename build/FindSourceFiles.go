@@ -16,23 +16,31 @@ func FindSourceFiles(directory string) (<-chan *File, <-chan error) {
 
 // findSourceFiles returns all source files in the directory (top-level only, not recursive).
 func findSourceFiles(directory string, files chan<- *File, errors chan<- error) {
-	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-		if path == directory || !strings.HasSuffix(path, ".q") {
-			return nil
-		}
+	defer close(files)
+	defer close(errors)
 
-		if info.IsDir() {
-			return filepath.SkipDir
-		}
-
-		files <- NewFile(path)
-		return nil
-	})
+	fd, err := os.Open(directory)
 
 	if err != nil {
 		errors <- err
+		return
 	}
 
-	close(files)
-	close(errors)
+	defer fd.Close()
+
+	names, err := fd.Readdirnames(0)
+
+	if err != nil {
+		errors <- err
+		return
+	}
+
+	for _, name := range names {
+		if !strings.HasSuffix(name, ".q") {
+			continue
+		}
+
+		fullPath := filepath.Join(directory, name)
+		files <- NewFile(fullPath)
+	}
 }
