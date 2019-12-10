@@ -29,7 +29,9 @@ This will produce the `q` compiler in your current directory.
 * Small binaries ("Hello World" is 247 bytes)
 * High performance (compete with C and Rust)
 
-To achieve these goals, we will implement a new backend:
+### Sub-goals
+
+To achieve these goals, we will implement a new backend with:
 
 * No binary dependencies (not even libc)
 * No compiler dependencies (no LLVM, no GCC, ...)
