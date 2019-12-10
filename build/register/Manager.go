@@ -11,22 +11,45 @@ type Manager struct {
 
 // NewManager creates a new register manager.
 func NewManager() *Manager {
-	rax := &Register{Name: "rax"}
-	rbx := &Register{Name: "rbx"}
-	rcx := &Register{Name: "rcx"}
-	rdx := &Register{Name: "rdx"}
-	rdi := &Register{Name: "rdi"}
-	rsi := &Register{Name: "rsi"}
-	rbp := &Register{Name: "rbp"}
-	r8 := &Register{Name: "r8"}
-	r9 := &Register{Name: "r9"}
-	r10 := &Register{Name: "r10"}
-	r11 := &Register{Name: "r11"}
-	r12 := &Register{Name: "r12"}
-	r13 := &Register{Name: "r13"}
-	r14 := &Register{Name: "r14"}
-	r15 := &Register{Name: "r15"}
+	// Rather than doing lots of mini allocations
+	// we'll allocate memory for all registers at once.
+	registers := []Register{
+		{Name: "rax"},
+		{Name: "rbx"},
+		{Name: "rcx"},
+		{Name: "rdx"},
+		{Name: "rdi"},
+		{Name: "rsi"},
+		{Name: "rbp"},
+		{Name: "r8"},
+		{Name: "r9"},
+		{Name: "r10"},
+		{Name: "r11"},
+		{Name: "r12"},
+		{Name: "r13"},
+		{Name: "r14"},
+		{Name: "r15"},
+	}
 
+	// To simplify the lists below,
+	// bind the registers to their name.
+	rax := &registers[0]
+	rbx := &registers[1]
+	rcx := &registers[2]
+	rdx := &registers[3]
+	rdi := &registers[4]
+	rsi := &registers[5]
+	rbp := &registers[6]
+	r8 := &registers[7]
+	r9 := &registers[8]
+	r10 := &registers[9]
+	r11 := &registers[10]
+	r12 := &registers[11]
+	r13 := &registers[12]
+	r14 := &registers[13]
+	r15 := &registers[14]
+
+	// Register configuration
 	manager := &Manager{
 		All: List{
 			rax,
