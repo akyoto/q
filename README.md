@@ -8,8 +8,6 @@
 
 This is a **very early version** of a programming language I'm currently working on.
 
-It produces machine code and ELF binaries directly without using an external assembler or compiler.
-
 ## Installation
 
 ```shell
@@ -27,26 +25,33 @@ This will produce the `q` compiler in your current directory.
 
 ## Goals
 
-### No...
-
-* No binary dependencies (not even libc)
-* No compiler dependencies (no LLVM, no GCC, ...)
-* No global state (all mutable variables are local)
-* No classes or methods: There is just a) data and b) functions that can operate on data
-* No name shadowing, names never change their meaning
-* No side effects when importing a package
-
-### Yes...
-
 * Fast compilation (<1 ms for simple programs)
 * Small binaries ("Hello World" is 247 bytes)
 * High performance (compete with C and Rust)
+
+To achieve these goals, we will implement a new backend:
+
+* No binary dependencies (not even libc)
+* No compiler dependencies (no LLVM, no GCC, ...)
+
+We'll also say goodbye to the following:
+
+* No global state (all mutable variables are local)
+* No side effects when importing a package
+* No name shadowing, names never change their meaning
+* No complicated classes, just simple data structures
+
+Productivity is nice but bugs in your code are not. We'll use:
+
 * Contracts (reduce bugs at run time)
-* Testing (reduce bugs at test time)
-* Linting (reduce bugs at compile time)
-* Format source code
-* Packages should be highly reusable
-* Statically typed with type inference
+* Tests (reduce bugs at test time)
+* Linters (reduce bugs at compile time)
+* Type system (reduce bugs at compile time)
+
+Quality of life features:
+
+* Simple dependency management
+* Auto-formatter for source code
 * User-friendly compiler messages
 
 ## Todo
@@ -71,10 +76,6 @@ This will produce the `q` compiler in your current directory.
 * [x] `import` standard packages
 * [x] `expect` for input validation
 * [x] `ensure` for output validation
-* [x] Assembly optimizer
-* [x] Exclude unused functions
-* [x] Function call inlining
-* [x] Disable contracts via `-O` flag
 * [ ] Data structures
 * [ ] Stack allocation
 * [ ] Heap allocation
@@ -88,8 +89,27 @@ This will produce the `q` compiler in your current directory.
 * [ ] Multi-threading
 * [ ] Lock-free data structures
 * [ ] Multiple return values
-* [ ] Expression optimization
 * [ ] Rewrite compiler in Q
+* [ ] ...
+
+### Optimizations
+
+* [x] Exclude unused functions
+* [x] Function call inlining
+* [x] Assembly optimization backend
+* [x] Disable contracts via `-O` flag
+* [ ] Expression optimization
+* [ ] Loop unrolls
+* [ ] ...
+
+### Linter
+
+* [x] Unused variables
+* [x] Unused parameters
+* [x] Unused imports
+* [x] Unmodified mutable variables
+* [x] Unnecessary newlines
+* [x] Ineffective assignments
 * [ ] ...
 
 ### Operators
@@ -106,16 +126,6 @@ This will produce the `q` compiler in your current directory.
 * [ ] `%`
 * [ ] ...
 
-### Linter
-
-* [x] Unused variables
-* [x] Unused parameters
-* [x] Unused imports
-* [x] Unmodified mutable variables
-* [x] Unnecessary newlines
-* [x] Ineffective assignments
-* [ ] ...
-
 ### Architecture
 
 * [x] x86-64
@@ -128,7 +138,6 @@ This will produce the `q` compiler in your current directory.
 * [x] Linux
 * [ ] Mac
 * [ ] Windows
-* [ ] Browser
 * [ ] ...
 
 ## FAQ
@@ -144,24 +153,28 @@ This will produce the `q` compiler in your current directory.
 ### How do I view the produced assembly output?
 
 ```shell
-./q build -v examples/loops
+q build -v
 ```
 
 ### How can I make a performance optimized build?
 
 ```shell
-./q build -O examples/loops
+q build -O
 ```
 
 This will disable all `expect` and `ensure` checks.
 
-### Is the syntax final?
+### How do I install it system-wide?
 
-No, the syntax will be changed in the future.
+```shell
+sudo ln -s $PWD/q /usr/local/bin/q
+```
 
-### Which builtin functions are available?
+### How can I include information about my system in bug reports?
 
-There are currently 2 builtin functions, `syscall` and `print`. In the future we'd like to remove `print` so that `syscall` becomes the only builtin function.
+```shell
+q system
+```
 
 ### Which editor can I use to edit Q code?
 
@@ -171,9 +184,13 @@ There is a simple [VS Code extension](https://github.com/akyoto/vscode-q) with s
 git clone https://github.com/akyoto/vscode-q ~/.vscode/extensions/vscode-q
 ```
 
-### Is there a community for this project?
+### Is the syntax final?
 
-There is a Discord channel and a Telegram group for [sponsors](https://github.com/sponsors/akyoto).
+Unlikely. There will be changes in the near future.
+
+### Which builtin functions are available?
+
+There are currently 2 builtin functions, `syscall` and `print`. In the future we'd like to remove `print` so that `syscall` becomes the only builtin function.
 
 ### How do I run the tests?
 
@@ -186,6 +203,10 @@ go test -coverpkg=./...
 ```shell
 go test -run=^$ -bench=. ./benchmarks
 ```
+
+### Is there a community for this project?
+
+There is a Discord channel and a Telegram group for [sponsors](https://github.com/sponsors/akyoto).
 
 ## Style
 
