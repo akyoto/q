@@ -19,7 +19,7 @@ func FindStandardLibrary() (string, error) {
 	_, err = os.Stat(stdLib)
 
 	// Fix stdLib path for tests and benchmarks
-	if err != nil {
+	if os.IsNotExist(err) {
 		qRoot, err = os.Getwd()
 
 		if err != nil {
@@ -33,5 +33,5 @@ func FindStandardLibrary() (string, error) {
 		return filepath.Join(qRoot, "lib"), nil
 	}
 
-	return stdLib, nil
+	return stdLib, err
 }

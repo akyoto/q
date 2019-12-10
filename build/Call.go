@@ -226,7 +226,7 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 			return nil, nil, err
 		}
 
-		if typ != function.Parameters[i].Type {
+		if !function.NoParameterCheck && typ != function.Parameters[i].Type {
 			return nil, nil, &errors.InvalidType{
 				Type:          typ.String(),
 				Expected:      function.Parameters[i].Type.String(),
