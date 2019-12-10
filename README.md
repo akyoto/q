@@ -140,7 +140,6 @@ This will produce the `q` compiler in your current directory.
 * [cli](https://github.com/akyoto/q/tree/master/cli) contains the command line interface
 * [examples](https://github.com/akyoto/q/tree/master/examples) contains a few examples that are also used in tests
 * [lib](https://github.com/akyoto/q/tree/master/lib) contains the standard library
-* [tests](https://github.com/akyoto/q/tree/master/tests) contains the compiler tests
 
 ### How do I view the produced assembly output?
 
@@ -179,7 +178,7 @@ There is a Discord channel and a Telegram group for [sponsors](https://github.co
 ### How do I run the tests?
 
 ```shell
-go test -v -coverpkg=./...
+go test -coverpkg=./...
 ```
 
 ### How do I run the benchmarks?
