@@ -179,7 +179,7 @@ There is a Discord channel and a Telegram group for [sponsors](https://github.co
 ### How do I run the tests?
 
 ```shell
-go test -v ./...
+go test -v -coverpkg=./...
 ```
 
 ### How do I run the benchmarks?

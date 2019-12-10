@@ -25,7 +25,7 @@ func FindStandardLibrary() (string, error) {
 			return "", err
 		}
 
-		return filepath.Join(qRoot, "..", "lib"), nil
+		return filepath.Join(qRoot, "lib"), nil
 	}
 
 	return stdLib, nil
