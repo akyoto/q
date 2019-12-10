@@ -8,5 +8,5 @@ type UnknownExpression struct {
 }
 
 func (err *UnknownExpression) Error() string {
-	return fmt.Sprintf("Unknown expression: '%s'", err.Expression)
+	return fmt.Sprintf("Unknown expression '%s'", err.Expression)
 }

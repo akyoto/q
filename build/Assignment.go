@@ -74,7 +74,7 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 		defer state.scopes.Add(variable)
 	} else {
 		if variable == nil {
-			return nil, &errors.UnknownVariable{Name: variableName}
+			return nil, state.UnknownVariableError(variableName)
 		}
 
 		if !variable.Mutable {

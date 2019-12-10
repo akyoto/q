@@ -183,7 +183,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		variable := state.scopes.Get(variableName)
 
 		if variable == nil {
-			return nil, &errors.UnknownVariable{Name: variableName}
+			return nil, state.UnknownVariableError(variableName)
 		}
 
 		state.UseVariable(variable)

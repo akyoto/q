@@ -1,1 +1,1 @@
-allocate(length) {}
+noParameterType(length) {}

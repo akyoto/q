@@ -2,7 +2,6 @@ package build
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 
 	"github.com/akyoto/q/build/assembler"
@@ -10,7 +9,6 @@ import (
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
-	"github.com/akyoto/stringutils/similarity"
 )
 
 // State encapsulates a compiler's state.
@@ -117,7 +115,7 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 			variable := state.scopes.Get(variableName)
 
 			if variable == nil {
-				return nil, &errors.UnknownVariable{Name: variableName}
+				return nil, state.UnknownVariableError(variableName)
 			}
 
 			state.UseVariable(variable)
@@ -225,64 +223,4 @@ func (state *State) Skip(expectedKind token.Kind) token.Token {
 
 	state.tokenCursor++
 	return actual
-}
-
-// UnknownFunctionError produces an unknown function error
-// and tries to guess which function the user was trying to type.
-func (state *State) UnknownFunctionError(functionName string) error {
-	knownFunctions := make([]string, 0, len(state.environment.Functions)+len(BuiltinFunctions))
-
-	for builtin := range BuiltinFunctions {
-		knownFunctions = append(knownFunctions, builtin)
-	}
-
-	for function := range state.environment.Functions {
-		knownFunctions = append(knownFunctions, function)
-	}
-
-	// Suggest a function name based on the similarity to known functions
-	sort.Slice(knownFunctions, func(a, b int) bool {
-		aSimilarity := similarity.JaroWinkler(functionName, knownFunctions[a])
-		bSimilarity := similarity.JaroWinkler(functionName, knownFunctions[b])
-		return aSimilarity > bSimilarity
-	})
-
-	if similarity.JaroWinkler(functionName, knownFunctions[0]) < 0.9 {
-		return &errors.UnknownFunction{Name: functionName}
-	}
-
-	return &errors.UnknownFunction{
-		Name:        functionName,
-		CorrectName: knownFunctions[0],
-	}
-}
-
-// UnknownPackageError produces an unknown package error
-// and tries to guess which package the user was trying to type.
-func (state *State) UnknownPackageError(pkgName string) error {
-	if len(state.function.File.imports) == 0 {
-		return &errors.UnknownPackage{Name: pkgName}
-	}
-
-	knownPackages := make([]string, 0, len(state.function.File.imports))
-
-	for imp := range state.function.File.imports {
-		knownPackages = append(knownPackages, imp)
-	}
-
-	// Suggest a package name based on the similarity to known functions
-	sort.Slice(knownPackages, func(a, b int) bool {
-		aSimilarity := similarity.JaroWinkler(pkgName, knownPackages[a])
-		bSimilarity := similarity.JaroWinkler(pkgName, knownPackages[b])
-		return aSimilarity > bSimilarity
-	})
-
-	if similarity.JaroWinkler(pkgName, knownPackages[0]) < 0.9 {
-		return &errors.UnknownPackage{Name: pkgName}
-	}
-
-	return &errors.UnknownPackage{
-		Name:        pkgName,
-		CorrectName: knownPackages[0],
-	}
 }

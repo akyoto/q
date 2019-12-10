@@ -1,1 +1,1 @@
-allocate(length Int) -> {}
+noReturnType(length Int) -> {}
