@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// FindSourceFiles returns all source files in the directory (top-level only, not recursive).
+// FindSourceFiles returns all source files in the directory.
 func FindSourceFiles(directory string) (<-chan *File, <-chan error) {
 	files := make(chan *File)
 	errors := make(chan error)
@@ -14,7 +14,7 @@ func FindSourceFiles(directory string) (<-chan *File, <-chan error) {
 	return files, errors
 }
 
-// findSourceFiles returns all source files in the directory (top-level only, not recursive).
+// findSourceFiles returns all source files in the directory without channel allocations.
 func findSourceFiles(directory string, files chan<- *File, errors chan<- error) {
 	defer close(files)
 	defer close(errors)

@@ -203,7 +203,7 @@ go test -coverpkg=./...
 ### How do I run the benchmarks?
 
 ```shell
-go test -run=^$ -bench=. ./benchmarks
+go test -bench=. ./benchmarks
 ```
 
 ### Is there a community for this project?

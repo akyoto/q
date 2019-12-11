@@ -157,63 +157,65 @@ begin:
 			function.parameterStart = index + 1
 
 		case token.Keyword:
-			if t.Text() == "import" {
-				var baseName string
-				position := index
-				fullImportPath := strings.Builder{}
-				fullImportPath.WriteString(file.environment.StandardLibrary)
-				fullImportPath.WriteByte('/')
-				importPath := strings.Builder{}
-				index++
-
-				for ; index < len(tokens); index++ {
-					t = tokens[index]
-
-					switch t.Kind {
-					case token.Identifier:
-						baseName = t.Text()
-						fullImportPath.WriteString(baseName)
-						importPath.WriteString(baseName)
-
-					case token.Operator:
-						if t.Text() != "." {
-							return NewError(&errors.InvalidCharacter{Character: t.Text()}, file.path, tokens[:index+1], function)
-						}
-
-						fullImportPath.WriteByte('/')
-						importPath.WriteByte('.')
-
-					case token.NewLine:
-						imp := &Import{
-							Path:     importPath.String(),
-							FullPath: fullImportPath.String(),
-							BaseName: baseName,
-							Position: position,
-							Used:     0,
-						}
-
-						otherImport, exists := file.imports[baseName]
-
-						if exists {
-							return NewError(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}, file.path, tokens[:index], function)
-						}
-
-						stat, err := os.Stat(imp.FullPath)
-
-						if err != nil || !stat.IsDir() {
-							return NewError(&errors.PackageDoesntExist{ImportPath: imp.Path, FilePath: imp.FullPath}, file.path, tokens[:imp.Position+2], function)
-						}
-
-						file.imports[baseName] = imp
-						imports <- imp
-						index++
-						goto begin
-					}
-				}
+			if function != nil {
+				continue
 			}
 
-			if function == nil {
+			if t.Text() != "import" {
 				return NewError(errors.TopLevel, file.path, tokens[:index+1], function)
+			}
+
+			var baseName string
+			position := index
+			fullImportPath := strings.Builder{}
+			fullImportPath.WriteString(file.environment.StandardLibrary)
+			fullImportPath.WriteByte('/')
+			importPath := strings.Builder{}
+			index++
+
+			for ; index < len(tokens); index++ {
+				t = tokens[index]
+
+				switch t.Kind {
+				case token.Identifier:
+					baseName = t.Text()
+					fullImportPath.WriteString(baseName)
+					importPath.WriteString(baseName)
+
+				case token.Operator:
+					if t.Text() != "." {
+						return NewError(&errors.InvalidCharacter{Character: t.Text()}, file.path, tokens[:index+1], function)
+					}
+
+					fullImportPath.WriteByte('/')
+					importPath.WriteByte('.')
+
+				case token.NewLine:
+					imp := &Import{
+						Path:     importPath.String(),
+						FullPath: fullImportPath.String(),
+						BaseName: baseName,
+						Position: position,
+						Used:     0,
+					}
+
+					otherImport, exists := file.imports[baseName]
+
+					if exists {
+						return NewError(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}, file.path, tokens[:index], function)
+					}
+
+					stat, err := os.Stat(imp.FullPath)
+
+					if err != nil || !stat.IsDir() {
+						return NewError(&errors.PackageDoesntExist{ImportPath: imp.Path, FilePath: imp.FullPath}, file.path, tokens[:imp.Position+2], function)
+					}
+
+					file.imports[baseName] = imp
+					imports <- imp
+					index++
+					goto begin
+				}
 			}
 
 		case token.Operator:
