@@ -12,13 +12,11 @@ import (
 
 // File represents a single source file.
 type File struct {
-	contents      []byte
 	tokens        []token.Token
-	path          string
-	functionCount int64
 	imports       map[string]*Import
 	environment   *Environment
-	verbose       bool
+	path          string
+	functionCount int64
 }
 
 // NewFile creates a new compiler for a single file.
@@ -99,7 +97,6 @@ func (file *File) Tokenize() error {
 		return NewError(err, file.path, tokens, nil)
 	}
 
-	file.contents = contents
 	file.tokens = tokens
 	return nil
 }
@@ -118,6 +115,5 @@ func (file *File) Close() error {
 	}
 
 	file.tokens = nil
-	file.contents = nil
 	return nil
 }

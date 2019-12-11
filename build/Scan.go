@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/akyoto/q/build/errors"
-	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -54,10 +53,6 @@ begin:
 
 			if functionName == "main" {
 				function.CallCount = 1
-			}
-
-			if file.verbose {
-				log.Info.Println("Function:", function.Name)
 			}
 
 			file.functionCount++
