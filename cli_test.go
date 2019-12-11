@@ -17,6 +17,7 @@ func TestCLI(t *testing.T) {
 	tests := []cliTest{
 		{[]string{"q"}, 2},
 		{[]string{"q", "invalid"}, 2},
+		{[]string{"q", "system"}, 0},
 		{[]string{"q", "build", "non-existing-directory"}, 1},
 		{[]string{"q", "build", "examples/hello/hello.q"}, 2},
 	}
