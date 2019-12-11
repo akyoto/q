@@ -1,9 +1,11 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
@@ -57,20 +59,72 @@ func System() {
 	}
 
 	// CPU model
-	cpuInfoBytes, err := ioutil.ReadFile("/proc/cpuinfo")
+	cpuModel := cpuModelName()
 
-	if err == nil {
-		cpuInfo := string(cpuInfoBytes)
-		modelNamePrefix := "model name"
-		cpuInfo = cpuInfo[strings.Index(cpuInfo, modelNamePrefix)+len(modelNamePrefix):]
-		cpuInfo = strings.TrimSpace(cpuInfo)
-		cpuInfo = strings.TrimPrefix(cpuInfo, ":")
-		cpuInfo = strings.TrimSpace(cpuInfo)
-		cpuInfo = cpuInfo[:strings.Index(cpuInfo, "\n")]
-		log.Info.Printf(key(prefix)+"%s\n", "CPU:", value(cpuInfo))
+	if cpuModel != "" {
+		log.Info.Printf(key(prefix)+"%s\n", "CPU:", value(cpuModel))
 	}
 
 	// CPU threads
 	cpuCount := runtime.NumCPU()
 	log.Info.Printf(key(prefix)+"%s\n", "CPU threads:", value(strconv.Itoa(cpuCount)))
+}
+
+// cpuModelName returns the model name of the CPU.
+func cpuModelName() string {
+	// Via "/proc/cpuinfo" (Linux)
+	cpuInfoBytes, err := ioutil.ReadFile("/proc/cpuinfo")
+
+	if err == nil {
+		cpuInfo := string(cpuInfoBytes)
+		cpuInfo = findColumnValue(cpuInfo, "model name")
+
+		if cpuInfo != "" {
+			return cpuInfo
+		}
+	}
+
+	// Via "lscpu" (Linux)
+	cpuInfoBytes, err = exec.Command("lscpu").Output()
+
+	if err == nil {
+		cpuInfo := string(cpuInfoBytes)
+		cpuInfo = findColumnValue(cpuInfo, "Model name")
+
+		if cpuInfo != "" {
+			return cpuInfo
+		}
+	}
+
+	// Via "sysctl" (Mac)
+	cpuInfoBytes, err = exec.Command("sysctl", "-n", "machdep.cpu.brand_string").Output()
+
+	if err == nil {
+		cpuInfoBytes = bytes.TrimSpace(cpuInfoBytes)
+		return string(cpuInfoBytes)
+	}
+
+	return ""
+}
+
+// findColumnValue finds the value of the given column inside a table.
+func findColumnValue(output string, column string) string {
+	columnPos := strings.Index(output, column)
+
+	if columnPos == -1 {
+		return ""
+	}
+
+	output = output[columnPos+len(column):]
+	output = strings.TrimSpace(output)
+	output = strings.TrimPrefix(output, ":")
+	output = strings.TrimSpace(output)
+
+	newline := strings.Index(output, "\n")
+
+	if newline != -1 {
+		output = output[:newline]
+	}
+
+	return output
 }
