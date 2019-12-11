@@ -155,16 +155,25 @@ Quality of life features:
 ### How do I view the produced assembly output?
 
 ```shell
-q build -v
+q build -a
+q build --assembly
 ```
 
 ### How can I make a performance optimized build?
 
 ```shell
 q build -O
+q build --optimize
 ```
 
 This will disable all `expect` and `ensure` checks.
+
+### How can I see where my compilation time is spent on?
+
+```shell
+q build -t
+q build --time
+```
 
 ### How do I install it system-wide?
 

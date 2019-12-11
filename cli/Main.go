@@ -12,7 +12,8 @@ import (
 // We never call os.Exit directly here because it's bad for testing.
 func Main() int {
 	var (
-		verbose   = false
+		assembly  = false
+		timings   = false
 		optimize  = false
 		directory = "."
 	)
@@ -43,8 +44,15 @@ func Main() int {
 		argument := os.Args[i]
 
 		switch argument {
+		case "-a", "--assembly":
+			assembly = true
+
+		case "-t", "--time":
+			timings = true
+
 		case "-v", "--verbose":
-			verbose = true
+			assembly = true
+			timings = true
 
 		case "-O", "--optimize":
 			optimize = true
@@ -72,7 +80,8 @@ func Main() int {
 		return 1
 	}
 
-	b.Verbose = verbose
+	b.ShowAssembly = assembly
+	b.ShowTimings = timings
 	b.Optimize = optimize
 	err = b.Run()
 

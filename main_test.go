@@ -74,5 +74,6 @@ func Check(inputFile string) error {
 		return err
 	}
 
-	return compiler.Compile()
+	_, err = compiler.Compile()
+	return err
 }
