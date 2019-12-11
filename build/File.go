@@ -52,7 +52,10 @@ func (file *File) Tokenize() error {
 
 	for {
 		n, err := fd.Read(buffer)
-		contents = append(contents, buffer[:n]...)
+
+		if n > 0 {
+			contents = append(contents, buffer[:n]...)
+		}
 
 		if err != nil {
 			if err == io.EOF {
