@@ -34,7 +34,7 @@ func NewFile(inputFile string) *File {
 func (file *File) Tokenize() error {
 	var (
 		err       error
-		processed int
+		processed uint16
 	)
 
 	file.contents, err = ioutil.ReadFile(file.path)
@@ -45,7 +45,9 @@ func (file *File) Tokenize() error {
 
 	// Dividing the file length by 2 is a good approximation
 	// of the number of tokens in the file.
-	tokens := make([]token.Token, 0, len(file.contents)/2)
+	// For very small files we add a minimum of 4 reserved tokens.
+	guessTokenCount := len(file.contents)/2 + 4
+	tokens := make([]token.Token, 0, guessTokenCount)
 
 	// Process tokens
 	file.tokens, processed = token.Tokenize(file.contents, tokens)
@@ -56,7 +58,7 @@ func (file *File) Tokenize() error {
 	}
 
 	// If we didn't process everything, there's some error in the tokenization.
-	if processed != len(file.contents) {
+	if processed != uint16(len(file.contents)) {
 		remaining := file.contents[processed:]
 		until := len(remaining)
 

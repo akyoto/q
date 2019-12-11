@@ -23,16 +23,16 @@ var (
 )
 
 // Tokenize processes the partial read and returns how many bytes were processed.
-func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
+func Tokenize(buffer []byte, tokens []Token) ([]Token, uint16) {
 	var (
-		i              int
+		i              uint16
 		c              byte
-		processedBytes int
+		processedBytes uint16
 		lastTokenKind  Kind
-		token          = Token{Invalid, nil, 0}
+		token          = Token{Invalid, 0, nil}
 	)
 
-	for i < len(buffer) {
+	for i < uint16(len(buffer)) {
 		c = buffer[i]
 
 		switch {
@@ -43,7 +43,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			for {
 				i++
 
-				if i >= len(buffer) {
+				if i >= uint16(len(buffer)) {
 					return tokens, processedBytes
 				}
 
@@ -55,7 +55,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 				}
 			}
 
-			token = Token{Identifier, buffer[processedBytes : i+1], processedBytes}
+			token = Token{Identifier, processedBytes, buffer[processedBytes : i+1]}
 
 			if spec.Keywords[string(token.Bytes)] {
 				token.Kind = Keyword
@@ -68,7 +68,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			for {
 				i++
 
-				if i >= len(buffer) {
+				if i >= uint16(len(buffer)) {
 					return tokens, processedBytes
 				}
 
@@ -80,7 +80,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 				}
 			}
 
-			token = Token{Number, buffer[processedBytes : i+1], processedBytes}
+			token = Token{Number, processedBytes, buffer[processedBytes : i+1]}
 
 		case c == '#':
 			processedBytes = i
@@ -88,7 +88,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			for {
 				i++
 
-				if i >= len(buffer) {
+				if i >= uint16(len(buffer)) {
 					return tokens, processedBytes
 				}
 
@@ -101,7 +101,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			}
 
 			trimmed := bytes.TrimSpace(buffer[processedBytes+1 : i+1])
-			token = Token{Comment, trimmed, processedBytes}
+			token = Token{Comment, processedBytes, trimmed}
 
 		// Operators
 		case c == '=' || c == ':' || c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>' || c == '!':
@@ -110,7 +110,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			for {
 				i++
 
-				if i >= len(buffer) {
+				if i >= uint16(len(buffer)) {
 					return tokens, processedBytes
 				}
 
@@ -122,7 +122,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 				}
 			}
 
-			token = Token{Operator, buffer[processedBytes : i+1], processedBytes}
+			token = Token{Operator, processedBytes, buffer[processedBytes : i+1]}
 
 			if spec.Operators[string(token.Bytes)] == nil {
 				return tokens, processedBytes
@@ -137,7 +137,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 			for {
 				i++
 
-				if i >= len(buffer) {
+				if i >= uint16(len(buffer)) {
 					return tokens, processedBytes
 				}
 
@@ -171,52 +171,52 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, int) {
 				text = append(text, c)
 			}
 
-			token = Token{Text, text, processedBytes + 1}
+			token = Token{Text, processedBytes + 1, text}
 
 		// Parentheses start
 		case c == '(':
-			token = Token{GroupStart, groupStartBytes, i}
+			token = Token{GroupStart, i, groupStartBytes}
 
 		// Parentheses end
 		case c == ')':
-			token = Token{GroupEnd, groupEndBytes, i}
+			token = Token{GroupEnd, i, groupEndBytes}
 
 		// Block start
 		case c == '{':
-			token = Token{BlockStart, blockStartBytes, i}
+			token = Token{BlockStart, i, blockStartBytes}
 
 		// Block end
 		case c == '}':
-			token = Token{BlockEnd, blockEndBytes, i}
+			token = Token{BlockEnd, i, blockEndBytes}
 
 		// Array start
 		case c == '[':
-			token = Token{ArrayStart, arrayStartBytes, i}
+			token = Token{ArrayStart, i, arrayStartBytes}
 
 		// Array end
 		case c == ']':
-			token = Token{ArrayEnd, arrayEndBytes, i}
+			token = Token{ArrayEnd, i, arrayEndBytes}
 
 		// Separator
 		case c == ',':
-			token = Token{Separator, separatorBytes, i}
+			token = Token{Separator, i, separatorBytes}
 
 		// Accessor
 		case c == '.':
 			if buffer[i+1] == '.' {
-				token = Token{Range, rangeBytes, i}
+				token = Token{Range, i, rangeBytes}
 				i++
 			} else {
-				token = Token{Operator, accessorBytes, i}
+				token = Token{Operator, i, accessorBytes}
 			}
 
 		// Question
 		case c == '?':
-			token = Token{Question, questionBytes, i}
+			token = Token{Question, i, questionBytes}
 
 		// New line
 		case c == '\n':
-			token = Token{NewLine, newLineBytes, i}
+			token = Token{NewLine, i, newLineBytes}
 		}
 
 		// Handle token

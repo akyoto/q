@@ -7,8 +7,8 @@ import "github.com/akyoto/stringutils/unsafe"
 // This makes parsing easier and allows us to do better syntax checks.
 type Token struct {
 	Kind     Kind
+	Position uint16
 	Bytes    []byte
-	Position int
 }
 
 // Text converts the bytes of the token to a string.

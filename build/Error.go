@@ -34,12 +34,12 @@ func NewError(err error, path string, tokens []token.Token, function *Function) 
 	for i, oldToken := range tokens {
 		if oldToken.Kind == token.NewLine && i != len(tokens)-1 {
 			lineCount++
-			lineStart = oldToken.Position
+			lineStart = int(oldToken.Position)
 		}
 	}
 
 	cursorToken := tokens[len(tokens)-1]
-	column := cursorToken.Position - lineStart
+	column := int(cursorToken.Position) - lineStart
 
 	cursorRight, ok := err.(errors.CursorRight)
 

@@ -41,9 +41,9 @@ func TestInstructionsFromTokens(t *testing.T) {
 
 		t.Run(string(pattern.Source), func(t *testing.T) {
 			tokens := []token.Token{}
-			processed := 0
+			processed := uint16(0)
 			tokens, processed = token.Tokenize(pattern.Source, tokens)
-			assert.Equal(t, processed, len(pattern.Source))
+			assert.Equal(t, processed, uint16(len(pattern.Source)))
 			instructions, err := instruction.FromTokens(tokens)
 			assert.Nil(t, err)
 			assert.Equal(t, len(instructions), len(pattern.Expected))
