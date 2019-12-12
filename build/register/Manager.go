@@ -14,21 +14,21 @@ func NewManager() *Manager {
 	// Rather than doing lots of mini allocations
 	// we'll allocate memory for all registers at once.
 	registers := []Register{
-		{Name: "rax"},
-		{Name: "rbx"},
-		{Name: "rcx"},
-		{Name: "rdx"},
-		{Name: "rdi"},
-		{Name: "rsi"},
-		{Name: "rbp"},
-		{Name: "r8"},
-		{Name: "r9"},
-		{Name: "r10"},
-		{Name: "r11"},
-		{Name: "r12"},
-		{Name: "r13"},
-		{Name: "r14"},
-		{Name: "r15"},
+		{ID: 0, Name: "rax"},
+		{ID: 1, Name: "rbx"},
+		{ID: 2, Name: "rcx"},
+		{ID: 3, Name: "rdx"},
+		{ID: 4, Name: "rdi"},
+		{ID: 5, Name: "rsi"},
+		{ID: 6, Name: "rbp"},
+		{ID: 7, Name: "r8"},
+		{ID: 8, Name: "r9"},
+		{ID: 9, Name: "r10"},
+		{ID: 10, Name: "r11"},
+		{ID: 11, Name: "r12"},
+		{ID: 12, Name: "r13"},
+		{ID: 13, Name: "r14"},
+		{ID: 14, Name: "r15"},
 	}
 
 	// To simplify the lists below,
@@ -101,4 +101,9 @@ func NewManager() *Manager {
 	}
 
 	return manager
+}
+
+// ByID returns the register with the given ID.
+func (manager *Manager) ByID(id byte) *Register {
+	return manager.All[id]
 }

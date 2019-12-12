@@ -150,8 +150,8 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 	function.Wait()
 
 	// Determine the registers we need to save
-	for registerName := range function.UsedRegisterNames() {
-		callModifiedRegister := state.registers.All.ByName(registerName)
+	for registerID := range function.UsedRegisterIDs() {
+		callModifiedRegister := state.registers.ByID(registerID)
 
 		if callModifiedRegister.IsFree() {
 			continue

@@ -65,8 +65,8 @@ func (function *Function) Errorf(position token.Position, message string, args .
 	return function.Error(position, fmt.Errorf(message, args...))
 }
 
-// UsedRegisterNames returns the names of used registers.
-func (function *Function) UsedRegisterNames() map[string]struct{} {
+// UsedRegisterIDs returns the IDs of used registers.
+func (function *Function) UsedRegisterIDs() map[byte]struct{} {
 	if function.IsBuiltin {
 		// return map[string]struct{}{
 		// 	// Parameters
@@ -85,7 +85,7 @@ func (function *Function) UsedRegisterNames() map[string]struct{} {
 		return nil
 	}
 
-	return function.assembler.UsedRegisterNames()
+	return function.assembler.UsedRegisterIDs()
 }
 
 // Wait will block until the compilation finishes.
