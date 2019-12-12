@@ -24,6 +24,7 @@ func TestErrors(t *testing.T) {
 		{"missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
 		{"missing-return-type.q", errors.MissingReturnType},
 		{"missing-return-value.q", &errors.MissingReturnValue{ReturnType: "Int64"}},
+		{"missing-struct-name.q", errors.MissingStructName},
 		{"missing-type.q", &errors.MissingType{Of: "length"}},
 		{"package-doesnt-exist.q", &errors.PackageDoesntExist{ImportPath: "non.existing.package"}},
 		{"parameter-count.q", &errors.ParameterCount{FunctionName: "sum", CountGiven: 1, CountRequired: 2}},

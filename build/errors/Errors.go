@@ -16,6 +16,7 @@ var (
 	MissingRangeStart           = &Base{"Missing starting value in range expression", false}
 	MissingRangeLimit           = &Base{"Missing upper limit in range expression", true}
 	MissingReturnType           = &Base{"Missing function return type", false}
+	MissingStructName           = &Base{"Missing struct name", false}
 	NotImplemented              = &Base{"Not implemented", false}
 	ParameterOpeningBracket     = &Base{"Missing opening bracket '(' after the function name", false}
 	ReturnWithoutFunctionType   = &Base{"Returning a value in a function without a return type", false}
