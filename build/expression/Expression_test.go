@@ -83,7 +83,7 @@ func TestExpressionFromTokens(t *testing.T) {
 			src := []byte(test.Expression + "\n")
 
 			tokens, processed := token.Tokenize(src, []token.Token{})
-			assert.Equal(t, processed, len(src))
+			assert.Equal(t, processed, uint16(len(src)))
 			tokens = tokens[:len(tokens)-1]
 
 			expr, err := expression.FromTokens(tokens)
