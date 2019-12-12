@@ -102,10 +102,6 @@ func (function *Function) Wait() {
 	function.Finished.L.Lock()
 	defer function.Finished.L.Unlock()
 
-	if function.IsFinished {
-		return
-	}
-
 	for !function.IsFinished {
 		function.Finished.Wait()
 	}
