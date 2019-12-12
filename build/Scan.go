@@ -3,6 +3,7 @@ package build
 import (
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
@@ -47,9 +48,10 @@ begin:
 			function = &Function{
 				Name:           functionName,
 				File:           file,
-				Finished:       make(chan struct{}),
 				parameterStart: index + 2,
 			}
+
+			function.Finished = sync.NewCond(&function.FinishedMutex)
 
 			if functionName == "main" {
 				function.CallCount = 1

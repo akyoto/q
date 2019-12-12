@@ -2,6 +2,7 @@ package build
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/akyoto/q/build/assembler"
 	"github.com/akyoto/q/build/register"
@@ -19,10 +20,12 @@ type Function struct {
 	TokenEnd         token.Position
 	NoParameterCheck bool
 	IsBuiltin        bool
+	IsFinished       bool
 	SideEffects      int32
 	CallCount        int32
+	Finished         *sync.Cond
+	FinishedMutex    sync.Mutex
 	assembler        *assembler.Assembler
-	Finished         chan struct{}
 	parameterStart   token.Position
 }
 
@@ -95,7 +98,17 @@ func (function *Function) Wait() {
 		return
 	}
 
-	<-function.Finished
+	if function.IsFinished {
+		return
+	}
+
+	function.Finished.L.Lock()
+
+	for !function.IsFinished {
+		function.Finished.Wait()
+	}
+
+	function.Finished.L.Unlock()
 }
 
 // String returns the function name.

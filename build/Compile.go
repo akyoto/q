@@ -13,7 +13,12 @@ import (
 // Compile turns a function into machine code.
 // It is executed for all function bodies.
 func Compile(function *Function, environment *Environment, optimize bool, verbose bool) error {
-	defer close(function.Finished)
+	defer func() {
+		function.Finished.L.Lock()
+		function.IsFinished = true
+		function.Finished.Broadcast()
+		function.Finished.L.Unlock()
+	}()
 
 	scopes := &ScopeStack{}
 	scopes.Push()
