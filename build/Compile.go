@@ -12,7 +12,7 @@ import (
 
 // Compile turns a function into machine code.
 // It is executed for all function bodies.
-func Compile(function *Function, environment *Environment, optimize bool, verbose bool) error {
+func Compile(function *Function, environment *Environment, optimize bool, verbose bool) {
 	defer func() {
 		function.Finished.L.Lock()
 		function.IsFinished = true
@@ -29,13 +29,15 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	err := declareParameters(function, scopes, registers, identifierLifeTime)
 
 	if err != nil {
-		return err
+		function.Error = err
+		return
 	}
 
 	instructions, instrErr := instruction.FromTokens(tokens)
 
 	if instrErr != nil {
-		return function.NewError(instrErr.Position, instrErr)
+		function.Error = function.NewError(instrErr.Position, instrErr)
+		return
 	}
 
 	assembler := assembler.New(verbose)
@@ -62,14 +64,16 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	err = state.CompileInstructions()
 
 	if err != nil {
-		return function.NewError(state.tokenCursor, err)
+		function.Error = function.NewError(state.tokenCursor, err)
+		return
 	}
 
 	// Check for mistakes in variable usage
 	err = state.PopScope(false)
 
 	if err != nil {
-		return err
+		function.Error = err
+		return
 	}
 
 	// Return
@@ -85,7 +89,8 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 			err := state.Condition(ensure.condition, ensure.failLabel)
 
 			if err != nil {
-				return err
+				function.Error = err
+				return
 			}
 		}
 
@@ -114,8 +119,6 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	// Optimize assembly code
 	state.assembler.Optimize()
-
-	return nil
 }
 
 // declareParameters declares the given parameters as variables inside the scope.

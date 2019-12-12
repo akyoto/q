@@ -139,6 +139,10 @@ func (build *Build) Compile() (*asm.Assembler, error) {
 			return nil, function.Error
 		}
 
+		if function.File.Error != nil {
+			return nil, function.File.Error
+		}
+
 		if function.CallCount == 0 {
 			continue
 		}

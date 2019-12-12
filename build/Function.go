@@ -99,17 +99,16 @@ func (function *Function) Wait() {
 		return
 	}
 
+	function.Finished.L.Lock()
+	defer function.Finished.L.Unlock()
+
 	if function.IsFinished {
 		return
 	}
 
-	function.Finished.L.Lock()
-
 	for !function.IsFinished {
 		function.Finished.Wait()
 	}
-
-	function.Finished.L.Unlock()
 }
 
 // String returns the function name.

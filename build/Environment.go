@@ -84,14 +84,14 @@ func (env *Environment) Compile(optimize bool, verbose bool) {
 
 		go func(function *Function) {
 			defer wg.Done()
-			function.Error = Compile(function, env, optimize, verbose)
+			Compile(function, env, optimize, verbose)
 
 			if function.Error != nil {
 				return
 			}
 
 			if atomic.AddInt64(&function.File.functionCount, -1) == 0 {
-				function.Error = function.File.Close()
+				function.File.Close()
 			}
 		}(function)
 	}

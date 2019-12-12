@@ -17,6 +17,7 @@ type File struct {
 	environment   *Environment
 	path          string
 	functionCount int64
+	Error         error
 }
 
 // NewFile creates a new compiler for a single file.
@@ -107,13 +108,13 @@ func (file *File) Tokens() []token.Token {
 }
 
 // Close frees up the memory.
-func (file *File) Close() error {
+func (file *File) Close() {
 	for _, imp := range file.imports {
 		if atomic.LoadInt32(&imp.Used) == 0 {
-			return NewError(fmt.Errorf("Import '%s' has never been used", imp.Path), file.path, file.tokens[:imp.Position+1], nil)
+			file.Error = NewError(fmt.Errorf("Import '%s' has never been used", imp.Path), file.path, file.tokens[:imp.Position+1], nil)
+			break
 		}
 	}
 
 	file.tokens = nil
-	return nil
 }
