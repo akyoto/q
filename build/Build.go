@@ -123,36 +123,22 @@ func (build *Build) Compile() (*asm.Assembler, error) {
 		return nil, errors.New("Function 'main' has not been defined")
 	}
 
-	var results []*Function
-	resultsChannel, errors := build.Environment.Compile(build.Optimize, build.ShowAssembly)
+	build.Environment.Compile(build.Optimize, build.ShowAssembly)
 
 	// Generate machine code
 	finalCode := asm.New()
 	finalCode.Call("main")
 	finalCode.Exit(0)
 
-	for {
-		select {
-		case err, ok := <-errors:
-			if ok {
-				return nil, err
-			}
-
-		case compiled, ok := <-resultsChannel:
-			if !ok {
-				goto done
-			}
-
-			results = append(results, compiled)
-		}
-	}
-
-done:
 	if !build.WriteExecutable {
 		return nil, nil
 	}
 
-	for _, function := range results {
+	for _, function := range build.Environment.Functions {
+		if function.Error != nil {
+			return nil, function.Error
+		}
+
 		if function.CallCount == 0 {
 			continue
 		}

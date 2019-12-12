@@ -76,43 +76,25 @@ func (env *Environment) Import(prefix string, functions <-chan *Function, import
 }
 
 // Compile compiles all functions.
-func (env *Environment) Compile(optimize bool, verbose bool) (<-chan *Function, <-chan error) {
-	results := make(chan *Function)
-	errors := make(chan error)
+func (env *Environment) Compile(optimize bool, verbose bool) {
+	wg := sync.WaitGroup{}
 
-	go func() {
-		wg := sync.WaitGroup{}
+	for _, function := range env.Functions {
+		wg.Add(1)
 
-		for _, function := range env.Functions {
-			function := function
-			wg.Add(1)
+		go func(function *Function) {
+			defer wg.Done()
+			function.Error = Compile(function, env, optimize, verbose)
 
-			go func() {
-				defer wg.Done()
-				err := Compile(function, env, optimize, verbose)
+			if function.Error != nil {
+				return
+			}
 
-				if err != nil {
-					errors <- err
-					return
-				}
+			if atomic.AddInt64(&function.File.functionCount, -1) == 0 {
+				function.Error = function.File.Close()
+			}
+		}(function)
+	}
 
-				if atomic.AddInt64(&function.File.functionCount, -1) == 0 {
-					err := function.File.Close()
-
-					if err != nil {
-						errors <- err
-						return
-					}
-				}
-
-				results <- function
-			}()
-		}
-
-		wg.Wait()
-		close(results)
-		close(errors)
-	}()
-
-	return results, errors
+	wg.Wait()
 }

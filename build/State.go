@@ -163,7 +163,7 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 // an error if there were any unused variables.
 func (state *State) PopScope(isLoop bool) error {
 	for _, scopeError := range state.scopes.Errors(isLoop) {
-		return state.function.Error(scopeError.Position, scopeError.Err)
+		return state.function.NewError(scopeError.Position, scopeError.Err)
 	}
 
 	state.scopes.Pop()

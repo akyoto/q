@@ -149,6 +149,12 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 	// Wait for function compilation to finish
 	function.Wait()
 
+	// If the function failed with a compilation error,
+	// we're done here.
+	if function.Error != nil {
+		return nil, nil, function.Error
+	}
+
 	// Determine the registers we need to save
 	for _, registerID := range function.UsedRegisterIDs() {
 		callModifiedRegister := state.registers.ByID(registerID)

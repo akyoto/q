@@ -35,7 +35,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	instructions, instrErr := instruction.FromTokens(tokens)
 
 	if instrErr != nil {
-		return function.Error(instrErr.Position, instrErr)
+		return function.NewError(instrErr.Position, instrErr)
 	}
 
 	assembler := assembler.New(verbose)
@@ -62,7 +62,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	err = state.CompileInstructions()
 
 	if err != nil {
-		return function.Error(state.tokenCursor, err)
+		return function.NewError(state.tokenCursor, err)
 	}
 
 	// Check for mistakes in variable usage

@@ -18,6 +18,7 @@ type Function struct {
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
+	Error            error
 	NoParameterCheck bool
 	IsBuiltin        bool
 	IsFinished       bool
@@ -34,8 +35,8 @@ func (function *Function) Tokens() []token.Token {
 	return function.File.tokens[function.TokenStart:function.TokenEnd]
 }
 
-// Error creates an error inside the function.
-func (function *Function) Error(position token.Position, err error) error {
+// NewError creates an error inside the function.
+func (function *Function) NewError(position token.Position, err error) error {
 	metaError, hasMetaData := err.(*Error)
 
 	if hasMetaData {
@@ -64,9 +65,9 @@ func (function *Function) HasReturnValue() bool {
 	return len(function.ReturnTypes) > 0
 }
 
-// Errorf creates a formatted error inside the function.
-func (function *Function) Errorf(position token.Position, message string, args ...interface{}) error {
-	return function.Error(position, fmt.Errorf(message, args...))
+// NewErrorf creates a formatted error inside the function.
+func (function *Function) NewErrorf(position token.Position, message string, args ...interface{}) error {
+	return function.NewError(position, fmt.Errorf(message, args...))
 }
 
 // UsedRegisterIDs returns the IDs of used registers.
