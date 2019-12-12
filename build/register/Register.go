@@ -8,7 +8,7 @@ import (
 
 // Register represents a single CPU register.
 type Register struct {
-	ID     byte
+	ID     ID
 	Name   string
 	usedBy fmt.Stringer
 }

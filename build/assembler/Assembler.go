@@ -11,7 +11,7 @@ import (
 type Assembler struct {
 	Instructions    []instruction
 	final           *asm.Assembler
-	usedRegisterIDs map[byte]struct{}
+	usedRegisterIDs map[register.ID]struct{}
 	verbose         bool
 }
 
@@ -20,7 +20,7 @@ func New(verbose bool) *Assembler {
 	return &Assembler{
 		Instructions:    make([]instruction, 0, 8),
 		final:           asm.New(),
-		usedRegisterIDs: make(map[byte]struct{}),
+		usedRegisterIDs: make(map[register.ID]struct{}),
 		verbose:         verbose,
 	}
 }
@@ -51,7 +51,7 @@ func (a *Assembler) Finalize() *asm.Assembler {
 }
 
 // UsedRegisterIDs returns the IDs of used registers.
-func (a *Assembler) UsedRegisterIDs() map[byte]struct{} {
+func (a *Assembler) UsedRegisterIDs() map[register.ID]struct{} {
 	return a.usedRegisterIDs
 }
 

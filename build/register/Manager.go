@@ -104,6 +104,6 @@ func NewManager() *Manager {
 }
 
 // ByID returns the register with the given ID.
-func (manager *Manager) ByID(id byte) *Register {
+func (manager *Manager) ByID(id ID) *Register {
 	return manager.All[id]
 }

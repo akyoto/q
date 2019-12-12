@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/akyoto/q/build/assembler"
+	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
 	"github.com/akyoto/q/build/types"
 )
@@ -66,7 +67,7 @@ func (function *Function) Errorf(position token.Position, message string, args .
 }
 
 // UsedRegisterIDs returns the IDs of used registers.
-func (function *Function) UsedRegisterIDs() map[byte]struct{} {
+func (function *Function) UsedRegisterIDs() map[register.ID]struct{} {
 	if function.IsBuiltin {
 		// return map[string]struct{}{
 		// 	// Parameters
