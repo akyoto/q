@@ -1,9 +1,10 @@
 package build
 
 import (
-	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/akyoto/directory"
 )
 
 // FindSourceFiles returns all source files in the directory.
@@ -15,32 +16,16 @@ func FindSourceFiles(directory string) (<-chan *File, <-chan error) {
 }
 
 // findSourceFiles returns all source files in the directory without channel allocations.
-func findSourceFiles(directory string, files chan<- *File, errors chan<- error) {
+func findSourceFiles(dir string, files chan<- *File, errors chan<- error) {
 	defer close(files)
 	defer close(errors)
 
-	fd, err := os.Open(directory)
-
-	if err != nil {
-		errors <- err
-		return
-	}
-
-	defer fd.Close()
-
-	names, err := fd.Readdirnames(0)
-
-	if err != nil {
-		errors <- err
-		return
-	}
-
-	for _, name := range names {
+	directory.Walk(dir, func(name string) {
 		if !strings.HasSuffix(name, ".q") {
-			continue
+			return
 		}
 
-		fullPath := filepath.Join(directory, name)
+		fullPath := filepath.Join(dir, name)
 		files <- NewFile(fullPath)
-	}
+	})
 }
