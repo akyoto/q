@@ -6,27 +6,29 @@ import (
 	"sync"
 
 	"github.com/akyoto/directory"
+	"github.com/akyoto/q/build/types"
 )
 
 // FindFunctions scans the directory for functions.
-func FindFunctions(dir string, env *Environment) (<-chan *Function, <-chan *Import, <-chan error) {
+func FindFunctions(dir string, env *Environment) (<-chan *Function, <-chan *types.Type, <-chan *Import, <-chan error) {
 	functions := make(chan *Function, 16)
+	structs := make(chan *types.Type, 16)
 	imports := make(chan *Import)
 	errors := make(chan error)
 
 	go func() {
-		findFunctions(dir, env, functions, imports, errors)
+		findFunctions(dir, env, functions, structs, imports, errors)
 
 		close(functions)
 		close(imports)
 		close(errors)
 	}()
 
-	return functions, imports, errors
+	return functions, structs, imports, errors
 }
 
 // findFunctions scans the directory for functions without channel allocations.
-func findFunctions(dir string, env *Environment, functions chan<- *Function, imports chan<- *Import, errors chan<- error) {
+func findFunctions(dir string, env *Environment, functions chan<- *Function, structs chan<- *types.Type, imports chan<- *Import, errors chan<- error) {
 	wg := sync.WaitGroup{}
 
 	directory.Walk(dir, func(name string) {
@@ -39,7 +41,7 @@ func findFunctions(dir string, env *Environment, functions chan<- *Function, imp
 
 		go func() {
 			defer wg.Done()
-			findFunctionsInFile(fullPath, env, functions, imports, errors)
+			findFunctionsInFile(fullPath, env, functions, structs, imports, errors)
 		}()
 	})
 
@@ -47,24 +49,25 @@ func findFunctions(dir string, env *Environment, functions chan<- *Function, imp
 }
 
 // FindFunctionsInFile a single file for functions.
-func FindFunctionsInFile(fileName string, env *Environment) (<-chan *Function, <-chan *Import, <-chan error) {
+func FindFunctionsInFile(fileName string, env *Environment) (<-chan *Function, <-chan *types.Type, <-chan *Import, <-chan error) {
 	functions := make(chan *Function, 16)
+	structs := make(chan *types.Type, 16)
 	imports := make(chan *Import)
 	errors := make(chan error)
 
 	go func() {
-		findFunctionsInFile(fileName, env, functions, imports, errors)
+		findFunctionsInFile(fileName, env, functions, structs, imports, errors)
 
 		close(functions)
 		close(imports)
 		close(errors)
 	}()
 
-	return functions, imports, errors
+	return functions, structs, imports, errors
 }
 
 // findFunctionsInFile scans the file for functions without channel allocations.
-func findFunctionsInFile(fileName string, env *Environment, functions chan<- *Function, imports chan<- *Import, errors chan<- error) {
+func findFunctionsInFile(fileName string, env *Environment, functions chan<- *Function, structs chan<- *types.Type, imports chan<- *Import, errors chan<- error) {
 	file := NewFile(fileName)
 	file.environment = env
 	err := file.Tokenize()
@@ -74,7 +77,7 @@ func findFunctionsInFile(fileName string, env *Environment, functions chan<- *Fu
 		return
 	}
 
-	err = file.Scan(imports, functions)
+	err = file.Scan(imports, structs, functions)
 
 	if err != nil {
 		errors <- err

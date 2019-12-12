@@ -35,12 +35,12 @@ func NewEnvironment() (*Environment, error) {
 
 // ImportDirectory imports a directory to the environment.
 func (env *Environment) ImportDirectory(directory string, prefix string) error {
-	functions, imports, errors := FindFunctions(directory, env)
-	return env.Import(prefix, functions, imports, errors)
+	functions, structs, imports, errors := FindFunctions(directory, env)
+	return env.Import(prefix, functions, structs, imports, errors)
 }
 
 // Import imports the given functions and imports to the environment.
-func (env *Environment) Import(prefix string, functions <-chan *Function, imports <-chan *Import, errors <-chan error) error {
+func (env *Environment) Import(prefix string, functions <-chan *Function, structs <-chan *types.Type, imports <-chan *Import, errors <-chan error) error {
 	for {
 		select {
 		case err, ok := <-errors:
@@ -63,6 +63,14 @@ func (env *Environment) Import(prefix string, functions <-chan *Function, import
 			if err != nil {
 				return err
 			}
+
+		case typ, ok := <-structs:
+			if !ok {
+				return nil
+			}
+
+			typ.Name = prefix + typ.Name
+			env.Types[typ.Name] = typ
 
 		case function, ok := <-functions:
 			if !ok {

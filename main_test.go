@@ -63,8 +63,8 @@ func Check(inputFile string) error {
 		return err
 	}
 
-	functions, imports, errors := build.FindFunctionsInFile(inputFile, compiler.Environment)
-	err = compiler.Environment.Import("", functions, imports, errors)
+	functions, structs, imports, errors := build.FindFunctionsInFile(inputFile, compiler.Environment)
+	err = compiler.Environment.Import("", functions, structs, imports, errors)
 
 	if err != nil {
 		return err

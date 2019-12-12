@@ -2,13 +2,12 @@ package build
 
 import (
 	"github.com/akyoto/q/build/errors"
-	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
 	"github.com/akyoto/q/build/types"
 )
 
 // Scan scans the input file.
-func (file *File) Scan(imports chan<- *Import, functions chan<- *Function) error {
+func (file *File) Scan(imports chan<- *Import, structs chan<- *types.Type, functions chan<- *Function) error {
 	var (
 		tokens                  = file.tokens
 		newlines                = 0
@@ -62,7 +61,7 @@ begin:
 					return err
 				}
 
-				log.Info.Println("struct", typ, typ.Fields, typ.Size)
+				structs <- typ
 				continue
 			}
 
