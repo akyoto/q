@@ -31,6 +31,12 @@ const (
 	// LoopEnd represents the end of the infinite loop.
 	LoopEnd
 
+	// StructStart represents the start of the struct.
+	StructStart
+
+	// StructEnd represents the end of the struct.
+	StructEnd
+
 	// Return represents the return statement.
 	Return
 
@@ -70,6 +76,12 @@ func (kind Kind) String() string {
 
 	case LoopEnd:
 		return "LoopEnd"
+
+	case StructStart:
+		return "StructStart"
+
+	case StructEnd:
+		return "StructEnd"
 
 	case Expect:
 		return "Expect"

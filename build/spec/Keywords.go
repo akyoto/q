@@ -10,4 +10,5 @@ var Keywords = map[string]bool{
 	"loop":   true,
 	"mut":    true,
 	"return": true,
+	"struct": true,
 }

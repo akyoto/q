@@ -116,6 +116,8 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				instruction.Kind = ForStart
 			case "loop":
 				instruction.Kind = LoopStart
+			case "struct":
+				instruction.Kind = StructStart
 			case "return":
 				instruction.Kind = Return
 			case "expect":
@@ -158,6 +160,9 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 
 			case LoopStart:
 				instruction.Kind = LoopEnd
+
+			case StructStart:
+				instruction.Kind = StructEnd
 
 			default:
 				return nil, &Error{fmt.Sprintf("Not implemented: %v", block), i, false}
