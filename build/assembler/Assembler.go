@@ -10,18 +10,17 @@ import (
 // Assembler produces machine code.
 type Assembler struct {
 	Instructions    []instruction
+	usedRegisterIDs []register.ID
 	final           *asm.Assembler
-	usedRegisterIDs map[register.ID]struct{}
 	verbose         bool
 }
 
 // New creates a new assembler.
 func New(verbose bool) *Assembler {
 	return &Assembler{
-		Instructions:    make([]instruction, 0, 8),
-		final:           asm.New(),
-		usedRegisterIDs: make(map[register.ID]struct{}),
-		verbose:         verbose,
+		Instructions: make([]instruction, 0, 8),
+		final:        asm.New(),
+		verbose:      verbose,
 	}
 }
 
@@ -50,8 +49,19 @@ func (a *Assembler) Finalize() *asm.Assembler {
 	return a.final
 }
 
+// UseRegisterID marks the given register ID as used.
+func (a *Assembler) UseRegisterID(newID register.ID) {
+	for _, id := range a.usedRegisterIDs {
+		if id == newID {
+			return
+		}
+	}
+
+	a.usedRegisterIDs = append(a.usedRegisterIDs, newID)
+}
+
 // UsedRegisterIDs returns the IDs of used registers.
-func (a *Assembler) UsedRegisterIDs() map[register.ID]struct{} {
+func (a *Assembler) UsedRegisterIDs() []register.ID {
 	return a.usedRegisterIDs
 }
 
@@ -97,7 +107,7 @@ func (a *Assembler) doRegister1(mnemonic string, destination *register.Register)
 	}
 
 	a.Instructions = append(a.Instructions, instr)
-	a.usedRegisterIDs[destination.ID] = nothing
+	a.UseRegisterID(destination.ID)
 }
 
 // doRegister2 adds an instruction using 2 registers.
@@ -114,8 +124,8 @@ func (a *Assembler) doRegister2(mnemonic string, destination *register.Register,
 	}
 
 	a.Instructions = append(a.Instructions, instr)
-	a.usedRegisterIDs[destination.ID] = nothing
-	a.usedRegisterIDs[source.ID] = nothing
+	a.UseRegisterID(destination.ID)
+	a.UseRegisterID(source.ID)
 }
 
 // doRegisterNumber adds an instruction using a register and a number.
@@ -131,7 +141,7 @@ func (a *Assembler) doRegisterNumber(mnemonic string, destination *register.Regi
 	}
 
 	a.Instructions = append(a.Instructions, instr)
-	a.usedRegisterIDs[destination.ID] = nothing
+	a.UseRegisterID(destination.ID)
 }
 
 // doRegisterAddress adds an instruction using a register and a section address.
@@ -147,7 +157,7 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 	}
 
 	a.Instructions = append(a.Instructions, instr)
-	a.usedRegisterIDs[destination.ID] = nothing
+	a.UseRegisterID(destination.ID)
 }
 
 // doMemoryNumber adds an instruction using a memory address and a number.
@@ -165,7 +175,7 @@ func (a *Assembler) doMemoryNumber(mnemonic string, destination *register.Regist
 	}
 
 	a.Instructions = append(a.Instructions, instr)
-	a.usedRegisterIDs[destination.ID] = nothing
+	a.UseRegisterID(destination.ID)
 }
 
 // doLabel adds an instruction with a label operand.

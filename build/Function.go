@@ -67,7 +67,7 @@ func (function *Function) Errorf(position token.Position, message string, args .
 }
 
 // UsedRegisterIDs returns the IDs of used registers.
-func (function *Function) UsedRegisterIDs() map[register.ID]struct{} {
+func (function *Function) UsedRegisterIDs() []register.ID {
 	if function.IsBuiltin {
 		// return map[string]struct{}{
 		// 	// Parameters
