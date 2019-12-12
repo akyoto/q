@@ -35,21 +35,15 @@ func NewEnvironment() (*Environment, error) {
 
 // ImportDirectory imports a directory to the environment.
 func (env *Environment) ImportDirectory(directory string, prefix string) error {
-	files, fileSystemErrors := FindSourceFiles(directory)
-	functions, imports, tokenizeErrors := FindFunctions(files, env)
-	return env.Import(prefix, functions, imports, fileSystemErrors, tokenizeErrors)
+	functions, imports, errors := FindFunctions(directory, env)
+	return env.Import(prefix, functions, imports, errors)
 }
 
 // Import imports the given functions and imports to the environment.
-func (env *Environment) Import(prefix string, functions <-chan *Function, imports <-chan *Import, fileSystemErrors <-chan error, tokenizeErrors <-chan error) error {
+func (env *Environment) Import(prefix string, functions <-chan *Function, imports <-chan *Import, errors <-chan error) error {
 	for {
 		select {
-		case err, ok := <-fileSystemErrors:
-			if ok {
-				return err
-			}
-
-		case err, ok := <-tokenizeErrors:
+		case err, ok := <-errors:
 			if ok {
 				return err
 			}

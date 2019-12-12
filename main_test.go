@@ -63,12 +63,8 @@ func Check(inputFile string) error {
 		return err
 	}
 
-	files := make(chan *build.File, 1)
-	files <- build.NewFile(inputFile)
-	close(files)
-
-	functions, imports, errors := build.FindFunctions(files, compiler.Environment)
-	err = compiler.Environment.Import("", functions, imports, make(chan error), errors)
+	functions, imports, errors := build.FindFunctionsInFile(inputFile, compiler.Environment)
+	err = compiler.Environment.Import("", functions, imports, errors)
 
 	if err != nil {
 		return err
