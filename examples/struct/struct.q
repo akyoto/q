@@ -4,5 +4,5 @@ struct Point {
 }
 
 main() {
-
+	#p := Point()
 }

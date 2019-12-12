@@ -4,6 +4,7 @@ import (
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // Scan scans the input file.
@@ -52,16 +53,16 @@ begin:
 			}
 
 			if t.Text() == "struct" {
-				var structure *Struct
+				var typ *types.Type
 				var err error
 
-				structure, index, err = file.scanStruct(tokens, index)
+				typ, index, err = file.scanStruct(tokens, index)
 
 				if err != nil {
 					return err
 				}
 
-				log.Info.Println("struct", structure, structure.Fields, structure.Size)
+				log.Info.Println("struct", typ, typ.Fields, typ.Size)
 				continue
 			}
 

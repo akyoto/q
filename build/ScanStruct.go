@@ -3,24 +3,25 @@ package build
 import (
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // scanStruct scans a data structure.
-func (file *File) scanStruct(tokens token.List, index token.Position) (*Struct, token.Position, error) {
+func (file *File) scanStruct(tokens token.List, index token.Position) (*types.Type, token.Position, error) {
 	var (
 		blockLevel = 0
-		structure  = &Struct{}
-		field      *Field
+		typ        = &types.Type{}
+		field      *types.Field
 	)
 
 	index++
 	name := tokens[index]
 
 	if name.Kind != token.Identifier {
-		return structure, index, NewError(errors.MissingStructName, file.path, tokens[:index+1], nil)
+		return typ, index, NewError(errors.MissingStructName, file.path, tokens[:index+1], nil)
 	}
 
-	structure.Name = name.Text()
+	typ.Name = name.Text()
 	index++
 
 	for ; index < len(tokens); index++ {
@@ -29,7 +30,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*Struct, 
 		switch t.Kind {
 		case token.Identifier:
 			if field == nil {
-				field = &Field{
+				field = &types.Field{
 					Name: t.Text(),
 				}
 
@@ -41,7 +42,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*Struct, 
 				field.Type = file.environment.Types[typeName]
 
 				if field.Type == nil {
-					return structure, index, NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index], nil)
+					return typ, index, NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index], nil)
 				}
 
 				continue
@@ -53,11 +54,11 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*Struct, 
 			}
 
 			if field.Type == nil {
-				return structure, index, NewError(&errors.MissingType{Of: field.Name}, file.path, tokens[:index], nil)
+				return typ, index, NewError(&errors.MissingType{Of: field.Name}, file.path, tokens[:index], nil)
 			}
 
-			structure.Fields = append(structure.Fields, field)
-			structure.Size += field.Type.Size
+			typ.Fields = append(typ.Fields, field)
+			typ.Size += field.Type.Size
 			field = nil
 
 		case token.BlockStart:
@@ -70,7 +71,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*Struct, 
 				continue
 			}
 
-			return structure, index, nil
+			return typ, index, nil
 		}
 	}
 
