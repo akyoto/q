@@ -58,6 +58,15 @@ func System() {
 		log.Info.Printf(key(prefix)+"%s\n", "Standard library:", errorValue(err.Error()))
 	}
 
+	// Installation date
+	if executable != "" {
+		stat, err := os.Stat(executable)
+
+		if err == nil && stat != nil {
+			log.Info.Printf(key(prefix)+"%s\n", "Last modified:", value(stat.ModTime()))
+		}
+	}
+
 	// CPU model
 	cpuModel := cpuModelName()
 
