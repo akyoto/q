@@ -6,8 +6,9 @@ import "github.com/akyoto/q/build/token"
 type Field struct {
 	Name     string
 	Type     *Type
-	Mutable  bool
 	Position token.Position
+	Offset   uint16
+	Mutable  bool
 }
 
 // String returns the name of the parameter.

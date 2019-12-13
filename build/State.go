@@ -115,7 +115,7 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 			variable := state.scopes.Get(variableName)
 
 			if variable == nil {
-				return nil, state.UnknownVariableError(variableName)
+				return nil, errors.New(state.UnknownVariableError(variableName))
 			}
 
 			state.UseVariable(variable)

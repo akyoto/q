@@ -183,7 +183,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		variable := state.scopes.Get(variableName)
 
 		if variable == nil {
-			return nil, state.UnknownVariableError(variableName)
+			return nil, errors.New(state.UnknownVariableError(variableName))
 		}
 
 		state.UseVariable(variable)
@@ -357,7 +357,7 @@ func (state *State) ResolveAccessor(root *expression.Expression) error {
 	imp := state.function.File.imports[pkgName]
 
 	if imp == nil {
-		return state.UnknownPackageError(pkgName)
+		return errors.New(state.UnknownPackageError(pkgName))
 	}
 
 	atomic.AddInt32(&imp.Used, 1)

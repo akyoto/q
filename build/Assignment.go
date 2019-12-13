@@ -4,29 +4,74 @@ import (
 	"fmt"
 
 	"github.com/akyoto/q/build/errors"
+	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
 )
 
 // Assignment handles assignment instructions.
 func (state *State) Assignment(tokens []token.Token) error {
+	operatorPos := token.Index(tokens, token.Operator, "=")
+
+	if operatorPos == -1 {
+		return errors.New(errors.MissingAssignmentOperator)
+	}
+
+	left := tokens[:operatorPos]
+
+	if left[operatorPos-1].Kind == token.ArrayEnd {
+		return state.AssignArrayElement(tokens)
+	}
+
+	for _, t := range left {
+		if t.Kind == token.Keyword && (t.Text() == "let" || t.Text() == "mut") {
+			_, err := state.AssignVariable(tokens, false)
+			return err
+		}
+
+		if t.Kind == token.Operator && t.Text() == "." {
+			return state.AssignStructField(tokens)
+		}
+	}
+
 	_, err := state.AssignVariable(tokens, false)
 	return err
+}
+
+// AssignStructField assigns a value to a struct field.
+func (state *State) AssignStructField(tokens []token.Token) error {
+	log.Info.Println("AssignStructField", tokens)
+	return nil
+}
+
+// AssignArrayElement assigns a value to an array element.
+func (state *State) AssignArrayElement(tokens []token.Token) error {
+	log.Info.Println("AssignArrayElement", tokens)
+	operatorPos := token.Index(tokens, token.Operator, "=")
+	left := tokens[:operatorPos]
+	suffix := left[1:]
+
+	if suffix[0].Kind == token.ArrayStart && suffix[len(suffix)-1].Kind == token.ArrayEnd {
+		indexTokens := suffix[1 : len(suffix)-1]
+
+		if indexTokens[0].Kind != token.Number {
+			return errors.New(errors.NotImplemented)
+		}
+
+		fmt.Println(indexTokens)
+		return errors.New(errors.NotImplemented)
+	}
+
+	return nil
 }
 
 // AssignVariable handles assignment instructions and also returns the referenced variable.
 func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*Variable, error) {
 	cursor := 0
 	mutable := false
-	operatorPos := token.IndexKind(tokens, token.Operator)
+	left := tokens[cursor]
 
-	if operatorPos == -1 {
-		return nil, errors.MissingAssignmentOperator
-	}
-
-	left := tokens[cursor:operatorPos]
-
-	if left[0].Kind == token.Keyword {
-		switch left[0].Text() {
+	if left.Kind == token.Keyword {
+		switch left.Text() {
 		case "let":
 			isNewVariable = true
 
@@ -40,20 +85,24 @@ func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*V
 
 		cursor++
 		state.tokenCursor++
-		left = tokens[cursor:operatorPos]
+		left = tokens[cursor]
 	}
 
-	if left[0].Kind != token.Identifier {
-		return nil, errors.ExpectedVariable
+	if left.Kind != token.Identifier {
+		return nil, errors.New(errors.ExpectedVariable)
+	}
+
+	if tokens[cursor+1].Kind != token.Operator {
+		return nil, errors.New(errors.MissingAssignmentOperator)
 	}
 
 	assignPos := state.tokenCursor
-	variableName := left[0].Text()
+	variableName := left.Text()
 	variable := state.scopes.Get(variableName)
 
 	if isNewVariable {
 		if variable != nil {
-			return variable, &errors.VariableAlreadyExists{Name: variable.Name}
+			return variable, errors.New(&errors.VariableAlreadyExists{Name: variable.Name})
 		}
 
 		register := state.registers.General.FindFree()
@@ -75,26 +124,11 @@ func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*V
 		defer state.scopes.Add(variable)
 	} else {
 		if variable == nil {
-			return nil, state.UnknownVariableError(variableName)
+			return nil, errors.New(state.UnknownVariableError(variableName))
 		}
 
 		if !variable.Mutable {
-			return variable, &errors.ImmutableVariable{Name: variable.Name}
-		}
-
-		if len(left) > 1 {
-			suffix := left[1:]
-
-			if suffix[0].Kind == token.ArrayStart && suffix[len(suffix)-1].Kind == token.ArrayEnd {
-				indexTokens := suffix[1 : len(suffix)-1]
-
-				if indexTokens[0].Kind != token.Number {
-					return variable, errors.New(errors.NotImplemented)
-				}
-
-				fmt.Println(indexTokens)
-				return variable, errors.New(errors.NotImplemented)
-			}
+			return variable, errors.New(&errors.ImmutableVariable{Name: variable.Name})
 		}
 	}
 
@@ -128,14 +162,14 @@ func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*V
 	if isNewVariable {
 		variable.Type = typ
 	} else if typ != variable.Type {
-		return variable, &errors.InvalidType{Type: typ.String(), Expected: variable.Type.String()}
+		return variable, errors.New(&errors.InvalidType{Type: typ.String(), Expected: variable.Type.String()})
 	}
 
 	// Check for ineffective assignments
 	if !isNewVariable {
 		if !variable.LastAssignUsed {
 			state.tokenCursor = variable.LastAssign
-			return variable, &errors.IneffectiveAssignment{Name: variable.Name}
+			return variable, errors.New(&errors.IneffectiveAssignment{Name: variable.Name})
 		}
 
 		variable.LastAssign = assignPos

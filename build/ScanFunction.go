@@ -61,6 +61,15 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 
 			function.TokenStart = index + 1
 
+			// Return type
+			if function.returnTypeStart != 0 {
+				function.ReturnTypeTokens = tokens[function.returnTypeStart:index]
+
+				if len(function.ReturnTypeTokens) == 0 {
+					return function, index, NewError(errors.New(errors.MissingReturnType), file.path, tokens[:index+1], function)
+				}
+			}
+
 		case token.BlockEnd:
 			blockLevel--
 
@@ -128,26 +137,13 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 			function.parameterStart = index + 1
 
 		case token.Operator:
-			if groupLevel != 0 || function == nil || function.TokenStart != 0 || t.Text() != "->" {
+			if groupLevel != 0 || function == nil || function.TokenStart != 0 {
 				continue
 			}
 
-			// Return type
-			index++
-			t = tokens[index]
-
-			if t.Kind != token.Identifier {
-				return function, index, NewError(errors.New(errors.MissingReturnType), file.path, tokens[:index+1], function)
+			if t.Text() == "->" {
+				function.returnTypeStart = index + 1
 			}
-
-			typeName := t.Text()
-			typ := file.environment.Types[typeName]
-
-			if typ == nil {
-				return function, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index+1], function)
-			}
-
-			function.ReturnTypes = append(function.ReturnTypes, typ)
 
 		case token.NewLine:
 			newlines++

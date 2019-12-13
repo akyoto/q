@@ -8,6 +8,7 @@ import (
 	"github.com/akyoto/asm/syscall"
 	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/expression"
+	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
 )
@@ -47,7 +48,7 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 		typ := state.environment.Types[functionName]
 
 		if typ != nil {
-			fmt.Println("New object", typ)
+			log.Info.Println("New object:", typ)
 			state.assembler.MoveRegisterNumber(state.registers.Syscall[0], 9)
 			state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 0)
 			state.assembler.MoveRegisterNumber(state.registers.Syscall[2], uint64(typ.Size))
@@ -59,12 +60,11 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 				state.assembler.MoveRegisterRegister(expr.Register, state.registers.ReturnValue[0])
 			}
 
-			// NOTE: Should be "pointer to typ"
-			expr.Type = state.environment.Types["Pointer"]
+			expr.Type = typ
 			return nil
 		}
 
-		return state.UnknownFunctionError(functionName)
+		return errors.New(state.environment.UnknownFunctionError(functionName))
 	}
 
 	// Calling a function with side effects causes our function to have side effects

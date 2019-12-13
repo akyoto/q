@@ -26,6 +26,8 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	registers := register.NewManager()
 	tokens := function.Tokens()
 	identifierLifeTime := IdentifierLifeTimeMap(tokens)
+
+	// Parameters
 	err := declareParameters(function, scopes, registers, identifierLifeTime)
 
 	if err != nil {
@@ -33,6 +35,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return
 	}
 
+	// Instructions
 	instructions, instrErr := instruction.FromTokens(tokens)
 
 	if instrErr != nil {
@@ -40,10 +43,12 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 		return
 	}
 
+	// Assembler
 	assembler := assembler.New(verbose)
 	assembler.AddLabel(function.Name)
 	function.assembler = assembler
 
+	// State
 	state := State{
 		assembler:          assembler,
 		scopes:             scopes,
@@ -58,6 +63,20 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 
 	if optimize {
 		state.ignoreContracts = true
+	}
+
+	// Return types
+	if len(function.ReturnTypeTokens) > 0 {
+		typeName := function.ReturnTypeTokens[0].Text()
+		typ := environment.Types[typeName]
+
+		if typ == nil {
+			err = errors.New(state.environment.UnknownTypeError(typeName))
+			function.Error = NewError(err, function.File.path, function.File.tokens[:function.returnTypeStart+1], function)
+			return
+		}
+
+		function.ReturnTypes = append(function.ReturnTypes, typ)
 	}
 
 	// Compile the function

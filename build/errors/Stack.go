@@ -15,7 +15,7 @@ type WithStack struct {
 }
 
 func (err *WithStack) Error() string {
-	return fmt.Sprintf("%v\n%s", err.Err, log.Faint.Sprint(err.Stack))
+	return fmt.Sprintf("%v\n\n%s", err.Err, log.Faint.Sprint(err.Stack))
 }
 
 // New creates a new error with stack information.
@@ -24,13 +24,20 @@ func New(err error) *WithStack {
 	n := runtime.Stack(buffer, false)
 	stack := string(buffer[:n])
 	lines := strings.Split(stack, "\n")
-	stack = strings.TrimSpace(lines[4])
-	space := strings.LastIndex(stack, " ")
+	var extractedLines []string
 
-	if space != -1 {
-		stack = stack[:space]
+	for i := 4; i < len(lines); i += 2 {
+		line := strings.TrimSpace(lines[i])
+		space := strings.LastIndex(line, " ")
+
+		if space != -1 {
+			line = line[:space]
+		}
+
+		extractedLines = append(extractedLines, line)
 	}
-	// lines = append(lines[:1], lines[3:]...)
+
+	stack = strings.Join(extractedLines, "\n")
 
 	return &WithStack{
 		Err:   err,

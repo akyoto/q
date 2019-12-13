@@ -3,6 +3,7 @@ package build
 import (
 	"fmt"
 
+	"github.com/akyoto/q/build/errors"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -31,7 +32,7 @@ func (state *State) Condition(condition []token.Token, elseLabel string) error {
 	variable := state.scopes.Get(variableName)
 
 	if variable == nil {
-		return state.UnknownVariableError(variableName)
+		return errors.New(state.UnknownVariableError(variableName))
 	}
 
 	state.UseVariable(variable)

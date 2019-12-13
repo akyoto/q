@@ -15,6 +15,7 @@ type Function struct {
 	Name             string
 	Parameters       []*Parameter
 	ReturnTypes      []*types.Type
+	ReturnTypeTokens []token.Token
 	File             *File
 	TokenStart       token.Position
 	TokenEnd         token.Position
@@ -28,6 +29,7 @@ type Function struct {
 	FinishedMutex    sync.Mutex
 	assembler        *assembler.Assembler
 	parameterStart   token.Position
+	returnTypeStart  token.Position
 }
 
 // Tokens returns all tokens within the function body (excluding the braces '{' and '}').
