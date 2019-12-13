@@ -135,14 +135,14 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 			return nil, nil
 
 		default:
-			return nil, errors.InvalidExpression
+			return nil, errors.New(errors.InvalidExpression)
 		}
 	}
 
 	temporary := state.registers.General.FindFree()
 
 	if temporary == nil {
-		return nil, errors.ExceededMaxVariables
+		return nil, errors.New(errors.ExceededMaxVariables)
 	}
 
 	_, err := state.TokensToRegister(expression, temporary)
@@ -188,14 +188,14 @@ func (state *State) Invalid(tokens []token.Token) error {
 	closingBrackets := token.Count(tokens, token.GroupEnd)
 
 	if openingBrackets < closingBrackets {
-		return &errors.MissingCharacter{Character: "("}
+		return errors.New(&errors.MissingCharacter{Character: "("})
 	}
 
 	if openingBrackets > closingBrackets {
-		return &errors.MissingCharacter{Character: ")"}
+		return errors.New(&errors.MissingCharacter{Character: ")"})
 	}
 
-	return errors.InvalidInstruction
+	return errors.New(errors.InvalidInstruction)
 }
 
 // ParseInt parses an integer number.
@@ -203,9 +203,9 @@ func (state *State) ParseInt(numberString string) (int64, error) {
 	number, err := strconv.ParseInt(numberString, 10, 64)
 
 	if err != nil {
-		return 0, &errors.NotANumber{
+		return 0, errors.New(&errors.NotANumber{
 			Expression: numberString,
-		}
+		})
 	}
 
 	return number, nil

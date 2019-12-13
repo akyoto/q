@@ -104,7 +104,7 @@ func (build *Build) Run() error {
 	if build.ShowTimings {
 		write = time.Since(start)
 
-		key := color.New(color.Faint).Sprint
+		key := log.Faint.Sprint
 		log.Info.Printf(key("%-17s")+" %10v\n", "Scan files:", scan)
 		log.Info.Printf(key("%-17s")+" %10v\n", "Compile:", compile)
 		log.Info.Printf(key("%-17s")+" %10v\n", "Write to disk:", write)
@@ -156,7 +156,9 @@ func (build *Build) Compile() (*asm.Assembler, error) {
 
 		// Show assembler code of used functions
 		if build.ShowAssembly {
+			log.Info.SetPrefix(log.Faint.Sprint(function.Name) + " ")
 			function.assembler.WriteTo(log.Info)
+			log.Info.SetPrefix("")
 			log.Info.Println()
 		}
 	}

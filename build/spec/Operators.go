@@ -8,7 +8,6 @@ var Operators = map[string]*Operator{
 
 	// Assignment
 	"=":   {"=", 2, true},
-	":=":  {":=", 2, true},
 	"+=":  {"+=", 2, true},
 	"-=":  {"-=", 2, true},
 	"*=":  {"*=", 2, true},

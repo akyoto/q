@@ -12,7 +12,7 @@ func (state *State) Return(tokens []token.Token) error {
 
 	if len(expression) > 0 {
 		if len(state.function.ReturnTypes) == 0 {
-			return errors.ReturnWithoutFunctionType
+			return errors.New(errors.ReturnWithoutFunctionType)
 		}
 
 		typ, err := state.TokensToRegister(expression, state.registers.ReturnValue[0])
@@ -22,10 +22,10 @@ func (state *State) Return(tokens []token.Token) error {
 		}
 
 		if typ != state.function.ReturnTypes[0] {
-			return &errors.InvalidType{Type: typ.String(), Expected: state.function.ReturnTypes[0].String()}
+			return errors.New(&errors.InvalidType{Type: typ.String(), Expected: state.function.ReturnTypes[0].String()})
 		}
 	} else if len(state.function.ReturnTypes) > 0 {
-		return &errors.MissingReturnValue{ReturnType: state.function.ReturnTypes[0].Name}
+		return errors.New(&errors.MissingReturnValue{ReturnType: state.function.ReturnTypes[0].Name})
 	}
 
 	if state.ensureState.counter == 0 {

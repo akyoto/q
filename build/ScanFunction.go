@@ -18,11 +18,11 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 	functionName := tokens[index].Text()
 
 	if functionName == "func" || functionName == "fn" {
-		return nil, index, NewError(errors.InvalidFunctionName, file.path, tokens[:index+1], nil)
+		return nil, index, NewError(errors.New(errors.InvalidFunctionName), file.path, tokens[:index+1], nil)
 	}
 
 	if index+1 >= len(tokens) || tokens[index+1].Kind != token.GroupStart {
-		return nil, index, NewError(errors.ParameterOpeningBracket, file.path, tokens[:index+2], nil)
+		return nil, index, NewError(errors.New(errors.ParameterOpeningBracket), file.path, tokens[:index+2], nil)
 	}
 
 	function := &Function{
@@ -50,7 +50,7 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 		switch t.Kind {
 		case token.BlockStart:
 			if groupLevel > 0 {
-				return function, index, NewError(&errors.MissingCharacter{Character: ")"}, file.path, tokens[:index+1], function)
+				return function, index, NewError(errors.New(&errors.MissingCharacter{Character: ")"}), file.path, tokens[:index+1], function)
 			}
 
 			blockLevel++
@@ -91,14 +91,14 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 				parameterName := parameter[0]
 
 				if len(parameter) == 1 {
-					return function, index, NewError(&errors.MissingType{Of: parameterName.Text()}, file.path, tokens[:function.parameterStart+1], function)
+					return function, index, NewError(errors.New(&errors.MissingType{Of: parameterName.Text()}), file.path, tokens[:function.parameterStart+1], function)
 				}
 
 				typeName := parameter[1].Text()
 				typ := file.environment.Types[typeName]
 
 				if typ == nil {
-					return function, index, NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index], function)
+					return function, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index], function)
 				}
 
 				function.Parameters = append(function.Parameters, &Parameter{
@@ -123,14 +123,14 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 			parameterName := parameter[0]
 
 			if len(parameter) == 1 {
-				return function, index, NewError(&errors.MissingType{Of: parameterName.Text()}, file.path, tokens[:function.parameterStart+1], function)
+				return function, index, NewError(errors.New(&errors.MissingType{Of: parameterName.Text()}), file.path, tokens[:function.parameterStart+1], function)
 			}
 
 			typeName := parameter[1].Text()
 			typ := file.environment.Types[typeName]
 
 			if typ == nil {
-				return function, index, NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index], function)
+				return function, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index], function)
 			}
 
 			function.Parameters = append(function.Parameters, &Parameter{
@@ -151,14 +151,14 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 			t = tokens[index]
 
 			if t.Kind != token.Identifier {
-				return function, index, NewError(errors.MissingReturnType, file.path, tokens[:index+1], function)
+				return function, index, NewError(errors.New(errors.MissingReturnType), file.path, tokens[:index+1], function)
 			}
 
 			typeName := t.Text()
 			typ := file.environment.Types[typeName]
 
 			if typ == nil {
-				return function, index, NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index+1], function)
+				return function, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index+1], function)
 			}
 
 			function.ReturnTypes = append(function.ReturnTypes, typ)
@@ -167,7 +167,7 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 			newlines++
 
 			if newlines == 3 {
-				return function, index, NewError(errors.UnnecessaryNewlines, file.path, tokens[:index+1], function)
+				return function, index, NewError(errors.New(errors.UnnecessaryNewlines), file.path, tokens[:index+1], function)
 			}
 		}
 	}

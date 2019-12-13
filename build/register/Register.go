@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/akyoto/color"
+	"github.com/akyoto/q/build/log"
 )
 
 // Register represents a single CPU register.
@@ -64,5 +65,5 @@ func (register *Register) String() string {
 
 // StringWithUser returns a human-readable representation of the register.
 func (register *Register) StringWithUser(usedBy string) string {
-	return fmt.Sprintf("%s%s%v", register.Name, color.New(color.Faint).Sprint("="), color.GreenString(usedBy))
+	return fmt.Sprintf("%s%s%v", register.Name, log.Faint.Sprint("="), color.GreenString(usedBy))
 }

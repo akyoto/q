@@ -7,6 +7,7 @@ var Keywords = map[string]bool{
 	"for":    true,
 	"if":     true,
 	"import": true,
+	"let":    true,
 	"loop":   true,
 	"mut":    true,
 	"return": true,

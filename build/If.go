@@ -15,6 +15,7 @@ type IfState struct {
 // IfStart handles the start of if conditions.
 func (state *State) IfStart(tokens []token.Token) error {
 	state.Skip(token.Keyword)
+	state.scopes.Push()
 	condition := tokens[1:]
 
 	state.ifState.counter++

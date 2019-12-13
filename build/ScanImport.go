@@ -29,7 +29,7 @@ func (file *File) scanImport(tokens token.List, index token.Position) (*Import, 
 
 		case token.Operator:
 			if t.Text() != "." {
-				return nil, index, NewError(&errors.InvalidCharacter{Character: t.Text()}, file.path, tokens[:index+1], nil)
+				return nil, index, NewError(errors.New(&errors.InvalidCharacter{Character: t.Text()}), file.path, tokens[:index+1], nil)
 			}
 
 			fullImportPath.WriteByte('/')
@@ -47,13 +47,13 @@ func (file *File) scanImport(tokens token.List, index token.Position) (*Import, 
 			otherImport, exists := file.imports[baseName]
 
 			if exists {
-				return nil, index, NewError(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}, file.path, tokens[:index], nil)
+				return nil, index, NewError(errors.New(&errors.ImportNameAlreadyExists{ImportPath: otherImport.Path, Name: baseName}), file.path, tokens[:index], nil)
 			}
 
 			stat, err := os.Stat(imp.FullPath)
 
 			if err != nil || !stat.IsDir() {
-				return nil, index, NewError(&errors.PackageDoesntExist{ImportPath: imp.Path, FilePath: imp.FullPath}, file.path, tokens[:imp.Position+2], nil)
+				return nil, index, NewError(errors.New(&errors.PackageDoesntExist{ImportPath: imp.Path, FilePath: imp.FullPath}), file.path, tokens[:imp.Position+2], nil)
 			}
 
 			index++
@@ -61,5 +61,5 @@ func (file *File) scanImport(tokens token.List, index token.Position) (*Import, 
 		}
 	}
 
-	return nil, index, errors.InvalidExpression
+	return nil, index, errors.New(errors.InvalidExpression)
 }

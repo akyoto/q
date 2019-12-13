@@ -17,13 +17,13 @@ func (state *State) Call(tokens []token.Token) error {
 	firstToken := tokens[0]
 
 	if firstToken.Kind != token.Identifier {
-		return errors.MissingFunctionName
+		return errors.New(errors.MissingFunctionName)
 	}
 
 	lastToken := tokens[len(tokens)-1]
 
 	if lastToken.Kind != token.GroupEnd {
-		return &errors.MissingCharacter{Character: ")"}
+		return errors.New(&errors.MissingCharacter{Character: ")"})
 	}
 
 	_, err := state.TokensToRegister(tokens, nil)
@@ -44,6 +44,26 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 	}
 
 	if function == nil {
+		typ := state.environment.Types[functionName]
+
+		if typ != nil {
+			fmt.Println("New object", typ)
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[0], 9)
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[1], 0)
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[2], uint64(typ.Size))
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[3], 3)
+			state.assembler.MoveRegisterNumber(state.registers.Syscall[4], 290)
+			state.assembler.Syscall()
+
+			if expr.Register != state.registers.ReturnValue[0] {
+				state.assembler.MoveRegisterRegister(expr.Register, state.registers.ReturnValue[0])
+			}
+
+			// NOTE: Should be "pointer to typ"
+			expr.Type = state.environment.Types["Pointer"]
+			return nil
+		}
+
 		return state.UnknownFunctionError(functionName)
 	}
 
@@ -54,11 +74,11 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 
 	// Parameter check
 	if !function.NoParameterCheck && len(parameters) != len(function.Parameters) {
-		return &errors.ParameterCount{
+		return errors.New(&errors.ParameterCount{
 			FunctionName:  function.Name,
 			CountGiven:    len(parameters),
 			CountRequired: len(function.Parameters),
-		}
+		})
 	}
 
 	if isBuiltin {
@@ -145,18 +165,33 @@ func (state *State) CallExpression(expr *expression.Expression) error {
 func (state *State) BeforeCall(function *Function, parameters []*expression.Expression) (register.List, register.List, error) {
 	// nolint:prealloc
 	var pushRegisters []*register.Register
+	var usedRegisterIDs []register.ID
 
-	// Wait for function compilation to finish
-	function.Wait()
+	if function == state.function {
+		// Recursive call.
+		// We can't determine the used registers for recursive calls
+		// so we'll assume that every register has been used.
+		// This is obviously bad for performance.
+		// NOTE: We could save a recursive call reference here
+		// and revisit it later after the function has been compiled.
+		for _, reg := range state.registers.All {
+			usedRegisterIDs = append(usedRegisterIDs, reg.ID)
+		}
+	} else {
+		// Wait for function compilation to finish
+		function.Wait()
 
-	// If the function failed with a compilation error,
-	// we're done here.
-	if function.Error != nil {
-		return nil, nil, function.Error
+		// If the function failed with a compilation error,
+		// we're done here.
+		if function.Error != nil {
+			return nil, nil, function.Error
+		}
+
+		usedRegisterIDs = function.UsedRegisterIDs()
 	}
 
 	// Determine the registers we need to save
-	for _, registerID := range function.UsedRegisterIDs() {
+	for _, registerID := range usedRegisterIDs {
 		callModifiedRegister := state.registers.ByID(registerID)
 
 		if callModifiedRegister.IsFree() {
@@ -208,7 +243,7 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 			freeRegister := state.registers.General.FindFree()
 
 			if freeRegister == nil {
-				return nil, nil, errors.ExceededMaxVariables
+				return nil, nil, errors.New(errors.ExceededMaxVariables)
 			}
 
 			state.assembler.MoveRegisterRegister(freeRegister, callRegister)
@@ -233,11 +268,11 @@ func (state *State) BeforeCall(function *Function, parameters []*expression.Expr
 		}
 
 		if !function.NoParameterCheck && typ != function.Parameters[i].Type {
-			return nil, nil, &errors.InvalidType{
+			return nil, nil, errors.New(&errors.InvalidType{
 				Type:          typ.String(),
 				Expected:      function.Parameters[i].Type.String(),
 				ParameterName: function.Parameters[i].Name,
-			}
+			})
 		}
 	}
 

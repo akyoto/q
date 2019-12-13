@@ -41,7 +41,7 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 				continue
 			}
 
-			if t.Text() != "=" && t.Text() != ":=" {
+			if t.Text() != "=" {
 				continue
 			}
 
@@ -82,27 +82,27 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 			instruction.Kind = Invalid
 			start = i + 1
 
-		case token.Identifier:
-			if instruction.Kind != Invalid {
-				continue
-			}
+		// case token.Identifier:
+		// 	if instruction.Kind != Invalid {
+		// 		continue
+		// 	}
 
-			if i == len(tokens)-1 {
-				return nil, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
-			}
+		// 	if i == len(tokens)-1 {
+		// 		return nil, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
+		// 	}
 
-			nextToken := tokens[i+1]
+		// 	nextToken := tokens[i+1]
 
-			if nextToken.Kind != token.Operator && nextToken.Kind != token.GroupStart {
-				remaining := tokens[i+1:]
-				newLinePos := token.IndexKind(remaining, token.NewLine)
+		// 	if nextToken.Kind != token.Operator && nextToken.Kind != token.GroupStart {
+		// 		remaining := tokens[i+1:]
+		// 		newLinePos := token.IndexKind(remaining, token.NewLine)
 
-				if newLinePos != -1 && remaining[newLinePos-1].Kind == token.GroupEnd {
-					return nil, &Error{fmt.Sprintf("Missing opening bracket '(' after '%s'", t.Text()), i, true}
-				}
+		// 		if newLinePos != -1 && remaining[newLinePos-1].Kind == token.GroupEnd {
+		// 			return nil, &Error{fmt.Sprintf("Missing opening bracket '(' after '%s'", t.Text()), i, true}
+		// 		}
 
-				return nil, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
-			}
+		// 		return nil, &Error{fmt.Sprintf("Expected assignment or function call after '%s'", t.Text()), i, true}
+		// 	}
 
 		case token.Keyword:
 			if instruction.Kind != Invalid {
@@ -110,22 +110,24 @@ func FromTokens(tokens []token.Token) ([]Instruction, *Error) {
 			}
 
 			switch t.Text() {
+			case "let":
+				instruction.Kind = Assignment
+			case "mut":
+				instruction.Kind = Assignment
 			case "if":
 				instruction.Kind = IfStart
 			case "for":
 				instruction.Kind = ForStart
-			case "loop":
-				instruction.Kind = LoopStart
 			case "struct":
 				instruction.Kind = StructStart
 			case "return":
 				instruction.Kind = Return
+			case "loop":
+				instruction.Kind = LoopStart
 			case "expect":
 				instruction.Kind = Expect
 			case "ensure":
 				instruction.Kind = Ensure
-			case "mut":
-				instruction.Kind = Assignment
 			default:
 				return nil, &Error{"Keyword not implemented", i, false}
 			}

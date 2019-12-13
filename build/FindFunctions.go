@@ -12,7 +12,7 @@ import (
 // FindFunctions scans the directory for functions.
 func FindFunctions(dir string, env *Environment) (<-chan *Function, <-chan *types.Type, <-chan *Import, <-chan error) {
 	functions := make(chan *Function, 16)
-	structs := make(chan *types.Type, 16)
+	structs := make(chan *types.Type)
 	imports := make(chan *Import)
 	errors := make(chan error)
 
@@ -51,7 +51,7 @@ func findFunctions(dir string, env *Environment, functions chan<- *Function, str
 // FindFunctionsInFile a single file for functions.
 func FindFunctionsInFile(fileName string, env *Environment) (<-chan *Function, <-chan *types.Type, <-chan *Import, <-chan error) {
 	functions := make(chan *Function, 16)
-	structs := make(chan *types.Type, 16)
+	structs := make(chan *types.Type)
 	imports := make(chan *Import)
 	errors := make(chan error)
 

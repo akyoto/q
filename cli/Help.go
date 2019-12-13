@@ -9,7 +9,7 @@ import (
 func Help() {
 	log.Error.Println(color.YellowString("# Commands"))
 	log.Error.Println("")
-	log.Error.Println("q build", color.New(color.Faint).Sprint("[directory]"))
+	log.Error.Println("q build", log.Faint.Sprint("[directory]"))
 	log.Error.Println("q system")
 	log.Error.Println("")
 	log.Error.Println(color.YellowString("## build"))

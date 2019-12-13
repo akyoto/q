@@ -18,7 +18,7 @@ var examples = []struct {
 	{"functions", "123456789\n123456789\n123456789\n123456789\n", 0},
 	{"loops", "Hello\nHello\nHello\n\nH\nHe\nHel\nHell\nHello\n", 0},
 	{"memory", "ABCD\n", 0},
-	{"struct", "", 0},
+	{"struct", "000", 0},
 }
 
 func TestExamples(t *testing.T) {

@@ -65,20 +65,20 @@ begin:
 				continue
 			}
 
-			return NewError(errors.TopLevel, file.path, tokens[:index+1], nil)
+			return NewError(errors.New(errors.TopLevel), file.path, tokens[:index+1], nil)
 
 		case token.NewLine:
 			newlines++
 
 			if newlines == 3 {
-				return NewError(errors.UnnecessaryNewlines, file.path, tokens[:index+1], nil)
+				return NewError(errors.New(errors.UnnecessaryNewlines), file.path, tokens[:index+1], nil)
 			}
 
 		case token.Comment:
 			// OK.
 
 		default:
-			return NewError(errors.TopLevel, file.path, tokens[:index+1], nil)
+			return NewError(errors.New(errors.TopLevel), file.path, tokens[:index+1], nil)
 		}
 	}
 

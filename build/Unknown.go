@@ -28,13 +28,13 @@ func (state *State) UnknownFunctionError(functionName string) error {
 	})
 
 	if similarity.JaroWinkler(functionName, knownFunctions[0]) < 0.9 {
-		return &errors.UnknownFunction{Name: functionName}
+		return errors.New(&errors.UnknownFunction{Name: functionName})
 	}
 
-	return &errors.UnknownFunction{
+	return errors.New(&errors.UnknownFunction{
 		Name:        functionName,
 		CorrectName: knownFunctions[0],
-	}
+	})
 }
 
 // UnknownPackageError produces an unknown package error
@@ -58,13 +58,13 @@ func (state *State) UnknownPackageError(pkgName string) error {
 	})
 
 	if similarity.JaroWinkler(pkgName, knownPackages[0]) < 0.9 {
-		return &errors.UnknownPackage{Name: pkgName}
+		return errors.New(&errors.UnknownPackage{Name: pkgName})
 	}
 
-	return &errors.UnknownPackage{
+	return errors.New(&errors.UnknownPackage{
 		Name:        pkgName,
 		CorrectName: knownPackages[0],
-	}
+	})
 }
 
 // UnknownVariableError produces an unknown variable error
@@ -77,7 +77,7 @@ func (state *State) UnknownVariableError(variableName string) error {
 	})
 
 	if len(knownVariables) == 0 {
-		return &errors.UnknownVariable{Name: variableName}
+		return errors.New(&errors.UnknownVariable{Name: variableName})
 	}
 
 	// Suggest a variable name based on the similarity to known variables
@@ -88,11 +88,11 @@ func (state *State) UnknownVariableError(variableName string) error {
 	})
 
 	if similarity.JaroWinkler(variableName, knownVariables[0]) < 0.9 {
-		return &errors.UnknownVariable{Name: variableName}
+		return errors.New(&errors.UnknownVariable{Name: variableName})
 	}
 
-	return &errors.UnknownVariable{
+	return errors.New(&errors.UnknownVariable{
 		Name:        variableName,
 		CorrectName: knownVariables[0],
-	}
+	})
 }

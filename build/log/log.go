@@ -3,6 +3,8 @@ package log
 import (
 	"log"
 	"os"
+
+	"github.com/akyoto/color"
 )
 
 var (
@@ -11,4 +13,7 @@ var (
 
 	// Error is used for error messages.
 	Error = log.New(os.Stderr, "", 0)
+
+	// Faint is the color used for printing faint messages.
+	Faint = color.New(color.Faint)
 )

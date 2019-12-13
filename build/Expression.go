@@ -17,7 +17,7 @@ func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, *t
 	freeRegister := state.registers.General.FindFree()
 
 	if freeRegister == nil {
-		return nil, nil, errors.ExceededMaxVariables
+		return nil, nil, errors.New(errors.ExceededMaxVariables)
 	}
 
 	typ, err := state.TokensToRegister(tokens, freeRegister)
@@ -82,7 +82,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 				sub.Register = state.registers.General.FindFree()
 
 				if sub.Register == nil {
-					return errors.ExceededMaxVariables
+					return errors.New(errors.ExceededMaxVariables)
 				}
 
 				_ = sub.Register.Use(sub)
@@ -100,7 +100,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 			left.Register = state.registers.General.FindFree()
 
 			if left.Register == nil {
-				return errors.ExceededMaxVariables
+				return errors.New(errors.ExceededMaxVariables)
 			}
 
 			_ = left.Register.Use(sub)
@@ -213,7 +213,7 @@ func (state *State) TokenToRegister(singleToken token.Token, register *register.
 		return types.Text, nil
 	}
 
-	return nil, errors.NotImplemented
+	return nil, errors.New(errors.NotImplemented)
 }
 
 // CalculateRegisterNumber performs an operation on a register and a number.
@@ -248,7 +248,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		temporary := state.registers.General.FindFree()
 
 		if temporary == nil {
-			return errors.ExceededMaxVariables
+			return errors.New(errors.ExceededMaxVariables)
 		}
 
 		temporary.ForceUse(operand)
@@ -262,7 +262,7 @@ func (state *State) CalculateRegisterNumber(operation string, register *register
 		temporary.Free()
 
 	default:
-		return errors.NotImplemented
+		return errors.New(errors.NotImplemented)
 	}
 
 	return nil
@@ -305,7 +305,7 @@ func (state *State) CalculateRegisterRegister(operation string, registerTo *regi
 		state.assembler.MoveRegisterRegister(registerTo, rax)
 
 	default:
-		return errors.NotImplemented
+		return errors.New(errors.NotImplemented)
 	}
 
 	return nil
@@ -320,7 +320,7 @@ func (state *State) TryFreeRegister(reg *register.Register) error {
 	freeRegister := state.registers.General.FindFree()
 
 	if freeRegister == nil {
-		return errors.ExceededMaxVariables
+		return errors.New(errors.ExceededMaxVariables)
 	}
 
 	state.assembler.MoveRegisterRegister(freeRegister, reg)

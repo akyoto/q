@@ -3,8 +3,8 @@ import sys
 
 main() {
 	# Allocate a few bytes
-	length := 256
-	buffer := mem.allocate(length)
+	let length = 256
+	let buffer = mem.allocate(length)
 
 	store(buffer, 0, 1, 65)
 	store(buffer, 1, 1, 66)
@@ -14,6 +14,6 @@ main() {
 	sys.write(1, buffer, 5)
 
 	# Free the memory
-	err := mem.free(buffer, length)
+	let err = mem.free(buffer, length)
 	sys.exit(err)
 }

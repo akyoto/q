@@ -33,7 +33,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	rangePos := token.IndexKind(expression, token.Range)
 
 	if rangePos == -1 {
-		return errors.MissingRange
+		return errors.New(errors.MissingRange)
 	}
 
 	operatorPos := token.IndexKind(expression, token.Operator)
@@ -43,13 +43,13 @@ func (state *State) ForStart(tokens []token.Token) error {
 		start := expression[:rangePos]
 
 		if len(start) == 0 {
-			return errors.MissingRangeStart
+			return errors.New(errors.MissingRangeStart)
 		}
 
 		register = state.registers.General.FindFree()
 
 		if register == nil {
-			return errors.ExceededMaxVariables
+			return errors.New(errors.ExceededMaxVariables)
 		}
 
 		register.ForceUse(token.List(expression))
@@ -60,11 +60,11 @@ func (state *State) ForStart(tokens []token.Token) error {
 		}
 
 		if typ != types.Int {
-			return &errors.InvalidType{Type: typ.String(), Expected: types.Int.String()}
+			return errors.New(&errors.InvalidType{Type: typ.String(), Expected: types.Int.String()})
 		}
 	} else {
 		assignment := expression[:rangePos]
-		variable, err := state.AssignVariable(assignment)
+		variable, err := state.AssignVariable(assignment, true)
 
 		if err != nil {
 			return err
@@ -81,7 +81,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	upperLimit := expression[rangePos+1:]
 
 	if len(upperLimit) == 0 {
-		return errors.MissingRangeLimit
+		return errors.New(errors.MissingRangeLimit)
 	}
 
 	state.tokenCursor++

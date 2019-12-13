@@ -1,9 +1,9 @@
 import fs
 
 main() {
-	fileName := "test.txt"
-	contents := "123456789\n"
-	length := 10
+	let fileName = "test.txt"
+	let contents = "123456789\n"
+	let length = 10
 
 	fs.writeFile(fileName, contents, length)
 	fs.deleteFile(fileName)

@@ -126,7 +126,7 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 func declareParameters(function *Function, scopes *ScopeStack, registers *register.Manager, identifierLifeTime map[string]token.Position) error {
 	for i, parameter := range function.Parameters {
 		if i >= len(registers.Call) {
-			return errors.ExceededMaxParameters
+			return errors.New(errors.ExceededMaxParameters)
 		}
 
 		register := registers.Call[i]

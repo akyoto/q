@@ -18,7 +18,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*types.Ty
 	name := tokens[index]
 
 	if name.Kind != token.Identifier {
-		return typ, index, NewError(errors.MissingStructName, file.path, tokens[:index+1], nil)
+		return typ, index, NewError(errors.New(errors.MissingStructName), file.path, tokens[:index+1], nil)
 	}
 
 	typ.Name = name.Text()
@@ -42,7 +42,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*types.Ty
 				field.Type = file.environment.Types[typeName]
 
 				if field.Type == nil {
-					return typ, index, NewError(&errors.UnknownType{Name: typeName}, file.path, tokens[:index], nil)
+					return typ, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index], nil)
 				}
 
 				continue
@@ -54,7 +54,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*types.Ty
 			}
 
 			if field.Type == nil {
-				return typ, index, NewError(&errors.MissingType{Of: field.Name}, file.path, tokens[:index], nil)
+				return typ, index, NewError(errors.New(&errors.MissingType{Of: field.Name}), file.path, tokens[:index], nil)
 			}
 
 			typ.Fields = append(typ.Fields, field)

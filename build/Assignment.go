@@ -9,45 +9,46 @@ import (
 
 // Assignment handles assignment instructions.
 func (state *State) Assignment(tokens []token.Token) error {
-	_, err := state.AssignVariable(tokens)
+	_, err := state.AssignVariable(tokens, false)
 	return err
 }
 
 // AssignVariable handles assignment instructions and also returns the referenced variable.
-func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
+func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*Variable, error) {
 	cursor := 0
 	mutable := false
-	isNewVariable := false
-	left := tokens[cursor]
+	operatorPos := token.IndexKind(tokens, token.Operator)
 
-	if left.Kind == token.Keyword && left.Text() == "mut" {
-		mutable = true
-		isNewVariable = true
-		cursor++
-		state.tokenCursor++
-		left = tokens[cursor]
-	}
-
-	if left.Kind != token.Identifier {
-		return nil, errors.ExpectedVariable
-	}
-
-	operator := tokens[cursor+1]
-
-	if operator.Kind != token.Operator {
+	if operatorPos == -1 {
 		return nil, errors.MissingAssignmentOperator
 	}
 
-	if operator.Text() == ":=" {
-		if mutable {
-			return nil, fmt.Errorf("Use a normal '=' operator if the variable is mutable")
+	left := tokens[cursor:operatorPos]
+
+	if left[0].Kind == token.Keyword {
+		switch left[0].Text() {
+		case "let":
+			isNewVariable = true
+
+		case "mut":
+			mutable = true
+			isNewVariable = true
+
+		default:
+			return nil, errors.New(errors.InvalidExpression)
 		}
 
-		isNewVariable = true
+		cursor++
+		state.tokenCursor++
+		left = tokens[cursor:operatorPos]
+	}
+
+	if left[0].Kind != token.Identifier {
+		return nil, errors.ExpectedVariable
 	}
 
 	assignPos := state.tokenCursor
-	variableName := left.Text()
+	variableName := left[0].Text()
 	variable := state.scopes.Get(variableName)
 
 	if isNewVariable {
@@ -79,6 +80,21 @@ func (state *State) AssignVariable(tokens []token.Token) (*Variable, error) {
 
 		if !variable.Mutable {
 			return variable, &errors.ImmutableVariable{Name: variable.Name}
+		}
+
+		if len(left) > 1 {
+			suffix := left[1:]
+
+			if suffix[0].Kind == token.ArrayStart && suffix[len(suffix)-1].Kind == token.ArrayEnd {
+				indexTokens := suffix[1 : len(suffix)-1]
+
+				if indexTokens[0].Kind != token.Number {
+					return variable, errors.New(errors.NotImplemented)
+				}
+
+				fmt.Println(indexTokens)
+				return variable, errors.New(errors.NotImplemented)
+			}
 		}
 	}
 

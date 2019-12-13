@@ -2,24 +2,24 @@ import sys
 
 # main is the entry point for our program.
 main() {
-	a := add(1, 2)
-	b := add(3, 4)
-	c := add(a, b)
+	let a = add(1, 2)
+	let b = add(3, 4)
+	let c = add(a, b)
 	show(c)
 
-	d := sub(50, 10)
-	e := sub(40, 10)
-	f := sub(d, e)
+	let d = sub(50, 10)
+	let e = sub(40, 10)
+	let f = sub(d, e)
 	show(f)
 
-	g := mul(1, 1)
-	h := mul(2, 5)
-	i := mul(g, h)
+	let g = mul(1, 1)
+	let h = mul(2, 5)
+	let i = mul(g, h)
 	show(i)
 
-	j := div(1000, 10)
-	k := div(100, 10)
-	l := div(j, k)
+	let j = div(1000, 10)
+	let k = div(100, 10)
+	let l = div(j, k)
 	show(l)
 }
 

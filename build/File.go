@@ -76,7 +76,7 @@ func (file *File) Tokenize() error {
 
 	// Warn about missing final newline.
 	if contents[len(contents)-1] != '\n' {
-		return NewError(errors.MissingEndingNewline, file.path, tokens, nil)
+		return NewError(errors.New(errors.MissingEndingNewline), file.path, tokens, nil)
 	}
 
 	// If we didn't process everything, there's some error in the tokenization.
@@ -91,9 +91,9 @@ func (file *File) Tokenize() error {
 			}
 		}
 
-		err = &errors.UnknownExpression{
+		err = errors.New(&errors.UnknownExpression{
 			Expression: string(remaining[:until]),
-		}
+		})
 
 		return NewError(err, file.path, tokens, nil)
 	}

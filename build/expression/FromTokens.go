@@ -200,7 +200,7 @@ func multiExpressionList(tokens []token.Token) ([]*Expression, error) {
 			}
 
 			if i == parameterStart {
-				return list, errors.MissingParameter
+				return list, errors.New(errors.MissingParameter)
 			}
 
 			parameterTokens := tokens[parameterStart:i]

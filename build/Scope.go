@@ -71,21 +71,21 @@ func (stack *ScopeStack) Errors(isLoop bool) []*ScopeError {
 		if !variable.Used {
 			scopeErrors = append(scopeErrors, &ScopeError{
 				Position: variable.Position,
-				Err:      &errors.UnusedVariable{Name: variable.Name},
+				Err:      errors.New(&errors.UnusedVariable{Name: variable.Name}),
 			})
 		}
 
 		if !variable.LastAssignUsed {
 			scopeErrors = append(scopeErrors, &ScopeError{
 				Position: variable.LastAssign,
-				Err:      &errors.IneffectiveAssignment{Name: variable.Name},
+				Err:      errors.New(&errors.IneffectiveAssignment{Name: variable.Name}),
 			})
 		}
 
 		if variable.Mutable && variable.LastAssign == variable.Position {
 			scopeErrors = append(scopeErrors, &ScopeError{
 				Position: variable.Position,
-				Err:      &errors.UnmodifiedMutable{Name: variable.Name},
+				Err:      errors.New(&errors.UnmodifiedMutable{Name: variable.Name}),
 			})
 		}
 	}
