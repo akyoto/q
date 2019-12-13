@@ -7,7 +7,7 @@ type Field struct {
 	Name     string
 	Type     *Type
 	Position token.Position
-	Offset   uint16
+	Offset   uint
 	Mutable  bool
 }
 

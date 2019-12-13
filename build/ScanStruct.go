@@ -57,6 +57,7 @@ func (file *File) scanStruct(tokens token.List, index token.Position) (*types.Ty
 				return typ, index, NewError(errors.New(&errors.MissingType{Of: field.Name}), file.path, tokens[:index], nil)
 			}
 
+			field.Offset = typ.Size
 			typ.Fields = append(typ.Fields, field)
 			typ.Size += field.Type.Size
 			field = nil

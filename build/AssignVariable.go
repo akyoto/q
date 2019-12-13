@@ -1,68 +1,9 @@
 package build
 
 import (
-	"fmt"
-
 	"github.com/akyoto/q/build/errors"
-	"github.com/akyoto/q/build/log"
 	"github.com/akyoto/q/build/token"
 )
-
-// Assignment handles assignment instructions.
-func (state *State) Assignment(tokens []token.Token) error {
-	operatorPos := token.Index(tokens, token.Operator, "=")
-
-	if operatorPos == -1 {
-		return errors.New(errors.MissingAssignmentOperator)
-	}
-
-	left := tokens[:operatorPos]
-
-	if left[operatorPos-1].Kind == token.ArrayEnd {
-		return state.AssignArrayElement(tokens)
-	}
-
-	for _, t := range left {
-		if t.Kind == token.Keyword && (t.Text() == "let" || t.Text() == "mut") {
-			_, err := state.AssignVariable(tokens, false)
-			return err
-		}
-
-		if t.Kind == token.Operator && t.Text() == "." {
-			return state.AssignStructField(tokens)
-		}
-	}
-
-	_, err := state.AssignVariable(tokens, false)
-	return err
-}
-
-// AssignStructField assigns a value to a struct field.
-func (state *State) AssignStructField(tokens []token.Token) error {
-	log.Info.Println("AssignStructField", tokens)
-	return nil
-}
-
-// AssignArrayElement assigns a value to an array element.
-func (state *State) AssignArrayElement(tokens []token.Token) error {
-	log.Info.Println("AssignArrayElement", tokens)
-	operatorPos := token.Index(tokens, token.Operator, "=")
-	left := tokens[:operatorPos]
-	suffix := left[1:]
-
-	if suffix[0].Kind == token.ArrayStart && suffix[len(suffix)-1].Kind == token.ArrayEnd {
-		indexTokens := suffix[1 : len(suffix)-1]
-
-		if indexTokens[0].Kind != token.Number {
-			return errors.New(errors.NotImplemented)
-		}
-
-		fmt.Println(indexTokens)
-		return errors.New(errors.NotImplemented)
-	}
-
-	return nil
-}
 
 // AssignVariable handles assignment instructions and also returns the referenced variable.
 func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*Variable, error) {

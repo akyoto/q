@@ -5,6 +5,7 @@ struct Point {
 
 main() -> Point {
 	let p = Point()
-	p.x = 5
+	p.x = 2
+	p.y = 3
 	return p
 }

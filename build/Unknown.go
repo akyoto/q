@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"github.com/akyoto/q/build/errors"
+	"github.com/akyoto/q/build/types"
 	"github.com/akyoto/stringutils/similarity"
 )
 
@@ -27,7 +28,7 @@ func (state *State) UnknownPackageError(pkgName string) error {
 		return aSimilarity > bSimilarity
 	})
 
-	if similarity.JaroWinkler(pkgName, knownPackages[0]) < 0.9 {
+	if similarity.JaroWinkler(pkgName, knownPackages[0]) < 0.8 {
 		return &errors.UnknownPackage{Name: pkgName}
 	}
 
@@ -57,7 +58,7 @@ func (state *State) UnknownVariableError(variableName string) error {
 		return aSimilarity > bSimilarity
 	})
 
-	if similarity.JaroWinkler(variableName, knownVariables[0]) < 0.9 {
+	if similarity.JaroWinkler(variableName, knownVariables[0]) < 0.8 {
 		return &errors.UnknownVariable{Name: variableName}
 	}
 
@@ -87,7 +88,7 @@ func (env *Environment) UnknownFunctionError(functionName string) error {
 		return aSimilarity > bSimilarity
 	})
 
-	if similarity.JaroWinkler(functionName, knownFunctions[0]) < 0.9 {
+	if similarity.JaroWinkler(functionName, knownFunctions[0]) < 0.8 {
 		return &errors.UnknownFunction{Name: functionName}
 	}
 
@@ -113,12 +114,39 @@ func (env *Environment) UnknownTypeError(pkgName string) error {
 		return aSimilarity > bSimilarity
 	})
 
-	if similarity.JaroWinkler(pkgName, knownTypes[0]) < 0.9 {
+	if similarity.JaroWinkler(pkgName, knownTypes[0]) < 0.8 {
 		return &errors.UnknownType{Name: pkgName}
 	}
 
 	return &errors.UnknownType{
 		Name:        pkgName,
 		CorrectName: knownTypes[0],
+	}
+}
+
+// UnknownFieldError produces an unknown field error
+// and tries to guess which type the user was trying to type.
+func UnknownFieldError(field string, typ *types.Type) error {
+	knownFields := make([]string, 0, len(typ.Fields))
+
+	for _, field := range typ.Fields {
+		knownFields = append(knownFields, field.Name)
+	}
+
+	// Suggest a type name based on the similarity to known functions
+	sort.Slice(knownFields, func(a, b int) bool {
+		aSimilarity := similarity.JaroWinkler(field, knownFields[a])
+		bSimilarity := similarity.JaroWinkler(field, knownFields[b])
+		return aSimilarity > bSimilarity
+	})
+
+	if similarity.JaroWinkler(field, knownFields[0]) < 0.8 {
+		return &errors.UnknownField{TypeName: typ.Name, Name: field}
+	}
+
+	return &errors.UnknownField{
+		TypeName:    typ.Name,
+		Name:        field,
+		CorrectName: knownFields[0],
 	}
 }
