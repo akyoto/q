@@ -61,55 +61,42 @@ func (build *Build) Run() error {
 	)
 
 	// Scan
-	if build.ShowTimings {
-		start = time.Now()
-	}
-
+	start = time.Now()
 	err := build.Environment.ImportDirectory(build.Path, "")
 
 	if err != nil {
 		return err
 	}
 
-	if build.ShowTimings {
-		scan = time.Since(start)
-	}
+	scan = time.Since(start)
 
 	// Compile
-	if build.ShowTimings {
-		start = time.Now()
-	}
-
+	start = time.Now()
 	code, err := build.Compile()
 
 	if err != nil || !build.WriteExecutable {
 		return err
 	}
 
-	if build.ShowTimings {
-		compile = time.Since(start)
-	}
+	compile = time.Since(start)
 
 	// Write
-	if build.ShowTimings {
-		start = time.Now()
-	}
-
+	start = time.Now()
 	err = writeToDisk(code, build.ExecutablePath)
 
 	if err != nil {
 		return err
 	}
 
-	if build.ShowTimings {
-		write = time.Since(start)
+	write = time.Since(start)
 
+	if build.ShowTimings {
 		key := log.Faint.Sprint
-		log.Info.Printf(key("%-17s")+" %10v\n", "Scan files:", scan)
-		log.Info.Printf(key("%-17s")+" %10v\n", "Compile:", compile)
-		log.Info.Printf(key("%-17s")+" %10v\n", "Write to disk:", write)
+		log.Info.Printf(key("%-17s")+" %10v μs\n", "Scan files:", scan.Microseconds())
+		log.Info.Printf(key("%-17s")+" %10v μs\n", "Compile:", compile.Microseconds())
+		log.Info.Printf(key("%-17s")+" %10v μs\n", "Write to disk:", write.Microseconds())
 		log.Info.Println(key(strings.Repeat("-", 28)))
-		log.Info.Printf(key("%-17s")+color.GreenString(" %10v")+"\n", "Total:", scan+compile+write)
+		log.Info.Printf(key("%-17s")+color.GreenString(" %10v μs")+"\n", "Total:", (scan + compile + write).Microseconds())
 	}
 
 	return nil
