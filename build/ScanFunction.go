@@ -94,17 +94,10 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 					return function, index, NewError(errors.New(&errors.MissingType{Of: parameterName.Text()}), file.path, tokens[:function.parameterStart+1], function)
 				}
 
-				typeName := parameter[1].Text()
-				typ := file.environment.Types[typeName]
-
-				if typ == nil {
-					return function, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index], function)
-				}
-
 				function.Parameters = append(function.Parameters, &Parameter{
-					Name:     parameterName.Text(),
-					Type:     typ,
-					Position: function.parameterStart,
+					Name:       parameterName.Text(),
+					TypeTokens: parameter[1:],
+					Position:   function.parameterStart,
 				})
 
 				function.parameterStart = -1
@@ -126,17 +119,10 @@ func (file *File) scanFunction(tokens token.List, index token.Position) (*Functi
 				return function, index, NewError(errors.New(&errors.MissingType{Of: parameterName.Text()}), file.path, tokens[:function.parameterStart+1], function)
 			}
 
-			typeName := parameter[1].Text()
-			typ := file.environment.Types[typeName]
-
-			if typ == nil {
-				return function, index, NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, tokens[:index], function)
-			}
-
 			function.Parameters = append(function.Parameters, &Parameter{
-				Name:     parameterName.Text(),
-				Type:     typ,
-				Position: function.parameterStart,
+				Name:       parameterName.Text(),
+				TypeTokens: parameter[1:],
+				Position:   function.parameterStart,
 			})
 
 			function.parameterStart = index + 1

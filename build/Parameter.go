@@ -1,11 +1,18 @@
 package build
 
 import (
+	"github.com/akyoto/q/build/token"
 	"github.com/akyoto/q/build/types"
 )
 
 // Parameter represents a function parameter.
-type Parameter types.Field
+type Parameter struct {
+	Name       string
+	Type       *types.Type
+	TypeTokens []token.Token
+	Mutable    bool
+	Position   token.Position
+}
 
 // String returns the name of the parameter.
 func (parameter *Parameter) String() string {

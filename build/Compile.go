@@ -130,6 +130,13 @@ func declareParameters(function *Function, scopes *ScopeStack, registers *regist
 		}
 
 		register := registers.Call[i]
+		typeName := parameter.TypeTokens[0].Text()
+		file := function.File
+		parameter.Type = file.environment.Types[typeName]
+
+		if parameter.Type == nil {
+			return NewError(errors.New(&errors.UnknownType{Name: typeName}), file.path, file.tokens[:parameter.Position+2], function)
+		}
 
 		variable := &Variable{
 			Name:       parameter.Name,
