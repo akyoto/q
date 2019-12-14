@@ -1,6 +1,5 @@
 import sys
 
-# main is the entry point for our program.
 main() {
 	let a = add(1, 2)
 	let b = add(3, 4)
