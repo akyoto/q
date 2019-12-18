@@ -108,6 +108,29 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		}
 
 		sub.Register = left.Register
+		operator := sub.Token.Text()
+
+		// Struct field access
+		if operator == "." {
+			variableName := left.Token.Text()
+			variable := state.scopes.Get(variableName)
+
+			if variable == nil {
+				return errors.New(state.UnknownVariableError(variableName))
+			}
+
+			state.UseVariable(variable)
+			fieldName := right.Token.Text()
+			field := variable.Type.FieldByName(fieldName)
+
+			if field == nil {
+				return errors.New(&errors.UnknownField{Name: fieldName})
+			}
+
+			sub.Type = field.Type
+			state.assembler.LoadRegister(sub.Register, variable.Register(), byte(field.Offset), byte(field.Type.Size))
+			return nil
+		}
 
 		// Left operand
 		if left.IsLeaf() {
@@ -127,8 +150,6 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 			sub.Type = left.Type
 		}
 
-		operator := sub.Token.Text()
-
 		// Right operand is a leaf node
 		if right.IsLeaf() {
 			switch right.Token.Kind {
@@ -137,7 +158,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 				variable := state.scopes.Get(variableName)
 
 				if variable == nil {
-					return fmt.Errorf("Unknown variable %s", variableName)
+					return errors.New(state.UnknownVariableError(variableName))
 				}
 
 				state.UseVariable(variable)
@@ -348,7 +369,7 @@ func (state *State) ResolveAccessors(root *expression.Expression) error {
 
 // ResolveAccessor combines the children in the dot operator to a single function name.
 func (state *State) ResolveAccessor(root *expression.Expression) error {
-	if root.Token.Text() != "." {
+	if root.Token.Text() != "." || !root.Children[1].IsFunctionCall {
 		return nil
 	}
 

@@ -60,6 +60,12 @@ func (expr *Expression) EachOperation(callBack func(*Expression) error) error {
 		return nil
 	}
 
+	// Don't descend into the parameters of function calls.
+	// We rely on the compiler using CallExpression for each of them.
+	if expr.IsFunctionCall {
+		return callBack(expr)
+	}
+
 	for _, child := range expr.Children {
 		err := child.EachOperation(callBack)
 

@@ -1,11 +1,13 @@
+import sys
+
 struct Point {
 	x Int
 	y Int
 }
 
-main() -> Point {
+main() {
 	let p = Point()
-	p.x = 2
-	p.y = 3
-	return p
+	p.x = 10
+	p.y = 20
+	sys.exit(p.y)
 }

@@ -94,6 +94,10 @@ func (a *Assembler) StoreNumber(destination *register.Register, offset byte, byt
 	a.doMemoryNumber(STORE, destination, offset, byteCount, number)
 }
 
+func (a *Assembler) LoadRegister(destination *register.Register, source *register.Register, offset byte, byteCount byte) {
+	a.doRegisterMemory(LOAD, destination, source, offset, byteCount)
+}
+
 func (a *Assembler) MoveRegisterAddress(destination *register.Register, address uint32) {
 	a.doRegisterAddress(MOV, destination, address)
 }
