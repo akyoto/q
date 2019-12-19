@@ -78,11 +78,11 @@ Quality of life features:
 * [x] `import` standard packages
 * [x] `expect` for input validation
 * [x] `ensure` for output validation
-* [ ] Data structures
-* [ ] Stack allocation
-* [ ] Heap allocation
-* [ ] Type system
+* [ ] Data structures *in progress*
+* [ ] Heap allocation *in progress*
+* [ ] Type system *in progress*
 * [ ] Type operator: `|` (`User | Error`)
+* [ ] Stack allocation
 * [ ] Hexadecimal, octal and binary literals
 * [ ] `match` keyword
 * [ ] `import` external packages
