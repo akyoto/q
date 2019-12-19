@@ -2,7 +2,7 @@ package expression
 
 import (
 	"github.com/akyoto/q/build/errors"
-	"github.com/akyoto/q/build/spec"
+	"github.com/akyoto/q/build/operators"
 	"github.com/akyoto/q/build/token"
 	"github.com/akyoto/q/build/types"
 )
@@ -103,9 +103,9 @@ func FromTokens(tokens []token.Token) (*Expression, error) {
 
 			// Compare operator priority
 			oldOperator := current.Token.Text()
-			oldOperatorPriority := spec.Operators[oldOperator].Priority
+			oldOperatorPriority := operators.All[oldOperator].Priority
 			newOperator := t.Text()
-			newOperatorPriority := spec.Operators[newOperator].Priority
+			newOperatorPriority := operators.All[newOperator].Priority
 
 			if newOperatorPriority > oldOperatorPriority {
 				// Let's say we have the expression (1 + 2 * 3)

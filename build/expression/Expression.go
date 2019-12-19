@@ -3,8 +3,8 @@ package expression
 import (
 	"strings"
 
+	"github.com/akyoto/q/build/operators"
 	"github.com/akyoto/q/build/register"
-	"github.com/akyoto/q/build/spec"
 	"github.com/akyoto/q/build/token"
 	"github.com/akyoto/q/build/types"
 )
@@ -87,7 +87,7 @@ func (expr *Expression) SortByRegisterCount() {
 		child.SortByRegisterCount()
 	}
 
-	if expr.IsFunctionCall || (expr.Token.Kind == token.Operator && spec.Operators[string(expr.Token.Bytes)].OperandOrderImportant) {
+	if expr.IsFunctionCall || (expr.Token.Kind == token.Operator && operators.All[string(expr.Token.Bytes)].OperandOrderImportant) {
 		return
 	}
 

@@ -3,7 +3,8 @@ package token
 import (
 	"bytes"
 
-	"github.com/akyoto/q/build/spec"
+	"github.com/akyoto/q/build/keywords"
+	"github.com/akyoto/q/build/operators"
 )
 
 // Pre-allocate these byte buffers so we can re-use them
@@ -57,7 +58,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, uint16) {
 
 			token = Token{Identifier, processedBytes, buffer[processedBytes : i+1]}
 
-			if spec.Keywords[string(token.Bytes)] {
+			if keywords.All[string(token.Bytes)] {
 				token.Kind = Keyword
 			}
 
@@ -124,7 +125,7 @@ func Tokenize(buffer []byte, tokens []Token) ([]Token, uint16) {
 
 			token = Token{Operator, processedBytes, buffer[processedBytes : i+1]}
 
-			if spec.Operators[string(token.Bytes)] == nil {
+			if operators.All[string(token.Bytes)] == nil {
 				return tokens, processedBytes
 			}
 

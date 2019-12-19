@@ -1,7 +1,7 @@
-package spec
+package keywords
 
-// Keywords defines the keywords used in the language.
-var Keywords = map[string]bool{
+// All defines the keywords used in the language.
+var All = map[string]bool{
 	"ensure": true,
 	"expect": true,
 	"for":    true,

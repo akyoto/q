@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/akyoto/q/build/errors"
-	"github.com/akyoto/q/build/spec"
+	"github.com/akyoto/q/build/operators"
 	"github.com/akyoto/q/build/token"
 )
 
@@ -32,7 +32,7 @@ func (state *State) Condition(condition []token.Token, elseLabel string) error {
 	operatorPos := -1
 
 	for i, t := range condition {
-		if t.Kind == token.Operator && spec.Operators[t.Text()].IsComparison {
+		if t.Kind == token.Operator && operators.All[t.Text()].Kind == operators.Comparison {
 			operatorPos = i
 			break
 		}
