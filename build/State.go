@@ -9,6 +9,7 @@ import (
 	"github.com/akyoto/q/build/instruction"
 	"github.com/akyoto/q/build/register"
 	"github.com/akyoto/q/build/token"
+	"github.com/akyoto/q/build/types"
 )
 
 // State encapsulates a compiler's state.
@@ -103,7 +104,7 @@ func (state *State) Instruction(instr instruction.Instruction, index instruction
 
 // CompareRegisterExpression compares a register with the result of the expression.
 // If the expression needs to be stored in a temporary register, it will return it.
-func (state *State) CompareRegisterExpression(register *register.Register, expression []token.Token, labelBeforeComparison string) (*register.Register, error) {
+func (state *State) CompareRegisterExpression(register *register.Register, expression []token.Token, labelBeforeComparison string) (*register.Register, *types.Type, error) {
 	if len(expression) == 1 {
 		if labelBeforeComparison != "" {
 			state.assembler.AddLabel(labelBeforeComparison)
@@ -115,40 +116,39 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 			variable := state.scopes.Get(variableName)
 
 			if variable == nil {
-				return nil, errors.New(state.UnknownVariableError(variableName))
+				return nil, nil, errors.New(state.UnknownVariableError(variableName))
 			}
 
 			state.UseVariable(variable)
 			state.assembler.CompareRegisterRegister(register, variable.Register())
-
-			return nil, nil
+			return nil, variable.Type, nil
 
 		case token.Number:
 			numberString := expression[0].Text()
 			number, err := state.ParseInt(numberString)
 
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 
 			state.assembler.CompareRegisterNumber(register, uint64(number))
-			return nil, nil
+			return nil, types.Int, nil
 
 		default:
-			return nil, errors.New(errors.InvalidExpression)
+			return nil, nil, errors.New(errors.InvalidExpression)
 		}
 	}
 
 	temporary := state.registers.General.FindFree()
 
 	if temporary == nil {
-		return nil, errors.New(errors.ExceededMaxVariables)
+		return nil, nil, errors.New(errors.ExceededMaxVariables)
 	}
 
-	_, err := state.TokensToRegister(expression, temporary)
+	typ, err := state.TokensToRegister(expression, temporary)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if labelBeforeComparison != "" {
@@ -156,7 +156,7 @@ func (state *State) CompareRegisterExpression(register *register.Register, expre
 	}
 
 	state.assembler.CompareRegisterRegister(register, temporary)
-	return temporary, nil
+	return temporary, typ, nil
 }
 
 // PopScope pops the last scope on the stack and returns

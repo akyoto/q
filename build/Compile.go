@@ -99,7 +99,16 @@ func Compile(function *Function, environment *Environment, optimize bool, verbos
 	if state.ensureState.counter > 0 {
 		assembler.AddLabel("return")
 
-		underscore := &Variable{Name: "_"}
+		if len(state.function.ReturnTypes) == 0 {
+			function.Error = errors.New(errors.EnsureWithoutFunctionType)
+			return
+		}
+
+		underscore := &Variable{
+			Name: "_",
+			Type: state.function.ReturnTypes[0],
+		}
+
 		underscore.ForceSetRegister(registers.ReturnValue[0])
 		state.scopes.Push()
 		state.scopes.Add(underscore)

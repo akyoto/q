@@ -14,6 +14,18 @@ import (
 
 // EvaluateTokens evaluates the token expression and stores the result in a register.
 func (state *State) EvaluateTokens(tokens []token.Token) (*register.Register, *types.Type, error) {
+	if len(tokens) == 1 && tokens[0].Kind == token.Identifier {
+		variableName := tokens[0].Text()
+		variable := state.scopes.Get(variableName)
+
+		if variable == nil {
+			return nil, nil, errors.New(state.UnknownVariableError(variableName))
+		}
+
+		state.UseVariable(variable)
+		return variable.Register(), variable.Type, nil
+	}
+
 	freeRegister := state.registers.General.FindFree()
 
 	if freeRegister == nil {

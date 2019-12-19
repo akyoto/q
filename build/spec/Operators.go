@@ -4,44 +4,44 @@ package spec
 // The number corresponds to the operator priority and can not be zero.
 var Operators = map[string]*Operator{
 	// Parameters
-	// ",": {",", 1, true},
+	// ",": {",", 1, true, false},
 
 	// Assignment
-	"=":   {"=", 2, true},
-	"+=":  {"+=", 2, true},
-	"-=":  {"-=", 2, true},
-	"*=":  {"*=", 2, true},
-	"/=":  {"/=", 2, true},
-	">>=": {">>=", 2, true},
-	"<<=": {"<<=", 2, true},
+	"=":   {"=", 2, true, false},
+	"+=":  {"+=", 2, true, false},
+	"-=":  {"-=", 2, true, false},
+	"*=":  {"*=", 2, true, false},
+	"/=":  {"/=", 2, true, false},
+	">>=": {">>=", 2, true, false},
+	"<<=": {"<<=", 2, true, false},
 
 	// Send and receive
-	"->": {"->", 3, true},
-	"<-": {"->", 3, true},
+	"->": {"->", 3, true, false},
+	"<-": {"->", 3, true, false},
 
 	// Logical OR
-	"||": {"||", 4, true},
+	"||": {"||", 4, true, false},
 
 	// Logical AND
-	"&&": {"&&", 5, true},
+	"&&": {"&&", 5, true, false},
 
 	// Comparison
-	"==": {"==", 6, false},
-	"!=": {"!=", 6, false},
-	"<=": {"<=", 6, true},
-	">=": {">=", 6, true},
+	"==": {"==", 6, false, true},
+	"!=": {"!=", 6, false, true},
+	"<=": {"<=", 6, true, true},
+	">=": {">=", 6, true, true},
 
-	"<": {"<", 7, true},
-	">": {">", 7, true},
+	"<": {"<", 7, true, true},
+	">": {">", 7, true, true},
 
 	// Arithmetic operations
-	"+": {"+", 8, false},
-	"-": {"-", 8, false},
+	"+": {"+", 8, false, false},
+	"-": {"-", 8, false, false},
 
-	"*": {"*", 9, false},
-	"/": {"/", 9, true},
-	"%": {"%", 9, true},
+	"*": {"*", 9, false, false},
+	"/": {"/", 9, true, false},
+	"%": {"%", 9, true, false},
 
 	// Package and field access
-	".": {".", 10, true},
+	".": {".", 10, true, false},
 }

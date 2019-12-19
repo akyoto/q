@@ -85,7 +85,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 	}
 
 	state.tokenCursor++
-	temporary, err := state.CompareRegisterExpression(register, upperLimit, labelStart)
+	temporary, _, err := state.CompareRegisterExpression(register, upperLimit, labelStart)
 
 	if err != nil {
 		return err

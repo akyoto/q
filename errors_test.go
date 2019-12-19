@@ -14,6 +14,7 @@ func TestErrors(t *testing.T) {
 		File          string
 		ExpectedError error
 	}{
+		{"ensure-no-return-type.q", errors.EnsureWithoutFunctionType},
 		{"for-missing-upper-limit.q", errors.MissingRangeLimit},
 		{"for-missing-range.q", errors.MissingRange},
 		{"for-missing-start-value.q", errors.MissingRangeStart},

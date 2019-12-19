@@ -5,4 +5,5 @@ type Operator struct {
 	Symbol                string
 	Priority              int
 	OperandOrderImportant bool
+	IsComparison          bool
 }

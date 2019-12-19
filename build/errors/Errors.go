@@ -20,6 +20,7 @@ var (
 	NotImplemented              = &Base{"Not implemented", false}
 	ParameterOpeningBracket     = &Base{"Missing opening bracket '(' after the function name", false}
 	ReturnWithoutFunctionType   = &Base{"Returning a value in a function without a return type", false}
+	EnsureWithoutFunctionType   = &Base{"Ensuring a value in a function without a return type", false}
 	TopLevel                    = &Base{"Only function definitions are allowed at the top level", false}
 	UnnecessaryNewlines         = &Base{"More than 2 successive empty lines", false}
 )
