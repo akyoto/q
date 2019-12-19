@@ -124,7 +124,7 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 			field := variable.Type.FieldByName(fieldName)
 
 			if field == nil {
-				return errors.New(&errors.UnknownField{Name: fieldName})
+				return errors.New(UnknownFieldError(fieldName, variable.Type))
 			}
 
 			sub.Type = field.Type

@@ -32,6 +32,8 @@ func TestErrors(t *testing.T) {
 		{"unnecessary-newlines.q", errors.UnnecessaryNewlines},
 		{"unused-variable.q", &errors.UnusedVariable{Name: "a"}},
 		{"unused-mutable.q", &errors.UnmodifiedMutable{Name: "a"}},
+		{"unknown-field.q", &errors.UnknownField{Name: "z", TypeName: "Point"}},
+		{"unknown-field-suggestion.q", &errors.UnknownField{Name: "xx", CorrectName: "x", TypeName: "Point"}},
 		{"unknown-function.q", &errors.UnknownFunction{Name: "z"}},
 		{"unknown-function-suggestion.q", &errors.UnknownFunction{Name: "prin", CorrectName: "print"}},
 		{"unknown-expression.q", &errors.UnknownExpression{Expression: "\")"}},
