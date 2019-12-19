@@ -199,11 +199,6 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		reg.Free()
 	}
 
-	// Mark final register as used if it's not marked already
-	if finalRegister != nil && finalRegister.IsFree() {
-		_ = finalRegister.Use(root)
-	}
-
 	return root.Type, nil
 }
 

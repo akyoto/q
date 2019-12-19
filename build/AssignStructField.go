@@ -6,7 +6,7 @@ import (
 )
 
 // AssignStructField assigns a value to a struct field.
-func (state *State) AssignStructField(tokens []token.Token, operatorPos token.Position) error {
+func (state *State) AssignStructField(tokens token.List, operatorPos token.Position) error {
 	left := tokens[:operatorPos]
 	variableName := left[0].Text()
 	fieldName := left[2].Text()
@@ -41,10 +41,17 @@ func (state *State) AssignStructField(tokens []token.Token, operatorPos token.Po
 		return errors.New(err)
 	}
 
+	err = rightRegister.Use(right)
+
+	if err != nil {
+		return errors.New(err)
+	}
+
 	if field.Type != rightType {
 		return errors.New(&errors.InvalidType{Name: rightType.String(), Expected: field.Type.String()})
 	}
 
 	state.assembler.StoreRegister(variable.Register(), byte(field.Offset), byte(field.Type.Size), rightRegister)
+	rightRegister.Free()
 	return nil
 }
