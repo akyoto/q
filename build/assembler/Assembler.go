@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/assembler/instructions"
 	"github.com/akyoto/q/build/register"
 )
 
@@ -26,13 +27,13 @@ func New(verbose bool) *Assembler {
 
 // AddLabel adds an instruction that adds a label.
 func (a *Assembler) AddLabel(labelName string) {
-	jump, isJump := a.lastInstruction().(*label)
+	jump, isJump := a.lastInstruction().(*instructions.Jump)
 
 	if isJump && jump.Label == labelName {
 		a.removeLastInstruction()
 	}
 
-	a.Instructions = append(a.Instructions, &addLabel{labelName})
+	a.Instructions = append(a.Instructions, &instructions.AddLabel{Label: labelName})
 }
 
 // AddString adds a string.
@@ -92,15 +93,16 @@ func (a *Assembler) removeLastInstruction() {
 
 // do adds an instruction without any operands.
 func (a *Assembler) do(mnemonic string) {
-	a.Instructions = append(a.Instructions, &standalone{mnemonic, 0})
+	a.Instructions = append(a.Instructions, &instructions.Base{Mnemonic: mnemonic})
 }
 
-// doRegister1 adds an instruction with a single register operand.
-func (a *Assembler) doRegister1(mnemonic string, destination *register.Register) {
-	instr := &register1{
-		Mnemonic:    mnemonic,
+// doRegister adds an instruction with a single register operand.
+func (a *Assembler) doRegister(mnemonic string, destination *register.Register) {
+	instr := &instructions.Register{
 		Destination: destination,
 	}
+
+	instr.SetName(mnemonic)
 
 	if a.verbose {
 		instr.UsedBy = destination.UserString()
@@ -110,13 +112,14 @@ func (a *Assembler) doRegister1(mnemonic string, destination *register.Register)
 	a.UseRegisterID(destination.ID)
 }
 
-// doRegister2 adds an instruction using 2 registers.
-func (a *Assembler) doRegister2(mnemonic string, destination *register.Register, source *register.Register) {
-	instr := &register2{
-		Mnemonic:    mnemonic,
+// doRegisterRegister adds an instruction using 2 registers.
+func (a *Assembler) doRegisterRegister(mnemonic string, destination *register.Register, source *register.Register) {
+	instr := &instructions.RegisterRegister{
 		Destination: destination,
 		Source:      source,
 	}
+
+	instr.SetName(mnemonic)
 
 	if a.verbose {
 		instr.UsedBy1 = destination.UserString()
@@ -130,11 +133,12 @@ func (a *Assembler) doRegister2(mnemonic string, destination *register.Register,
 
 // doRegisterNumber adds an instruction using a register and a number.
 func (a *Assembler) doRegisterNumber(mnemonic string, destination *register.Register, number uint64) {
-	instr := &registerNumber{
-		Mnemonic:    mnemonic,
+	instr := &instructions.RegisterNumber{
 		Destination: destination,
 		Number:      number,
 	}
+
+	instr.SetName(mnemonic)
 
 	if a.verbose {
 		instr.UsedBy = destination.UserString()
@@ -146,11 +150,12 @@ func (a *Assembler) doRegisterNumber(mnemonic string, destination *register.Regi
 
 // doRegisterAddress adds an instruction using a register and a section address.
 func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Register, address uint32) {
-	instr := &registerAddress{
-		Mnemonic:    mnemonic,
+	instr := &instructions.RegisterAddress{
 		Destination: destination,
 		Address:     address,
 	}
+
+	instr.SetName(mnemonic)
 
 	if a.verbose {
 		instr.UsedBy = destination.UserString()
@@ -162,13 +167,14 @@ func (a *Assembler) doRegisterAddress(mnemonic string, destination *register.Reg
 
 // doMemoryNumber adds an instruction using a memory address and a number.
 func (a *Assembler) doMemoryNumber(mnemonic string, destination *register.Register, offset byte, byteCount byte, number uint64) {
-	instr := &memoryNumber{
-		Mnemonic:    mnemonic,
+	instr := &instructions.MemoryNumber{
 		Destination: destination,
 		Offset:      offset,
 		ByteCount:   byteCount,
 		Number:      number,
 	}
+
+	instr.SetName(mnemonic)
 
 	if a.verbose {
 		instr.UsedBy = destination.UserString()
@@ -180,13 +186,14 @@ func (a *Assembler) doMemoryNumber(mnemonic string, destination *register.Regist
 
 // doRegisterMemory adds an instruction using a register target and a source memory address.
 func (a *Assembler) doRegisterMemory(mnemonic string, destination *register.Register, source *register.Register, offset byte, byteCount byte) {
-	instr := &registerMemory{
-		Mnemonic:    mnemonic,
+	instr := &instructions.RegisterMemory{
 		Destination: destination,
 		Source:      source,
 		Offset:      offset,
 		ByteCount:   byteCount,
 	}
+
+	instr.SetName(mnemonic)
 
 	if a.verbose {
 		instr.UsedBy1 = destination.UserString()
@@ -198,7 +205,10 @@ func (a *Assembler) doRegisterMemory(mnemonic string, destination *register.Regi
 	a.UseRegisterID(source.ID)
 }
 
-// doLabel adds an instruction with a label operand.
-func (a *Assembler) doLabel(mnemonic string, labelName string) {
-	a.Instructions = append(a.Instructions, &label{mnemonic, labelName, 0})
+// doJump adds a jump instruction with a label operand.
+func (a *Assembler) doJump(mnemonic string, labelName string) {
+	instr := &instructions.Jump{Label: labelName}
+	instr.SetName(mnemonic)
+
+	a.Instructions = append(a.Instructions, instr)
 }

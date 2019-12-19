@@ -1,5 +1,10 @@
 package assembler
 
+import (
+	"github.com/akyoto/q/build/assembler/instructions"
+	"github.com/akyoto/q/build/assembler/mnemonics"
+)
+
 // Optimize optimizes the assembler instructions for improved performance.
 func (a *Assembler) Optimize() {
 	for index, instr := range a.Instructions {
@@ -15,15 +20,15 @@ func (a *Assembler) Optimize() {
 		// This optimization is only correct
 		// if reg1 is not used in the remaining code.
 		// --------------------------------------------
-		if instr.Name() == POP {
-			pop := instr.(*register1)
-			nextInstr, ok := a.Instructions[index+1].(*register2)
+		if instr.Name() == mnemonics.POP {
+			pop := instr.(*instructions.Register)
+			nextInstr, ok := a.Instructions[index+1].(*instructions.RegisterRegister)
 
 			if !ok {
 				continue
 			}
 
-			if nextInstr.Mnemonic != MOV {
+			if nextInstr.Mnemonic != mnemonics.MOV {
 				continue
 			}
 
@@ -37,10 +42,10 @@ func (a *Assembler) Optimize() {
 			canOptimize := true
 
 			for _, checkInstr := range remainingCode {
-				reg1, ok := checkInstr.(*register1)
+				reg1, ok := checkInstr.(*instructions.Register)
 
 				if ok {
-					if reg1.Destination == source && reg1.Mnemonic != POP {
+					if reg1.Destination == source && reg1.Mnemonic != mnemonics.POP {
 						canOptimize = false
 						break
 					}
@@ -48,7 +53,7 @@ func (a *Assembler) Optimize() {
 					continue
 				}
 
-				reg2, ok := checkInstr.(*register2)
+				reg2, ok := checkInstr.(*instructions.RegisterRegister)
 
 				if ok {
 					if reg2.Source == source {
@@ -58,7 +63,7 @@ func (a *Assembler) Optimize() {
 
 					if reg2.Destination == source {
 						// Overwriting the register means it's safe to optimize
-						if reg2.Mnemonic == MOV {
+						if reg2.Mnemonic == mnemonics.MOV {
 							break
 						}
 
@@ -69,10 +74,10 @@ func (a *Assembler) Optimize() {
 					continue
 				}
 
-				regNumber, ok := checkInstr.(*registerNumber)
+				regNumber, ok := checkInstr.(*instructions.RegisterNumber)
 
 				if ok {
-					if regNumber.Destination == source && regNumber.Mnemonic != MOV {
+					if regNumber.Destination == source && regNumber.Mnemonic != mnemonics.MOV {
 						canOptimize = false
 						break
 					}

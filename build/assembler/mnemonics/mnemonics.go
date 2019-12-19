@@ -1,4 +1,4 @@
-package assembler
+package mnemonics
 
 const (
 	MOV     = "mov"

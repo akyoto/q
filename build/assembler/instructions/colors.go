@@ -1,4 +1,4 @@
-package assembler
+package instructions
 
 import "github.com/akyoto/color"
 

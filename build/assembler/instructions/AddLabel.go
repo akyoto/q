@@ -1,4 +1,4 @@
-package assembler
+package instructions
 
 import (
 	"fmt"
@@ -7,32 +7,32 @@ import (
 	"github.com/akyoto/q/build/log"
 )
 
-// addLabel is used for instructions that add a addLabel.
-type addLabel struct {
+// AddLabel is used for instructions that add a AddLabel.
+type AddLabel struct {
 	Label string
 }
 
 // Exec writes the instruction to the final assembler.
-func (instr *addLabel) Exec(a *asm.Assembler) {
+func (instr *AddLabel) Exec(a *asm.Assembler) {
 	a.AddLabel(instr.Label)
 }
 
-// Name returns the mnemonic.
-func (instr *addLabel) Name() string {
+// Name returns the empty string.
+func (instr *AddLabel) Name() string {
 	return ""
 }
 
 // SetName sets the mnemonic.
-func (instr *addLabel) SetName(mnemonic string) {
+func (instr *AddLabel) SetName(mnemonic string) {
 	// Not applicable.
 }
 
 // Size returns the number of bytes consumed for the instruction.
-func (instr *addLabel) Size() byte {
+func (instr *AddLabel) Size() byte {
 	return 0
 }
 
 // String implements the string serialization.
-func (instr *addLabel) String() string {
+func (instr *AddLabel) String() string {
 	return fmt.Sprintf("[0] %s:", log.Faint.Sprint(instr.Label))
 }

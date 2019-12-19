@@ -1,63 +1,48 @@
-package assembler
+package instructions
 
 import (
 	"fmt"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/assembler/mnemonics"
 	"github.com/akyoto/q/build/register"
 )
 
-// register1 is used for instructions requiring 1 register operand.
-type register1 struct {
-	Mnemonic    string
+// Register is used for instructions requiring 1 register operand.
+type Register struct {
+	Base
 	Destination *register.Register
 	UsedBy      string
-	size        byte
 }
 
 // Exec writes the instruction to the final assembler.
-func (instr *register1) Exec(a *asm.Assembler) {
+func (instr *Register) Exec(a *asm.Assembler) {
 	start := a.Len()
 
 	switch instr.Mnemonic {
-	case INC:
+	case mnemonics.INC:
 		a.IncreaseRegister(instr.Destination.Name)
 
-	case DEC:
+	case mnemonics.DEC:
 		a.DecreaseRegister(instr.Destination.Name)
 
-	case DIV:
+	case mnemonics.DIV:
 		a.DivRegister(instr.Destination.Name)
 
-	case CDQ:
+	case mnemonics.CDQ:
 		a.SignExtendToDX(instr.Destination.Name)
 
-	case PUSH:
+	case mnemonics.PUSH:
 		a.PushRegister(instr.Destination.Name)
 
-	case POP:
+	case mnemonics.POP:
 		a.PopRegister(instr.Destination.Name)
 	}
 
 	instr.size = byte(a.Len() - start)
 }
 
-// Name returns the mnemonic.
-func (instr *register1) Name() string {
-	return instr.Mnemonic
-}
-
-// SetName sets the mnemonic.
-func (instr *register1) SetName(mnemonic string) {
-	instr.Mnemonic = mnemonic
-}
-
-// Size returns the number of bytes consumed for the instruction.
-func (instr *register1) Size() byte {
-	return instr.size
-}
-
 // String implements the string serialization.
-func (instr *register1) String() string {
+func (instr *Register) String() string {
 	return fmt.Sprintf("[%d]   %s %v", instr.size, mnemonicColor.Sprint(instr.Mnemonic), instr.Destination.StringWithUser(instr.UsedBy))
 }

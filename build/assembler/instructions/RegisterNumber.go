@@ -1,61 +1,46 @@
-package assembler
+package instructions
 
 import (
 	"fmt"
 
 	"github.com/akyoto/asm"
+	"github.com/akyoto/q/build/assembler/mnemonics"
 	"github.com/akyoto/q/build/register"
 )
 
-// registerNumber is used for instructions requiring a register and a number operand.
-type registerNumber struct {
-	Mnemonic    string
+// RegisterNumber is used for instructions requiring a register and a number operand.
+type RegisterNumber struct {
+	Base
 	Destination *register.Register
 	Number      uint64
 	UsedBy      string
-	size        byte
 }
 
 // Exec writes the instruction to the final assembler.
-func (instr *registerNumber) Exec(a *asm.Assembler) {
+func (instr *RegisterNumber) Exec(a *asm.Assembler) {
 	start := a.Len()
 
 	switch instr.Mnemonic {
-	case MOV:
+	case mnemonics.MOV:
 		a.MoveRegisterNumber(instr.Destination.Name, instr.Number)
 
-	case CMP:
+	case mnemonics.CMP:
 		a.CompareRegisterNumber(instr.Destination.Name, instr.Number)
 
-	case ADD:
+	case mnemonics.ADD:
 		a.AddRegisterNumber(instr.Destination.Name, instr.Number)
 
-	case MUL:
+	case mnemonics.MUL:
 		a.MulRegisterNumber(instr.Destination.Name, instr.Number)
 
-	case SUB:
+	case mnemonics.SUB:
 		a.SubRegisterNumber(instr.Destination.Name, instr.Number)
 	}
 
 	instr.size = byte(a.Len() - start)
 }
 
-// Name returns the mnemonic.
-func (instr *registerNumber) Name() string {
-	return instr.Mnemonic
-}
-
-// SetName sets the mnemonic.
-func (instr *registerNumber) SetName(mnemonic string) {
-	instr.Mnemonic = mnemonic
-}
-
-// Size returns the number of bytes consumed for the instruction.
-func (instr *registerNumber) Size() byte {
-	return instr.size
-}
-
 // String implements the string serialization.
-func (instr *registerNumber) String() string {
+func (instr *RegisterNumber) String() string {
 	return fmt.Sprintf("[%d]   %s %v, %d", instr.size, mnemonicColor.Sprint(instr.Mnemonic), instr.Destination.StringWithUser(instr.UsedBy), instr.Number)
 }
