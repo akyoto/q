@@ -32,9 +32,19 @@ func (state *State) AssignStructField(tokens []token.Token, operatorPos token.Po
 		}
 
 		state.assembler.StoreNumber(variable.Register(), byte(field.Offset), byte(field.Type.Size), uint64(number))
-	} else {
-		return errors.New(errors.NotImplemented)
+		return nil
 	}
 
+	rightRegister, rightType, err := state.EvaluateTokens(right)
+
+	if err != nil {
+		return errors.New(err)
+	}
+
+	if field.Type != rightType {
+		return errors.New(&errors.InvalidType{Name: rightType.String(), Expected: field.Type.String()})
+	}
+
+	state.assembler.StoreRegister(variable.Register(), byte(field.Offset), byte(field.Type.Size), rightRegister)
 	return nil
 }

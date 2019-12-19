@@ -60,7 +60,7 @@ func (state *State) ForStart(tokens []token.Token) error {
 		}
 
 		if typ != types.Int {
-			return errors.New(&errors.InvalidType{Type: typ.String(), Expected: types.Int.String()})
+			return errors.New(&errors.InvalidType{Name: typ.String(), Expected: types.Int.String()})
 		}
 	} else {
 		assignment := expression[:rangePos]

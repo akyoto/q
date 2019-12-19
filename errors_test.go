@@ -21,6 +21,7 @@ func TestErrors(t *testing.T) {
 		{"immutable-variable.q", &errors.ImmutableVariable{Name: "a"}},
 		{"import-already-exists.q", &errors.ImportNameAlreadyExists{Name: "sys", ImportPath: "sys"}},
 		{"ineffective-assignment.q", &errors.IneffectiveAssignment{Name: "a"}},
+		{"invalid-type-field-assign.q", &errors.InvalidType{Name: "Int64", Expected: "Int32"}},
 		{"missing-opening-bracket.q", &errors.MissingCharacter{Character: "("}},
 		{"missing-closing-bracket.q", &errors.MissingCharacter{Character: ")"}},
 		{"missing-return-type.q", errors.MissingReturnType},

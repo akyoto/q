@@ -22,7 +22,7 @@ func (state *State) Return(tokens []token.Token) error {
 		}
 
 		if typ != state.function.ReturnTypes[0] {
-			return errors.New(&errors.InvalidType{Type: typ.String(), Expected: state.function.ReturnTypes[0].String()})
+			return errors.New(&errors.InvalidType{Name: typ.String(), Expected: state.function.ReturnTypes[0].String()})
 		}
 	} else if len(state.function.ReturnTypes) > 0 {
 		return errors.New(&errors.MissingReturnValue{ReturnType: state.function.ReturnTypes[0].Name})

@@ -103,7 +103,7 @@ func (state *State) AssignVariable(tokens []token.Token, isNewVariable bool) (*V
 	if isNewVariable {
 		variable.Type = typ
 	} else if typ != variable.Type {
-		return variable, errors.New(&errors.InvalidType{Type: typ.String(), Expected: variable.Type.String()})
+		return variable, errors.New(&errors.InvalidType{Name: typ.String(), Expected: variable.Type.String()})
 	}
 
 	// Check for ineffective assignments

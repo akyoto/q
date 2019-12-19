@@ -7,7 +7,7 @@ struct Point {
 
 main() {
 	let p = Point()
-	p.x = 10
-	p.y = 20
+	p.x = 20
+	p.y = p.x
 	sys.exit(p.y)
 }

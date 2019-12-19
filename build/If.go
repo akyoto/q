@@ -65,7 +65,7 @@ func (state *State) Condition(condition []token.Token, elseLabel string) error {
 	}
 
 	if leftType != rightType {
-		return errors.New(&errors.InvalidType{Type: rightType.Name, Expected: leftType.Name})
+		return errors.New(&errors.InvalidType{Name: rightType.String(), Expected: leftType.String()})
 	}
 
 	if temporary != nil {

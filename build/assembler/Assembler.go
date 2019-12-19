@@ -184,6 +184,27 @@ func (a *Assembler) doMemoryNumber(mnemonic string, destination *register.Regist
 	a.UseRegisterID(destination.ID)
 }
 
+// doMemoryRegister adds an instruction using a memory address and a register.
+func (a *Assembler) doMemoryRegister(mnemonic string, destination *register.Register, offset byte, byteCount byte, source *register.Register) {
+	instr := &instructions.MemoryRegister{
+		Destination: destination,
+		Offset:      offset,
+		ByteCount:   byteCount,
+		Source:      source,
+	}
+
+	instr.SetName(mnemonic)
+
+	if a.verbose {
+		instr.UsedBy1 = destination.UserString()
+		instr.UsedBy2 = source.UserString()
+	}
+
+	a.Instructions = append(a.Instructions, instr)
+	a.UseRegisterID(destination.ID)
+	a.UseRegisterID(source.ID)
+}
+
 // doRegisterMemory adds an instruction using a register target and a source memory address.
 func (a *Assembler) doRegisterMemory(mnemonic string, destination *register.Register, source *register.Register, offset byte, byteCount byte) {
 	instr := &instructions.RegisterMemory{
