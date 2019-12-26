@@ -187,7 +187,14 @@ func (state *State) ExpressionToRegister(root *expression.Expression, finalRegis
 		}
 
 		// Right operand is an expression
-		return state.CalculateRegisterRegister(operator, sub.Register, right.Register)
+		err := state.CalculateRegisterRegister(operator, sub.Register, right.Register)
+
+		if err != nil {
+			return err
+		}
+
+		right.Register.Free()
+		return nil
 	})
 
 	if err != nil {

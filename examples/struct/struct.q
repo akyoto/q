@@ -6,8 +6,18 @@ struct Point {
 }
 
 main() {
-	let p = Point()
-	p.x = 20
-	p.y = p.x
-	sys.exit(p.y)
+	let p1 = Point()
+	p1.x = 10
+	p1.y = 20
+
+	let p2 = Point()
+	p2.x = 30
+	p2.y = 40
+
+	let s = sum(p1, p2)
+	sys.exit(s)
+}
+
+sum(a Point, b Point) -> Int {
+	return a.x + b.x + a.y + b.y
 }
