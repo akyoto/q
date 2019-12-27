@@ -187,6 +187,20 @@ sudo ln -s $PWD/q /usr/local/bin/q
 q system
 ```
 
+The output should look like this:
+
+```text
+Platform:          linux
+Architecture:      amd64
+Go version:        go1.13.5
+Working directory: /home/eduard/projects/akyoto/q
+Compiler path:     /home/eduard/projects/akyoto/q/q
+Standard library:  /home/eduard/projects/akyoto/q/lib
+Last modified:     2019-12-27 11:06:47.841459978 +0900 KST
+CPU:               Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+CPU threads:       12
+```
+
 ### Which editor can I use to edit Q code?
 
 There is a simple [VS Code extension](https://github.com/akyoto/vscode-q) with syntax highlighting.
