@@ -12,7 +12,7 @@ main() {
 
 	let p2 = Point()
 	p2.x = 30
-	p2.y = 40
+	p2.y = p1.y
 
 	let s = sum(p1, p2)
 	sys.exit(s)

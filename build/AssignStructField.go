@@ -41,17 +41,16 @@ func (state *State) AssignStructField(tokens token.List, operatorPos token.Posit
 		return errors.New(err)
 	}
 
-	err = rightRegister.Use(right)
-
-	if err != nil {
-		return errors.New(err)
-	}
-
 	if field.Type != rightType {
 		return errors.New(&errors.InvalidType{Name: rightType.String(), Expected: field.Type.String()})
 	}
 
+	registerUseError := rightRegister.Use(right)
 	state.assembler.StoreRegister(variable.Register(), byte(field.Offset), byte(field.Type.Size), rightRegister)
-	rightRegister.Free()
+
+	if registerUseError == nil {
+		rightRegister.Free()
+	}
+
 	return nil
 }
