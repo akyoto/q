@@ -28,6 +28,7 @@ This will produce the `q` compiler in your current directory.
 * Fast compilation (<1 ms for simple programs)
 * Small binaries ("Hello World" is 247 bytes)
 * High performance (compete with C and Rust)
+* No support for proprietary operating systems
 
 ### Sub-goals
 
@@ -138,8 +139,6 @@ Quality of life features:
 ### Platform
 
 * [x] Linux
-* [ ] Mac
-* [ ] Windows
 * [ ] ...
 
 ## FAQ
