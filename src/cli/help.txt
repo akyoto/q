@@ -1,0 +1,9 @@
+Usage:
+
+    q [command] [options]
+
+Commands:
+
+    build [directory | file]       build an executable
+    run [directory | file]         build and run the executable
+    help                           show this help
