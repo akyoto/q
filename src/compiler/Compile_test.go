@@ -13,3 +13,9 @@ func TestCompile(t *testing.T) {
 	_, err := compiler.Compile(b)
 	assert.Nil(t, err)
 }
+
+func TestCompileNotExisting(t *testing.T) {
+	b := build.New("_")
+	_, err := compiler.Compile(b)
+	assert.NotNil(t, err)
+}
