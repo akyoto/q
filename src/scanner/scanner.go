@@ -8,6 +8,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/token"
 )
 
 // scanner is used to scan files before the actual compilation step.
@@ -130,10 +131,13 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		return err
 	}
 
+	tokens := token.Tokenize(contents)
+
 	file := &fs.File{
 		Path:    path,
 		Package: pkg,
 		Bytes:   contents,
+		Tokens:  tokens,
 	}
 
 	s.files <- file
