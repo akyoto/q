@@ -6,7 +6,6 @@ import (
 
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
-	"git.urbach.dev/cli/q/src/scanner"
 )
 
 // _build parses the arguments and creates a build.
@@ -17,7 +16,7 @@ func _build(args []string) int {
 		return exit(err)
 	}
 
-	_, err = compiler.Compile(scanner.Scan(b))
+	_, err = compiler.Compile(b)
 
 	if err != nil {
 		return exit(err)
