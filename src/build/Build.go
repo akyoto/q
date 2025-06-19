@@ -10,6 +10,7 @@ type Build struct {
 	Files []string
 	Arch  Arch
 	OS    OS
+	Dry   bool
 }
 
 // Executable returns the path to the executable.

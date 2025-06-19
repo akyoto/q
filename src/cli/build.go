@@ -1,6 +1,94 @@
 package cli
 
-// build parses the arguments and creates a build.
-func build(args []string) int {
+import (
+	"runtime"
+	"strings"
+
+	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/scanner"
+)
+
+// _build parses the arguments and creates a build.
+func _build(args []string) int {
+	b, err := newBuildFromArgs(args)
+
+	if err != nil {
+		return exit(err)
+	}
+
+	_, err = compiler.Compile(scanner.Scan(b))
+
+	if err != nil {
+		return exit(err)
+	}
+
 	return 0
+}
+
+// newBuildFromArgs creates a new build with the given arguments.
+func newBuildFromArgs(args []string) (*build.Build, error) {
+	b := build.New()
+
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--arch":
+			i++
+
+			if i >= len(args) {
+				return b, &expectedParameterError{Parameter: "arch"}
+			}
+
+			switch args[i] {
+			case "arm":
+				b.Arch = build.ARM
+			case "x86":
+				b.Arch = build.X86
+			default:
+				return b, &invalidValueError{Value: args[i], Parameter: "arch"}
+			}
+
+		case "--dry":
+			b.Dry = true
+
+		case "--os":
+			i++
+
+			if i >= len(args) {
+				return b, &expectedParameterError{Parameter: "os"}
+			}
+
+			switch args[i] {
+			case "linux":
+				b.OS = build.Linux
+			case "mac":
+				b.OS = build.Mac
+			case "windows":
+				b.OS = build.Windows
+			default:
+				return b, &invalidValueError{Value: args[i], Parameter: "os"}
+			}
+
+		default:
+			if strings.HasPrefix(args[i], "-") {
+				return b, &unknownParameterError{Parameter: args[i]}
+			}
+
+			b.Files = append(b.Files, args[i])
+		}
+	}
+
+	if b.OS == build.UnknownOS {
+		return b, &invalidValueError{Value: runtime.GOOS, Parameter: "os"}
+	}
+
+	if b.Arch == build.UnknownArch {
+		return b, &invalidValueError{Value: runtime.GOARCH, Parameter: "arch"}
+	}
+
+	if len(b.Files) == 0 {
+		b.Files = append(b.Files, ".")
+	}
+
+	return b, nil
 }
