@@ -8,24 +8,44 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestExecutableNameFromDirectory(t *testing.T) {
+func TestExecutableFromDirectoryLinux(t *testing.T) {
 	b := build.New("../../examples/hello")
+	b.OS = build.Linux
 	exe := filepath.Base(b.Executable())
-
-	if b.OS == build.Windows {
-		assert.Equal(t, exe, "hello.exe")
-	} else {
-		assert.Equal(t, exe, "hello")
-	}
+	assert.Equal(t, exe, "hello")
 }
 
-func TestExecutableNameFromFile(t *testing.T) {
+func TestExecutableFromFileLinux(t *testing.T) {
 	b := build.New("../../examples/hello/hello.q")
+	b.OS = build.Linux
 	exe := filepath.Base(b.Executable())
+	assert.Equal(t, exe, "hello")
+}
 
-	if b.OS == build.Windows {
-		assert.Equal(t, exe, "hello.exe")
-	} else {
-		assert.Equal(t, exe, "hello")
-	}
+func TestExecutableFromDirectoryMac(t *testing.T) {
+	b := build.New("../../examples/hello")
+	b.OS = build.Mac
+	exe := filepath.Base(b.Executable())
+	assert.Equal(t, exe, "hello")
+}
+
+func TestExecutableFromFileMac(t *testing.T) {
+	b := build.New("../../examples/hello/hello.q")
+	b.OS = build.Mac
+	exe := filepath.Base(b.Executable())
+	assert.Equal(t, exe, "hello")
+}
+
+func TestExecutableFromDirectoryWindows(t *testing.T) {
+	b := build.New("../../examples/hello")
+	b.OS = build.Windows
+	exe := filepath.Base(b.Executable())
+	assert.Equal(t, exe, "hello.exe")
+}
+
+func TestExecutableFromFileWindows(t *testing.T) {
+	b := build.New("../../examples/hello/hello.q")
+	b.OS = build.Windows
+	exe := filepath.Base(b.Executable())
+	assert.Equal(t, exe, "hello.exe")
 }
