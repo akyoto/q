@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -141,5 +142,27 @@ func (s *scanner) scanFile(path string, pkg string) error {
 	}
 
 	s.files <- file
+
+	for i := 0; i < len(tokens); i++ {
+		switch tokens[i].Kind {
+		case token.NewLine:
+		case token.Comment:
+		case token.Identifier:
+			i, err = s.scanFunction(file, tokens, i)
+		case token.Import:
+			i, err = s.scanImport(file, tokens, i)
+		case token.EOF:
+			return nil
+		case token.Invalid:
+			return errors.New(&invalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+		default:
+			return errors.New(&invalidTopLevel{Instruction: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
