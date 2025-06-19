@@ -59,7 +59,7 @@ func (e *FileError) Path() string {
 		return e.file.Path
 	}
 
-	return relative
+	return filepath.ToSlash(relative)
 }
 
 // Unwrap returns the wrapped error.

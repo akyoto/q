@@ -1,6 +1,7 @@
 package errors_test
 
 import (
+	"bytes"
 	"io"
 	"os"
 	"path/filepath"
@@ -37,7 +38,8 @@ func test(t *testing.T, path string) *errors.FileError {
 		Tokens: tokens,
 	}
 
-	err := errors.New(io.EOF, file, 11)
+	main := token.Position(bytes.Index(contents, []byte("main()")))
+	err := errors.New(io.EOF, file, main)
 	assert.NotNil(t, err)
 
 	line, column := err.LineColumn()
