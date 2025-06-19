@@ -10,7 +10,7 @@ import (
 func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec(nil), 2)
 	assert.Equal(t, cli.Exec([]string{"_"}), 2)
-	assert.Equal(t, cli.Exec([]string{"build"}), 0)
+	assert.Equal(t, cli.Exec([]string{"build"}), 1)
 	assert.Equal(t, cli.Exec([]string{"build", "--invalid-parameter"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--invalid-parameter"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry"}), 0)

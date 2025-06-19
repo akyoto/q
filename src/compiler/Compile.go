@@ -1,36 +1,34 @@
 package compiler
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/build"
-	"git.urbach.dev/cli/q/src/scanner"
+	"git.urbach.dev/cli/q/src/errors"
 )
 
 // Compile waits for the scan to finish and compiles all functions.
 func Compile(b *build.Build) (Result, error) {
 	result := Result{}
-	files, errors := scanner.Scan(b)
+	all, err := scan(b)
 
-	for files != nil || errors != nil {
-		select {
-		case file, ok := <-files:
-			if !ok {
-				files = nil
-				continue
-			}
+	if err != nil {
+		return result, err
+	}
 
-			fmt.Println(file.Path)
+	if len(all.Files) == 0 {
+		return result, errors.NoInputFiles
+	}
 
-		case err, ok := <-errors:
-			if !ok {
-				errors = nil
-				continue
-			}
+	// Resolve the types
+	for _, function := range all.Functions {
+		err := function.ResolveTypes()
 
+		if err != nil {
 			return result, err
 		}
 	}
+
+	// Parallel compilation
+	compileFunctions(all.Functions)
 
 	return result, nil
 }
