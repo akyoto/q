@@ -110,12 +110,6 @@ func (s *scanner) queueDirectory(directory string, pkg string) {
 
 // queueFile queues a single file to be scanned.
 func (s *scanner) queueFile(file string, pkg string) {
-	_, loaded := s.queued.LoadOrStore(file, nil)
-
-	if loaded {
-		return
-	}
-
 	s.group.Add(1)
 
 	go func() {
