@@ -20,7 +20,7 @@ func TestMultiPlatform(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestScanHelloExample(t *testing.T) {
+func TestHelloExample(t *testing.T) {
 	b := build.New("../../examples/hello")
 	_, err := scanner.Scan(b)
 	assert.Nil(t, err)

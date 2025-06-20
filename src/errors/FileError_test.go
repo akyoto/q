@@ -27,6 +27,12 @@ func TestRelativePath(t *testing.T) {
 	assert.Equal(t, err.Path(), relPath)
 }
 
+func TestString(t *testing.T) {
+	msg := "Static error"
+	err := errors.String(msg)
+	assert.Equal(t, err.Error(), msg)
+}
+
 func test(t *testing.T, path string) *errors.FileError {
 	contents, oserr := os.ReadFile(path)
 	assert.Nil(t, oserr)

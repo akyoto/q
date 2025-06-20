@@ -1,11 +1,6 @@
 package errors
 
-// String is used for static errors that have no parameters.
-type String struct {
-	Message string
-}
-
-// Error implements the error interface.
-func (err *String) Error() string {
-	return err.Message
+// String creates a static error message without parameters.
+func String(message string) *static {
+	return &static{Message: message}
 }

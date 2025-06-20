@@ -2,10 +2,10 @@ package errors
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/global"
 	"git.urbach.dev/cli/q/src/token"
 )
 
@@ -47,13 +47,7 @@ func (e *FileError) LineColumn() (int, int) {
 
 // Path returns the relative path of the file to shorten the error message.
 func (e *FileError) Path() string {
-	cwd, err := os.Getwd()
-
-	if err != nil {
-		return e.file.Path
-	}
-
-	relative, err := filepath.Rel(cwd, e.file.Path)
+	relative, err := filepath.Rel(global.WorkingDirectory, e.file.Path)
 
 	if err != nil {
 		return e.file.Path

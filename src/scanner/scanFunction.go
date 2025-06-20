@@ -36,7 +36,7 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 			blockLevel--
 
 			if blockLevel < 0 {
-				return i, errors.New(errors.MissingBlockStart, file, tokens[i].Position)
+				return i, errors.New(MissingBlockStart, file, tokens[i].Position)
 			}
 
 			if blockLevel == 0 {
@@ -48,16 +48,16 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 		}
 
 		if tokens[i].Kind == token.Invalid {
-			return i, errors.New(&errors.InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return i, errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
 		}
 
 		if tokens[i].Kind == token.EOF {
 			if blockLevel > 0 {
-				return i, errors.New(errors.MissingBlockEnd, file, tokens[i].Position)
+				return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
 			}
 
 			if bodyStart == -1 {
-				return i, errors.New(errors.ExpectedFunctionDefinition, file, tokens[i].Position)
+				return i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
 			}
 
 			return i, nil
@@ -68,7 +68,7 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 			continue
 		}
 
-		return i, errors.New(errors.ExpectedFunctionDefinition, file, tokens[i].Position)
+		return i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
 	}
 
 	function.Body = tokens[bodyStart:i]

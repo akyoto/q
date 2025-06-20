@@ -37,7 +37,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			groupLevel--
 
 			if groupLevel < 0 {
-				return nil, i, errors.New(errors.MissingGroupStart, file, tokens[i].Position)
+				return nil, i, errors.New(MissingGroupStart, file, tokens[i].Position)
 			}
 
 			if groupLevel == 0 {
@@ -51,16 +51,16 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 		}
 
 		if tokens[i].Kind == token.Invalid {
-			return nil, i, errors.New(&errors.InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return nil, i, errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
 		}
 
 		if tokens[i].Kind == token.EOF {
 			if groupLevel > 0 {
-				return nil, i, errors.New(errors.MissingGroupEnd, file, tokens[i].Position)
+				return nil, i, errors.New(MissingGroupEnd, file, tokens[i].Position)
 			}
 
 			if paramsStart == -1 {
-				return nil, i, errors.New(errors.InvalidFunctionDefinition, file, tokens[i].Position)
+				return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
 			}
 
 			return nil, i, nil
@@ -71,7 +71,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			continue
 		}
 
-		return nil, i, errors.New(errors.InvalidFunctionDefinition, file, tokens[i].Position)
+		return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
 	}
 
 	// Return type
@@ -91,11 +91,11 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 
 	for param := range parameters.Split {
 		if len(param) == 0 {
-			return nil, i, errors.New(errors.MissingParameter, file, parameters[0].Position)
+			return nil, i, errors.New(MissingParameter, file, parameters[0].Position)
 		}
 
 		if len(param) == 1 {
-			return nil, i, errors.New(errors.MissingType, file, param[0].End())
+			return nil, i, errors.New(MissingType, file, param[0].End())
 		}
 
 		function.Input = append(function.Input, core.NewParameter(param))

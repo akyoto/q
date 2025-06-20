@@ -1,8 +1,9 @@
 package compiler
 
 import (
+	"maps"
+
 	"git.urbach.dev/cli/q/src/build"
-	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/scanner"
 )
 
@@ -16,7 +17,7 @@ func Compile(b *build.Build) (Result, error) {
 	}
 
 	if len(all.Files) == 0 {
-		return result, errors.NoInputFiles
+		return result, NoInputFiles
 	}
 
 	for _, function := range all.Functions {
@@ -27,6 +28,6 @@ func Compile(b *build.Build) (Result, error) {
 		}
 	}
 
-	compileFunctions(all.Functions)
+	compileFunctions(maps.Values(all.Functions))
 	return result, nil
 }

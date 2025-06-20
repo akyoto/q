@@ -1,16 +1,17 @@
 package compiler
 
 import (
+	"iter"
 	"sync"
 
 	"git.urbach.dev/cli/q/src/core"
 )
 
 // compileFunctions starts a goroutine for each function compilation and waits for completion.
-func compileFunctions(functions map[string]*core.Function) {
+func compileFunctions(functions iter.Seq[*core.Function]) {
 	wg := sync.WaitGroup{}
 
-	for _, function := range functions {
+	for function := range functions {
 		if function.IsExtern() {
 			continue
 		}

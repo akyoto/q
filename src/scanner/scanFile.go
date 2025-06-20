@@ -38,9 +38,9 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		case token.EOF:
 			return nil
 		case token.Invalid:
-			return errors.New(&errors.InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
 		default:
-			return errors.New(&errors.InvalidTopLevel{Instruction: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return errors.New(&InvalidTopLevel{Instruction: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
 		}
 
 		if err != nil {
