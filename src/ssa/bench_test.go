@@ -8,6 +8,8 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
+// This benchmark compares the performance of fat structs and interfaces.
+// It allocates `n` objects where `n` must be divisible by 2.
 const n = 100
 
 type FatStruct struct {

@@ -1,5 +1,6 @@
 package ssa
 
+// Type represents the instruction type.
 type Type byte
 
 const (
@@ -23,6 +24,10 @@ const (
 	Xor
 	Shl
 	Shr
+
+	// Branch
+	If
+	Jump
 
 	// Special
 	Call
