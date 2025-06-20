@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
 
 // Function is the smallest unit of code.
 type Function struct {
+	ssa.Function
 	Name       string
 	UniqueName string
 	File       *fs.File
