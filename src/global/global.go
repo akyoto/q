@@ -3,6 +3,7 @@ package global
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"runtime/debug"
 )
 
@@ -12,12 +13,16 @@ var (
 	Library          string
 	Root             string
 	WorkingDirectory string
+	HostOS           string
+	HostArch         string
 )
 
 // init is the very first thing that's executed.
 // It disables the GC and initializes global variables.
 func init() {
 	debug.SetGCPercent(-1)
+	HostOS = runtime.GOOS
+	HostArch = runtime.GOARCH
 
 	var err error
 	Executable, err = os.Executable()

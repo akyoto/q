@@ -1,6 +1,8 @@
 package build
 
-import "runtime"
+import (
+	"git.urbach.dev/cli/q/src/global"
+)
 
 // New creates a new build.
 func New(files ...string) *Build {
@@ -8,14 +10,14 @@ func New(files ...string) *Build {
 		Files: files,
 	}
 
-	switch runtime.GOARCH {
+	switch global.HostArch {
 	case "amd64":
 		b.Arch = X86
 	case "arm64":
 		b.Arch = ARM
 	}
 
-	switch runtime.GOOS {
+	switch global.HostOS {
 	case "linux":
 		b.OS = Linux
 	case "darwin":
