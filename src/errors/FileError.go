@@ -13,8 +13,8 @@ import (
 type FileError struct {
 	err      error
 	file     *fs.File
-	position token.Position
 	stack    string
+	position token.Position
 }
 
 // Error implements the error interface.
