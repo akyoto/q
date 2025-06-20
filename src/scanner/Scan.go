@@ -36,7 +36,7 @@ func Scan(b *build.Build) (*core.Environment, error) {
 				continue
 			}
 
-			all.Functions[f.String()] = f
+			all.Functions[f.UniqueName] = f
 
 		case file, ok := <-s.files:
 			if !ok {
