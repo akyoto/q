@@ -17,7 +17,7 @@ func Walk(directory string, callBack func(string)) error {
 	}
 
 	defer syscall.Close(fd)
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 512)
 
 	for {
 		n, err := syscall.ReadDirent(fd, buffer)

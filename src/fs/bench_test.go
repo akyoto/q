@@ -30,7 +30,7 @@ func BenchmarkReaddirnames(b *testing.B) {
 			func(string) {}(file)
 		}
 
-		f.Close()
+		assert.Nil(b, f.Close())
 	}
 }
 
