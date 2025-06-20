@@ -20,8 +20,8 @@ func TestExecutable(t *testing.T) {
 		for _, arch := range archList {
 			t.Run(fmt.Sprintf("%s-%s", os, arch), func(t *testing.T) {
 				for _, file := range fileList {
-					global.HostOS = os
-					global.HostArch = arch
+					global.OS = os
+					global.Arch = arch
 					b := build.New(file)
 					exe := filepath.Base(b.Executable())
 
@@ -35,6 +35,6 @@ func TestExecutable(t *testing.T) {
 		}
 	}
 
-	global.HostOS = runtime.GOOS
-	global.HostArch = runtime.GOARCH
+	global.OS = runtime.GOOS
+	global.Arch = runtime.GOARCH
 }

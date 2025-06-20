@@ -10,14 +10,14 @@ func New(files ...string) *Build {
 		Files: files,
 	}
 
-	switch global.HostArch {
+	switch global.Arch {
 	case "amd64":
 		b.Arch = X86
 	case "arm64":
 		b.Arch = ARM
 	}
 
-	switch global.HostOS {
+	switch global.OS {
 	case "linux":
 		b.OS = Linux
 	case "darwin":
