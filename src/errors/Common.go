@@ -3,7 +3,7 @@ package errors
 var (
 	ExpectedFunctionDefinition = &String{"Expected function definition"}
 	ExpectedPackageName        = &String{"Expected package name"}
-	InvalidDefinition          = &String{"Invalid definition"}
+	InvalidFunctionDefinition  = &String{"Invalid function definition"}
 	MissingBlockStart          = &String{"Missing '{'"}
 	MissingBlockEnd            = &String{"Missing '}'"}
 	MissingGroupStart          = &String{"Missing '('"}

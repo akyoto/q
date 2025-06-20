@@ -60,7 +60,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			}
 
 			if paramsStart == -1 {
-				return nil, i, errors.New(errors.InvalidDefinition, file, tokens[i].Position)
+				return nil, i, errors.New(errors.InvalidFunctionDefinition, file, tokens[i].Position)
 			}
 
 			return nil, i, nil
@@ -71,7 +71,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			continue
 		}
 
-		return nil, i, errors.New(errors.InvalidDefinition, file, tokens[i].Position)
+		return nil, i, errors.New(errors.InvalidFunctionDefinition, file, tokens[i].Position)
 	}
 
 	// Return type

@@ -7,7 +7,7 @@ import (
 )
 
 // Scan scans all the files included in the build.
-func Scan(b *build.Build) (<-chan *core.Function, <-chan *fs.File, <-chan error) {
+func Scan(b *build.Build) (*core.Environment, error) {
 	s := scanner{
 		functions: make(chan *core.Function),
 		files:     make(chan *fs.File),
@@ -23,5 +23,38 @@ func Scan(b *build.Build) (<-chan *core.Function, <-chan *fs.File, <-chan error)
 		close(s.errors)
 	}()
 
-	return s.functions, s.files, s.errors
+	all := &core.Environment{
+		Files:     make([]*fs.File, 0, 8),
+		Functions: make(map[string]*core.Function, 32),
+	}
+
+	for s.functions != nil || s.files != nil || s.errors != nil {
+		select {
+		case f, ok := <-s.functions:
+			if !ok {
+				s.functions = nil
+				continue
+			}
+
+			all.Functions[f.String()] = f
+
+		case file, ok := <-s.files:
+			if !ok {
+				s.files = nil
+				continue
+			}
+
+			all.Files = append(all.Files, file)
+
+		case err, ok := <-s.errors:
+			if !ok {
+				s.errors = nil
+				continue
+			}
+
+			return all, err
+		}
+	}
+
+	return all, nil
 }

@@ -3,12 +3,13 @@ package compiler
 import (
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/errors"
+	"git.urbach.dev/cli/q/src/scanner"
 )
 
 // Compile waits for the scan to finish and compiles all functions.
 func Compile(b *build.Build) (Result, error) {
 	result := Result{}
-	all, err := scan(b)
+	all, err := scanner.Scan(b)
 
 	if err != nil {
 		return result, err
@@ -18,7 +19,6 @@ func Compile(b *build.Build) (Result, error) {
 		return result, errors.NoInputFiles
 	}
 
-	// Resolve the types
 	for _, function := range all.Functions {
 		err := function.ResolveTypes()
 
@@ -27,8 +27,6 @@ func Compile(b *build.Build) (Result, error) {
 		}
 	}
 
-	// Parallel compilation
 	compileFunctions(all.Functions)
-
 	return result, nil
 }
