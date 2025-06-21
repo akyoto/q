@@ -63,7 +63,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 				return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
 			}
 
-			return nil, i, nil
+			return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
 		}
 
 		if groupLevel > 0 {
@@ -98,7 +98,10 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			return nil, i, errors.New(MissingType, file, param[0].End())
 		}
 
-		function.Input = append(function.Input, core.NewParameter(param))
+		function.Input = append(function.Input, &core.Parameter{
+			Name:       param[0].String(file.Bytes),
+			TypeTokens: param[1:],
+		})
 	}
 
 	if typeStart != -1 {
@@ -109,8 +112,30 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 
 		outputTokens := tokens[typeStart:typeEnd]
 
+		if len(outputTokens) == 0 {
+			return nil, i, errors.New(MissingParameter, file, tokens[typeStart].Position)
+		}
+
+		errorPos := token.Position(typeStart)
+
 		for param := range outputTokens.Split {
-			function.Output = append(function.Output, core.NewParameter(param))
+			if len(param) == 0 {
+				return nil, i, errors.New(MissingParameter, file, errorPos)
+			}
+
+			if len(param) == 1 {
+				function.Output = append(function.Output, &core.Parameter{
+					Name:       "",
+					TypeTokens: param,
+				})
+			} else {
+				function.Output = append(function.Output, &core.Parameter{
+					Name:       param[0].String(file.Bytes),
+					TypeTokens: param[1:],
+				})
+			}
+
+			errorPos = param[len(param)-1].End() + 1
 		}
 	}
 

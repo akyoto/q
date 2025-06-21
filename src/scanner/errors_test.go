@@ -32,6 +32,8 @@ var errs = []struct {
 	{"MissingParameter.q", scanner.MissingParameter},
 	{"MissingParameter2.q", scanner.MissingParameter},
 	{"MissingParameter3.q", scanner.MissingParameter},
+	{"MissingParameter4.q", scanner.MissingParameter},
+	{"MissingParameter5.q", scanner.MissingParameter},
 	{"MissingType.q", scanner.MissingType},
 }
 
