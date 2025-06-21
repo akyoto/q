@@ -8,11 +8,9 @@ import (
 // It is implemented as a "fat struct" for performance reasons.
 // It contains all the fields necessary to represent all instruction types.
 type Instruction struct {
-	Type  Type
-	Args  []*Instruction
-	Int   int64
-	Float float64
-	Text  string
+	Args []*Instruction
+	Int  int64
+	Type Type
 }
 
 // String returns a human-readable representation of the instruction.
