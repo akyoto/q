@@ -15,12 +15,14 @@ var errs = []struct {
 	ExpectedError error
 }{
 	{"ExpectedFunctionDefinition.q", scanner.ExpectedFunctionDefinition},
+	{"ExpectedFunctionDefinition2.q", scanner.ExpectedFunctionDefinition},
 	{"ExpectedPackageName.q", scanner.ExpectedPackageName},
 	{"InvalidCharacter.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter2.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter3.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter4.q", &scanner.InvalidCharacter{Character: "+++"}},
 	{"InvalidFunctionDefinition.q", scanner.InvalidFunctionDefinition},
+	{"InvalidFunctionDefinition2.q", scanner.InvalidFunctionDefinition},
 	{"InvalidTopLevel.q", &scanner.InvalidTopLevel{Instruction: "123"}},
 	{"InvalidTopLevel2.q", &scanner.InvalidTopLevel{Instruction: "\"Hello\""}},
 	{"InvalidTopLevel3.q", &scanner.InvalidTopLevel{Instruction: "+"}},
@@ -28,6 +30,7 @@ var errs = []struct {
 	{"MissingBlockEnd2.q", scanner.MissingBlockEnd},
 	{"MissingBlockStart.q", scanner.MissingBlockStart},
 	{"MissingGroupEnd.q", scanner.MissingGroupEnd},
+	{"MissingGroupEnd2.q", scanner.MissingGroupEnd},
 	{"MissingGroupStart.q", scanner.MissingGroupStart},
 	{"MissingParameter.q", scanner.MissingParameter},
 	{"MissingParameter2.q", scanner.MissingParameter},

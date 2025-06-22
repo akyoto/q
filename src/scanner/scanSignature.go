@@ -12,10 +12,10 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 	var (
 		groupLevel  = 0
 		nameStart   = i
-		paramsStart = -1
-		paramsEnd   = -1
-		typeStart   = -1
-		typeEnd     = -1
+		inputStart  = -1
+		inputEnd    = -1
+		outputStart = -1
+		outputEnd   = -1
 	)
 
 	i++
@@ -27,7 +27,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			i++
 
 			if groupLevel == 1 {
-				paramsStart = i
+				inputStart = i
 			}
 
 			continue
@@ -41,7 +41,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			}
 
 			if groupLevel == 0 {
-				paramsEnd = i
+				inputEnd = i
 				i++
 				break
 			}
@@ -59,10 +59,6 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 				return nil, i, errors.New(MissingGroupEnd, file, tokens[i].Position)
 			}
 
-			if paramsStart == -1 {
-				return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
-			}
-
 			return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
 		}
 
@@ -76,18 +72,18 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 
 	// Return type
 	if i < len(tokens) && tokens[i].Kind == token.ReturnType {
-		typeStart = i + 1
+		outputStart = i + 1
 
 		for i < len(tokens) && tokens[i].Kind != delimiter {
 			i++
 		}
 
-		typeEnd = i
+		outputEnd = i
 	}
 
 	name := tokens[nameStart].String(file.Bytes)
 	function := core.NewFunction(name, file)
-	parameters := tokens[paramsStart:paramsEnd]
+	parameters := tokens[inputStart:inputEnd]
 
 	for param := range parameters.Split {
 		if len(param) == 0 {
@@ -104,40 +100,45 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 		})
 	}
 
-	if typeStart != -1 {
-		if tokens[typeStart].Kind == token.GroupStart && tokens[typeEnd-1].Kind == token.GroupEnd {
-			typeStart++
-			typeEnd--
-		}
+	if outputStart == -1 {
+		return function, i, nil
+	}
 
-		outputTokens := tokens[typeStart:typeEnd]
-
-		if len(outputTokens) == 0 {
-			return nil, i, errors.New(MissingParameter, file, tokens[typeStart].Position)
-		}
-
-		errorPos := token.Position(typeStart)
-
-		for param := range outputTokens.Split {
-			if len(param) == 0 {
-				return nil, i, errors.New(MissingParameter, file, errorPos)
-			}
-
-			if len(param) == 1 {
-				function.Output = append(function.Output, &core.Parameter{
-					Name:       "",
-					TypeTokens: param,
-				})
-			} else {
-				function.Output = append(function.Output, &core.Parameter{
-					Name:       param[0].String(file.Bytes),
-					TypeTokens: param[1:],
-				})
-			}
-
-			errorPos = param[len(param)-1].End() + 1
+	if tokens[outputStart].Kind == token.GroupStart {
+		if tokens[outputEnd-1].Kind == token.GroupEnd {
+			outputStart++
+			outputEnd--
+		} else {
+			return nil, i, errors.New(MissingGroupEnd, file, tokens[outputEnd-1].Position)
 		}
 	}
 
+	outputTokens := tokens[outputStart:outputEnd]
+
+	if len(outputTokens) == 0 {
+		return nil, i, errors.New(MissingParameter, file, tokens[outputStart].Position)
+	}
+
+	errorPos := token.Position(outputStart)
+
+	for param := range outputTokens.Split {
+		if len(param) == 0 {
+			return nil, i, errors.New(MissingParameter, file, errorPos)
+		}
+
+		if len(param) == 1 {
+			function.Output = append(function.Output, &core.Parameter{
+				Name:       "",
+				TypeTokens: param,
+			})
+		} else {
+			function.Output = append(function.Output, &core.Parameter{
+				Name:       param[0].String(file.Bytes),
+				TypeTokens: param[1:],
+			})
+		}
+
+		errorPos = param[len(param)-1].End() + 1
+	}
 	return function, i, nil
 }

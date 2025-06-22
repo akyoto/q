@@ -56,11 +56,7 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 				return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
 			}
 
-			if bodyStart == -1 {
-				return i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
-			}
-
-			return i, nil
+			return i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
 		}
 
 		if blockLevel > 0 {
