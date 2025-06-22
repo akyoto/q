@@ -21,5 +21,16 @@ func Compile(b *build.Build) (*core.Environment, error) {
 	}
 
 	compileFunctions(maps.Values(all.Functions))
+
+	for _, f := range all.Functions {
+		if f.Err != nil {
+			return nil, f.Err
+		}
+	}
+
+	if b.ShowSSA {
+		showSSA(maps.Values(all.Functions))
+	}
+
 	return all, nil
 }

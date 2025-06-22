@@ -7,16 +7,20 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestBlock(t *testing.T) {
-	f := ssa.Function{}
-	block := f.AddBlock()
-	a := block.Append(ssa.Instruction{Type: ssa.Int, Int: 1})
-	b := block.Append(ssa.Instruction{Type: ssa.Int, Int: 2})
-	c := block.Append(ssa.Instruction{Type: ssa.Add, Args: []*ssa.Instruction{a, b}})
+func TestFunction(t *testing.T) {
+	fn := ssa.Function{}
+	a := fn.AppendInt(1)
+	b := fn.AppendInt(2)
+	c := fn.Append(ssa.Value{Type: ssa.Add, Args: []*ssa.Value{a, b}})
+	fn.AddBlock()
+	d := fn.AppendInt(3)
+	e := fn.AppendInt(4)
+	f := fn.Append(ssa.Value{Type: ssa.Add, Args: []*ssa.Value{d, e}})
 	assert.Equal(t, c.String(), "1 + 2")
+	assert.Equal(t, f.String(), "3 + 4")
 }
 
 func TestInvalidInstruction(t *testing.T) {
-	instr := ssa.Instruction{}
+	instr := ssa.Value{}
 	assert.Equal(t, instr.String(), "")
 }

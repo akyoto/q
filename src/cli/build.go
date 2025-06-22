@@ -68,6 +68,9 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 				return b, &invalidValueError{Value: args[i], Parameter: "os"}
 			}
 
+		case "-v", "--verbose":
+			b.ShowSSA = true
+
 		default:
 			if strings.HasPrefix(args[i], "-") {
 				return b, &unknownParameterError{Parameter: args[i]}

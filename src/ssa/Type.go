@@ -9,6 +9,8 @@ const (
 	// Values
 	Int
 	Float
+	Func
+	Register
 	String
 
 	// Binary
@@ -25,11 +27,13 @@ const (
 	Shl
 	Shr
 
-	// Branch
+	// Control flow
 	If
 	Jump
+	Call
+	Return
+	Syscall
 
 	// Special
-	Call
 	Phi
 )
