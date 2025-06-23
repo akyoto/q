@@ -13,9 +13,9 @@ type operator struct {
 	Operands   int8
 }
 
-// operators defines the operators used in the language.
+// Operators defines the Operators used in the language.
 // The number corresponds to the operator priority and can not be zero.
-var operators = [64]operator{
+var Operators = [64]operator{
 	token.Dot:    {".", 13, 2},
 	token.Call:   {"λ", 12, 1},
 	token.Array:  {"@", 12, 2},
@@ -59,9 +59,9 @@ var operators = [64]operator{
 }
 
 func numOperands(symbol token.Kind) int {
-	return int(operators[symbol].Operands)
+	return int(Operators[symbol].Operands)
 }
 
 func precedence(symbol token.Kind) int8 {
-	return operators[symbol].Precedence
+	return Operators[symbol].Precedence
 }

@@ -10,7 +10,7 @@ import (
 )
 
 // Evaluate converts an expression to an SSA value.
-func (f *Function) Evaluate(expr *expression.Expression) (*ssa.Value, error) {
+func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 	if expr.IsLeaf() {
 		switch expr.Token.Kind {
 		case token.Identifier:
@@ -30,12 +30,16 @@ func (f *Function) Evaluate(expr *expression.Expression) (*ssa.Value, error) {
 				return nil, err
 			}
 
-			return f.AppendInt(number), nil
+			v := f.AppendInt(number)
+			v.Source = expr.Token
+			return v, nil
 
 		case token.String:
 			data := expr.Token.Bytes(f.File.Bytes)
 			data = Unescape(data)
-			return f.AppendBytes(data), nil
+			v := f.AppendBytes(data)
+			v.Source = expr.Token
+			return v, nil
 		}
 
 		return nil, errors.New(InvalidExpression, f.File, expr.Token.Position)
@@ -44,7 +48,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (*ssa.Value, error) {
 	switch expr.Token.Kind {
 	case token.Call:
 		children := expr.Children
-		typ := ssa.Call
+		isSyscall := false
 
 		if children[0].Token.Kind == token.Identifier {
 			funcName := children[0].String(f.File.Bytes)
@@ -56,11 +60,11 @@ func (f *Function) Evaluate(expr *expression.Expression) (*ssa.Value, error) {
 
 			if funcName == "syscall" {
 				children = children[1:]
-				typ = ssa.Syscall
+				isSyscall = true
 			}
 		}
 
-		args := make([]*ssa.Value, len(children))
+		args := make([]ssa.Value, len(children))
 
 		for i, child := range children {
 			value, err := f.Evaluate(child)
@@ -72,12 +76,27 @@ func (f *Function) Evaluate(expr *expression.Expression) (*ssa.Value, error) {
 			args[i] = value
 		}
 
-		call := f.Append(ssa.Value{Type: typ, Args: args})
-		return call, nil
+		if isSyscall {
+			v := f.Append(&ssa.Syscall{
+				Arguments: ssa.Arguments{Args: args},
+				HasToken:  ssa.HasToken{Source: expr.Token},
+			})
+
+			return v, nil
+		} else {
+			v := f.Append(&ssa.Call{
+				Arguments: ssa.Arguments{Args: args},
+				HasToken:  ssa.HasToken{Source: expr.Token},
+			})
+
+			return v, nil
+		}
 
 	case token.Dot:
 		name := fmt.Sprintf("%s.%s", expr.Children[0].String(f.File.Bytes), expr.Children[1].String(f.File.Bytes))
-		return f.AppendFunction(name), nil
+		v := f.AppendFunction(name)
+		v.Source = expr.Children[1].Token
+		return v, nil
 	}
 
 	return nil, nil

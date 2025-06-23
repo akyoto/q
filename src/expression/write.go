@@ -17,9 +17,9 @@ func (expr *Expression) write(builder *strings.Builder, source []byte) {
 
 	switch expr.Token.Kind {
 	case token.Call:
-		builder.WriteString(operators[token.Call].Symbol)
+		builder.WriteString(Operators[token.Call].Symbol)
 	case token.Array:
-		builder.WriteString(operators[token.Array].Symbol)
+		builder.WriteString(Operators[token.Array].Symbol)
 	default:
 		builder.WriteString(expr.Token.String(source))
 	}

@@ -10,14 +10,14 @@ import (
 
 // Function is the smallest unit of code.
 type Function struct {
-	ssa.Function
+	ssa.IR
 	Name        string
 	UniqueName  string
 	File        *fs.File
 	Input       []*Parameter
 	Output      []*Parameter
 	Body        token.List
-	Identifiers map[string]*ssa.Value
+	Identifiers map[string]ssa.Value
 	Err         error
 }
 
@@ -27,9 +27,11 @@ func NewFunction(name string, file *fs.File) *Function {
 		Name:        name,
 		File:        file,
 		UniqueName:  fmt.Sprintf("%s.%s", file.Package, name),
-		Identifiers: make(map[string]*ssa.Value),
-		Function: ssa.Function{
-			Blocks: []*ssa.Block{{}},
+		Identifiers: make(map[string]ssa.Value),
+		IR: ssa.IR{
+			Blocks: []*ssa.Block{
+				{Instructions: make([]ssa.Value, 0, 8)},
+			},
 		},
 	}
 }

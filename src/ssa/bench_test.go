@@ -5,12 +5,16 @@ import (
 	"runtime/debug"
 	"testing"
 
+	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/go/assert"
 )
 
 // This benchmark compares the performance of fat structs and interfaces.
-// It allocates `n` objects where `n` must be divisible by 2.
-const n = 100
+// It allocates `actual` objects where `actual` must be divisible by 2.
+const (
+	actual   = 64
+	estimate = 8
+)
 
 type FatStruct struct {
 	Type byte
@@ -45,9 +49,9 @@ func TestMain(m *testing.M) {
 
 func BenchmarkFatStructRaw(b *testing.B) {
 	for b.Loop() {
-		entries := make([]FatStruct, 0, n)
+		entries := make([]FatStruct, 0, estimate)
 
-		for i := range n {
+		for i := range actual {
 			entries = append(entries, FatStruct{
 				Type: byte(i % 2),
 				A:    i,
@@ -65,15 +69,15 @@ func BenchmarkFatStructRaw(b *testing.B) {
 			}
 		}
 
-		assert.Equal(b, count, n/2)
+		assert.Equal(b, count, actual/2)
 	}
 }
 
 func BenchmarkFatStructPtr(b *testing.B) {
 	for b.Loop() {
-		entries := make([]*FatStruct, 0, n)
+		entries := make([]*FatStruct, 0, estimate)
 
-		for i := range n {
+		for i := range actual {
 			entries = append(entries, &FatStruct{
 				Type: byte(i % 2),
 				A:    i,
@@ -91,15 +95,15 @@ func BenchmarkFatStructPtr(b *testing.B) {
 			}
 		}
 
-		assert.Equal(b, count, n/2)
+		assert.Equal(b, count, actual/2)
 	}
 }
 
 func BenchmarkInterfaceRaw(b *testing.B) {
 	for b.Loop() {
-		entries := make([]Instruction, 0, n)
+		entries := make([]Instruction, 0, estimate)
 
-		for i := range n {
+		for i := range actual {
 			if i%2 == 0 {
 				entries = append(entries, BinaryInstruction{
 					A: i,
@@ -123,15 +127,15 @@ func BenchmarkInterfaceRaw(b *testing.B) {
 			}
 		}
 
-		assert.Equal(b, count, n/2)
+		assert.Equal(b, count, actual/2)
 	}
 }
 
 func BenchmarkInterfacePtr(b *testing.B) {
 	for b.Loop() {
-		entries := make([]Instruction, 0, n)
+		entries := make([]Instruction, 0, estimate)
 
-		for i := range n {
+		for i := range actual {
 			if i%2 == 0 {
 				entries = append(entries, &BinaryInstruction{
 					A: i,
@@ -155,6 +159,32 @@ func BenchmarkInterfacePtr(b *testing.B) {
 			}
 		}
 
-		assert.Equal(b, count, n/2)
+		assert.Equal(b, count, actual/2)
+	}
+}
+
+func BenchmarkSSA(b *testing.B) {
+	for b.Loop() {
+		f := ssa.IR{}
+
+		for i := range actual {
+			if i%2 == 0 {
+				f.Append(&ssa.Return{})
+			} else {
+				f.Append(&ssa.Call{})
+			}
+		}
+
+		count := 0
+
+		for instr := range f.Values {
+			switch instr.(type) {
+			case *ssa.Return:
+				count++
+			case *ssa.Call:
+			}
+		}
+
+		assert.Equal(b, count, actual/2)
 	}
 }

@@ -26,4 +26,6 @@ func (f *Function) Compile() {
 			return
 		}
 	}
+
+	f.Err = f.CheckDeadCode()
 }

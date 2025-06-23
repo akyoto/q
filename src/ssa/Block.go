@@ -6,7 +6,11 @@ type Block struct {
 }
 
 // Append adds a new instruction to the block.
-func (b *Block) Append(instr Value) *Value {
-	b.Instructions = append(b.Instructions, instr)
-	return &b.Instructions[len(b.Instructions)-1]
+func (block *Block) Append(instr Value) Value {
+	for _, dep := range instr.Dependencies() {
+		dep.AddUse(instr)
+	}
+
+	block.Instructions = append(block.Instructions, instr)
+	return instr
 }

@@ -25,3 +25,12 @@ func (err *UnknownIdentifier) Error() string {
 
 	return fmt.Sprintf("Unknown identifier '%s'", err.Name)
 }
+
+// UnusedValue error is created when a value is never used.
+type UnusedValue struct {
+	Value string
+}
+
+func (err *UnusedValue) Error() string {
+	return fmt.Sprintf("Unused value '%s'", err.Value)
+}

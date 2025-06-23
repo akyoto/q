@@ -15,9 +15,10 @@ func (f *Function) CompileReturn(tokens token.List) error {
 		return err
 	}
 
-	f.Append(ssa.Value{
-		Type: ssa.Return,
-		Args: []*ssa.Value{value},
+	f.Append(&ssa.Return{
+		Arguments: ssa.Arguments{
+			Args: []ssa.Value{value},
+		},
 	})
 
 	return nil
