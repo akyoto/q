@@ -9,6 +9,10 @@ import (
 
 // exit returns the exit code depending on the error type.
 func exit(err error) int {
+	if err == nil {
+		return 0
+	}
+
 	fmt.Fprintln(os.Stderr, err)
 
 	var (

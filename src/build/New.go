@@ -12,9 +12,9 @@ func New(files ...string) *Build {
 
 	switch global.Arch {
 	case "amd64":
-		b.Arch = X86
+		b.SetArch(X86)
 	case "arm64":
-		b.Arch = ARM
+		b.SetArch(ARM)
 	}
 
 	switch global.OS {

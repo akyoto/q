@@ -6,6 +6,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/linker"
 )
 
 // _build parses the arguments and creates a build.
@@ -16,13 +17,18 @@ func _build(args []string) int {
 		return exit(err)
 	}
 
-	_, err = compiler.Compile(b)
+	result, err := compiler.Compile(b)
 
 	if err != nil {
 		return exit(err)
 	}
 
-	return 0
+	if b.Dry {
+		return 0
+	}
+
+	err = linker.WriteExecutable(b, result)
+	return exit(err)
 }
 
 // newBuildFromArgs creates a new build with the given arguments.
@@ -40,9 +46,9 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 
 			switch args[i] {
 			case "arm":
-				b.Arch = build.ARM
+				b.SetArch(build.ARM)
 			case "x86":
-				b.Arch = build.X86
+				b.SetArch(build.X86)
 			default:
 				return b, &invalidValueError{Value: args[i], Parameter: "arch"}
 			}
