@@ -15,6 +15,10 @@ func (f *Function) CompileInstruction(instr token.List) error {
 
 	expr := expression.Parse(instr)
 
+	if expr == nil {
+		return nil
+	}
+
 	if expr.Token.Kind == token.Define {
 		name := expr.Children[0].String(f.File.Bytes)
 		value, err := f.Evaluate(expr.Children[1])

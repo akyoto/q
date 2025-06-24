@@ -11,7 +11,7 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestWriteExecutable(t *testing.T) {
+func TestWriteFile(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "q", "tests")
 	err := os.MkdirAll(tmpDir, 0755)
 	assert.Nil(t, err)
@@ -29,10 +29,10 @@ func TestWriteExecutable(t *testing.T) {
 	assert.Nil(t, err)
 
 	b.SetArch(build.ARM)
-	err = linker.WriteExecutable(b, env)
+	err = linker.WriteFile(b.Executable(), b, env)
 	assert.Nil(t, err)
 
 	b.SetArch(build.X86)
-	err = linker.WriteExecutable(b, env)
+	err = linker.WriteFile(b.Executable(), b, env)
 	assert.Nil(t, err)
 }

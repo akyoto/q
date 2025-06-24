@@ -27,7 +27,7 @@ func _build(args []string) int {
 		return 0
 	}
 
-	err = linker.WriteExecutable(b, result)
+	err = linker.WriteFile(b.Executable(), b, result)
 	return exit(err)
 }
 

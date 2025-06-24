@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"slices"
 
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
@@ -18,7 +19,16 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			value, exists := f.Identifiers[name]
 
 			if !exists {
-				return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
+				function, exists := f.All.Functions[f.File.Package+"."+name]
+
+				if !exists {
+					return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
+				}
+
+				f.Dependencies.Add(function)
+				v := f.AppendFunction(function.UniqueName)
+				v.Source = expr.Token
+				return v, nil
 			}
 
 			return value, nil
@@ -66,7 +76,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 		args := make([]ssa.Value, len(children))
 
-		for i, child := range children {
+		for i, child := range slices.Backward(children) {
 			value, err := f.Evaluate(child)
 
 			if err != nil {
@@ -93,8 +103,17 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 	case token.Dot:
-		name := fmt.Sprintf("%s.%s", expr.Children[0].String(f.File.Bytes), expr.Children[1].String(f.File.Bytes))
-		v := f.AppendFunction(name)
+		left := expr.Children[0]
+		right := expr.Children[1]
+		label := fmt.Sprintf("%s.%s", left.String(f.File.Bytes), right.String(f.File.Bytes))
+		function, exists := f.All.Functions[label]
+
+		if !exists {
+			return nil, errors.New(&UnknownIdentifier{Name: label}, f.File, left.Token.Position)
+		}
+
+		f.Dependencies.Add(function)
+		v := f.AppendFunction(function.UniqueName)
 		v.Source = expr.Children[1].Token
 		return v, nil
 	}

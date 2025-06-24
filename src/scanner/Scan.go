@@ -1,9 +1,12 @@
 package scanner
 
 import (
+	"path/filepath"
+
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/global"
 )
 
 // Scan scans all the files included in the build.
@@ -16,6 +19,7 @@ func Scan(b *build.Build) (*core.Environment, error) {
 	}
 
 	go func() {
+		s.queueDirectory(filepath.Join(global.Library, "core"), "core")
 		s.queue(b.Files...)
 		s.group.Wait()
 		close(s.functions)
@@ -36,6 +40,7 @@ func Scan(b *build.Build) (*core.Environment, error) {
 				continue
 			}
 
+			f.All = all
 			all.Functions[f.UniqueName] = f
 
 		case file, ok := <-s.files:

@@ -20,3 +20,8 @@ const (
 	R14
 	R15
 )
+
+var CPU = cpu.CPU{
+	Call:    []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
+	Syscall: []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
+}

@@ -16,8 +16,11 @@ func Compile(b *build.Build) (*core.Environment, error) {
 		return nil, err
 	}
 
-	if len(all.Files) == 0 {
-		return nil, NoInputFiles
+	// Check for existence of `main`
+	_, exists := all.Functions["main.main"]
+
+	if !exists {
+		return nil, MissingMainFunction
 	}
 
 	compileFunctions(maps.Values(all.Functions))

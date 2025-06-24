@@ -1,9 +1,5 @@
 package ssa
 
-import (
-	"git.urbach.dev/cli/q/src/cpu"
-)
-
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
@@ -44,8 +40,8 @@ func (f *IR) AppendInt(x int) *Int {
 }
 
 // AppendRegister adds a new register value to the last block.
-func (f *IR) AppendRegister(reg cpu.Register) *Register {
-	v := &Register{Register: reg}
+func (f *IR) AppendRegister(index int) *Parameter {
+	v := &Parameter{Index: uint8(index)}
 	f.Append(v)
 	return v
 }

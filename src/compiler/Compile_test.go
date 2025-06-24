@@ -19,7 +19,7 @@ func TestNoInputFiles(t *testing.T) {
 	b := build.New(".")
 	_, err := compiler.Compile(b)
 	assert.NotNil(t, err)
-	assert.True(t, errors.Is(err, compiler.NoInputFiles))
+	assert.True(t, errors.Is(err, compiler.MissingMainFunction))
 }
 
 func TestHelloExample(t *testing.T) {

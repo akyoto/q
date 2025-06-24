@@ -1,0 +1,63 @@
+package asm
+
+import (
+	"encoding/binary"
+
+	"git.urbach.dev/cli/q/src/arm"
+)
+
+type compilerARM struct {
+	*compiler
+}
+
+func (c *compiler) append(code uint32) {
+	c.code = binary.LittleEndian.AppendUint32(c.code, code)
+}
+
+func (c *compilerARM) Compile(instr Instruction) {
+	switch instr := instr.(type) {
+	case *Call:
+		start := len(c.code)
+		c.append(arm.Call(0))
+
+		c.Defer(func() {
+			address, exists := c.labels[instr.Label]
+
+			if !exists {
+				panic("unknown label: " + instr.Label)
+			}
+
+			offset := (address - start) / 4
+			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Call(offset))
+		})
+	case *FunctionStart:
+		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
+		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))
+	case *FunctionEnd:
+		c.append(arm.LoadPair(arm.FP, arm.LR, arm.SP, 16))
+	case *Label:
+		c.labels[instr.Name] = len(c.code)
+	case *MoveRegisterLabel:
+		start := len(c.code)
+		c.append(arm.LoadAddress(instr.Destination, 0))
+
+		c.Defer(func() {
+			address, exists := c.labels[instr.Label]
+
+			if !exists {
+				panic("unknown label: " + instr.Label)
+			}
+
+			offset := address - start
+			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.LoadAddress(instr.Destination, offset))
+		})
+	case *MoveRegisterNumber:
+		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *MoveRegisterRegister:
+		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
+	case *Return:
+		c.append(arm.Return())
+	case *Syscall:
+		c.append(arm.Syscall())
+	}
+}
