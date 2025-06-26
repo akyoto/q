@@ -2,12 +2,14 @@ package ssa
 
 import (
 	"fmt"
+
+	"git.urbach.dev/cli/q/src/types"
 )
 
 type Int struct {
 	Int int
 	Liveness
-	HasToken
+	Source
 }
 
 func (v *Int) Dependencies() []Value {
@@ -30,4 +32,8 @@ func (v *Int) IsConst() bool {
 
 func (v *Int) String() string {
 	return fmt.Sprintf("%d", v.Int)
+}
+
+func (v *Int) Type() types.Type {
+	return types.AnyInt
 }

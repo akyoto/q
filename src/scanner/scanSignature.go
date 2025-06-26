@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
 
@@ -94,9 +95,9 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 			return nil, i, errors.New(MissingType, file, param[0].End())
 		}
 
-		function.Input = append(function.Input, &core.Parameter{
-			Name:       param[0].String(file.Bytes),
-			TypeTokens: param[1:],
+		function.Input = append(function.Input, &ssa.Parameter{
+			Name:   param[0].String(file.Bytes),
+			Source: ssa.Source(param),
 		})
 	}
 
@@ -127,18 +128,19 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 		}
 
 		if len(param) == 1 {
-			function.Output = append(function.Output, &core.Parameter{
-				Name:       "",
-				TypeTokens: param,
+			function.Output = append(function.Output, &ssa.Parameter{
+				Name:   "",
+				Source: ssa.Source(param),
 			})
 		} else {
-			function.Output = append(function.Output, &core.Parameter{
-				Name:       param[0].String(file.Bytes),
-				TypeTokens: param[1:],
+			function.Output = append(function.Output, &ssa.Parameter{
+				Name:   param[0].String(file.Bytes),
+				Source: ssa.Source(param),
 			})
 		}
 
 		errorPos = param[len(param)-1].End() + 1
 	}
+
 	return function, i, nil
 }

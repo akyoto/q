@@ -5,6 +5,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 type BinaryOperation struct {
@@ -12,7 +13,7 @@ type BinaryOperation struct {
 	Right Value
 	Op    token.Kind
 	Liveness
-	HasToken
+	Source
 }
 
 func (v *BinaryOperation) Dependencies() []Value {
@@ -23,10 +24,6 @@ func (a *BinaryOperation) Equals(v Value) bool {
 	b, sameType := v.(*BinaryOperation)
 
 	if !sameType {
-		return false
-	}
-
-	if a.Source.Kind != b.Source.Kind {
 		return false
 	}
 
@@ -47,4 +44,8 @@ func (v *BinaryOperation) IsConst() bool {
 
 func (v *BinaryOperation) String() string {
 	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
+}
+
+func (v *BinaryOperation) Type() types.Type {
+	return v.Left.Type()
 }

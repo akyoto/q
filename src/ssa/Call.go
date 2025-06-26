@@ -1,11 +1,15 @@
 package ssa
 
-import "fmt"
+import (
+	"fmt"
+
+	"git.urbach.dev/cli/q/src/types"
+)
 
 type Call struct {
 	Arguments
 	Liveness
-	HasToken
+	Source
 }
 
 func (a *Call) Equals(v Value) bool {
@@ -23,5 +27,15 @@ func (v *Call) IsConst() bool {
 }
 
 func (v *Call) String() string {
-	return fmt.Sprintf("call%v", v.Args)
+	return fmt.Sprintf("%s(%v)", v.Arguments[0], v.Arguments[1:])
+}
+
+func (v *Call) Type() types.Type {
+	typ := v.Arguments[0].(*Function).Typ
+
+	if len(typ.Output) == 0 {
+		return types.Void
+	}
+
+	return typ.Output[0]
 }

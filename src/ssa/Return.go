@@ -1,10 +1,14 @@
 package ssa
 
-import "fmt"
+import (
+	"fmt"
+
+	"git.urbach.dev/cli/q/src/types"
+)
 
 type Return struct {
 	Arguments
-	HasToken
+	Source
 }
 
 func (a *Return) AddUse(user Value) { panic("return is not a value") }
@@ -17,12 +21,12 @@ func (a *Return) Equals(v Value) bool {
 		return false
 	}
 
-	if len(a.Args) != len(b.Args) {
+	if len(a.Arguments) != len(b.Arguments) {
 		return false
 	}
 
-	for i := range a.Args {
-		if !a.Args[i].Equals(b.Args[i]) {
+	for i := range a.Arguments {
+		if !a.Arguments[i].Equals(b.Arguments[i]) {
 			return false
 		}
 	}
@@ -35,5 +39,9 @@ func (v *Return) IsConst() bool {
 }
 
 func (v *Return) String() string {
-	return fmt.Sprintf("return %v", v.Args)
+	return fmt.Sprintf("return %v", v.Arguments)
+}
+
+func (v *Return) Type() types.Type {
+	return types.Void
 }

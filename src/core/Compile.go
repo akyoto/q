@@ -6,7 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // Compile turns a function into machine code.
@@ -18,12 +18,35 @@ func (f *Function) Compile() {
 			continue
 		}
 
-		f.Identifiers[input.Name] = f.AppendRegister(i + extra)
+		array, isArray := input.Typ.(*types.Array)
 
-		if input.TypeTokens[0].Kind == token.ArrayStart {
+		if isArray {
+			pointer := &ssa.Parameter{
+				Index:  uint8(i + extra),
+				Name:   input.Name,
+				Typ:    &types.Pointer{To: array.Of},
+				Source: input.Source,
+			}
+
+			f.Append(pointer)
+			f.Identifiers[pointer.Name] = pointer
 			extra++
-			f.Identifiers[input.Name+".length"] = f.AppendRegister(i + extra)
+
+			length := &ssa.Parameter{
+				Index:  uint8(i + extra),
+				Name:   input.Name + ".len",
+				Typ:    types.AnyInt,
+				Source: input.Source,
+			}
+
+			f.Append(length)
+			f.Identifiers[length.Name] = length
+			continue
 		}
+
+		input.Index = uint8(i + extra)
+		f.Append(input)
+		f.Identifiers[input.Name] = input
 	}
 
 	for instr := range f.Body.Instructions {
@@ -49,15 +72,15 @@ func (f *Function) Compile() {
 	for instr := range f.Values {
 		switch instr := instr.(type) {
 		case *ssa.Call:
-			f.mv(instr.Args[1:], f.CPU.Call)
+			f.mv(instr.Arguments[1:], f.CPU.Call)
 
-			switch arg := instr.Args[0].(type) {
+			switch arg := instr.Arguments[0].(type) {
 			case *ssa.Function:
 				f.Assembler.Instructions = append(f.Assembler.Instructions, &asm.Call{Label: arg.UniqueName})
 			}
 
 		case *ssa.Syscall:
-			f.mv(instr.Args, f.CPU.Syscall)
+			f.mv(instr.Arguments, f.CPU.Syscall)
 			f.Assembler.Append(&asm.Syscall{})
 
 		case *ssa.Return:

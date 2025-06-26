@@ -17,6 +17,7 @@ var (
 	UInt32     = &Base{name: "uint32", size: 4}
 	UInt16     = &Base{name: "uint16", size: 2}
 	UInt8      = &Base{name: "uint8", size: 1}
+	Void       = &Base{name: "void", size: 0}
 )
 
 var (

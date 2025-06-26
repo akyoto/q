@@ -11,6 +11,7 @@ type Expression struct {
 	Parent     *Expression
 	Children   []*Expression
 	Token      token.Token
+	Source     token.List
 	precedence int8
 }
 

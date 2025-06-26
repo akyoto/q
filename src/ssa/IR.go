@@ -1,5 +1,7 @@
 package ssa
 
+import "git.urbach.dev/cli/q/src/types"
+
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
@@ -39,16 +41,9 @@ func (f *IR) AppendInt(x int) *Int {
 	return v
 }
 
-// AppendRegister adds a new register value to the last block.
-func (f *IR) AppendRegister(index int) *Parameter {
-	v := &Parameter{Index: uint8(index)}
-	f.Append(v)
-	return v
-}
-
 // AppendFunction adds a new function value to the last block.
-func (f *IR) AppendFunction(name string) *Function {
-	v := &Function{UniqueName: name}
+func (f *IR) AppendFunction(name string, typ *types.Function) *Function {
+	v := &Function{UniqueName: name, Typ: typ}
 	f.Append(v)
 	return v
 }

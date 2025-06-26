@@ -18,8 +18,4 @@ func TestFunction(t *testing.T) {
 	assert.False(t, main.IsExtern())
 	assert.Equal(t, main.UniqueName, "main.main")
 	assert.Equal(t, main.String(), main.UniqueName)
-
-	write, exists := env.Functions["io.write"]
-	assert.True(t, exists)
-	write.Output[0].Type()
 }

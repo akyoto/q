@@ -1,9 +1,12 @@
 package ssa
 
+import "git.urbach.dev/cli/q/src/types"
+
 type Function struct {
 	UniqueName string
+	Typ        *types.Function
 	Liveness
-	HasToken
+	Source
 }
 
 func (v *Function) Dependencies() []Value {
@@ -26,4 +29,8 @@ func (v *Function) IsConst() bool {
 
 func (v *Function) String() string {
 	return v.UniqueName
+}
+
+func (v *Function) Type() types.Type {
+	return v.Typ
 }

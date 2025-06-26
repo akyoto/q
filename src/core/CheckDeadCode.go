@@ -8,7 +8,7 @@ import (
 func (f *Function) CheckDeadCode() error {
 	for instr := range f.Values {
 		if instr.IsConst() && instr.Alive() == 0 {
-			return errors.New(&UnusedValue{Value: instr.String()}, f.File, instr.Token().Position)
+			return errors.New(&UnusedValue{Value: instr.String()}, f.File, instr.Start())
 		}
 	}
 

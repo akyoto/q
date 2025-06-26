@@ -9,6 +9,7 @@ import (
 	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // Function is the smallest unit of code.
@@ -17,14 +18,15 @@ type Function struct {
 	Name         string
 	UniqueName   string
 	File         *fs.File
-	Input        []*Parameter
-	Output       []*Parameter
+	Input        []*ssa.Parameter
+	Output       []*ssa.Parameter
 	Body         token.List
 	Identifiers  map[string]ssa.Value
 	All          *Environment
 	Dependencies set.Ordered[*Function]
 	Assembler    asm.Assembler
 	CPU          *cpu.CPU
+	Type         *types.Function
 	Err          error
 }
 

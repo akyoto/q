@@ -1,11 +1,16 @@
 package ssa
 
-import "bytes"
+import (
+	"bytes"
+	"strconv"
+
+	"git.urbach.dev/cli/q/src/types"
+)
 
 type Bytes struct {
 	Bytes []byte
 	Liveness
-	HasToken
+	Source
 }
 
 func (v *Bytes) Dependencies() []Value {
@@ -27,5 +32,9 @@ func (v *Bytes) IsConst() bool {
 }
 
 func (v *Bytes) String() string {
-	return string(v.Bytes)
+	return strconv.Quote(string(v.Bytes))
+}
+
+func (v *Bytes) Type() types.Type {
+	return types.String
 }

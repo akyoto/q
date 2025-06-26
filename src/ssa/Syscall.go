@@ -1,11 +1,15 @@
 package ssa
 
-import "fmt"
+import (
+	"fmt"
+
+	"git.urbach.dev/cli/q/src/types"
+)
 
 type Syscall struct {
 	Arguments
 	Liveness
-	HasToken
+	Source
 }
 
 func (a *Syscall) Equals(v Value) bool {
@@ -23,5 +27,9 @@ func (v *Syscall) IsConst() bool {
 }
 
 func (v *Syscall) String() string {
-	return fmt.Sprintf("syscall%v", v.Args)
+	return fmt.Sprintf("syscall(%v)", v.Arguments)
+}
+
+func (v *Syscall) Type() types.Type {
+	return types.Any
 }

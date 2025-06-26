@@ -12,6 +12,43 @@ var (
 	InvalidRune       = errors.String("Invalid rune")
 )
 
+// ParameterCountMismatch error is created when the number of provided parameters doesn't match the function signature.
+type ParameterCountMismatch struct {
+	Function      string
+	Count         int
+	ExpectedCount int
+}
+
+func (err *ParameterCountMismatch) Error() string {
+	if err.Count > err.ExpectedCount {
+		return fmt.Sprintf("Too many parameters in '%s' function call", err.Function)
+	}
+
+	return fmt.Sprintf("Not enough parameters in '%s' function call", err.Function)
+}
+
+// TypeMismatch represents an error where a type requirement was not met.
+type TypeMismatch struct {
+	Encountered   string
+	Expected      string
+	ParameterName string
+	IsReturn      bool
+}
+
+func (err *TypeMismatch) Error() string {
+	subject := "type"
+
+	if err.IsReturn {
+		subject = "return type"
+	}
+
+	if err.ParameterName != "" {
+		return fmt.Sprintf("Expected parameter '%s' of %s '%s' (encountered '%s')", err.ParameterName, subject, err.Expected, err.Encountered)
+	}
+
+	return fmt.Sprintf("Expected %s '%s' instead of '%s'", subject, err.Expected, err.Encountered)
+}
+
 // UnknownIdentifier represents unknown identifiers.
 type UnknownIdentifier struct {
 	Name        string

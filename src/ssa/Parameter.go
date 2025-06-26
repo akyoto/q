@@ -1,11 +1,17 @@
 package ssa
 
-import "fmt"
+import (
+	"fmt"
+
+	"git.urbach.dev/cli/q/src/types"
+)
 
 type Parameter struct {
 	Index uint8
+	Name  string
+	Typ   types.Type
 	Liveness
-	HasToken
+	Source
 }
 
 func (v *Parameter) Dependencies() []Value {
@@ -27,5 +33,9 @@ func (v *Parameter) IsConst() bool {
 }
 
 func (v *Parameter) String() string {
-	return fmt.Sprintf("arg[%d]", v.Index)
+	return fmt.Sprintf("in[%d]", v.Index)
+}
+
+func (v *Parameter) Type() types.Type {
+	return v.Typ
 }

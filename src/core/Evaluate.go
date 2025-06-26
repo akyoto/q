@@ -8,6 +8,7 @@ import (
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // Evaluate converts an expression to an SSA value.
@@ -26,8 +27,8 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				}
 
 				f.Dependencies.Add(function)
-				v := f.AppendFunction(function.UniqueName)
-				v.Source = expr.Token
+				v := f.AppendFunction(function.UniqueName, function.Type)
+				v.Source = ssa.Source(expr.Source)
 				return v, nil
 			}
 
@@ -41,14 +42,14 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			}
 
 			v := f.AppendInt(number)
-			v.Source = expr.Token
+			v.Source = ssa.Source(expr.Source)
 			return v, nil
 
 		case token.String:
 			data := expr.Token.Bytes(f.File.Bytes)
 			data = Unescape(data)
 			v := f.AppendBytes(data)
-			v.Source = expr.Token
+			v.Source = ssa.Source(expr.Source)
 			return v, nil
 		}
 
@@ -65,7 +66,13 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 			if funcName == "len" {
 				identifier := children[1].String(f.File.Bytes)
-				return f.Identifiers[identifier+".length"], nil
+				length, exists := f.Identifiers[identifier+".len"]
+
+				if !exists {
+					return nil, errors.New(&UnknownIdentifier{Name: identifier + ".len"}, f.File, expr.Token.Position)
+				}
+
+				return length, nil
 			}
 
 			if funcName == "syscall" {
@@ -87,19 +94,37 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 		if isSyscall {
-			v := f.Append(&ssa.Syscall{
-				Arguments: ssa.Arguments{Args: args},
-				HasToken:  ssa.HasToken{Source: expr.Token},
-			})
+			syscall := &ssa.Syscall{
+				Arguments: args,
+				Source:    ssa.Source(expr.Source),
+			}
 
-			return v, nil
+			return f.Append(syscall), nil
 		} else {
-			v := f.Append(&ssa.Call{
-				Arguments: ssa.Arguments{Args: args},
-				HasToken:  ssa.HasToken{Source: expr.Token},
-			})
+			name := args[0].(*ssa.Function).UniqueName
+			fn := f.All.Functions[name]
+			parameters := args[1:]
 
-			return v, nil
+			if len(parameters) != len(fn.Input) {
+				return nil, errors.New(&ParameterCountMismatch{Function: name, Count: len(parameters), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
+			}
+
+			for i, param := range parameters {
+				if !types.Is(param.Type(), fn.Input[i].Typ) {
+					return nil, errors.New(&TypeMismatch{
+						Encountered:   param.Type().Name(),
+						Expected:      fn.Input[i].Typ.Name(),
+						ParameterName: fn.Input[i].Name,
+					}, f.File, param.Start())
+				}
+			}
+
+			call := &ssa.Call{
+				Arguments: args,
+				Source:    ssa.Source(expr.Source),
+			}
+
+			return f.Append(call), nil
 		}
 
 	case token.Dot:
@@ -113,8 +138,8 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 		f.Dependencies.Add(function)
-		v := f.AppendFunction(function.UniqueName)
-		v.Source = expr.Children[1].Token
+		v := f.AppendFunction(function.UniqueName, function.Type)
+		v.Source = ssa.Source(expr.Source)
 		return v, nil
 	}
 

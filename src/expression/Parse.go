@@ -7,12 +7,13 @@ import (
 )
 
 // Parse generates an expression tree from tokens.
-func Parse(tokens []token.Token) *Expression {
+func Parse(tokens token.List) *Expression {
 	var (
 		cursor        *Expression
 		root          *Expression
 		groupLevel    = 0
 		groupPosition = 0
+		cursorStart   = 0
 	)
 
 	for i, t := range tokens {
@@ -38,6 +39,7 @@ func Parse(tokens []token.Token) *Expression {
 				parameters := NewList(tokens[groupPosition:i])
 				node := New()
 				node.Token.Position = tokens[groupPosition].Position
+				node.Source = tokens[groupPosition:i]
 
 				switch t.Kind {
 				case token.GroupEnd:
@@ -72,6 +74,7 @@ func Parse(tokens []token.Token) *Expression {
 				continue
 			}
 
+			group.Source = tokens[groupPosition:i]
 			group.precedence = math.MaxInt8
 
 			if cursor == nil {
@@ -79,6 +82,7 @@ func Parse(tokens []token.Token) *Expression {
 					cursor = New()
 					cursor.Token.Position = tokens[groupPosition].Position
 					cursor.Token.Kind = token.Array
+					cursor.Source = tokens[groupPosition:i]
 					cursor.precedence = precedence(token.Array)
 					cursor.AddChild(group)
 					root = cursor
@@ -88,6 +92,7 @@ func Parse(tokens []token.Token) *Expression {
 				}
 			} else {
 				cursor.AddChild(group)
+				cursor.Source = tokens[cursorStart : i+1]
 			}
 
 			continue
@@ -100,9 +105,13 @@ func Parse(tokens []token.Token) *Expression {
 		if t.Kind == token.Identifier || t.Kind == token.Number || t.Kind == token.String || t.Kind == token.Rune {
 			if cursor != nil {
 				node := NewLeaf(t)
+				node.Source = tokens[i : i+1]
+				cursor.Source = tokens[cursorStart : i+1]
 				cursor.AddChild(node)
 			} else {
 				cursor = NewLeaf(t)
+				cursorStart = i
+				cursor.Source = tokens[i : i+1]
 				root = cursor
 			}
 
@@ -115,12 +124,15 @@ func Parse(tokens []token.Token) *Expression {
 
 		if cursor == nil {
 			cursor = NewLeaf(t)
+			cursorStart = i
+			cursor.Source = tokens[i : i+1]
 			cursor.precedence = precedence(t.Kind)
 			root = cursor
 			continue
 		}
 
 		node := NewLeaf(t)
+		node.Source = tokens[i : i+1]
 		node.precedence = precedence(t.Kind)
 
 		if cursor.Token.IsOperator() {
@@ -131,6 +143,7 @@ func Parse(tokens []token.Token) *Expression {
 				if len(cursor.Children) == numOperands(cursor.Token.Kind) {
 					cursor.LastChild().InsertAbove(node)
 				} else {
+					cursor.Source = tokens[cursorStart : i+1]
 					cursor.AddChild(node)
 				}
 			} else {
@@ -167,6 +180,10 @@ func Parse(tokens []token.Token) *Expression {
 		}
 
 		cursor = node
+	}
+
+	if root != nil {
+		root.Source = tokens
 	}
 
 	return root
