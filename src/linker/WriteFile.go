@@ -22,7 +22,7 @@ func WriteFile(executable string, b *build.Build, env *core.Environment) error {
 	traversed := make(map[*core.Function]bool, len(env.Functions))
 
 	final := asm.Assembler{
-		Instructions: make([]asm.Instruction, 0, 8),
+		Instructions: make([]asm.Instruction, 0, 32),
 		Data:         make(data.Data, 32),
 	}
 

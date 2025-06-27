@@ -73,11 +73,14 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte) {
 
 // Merge combines the contents of this assembler with another one.
 func (a *Assembler) Merge(b *Assembler) {
-	maps.Copy(a.Data, b.Data)
+	skip := 0
 
-	for _, instr := range b.Instructions {
-		a.Append(instr)
+	for a.Skip(b.Instructions[skip]) {
+		skip++
 	}
+
+	a.Instructions = append(a.Instructions, b.Instructions[skip:]...)
+	maps.Copy(a.Data, b.Data)
 }
 
 // SetData sets the data for the given label.
