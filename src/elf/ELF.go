@@ -14,7 +14,6 @@ type ELF struct {
 	CodeHeader     ProgramHeader
 	DataHeader     ProgramHeader
 	SectionHeaders []SectionHeader
-	StringTable    []byte
 }
 
 // Write writes the ELF64 format to the given writer.
@@ -70,10 +69,10 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 	binary.Write(writer, binary.LittleEndian, &elf.Header)
 	binary.Write(writer, binary.LittleEndian, &elf.CodeHeader)
 	binary.Write(writer, binary.LittleEndian, &elf.DataHeader)
+	writer.Write([]byte(StringTable))
+	binary.Write(writer, binary.LittleEndian, &elf.SectionHeaders)
 	writer.Seek(int64(code.Padding), io.SeekCurrent)
 	writer.Write(code.Bytes)
 	writer.Seek(int64(data.Padding), io.SeekCurrent)
 	writer.Write(data.Bytes)
-	writer.Write(elf.StringTable)
-	binary.Write(writer, binary.LittleEndian, &elf.SectionHeaders)
 }

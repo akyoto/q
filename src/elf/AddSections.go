@@ -1,19 +1,15 @@
 package elf
 
-import "bytes"
+import "strings"
 
 // AddSections adds section headers to the ELF file.
 func (elf *ELF) AddSections() {
-	elf.StringTable = []byte("\000.text\000.shstrtab\000")
-	stringTableStart := elf.DataHeader.Offset + elf.DataHeader.SizeInFile
-	sectionHeaderStart := stringTableStart + int64(len(elf.StringTable))
-
 	elf.SectionHeaders = []SectionHeader{
 		{
 			Type: SectionTypeNULL,
 		},
 		{
-			NameIndex:      int32(bytes.Index(elf.StringTable, []byte(".text\000"))),
+			NameIndex:      int32(strings.Index(StringTable, ".text\000")),
 			Type:           SectionTypePROGBITS,
 			Flags:          SectionFlagsAllocate | SectionFlagsExecutable,
 			VirtualAddress: elf.CodeHeader.VirtualAddress,
@@ -22,16 +18,25 @@ func (elf *ELF) AddSections() {
 			Align:          elf.CodeHeader.Align,
 		},
 		{
-			NameIndex:  int32(bytes.Index(elf.StringTable, []byte(".shstrtab\000"))),
+			NameIndex:      int32(strings.Index(StringTable, ".rodata\000")),
+			Type:           SectionTypePROGBITS,
+			Flags:          SectionFlagsAllocate,
+			VirtualAddress: elf.DataHeader.VirtualAddress,
+			Offset:         elf.DataHeader.Offset,
+			SizeInFile:     elf.DataHeader.SizeInFile,
+			Align:          elf.DataHeader.Align,
+		},
+		{
+			NameIndex:  int32(strings.Index(StringTable, ".shstrtab\000")),
 			Type:       SectionTypeSTRTAB,
-			Offset:     int64(stringTableStart),
-			SizeInFile: int64(len(elf.StringTable)),
+			Offset:     int64(StringTableStart),
+			SizeInFile: int64(len(StringTable)),
 			Align:      1,
 		},
 	}
 
 	elf.SectionHeaderEntrySize = SectionHeaderSize
 	elf.SectionHeaderEntryCount = int16(len(elf.SectionHeaders))
-	elf.SectionHeaderOffset = int64(sectionHeaderStart)
-	elf.SectionNameStringTableIndex = 2
+	elf.SectionHeaderOffset = int64(SectionHeaderStart)
+	elf.SectionNameStringTableIndex = int16(len(elf.SectionHeaders) - 1)
 }
