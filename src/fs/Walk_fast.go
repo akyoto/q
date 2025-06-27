@@ -3,6 +3,7 @@
 package fs
 
 import (
+	"strings"
 	"syscall"
 	"unsafe"
 )
@@ -44,16 +45,10 @@ func Walk(directory string, callBack func(string)) error {
 				continue
 			}
 
-			for i, c := range dirent.Name {
-				if c != 0 {
-					continue
-				}
-
-				bytePointer := (*byte)(unsafe.Pointer(&dirent.Name[0]))
-				name := unsafe.String(bytePointer, i)
-				callBack(name)
-				break
-			}
+			bytePointer := (*byte)(unsafe.Pointer(&dirent.Name[0]))
+			name := unsafe.String(bytePointer, 256)
+			null := strings.IndexByte(name, 0)
+			callBack(strings.Clone(name[:null]))
 		}
 	}
 
