@@ -93,11 +93,7 @@ func (f *Function) Compile() {
 	}
 
 	if f.UniqueName != "core.exit" {
-		switch f.Assembler.Instructions[len(f.Assembler.Instructions)-1].(type) {
-		case *asm.Return:
-		default:
-			f.Assembler.Append(&asm.Return{})
-		}
+		f.Assembler.Append(&asm.Return{})
 	}
 }
 

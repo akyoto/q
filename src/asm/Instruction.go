@@ -11,6 +11,10 @@ type Call struct {
 type FunctionStart struct{}
 type FunctionEnd struct{}
 
+type Jump struct {
+	Label string
+}
+
 type Label struct {
 	Name string
 }

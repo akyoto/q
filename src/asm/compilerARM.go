@@ -30,6 +30,25 @@ func (c *compilerARM) Compile(instr Instruction) {
 			offset := (address - start) / 4
 			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Call(offset))
 		})
+	case *Jump:
+		start := len(c.code)
+		c.append(arm.Jump(0))
+
+		c.Defer(func() {
+			address, exists := c.labels[instr.Label]
+
+			if !exists {
+				panic("unknown label: " + instr.Label)
+			}
+
+			offset := (address - start) / 4
+
+			if offset != (offset & 0b11_11111111_11111111_11111111) {
+				panic("not implemented: long jumps")
+			}
+
+			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Jump(offset))
+		})
 	case *FunctionStart:
 		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
 		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))
@@ -59,5 +78,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.Return())
 	case *Syscall:
 		c.append(arm.Syscall())
+	default:
+		panic("unknown instruction")
 	}
 }

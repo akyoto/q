@@ -3,6 +3,7 @@ package asm
 import (
 	"encoding/binary"
 
+	"git.urbach.dev/cli/q/src/sizeof"
 	"git.urbach.dev/cli/q/src/x86"
 )
 
@@ -25,6 +26,27 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 			offset := address - end
 			binary.LittleEndian.PutUint32(c.code[end-4:end], uint32(offset))
+		})
+	case *FunctionStart:
+	case *FunctionEnd:
+	case *Jump:
+		c.code = x86.Jump8(c.code, 0)
+		end := len(c.code)
+
+		c.Defer(func() {
+			address, exists := c.labels[instr.Label]
+
+			if !exists {
+				panic("unknown label: " + instr.Label)
+			}
+
+			offset := address - end
+
+			if sizeof.Signed(offset) > 1 {
+				panic("not implemented: long jumps")
+			}
+
+			c.code[end-1] = byte(offset)
 		})
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
@@ -50,5 +72,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.Return(c.code)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
+	default:
+		panic("unknown instruction")
 	}
 }

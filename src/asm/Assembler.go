@@ -17,7 +17,16 @@ type Assembler struct {
 
 // Append adds another instruction.
 func (a *Assembler) Append(instr Instruction) {
+	if a.Skip(instr) {
+		return
+	}
+
 	a.Instructions = append(a.Instructions, instr)
+}
+
+// Last returns the last instruction.
+func (a *Assembler) Last() Instruction {
+	return a.Instructions[len(a.Instructions)-1]
 }
 
 // Compile compiles the instructions to machine code.
@@ -65,7 +74,10 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte) {
 // Merge combines the contents of this assembler with another one.
 func (a *Assembler) Merge(b *Assembler) {
 	maps.Copy(a.Data, b.Data)
-	a.Instructions = append(a.Instructions, b.Instructions...)
+
+	for _, instr := range b.Instructions {
+		a.Append(instr)
+	}
 }
 
 // SetData sets the data for the given label.
@@ -75,4 +87,61 @@ func (a *Assembler) SetData(label string, bytes []byte) {
 	}
 
 	a.Data.Insert(label, bytes)
+}
+
+// SetLast sets the last instruction.
+func (a *Assembler) SetLast(instr Instruction) {
+	a.Instructions[len(a.Instructions)-1] = instr
+}
+
+// Skip returns true if appending the instruction can be skipped.
+func (a *Assembler) Skip(instr Instruction) bool {
+	if len(a.Instructions) == 0 {
+		return false
+	}
+
+	switch instr := instr.(type) {
+	case *FunctionEnd:
+		// Call + FunctionEnd can be replaced by a single Jump
+		call, isCall := a.Last().(*Call)
+
+		if isCall {
+			a.SetLast(&Jump{Label: call.Label})
+			return true
+		}
+
+	case *Label:
+		// Jump + Label can be replaced by just the Label if both addresses are equal
+		jump, isJump := a.Last().(*Jump)
+
+		if isJump && jump.Label == instr.Name {
+			a.SetLast(instr)
+			return true
+		}
+
+	case *Return:
+		// Call + Return can be replaced by a single Jump
+		call, isCall := a.Last().(*Call)
+
+		if isCall {
+			a.SetLast(&Jump{Label: call.Label})
+			return true
+		}
+
+		// Jump + Return is unnecessary
+		_, isJump := a.Last().(*Jump)
+
+		if isJump {
+			return true
+		}
+
+		// Return + Return is unnecessary
+		_, isReturn := a.Last().(*Return)
+
+		if isReturn {
+			return true
+		}
+	}
+
+	return false
 }
