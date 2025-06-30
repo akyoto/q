@@ -27,3 +27,10 @@ func TestHelloExample(t *testing.T) {
 	_, err := compiler.Compile(b)
 	assert.Nil(t, err)
 }
+
+func TestHelloExampleVerbose(t *testing.T) {
+	b := build.New("../../examples/hello")
+	b.ShowSSA = true
+	_, err := compiler.Compile(b)
+	assert.Nil(t, err)
+}

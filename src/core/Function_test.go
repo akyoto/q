@@ -5,6 +5,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/go/assert"
 )
 
@@ -18,4 +19,14 @@ func TestFunction(t *testing.T) {
 	assert.False(t, main.IsExtern())
 	assert.Equal(t, main.UniqueName, "main.main")
 	assert.Equal(t, main.String(), main.UniqueName)
+
+	deps := []*core.Function{}
+
+	main.EachDependency(map[*core.Function]bool{}, func(dep *core.Function) {
+		deps = append(deps, dep)
+	})
+
+	assert.True(t, len(deps) >= 2)
+	assert.Equal(t, deps[0].UniqueName, "main.main")
+	assert.Equal(t, deps[1].UniqueName, "io.write")
 }
