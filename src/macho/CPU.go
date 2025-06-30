@@ -1,0 +1,15 @@
+package macho
+
+type CPU uint32
+
+const (
+	CPU_X86    CPU = 7
+	CPU_X86_64 CPU = CPU_X86 | 0x01000000
+	CPU_ARM    CPU = 12
+	CPU_ARM_64 CPU = CPU_ARM | 0x01000000
+)
+
+const (
+	CPU_SUBTYPE_ARM64_ALL  = 0
+	CPU_SUBTYPE_X86_64_ALL = 3
+)
