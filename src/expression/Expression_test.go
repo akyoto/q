@@ -59,15 +59,40 @@ func TestSource(t *testing.T) {
 	src := []byte("(1+2-3*4)+(5*6-7+8)")
 	tokens := token.Tokenize(src)
 	expr := expression.Parse(tokens)
+
+	assert.Equal(t, expr.String(src), "(+ (- (+ 1 2) (* 3 4)) (+ (- (* 5 6) 7) 8))")
 	assert.DeepEqual(t, expr.Source, tokens)
+
+	assert.Equal(t, expr.Children[0].String(src), "(- (+ 1 2) (* 3 4))")
 	assert.DeepEqual(t, expr.Children[0].Source, tokens[1:8])
+
+	assert.Equal(t, expr.Children[1].String(src), "(+ (- (* 5 6) 7) 8)")
 	assert.DeepEqual(t, expr.Children[1].Source, tokens[11:18])
-	sources := []string{}
+
+	assert.Equal(t, expr.Children[0].Children[0].String(src), "(+ 1 2)")
+	assert.DeepEqual(t, expr.Children[0].Children[0].Source, tokens[1:4])
+
+	assert.Equal(t, expr.Children[0].Children[1].String(src), "(* 3 4)")
+	assert.DeepEqual(t, expr.Children[0].Children[1].Source, tokens[5:8])
+
+	assert.Equal(t, expr.Children[1].Children[0].String(src), "(- (* 5 6) 7)")
+	assert.DeepEqual(t, expr.Children[1].Children[0].Source, tokens[11:16])
+
+	assert.Equal(t, expr.Children[1].Children[0].Children[0].String(src), "(* 5 6)")
+	assert.DeepEqual(t, expr.Children[1].Children[0].Children[0].Source, tokens[11:14])
+
+	assert.Equal(t, expr.Children[1].Children[0].Children[1].String(src), "7")
+	assert.DeepEqual(t, expr.Children[1].Children[0].Children[1].Source, tokens[15:16])
+
+	assert.Equal(t, expr.Children[1].Children[1].String(src), "8")
+	assert.DeepEqual(t, expr.Children[1].Children[1].Source, tokens[17:18])
+
+	leaves := []string{}
 
 	expr.EachLeaf(func(leaf *expression.Expression) error {
-		sources = append(sources, leaf.Source.String(src))
+		leaves = append(leaves, leaf.Source.String(src))
 		return nil
 	})
 
-	assert.DeepEqual(t, sources, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
+	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
 }

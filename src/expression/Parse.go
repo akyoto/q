@@ -162,6 +162,7 @@ func Parse(tokens token.List) *Expression {
 							root = node
 						}
 
+						cursorStart = i + 1
 						start.InsertAbove(node)
 						break
 					}
