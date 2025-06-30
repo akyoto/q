@@ -33,7 +33,7 @@ func (f *Function) Name() string {
 		builder.WriteString(output.Name())
 
 		if i != len(f.Output)-1 {
-			builder.WriteString(",")
+			builder.WriteString(", ")
 		}
 	}
 

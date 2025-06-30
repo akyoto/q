@@ -6,9 +6,17 @@ import (
 
 // Parse returns the type with the given tokens or `nil` if it doesn't exist.
 func Parse[T ~[]token.Token](tokens T, source []byte) Type {
+	if len(tokens) == 0 {
+		return nil
+	}
+
 	if tokens[0].Kind == token.Mul {
 		to := tokens[1:]
 		typ := Parse(to, source)
+
+		if typ == nil {
+			return nil
+		}
 
 		if typ == Any {
 			return AnyPointer
@@ -20,6 +28,10 @@ func Parse[T ~[]token.Token](tokens T, source []byte) Type {
 	if len(tokens) >= 2 && tokens[0].Kind == token.ArrayStart && tokens[1].Kind == token.ArrayEnd {
 		to := tokens[2:]
 		typ := Parse(to, source)
+
+		if typ == nil {
+			return nil
+		}
 
 		if typ == Any {
 			return AnyArray
