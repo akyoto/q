@@ -8,7 +8,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-type BinaryOperation struct {
+type BinaryOp struct {
 	Left  Value
 	Right Value
 	Op    token.Kind
@@ -16,12 +16,12 @@ type BinaryOperation struct {
 	Source
 }
 
-func (v *BinaryOperation) Dependencies() []Value {
+func (v *BinaryOp) Dependencies() []Value {
 	return []Value{v.Left, v.Right}
 }
 
-func (a *BinaryOperation) Equals(v Value) bool {
-	b, sameType := v.(*BinaryOperation)
+func (a *BinaryOp) Equals(v Value) bool {
+	b, sameType := v.(*BinaryOp)
 
 	if !sameType {
 		return false
@@ -38,14 +38,14 @@ func (a *BinaryOperation) Equals(v Value) bool {
 	return true
 }
 
-func (v *BinaryOperation) IsConst() bool {
+func (v *BinaryOp) IsConst() bool {
 	return true
 }
 
-func (v *BinaryOperation) String() string {
+func (v *BinaryOp) String() string {
 	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
 }
 
-func (v *BinaryOperation) Type() types.Type {
+func (v *BinaryOp) Type() types.Type {
 	return v.Left.Type()
 }

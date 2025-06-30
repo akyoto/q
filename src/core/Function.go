@@ -36,7 +36,7 @@ func NewFunction(name string, file *fs.File) *Function {
 		Name:        name,
 		File:        file,
 		UniqueName:  fmt.Sprintf("%s.%s", file.Package, name),
-		Identifiers: make(map[string]ssa.Value),
+		Identifiers: make(map[string]ssa.Value, 8),
 		IR: ssa.IR{
 			Blocks: []*ssa.Block{
 				{Instructions: make([]ssa.Value, 0, 8)},

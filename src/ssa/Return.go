@@ -2,6 +2,7 @@ package ssa
 
 import (
 	"fmt"
+	"strings"
 
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -39,7 +40,17 @@ func (v *Return) IsConst() bool {
 }
 
 func (v *Return) String() string {
-	return fmt.Sprintf("return %v", v.Arguments)
+	if len(v.Arguments) == 0 {
+		return "return"
+	}
+
+	args := make([]string, 0, len(v.Arguments))
+
+	for _, arg := range v.Arguments {
+		args = append(args, arg.String())
+	}
+
+	return fmt.Sprintf("return %s", strings.Join(args, ", "))
 }
 
 func (v *Return) Type() types.Type {

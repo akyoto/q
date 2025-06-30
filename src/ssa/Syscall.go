@@ -2,6 +2,7 @@ package ssa
 
 import (
 	"fmt"
+	"strings"
 
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -27,7 +28,13 @@ func (v *Syscall) IsConst() bool {
 }
 
 func (v *Syscall) String() string {
-	return fmt.Sprintf("syscall(%v)", v.Arguments)
+	args := make([]string, 0, len(v.Arguments))
+
+	for _, arg := range v.Arguments {
+		args = append(args, arg.String())
+	}
+
+	return fmt.Sprintf("syscall(%s)", strings.Join(args, ", "))
 }
 
 func (v *Syscall) Type() types.Type {
