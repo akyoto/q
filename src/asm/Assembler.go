@@ -5,6 +5,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/data"
+	"git.urbach.dev/cli/q/src/dll"
 	"git.urbach.dev/cli/q/src/elf"
 	"git.urbach.dev/cli/q/src/exe"
 )
@@ -13,6 +14,7 @@ import (
 type Assembler struct {
 	Data         data.Data
 	Instructions []Instruction
+	Libraries    dll.List
 }
 
 // Append adds another instruction.
@@ -30,7 +32,7 @@ func (a *Assembler) Last() Instruction {
 }
 
 // Compile compiles the instructions to machine code.
-func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte) {
+func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.List) {
 	data, dataLabels := a.Data.Finalize()
 
 	c := compiler{
@@ -38,6 +40,7 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte) {
 		data:       data,
 		dataLabels: dataLabels,
 		labels:     make(map[string]Address, 32),
+		libraries:  a.Libraries,
 	}
 
 	switch b.Arch {
@@ -57,18 +60,22 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte) {
 	}
 
 	x := exe.New(elf.HeaderEnd, b.FileAlign, b.MemoryAlign)
-	x.InitSections(c.code, c.data)
+	x.InitSections(c.code, c.data, nil)
 	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
 
 	for dataLabel, address := range dataLabels {
 		c.labels[dataLabel] = dataSectionOffset + address
 	}
 
+	if b.OS == build.Windows {
+		c.importsStart = x.Sections[2].MemoryOffset - x.Sections[0].MemoryOffset
+	}
+
 	for _, call := range c.deferred {
 		call()
 	}
 
-	return c.code, c.data
+	return c.code, c.data, c.libraries
 }
 
 // Merge combines the contents of this assembler with another one.
@@ -81,6 +88,12 @@ func (a *Assembler) Merge(b *Assembler) {
 
 	a.Instructions = append(a.Instructions, b.Instructions[skip:]...)
 	maps.Copy(a.Data, b.Data)
+
+	for _, library := range b.Libraries {
+		for _, fn := range library.Functions {
+			a.Libraries = a.Libraries.Append(library.Name, fn)
+		}
+	}
 }
 
 // SetData sets the data for the given label.

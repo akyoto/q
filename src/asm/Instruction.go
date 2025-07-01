@@ -4,8 +4,19 @@ import "git.urbach.dev/cli/q/src/cpu"
 
 type Instruction interface{}
 
+type AndRegisterNumber struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Number      int
+}
+
 type Call struct {
 	Label string
+}
+
+type CallExtern struct {
+	Library  string
+	Function string
 }
 
 type FunctionStart struct{}
@@ -35,4 +46,11 @@ type MoveRegisterRegister struct {
 }
 
 type Return struct{}
+
+type SubRegisterNumber struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Number      int
+}
+
 type Syscall struct{}

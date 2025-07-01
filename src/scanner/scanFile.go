@@ -33,6 +33,8 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		case token.Comment:
 		case token.Identifier:
 			i, err = s.scanFunction(file, tokens, i)
+		case token.Extern:
+			i, err = s.scanExtern(file, tokens, i)
 		case token.Import:
 			i, err = s.scanImport(file, tokens, i)
 		case token.EOF:

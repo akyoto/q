@@ -37,9 +37,9 @@ func TestAssembler(t *testing.T) {
 	final.Merge(b)
 	final.Merge(c)
 
-	code, _ := final.Compile(&build.Build{Arch: build.ARM})
+	code, _, _ := final.Compile(&build.Build{Arch: build.ARM})
 	assert.NotNil(t, code)
 
-	code, _ = final.Compile(&build.Build{Arch: build.X86})
+	code, _, _ = final.Compile(&build.Build{Arch: build.X86})
 	assert.NotNil(t, code)
 }

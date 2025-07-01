@@ -2,6 +2,7 @@ package asm
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	"git.urbach.dev/cli/q/src/sizeof"
 	"git.urbach.dev/cli/q/src/x86"
@@ -13,6 +14,18 @@ type compilerX86 struct {
 
 func (c *compilerX86) Compile(instr Instruction) {
 	switch instr := instr.(type) {
+	case *AndRegisterNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.AndRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *SubRegisterNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Call:
 		c.code = x86.Call(c.code, 0)
 		end := len(c.code)
@@ -24,6 +37,21 @@ func (c *compilerX86) Compile(instr Instruction) {
 				panic("unknown label: " + instr.Label)
 			}
 
+			offset := address - end
+			binary.LittleEndian.PutUint32(c.code[end-4:end], uint32(offset))
+		})
+	case *CallExtern:
+		c.code = x86.CallAt(c.code, 0)
+		end := len(c.code)
+
+		c.Defer(func() {
+			index := c.libraries.Index(instr.Library, instr.Function)
+
+			if index == -1 {
+				panic(fmt.Sprintf("unknown extern function '%s' in library '%s'", instr.Function, instr.Library))
+			}
+
+			address := c.importsStart + index*8
 			offset := address - end
 			binary.LittleEndian.PutUint32(c.code[end-4:end], uint32(offset))
 		})

@@ -137,7 +137,12 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			return nil, errors.New(&UnknownIdentifier{Name: label}, f.File, left.Token.Position)
 		}
 
-		f.Dependencies.Add(function)
+		if function.IsExtern() {
+			f.Assembler.Libraries = f.Assembler.Libraries.Append(function.Package, function.Name)
+		} else {
+			f.Dependencies.Add(function)
+		}
+
 		v := f.AppendFunction(function.UniqueName, function.Type)
 		v.Source = ssa.Source(expr.Source)
 		return v, nil

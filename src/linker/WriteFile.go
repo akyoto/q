@@ -9,6 +9,7 @@ import (
 	"git.urbach.dev/cli/q/src/data"
 	"git.urbach.dev/cli/q/src/elf"
 	"git.urbach.dev/cli/q/src/macho"
+	"git.urbach.dev/cli/q/src/pe"
 )
 
 // WriteFile writes an executable file to disk.
@@ -33,13 +34,15 @@ func WriteFile(executable string, b *build.Build, env *core.Environment) error {
 		final.Merge(&f.Assembler)
 	})
 
-	code, data := final.Compile(b)
+	code, data, libs := final.Compile(b)
 
 	switch b.OS {
 	case build.Linux:
 		elf.Write(file, b, code, data)
 	case build.Mac:
 		macho.Write(file, b, code, data)
+	case build.Windows:
+		pe.Write(file, b, code, data, libs)
 	}
 
 	err = file.Close()

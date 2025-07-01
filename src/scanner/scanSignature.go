@@ -9,7 +9,7 @@ import (
 )
 
 // scanSignature scans only the function signature without the body.
-func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind) (*core.Function, int, error) {
+func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimiter token.Kind) (*core.Function, int, error) {
 	var (
 		groupLevel  = 0
 		nameStart   = i
@@ -83,7 +83,7 @@ func scanSignature(file *fs.File, tokens token.List, i int, delimiter token.Kind
 	}
 
 	name := tokens[nameStart].String(file.Bytes)
-	function := core.NewFunction(name, file)
+	function := core.NewFunction(name, pkg, file)
 	parameters := tokens[inputStart:inputEnd]
 
 	for param := range parameters.Split {

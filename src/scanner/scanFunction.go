@@ -11,7 +11,7 @@ import (
 
 // scanFunction scans a function.
 func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, error) {
-	function, i, err := scanSignature(file, tokens, i, token.BlockStart)
+	function, i, err := scanSignature(file, file.Package, tokens, i, token.BlockStart)
 
 	if err != nil {
 		return i, err

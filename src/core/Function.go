@@ -16,6 +16,7 @@ import (
 type Function struct {
 	ssa.IR
 	Name         string
+	Package      string
 	UniqueName   string
 	File         *fs.File
 	Input        []*ssa.Parameter
@@ -31,11 +32,12 @@ type Function struct {
 }
 
 // NewFunction creates a new function.
-func NewFunction(name string, file *fs.File) *Function {
+func NewFunction(name string, pkg string, file *fs.File) *Function {
 	return &Function{
 		Name:        name,
+		Package:     pkg,
+		UniqueName:  fmt.Sprintf("%s.%s", pkg, name),
 		File:        file,
-		UniqueName:  fmt.Sprintf("%s.%s", file.Package, name),
 		Identifiers: make(map[string]ssa.Value, 8),
 		IR: ssa.IR{
 			Blocks: []*ssa.Block{

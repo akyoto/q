@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
+	"git.urbach.dev/cli/q/src/x86"
 )
 
 // Compile turns a function into machine code.
@@ -72,11 +73,19 @@ func (f *Function) Compile() {
 	for instr := range f.Values {
 		switch instr := instr.(type) {
 		case *ssa.Call:
-			f.mv(instr.Arguments[1:], f.CPU.Call)
+			arg := instr.Arguments[0].(*ssa.Function)
+			fn := f.All.Functions[arg.UniqueName]
 
-			switch arg := instr.Arguments[0].(type) {
-			case *ssa.Function:
-				f.Assembler.Instructions = append(f.Assembler.Instructions, &asm.Call{Label: arg.UniqueName})
+			if fn.IsExtern() {
+				f.mv(instr.Arguments[1:], f.CPU.ExternCall)
+				f.Assembler.Append(&asm.MoveRegisterRegister{Destination: x86.R5, Source: x86.SP})
+				f.Assembler.Append(&asm.AndRegisterNumber{Destination: x86.SP, Source: x86.SP, Number: -16})
+				f.Assembler.Append(&asm.SubRegisterNumber{Destination: x86.SP, Source: x86.SP, Number: 32})
+				f.Assembler.Append(&asm.CallExtern{Library: fn.Package, Function: fn.Name})
+				f.Assembler.Append(&asm.MoveRegisterRegister{Destination: x86.SP, Source: x86.R5})
+			} else {
+				f.mv(instr.Arguments[1:], f.CPU.Call)
+				f.Assembler.Append(&asm.Call{Label: fn.UniqueName})
 			}
 
 		case *ssa.Syscall:
