@@ -29,6 +29,7 @@ type Function struct {
 	CPU          *cpu.CPU
 	Type         *types.Function
 	Err          error
+	count        count
 }
 
 // NewFunction creates a new function.

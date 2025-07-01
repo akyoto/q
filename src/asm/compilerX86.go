@@ -41,8 +41,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(c.code[end-4:end], uint32(offset))
 		})
 	case *CallExtern:
+		c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
+		c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
+		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
 		c.code = x86.CallAt(c.code, 0)
 		end := len(c.code)
+		c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
 
 		c.Defer(func() {
 			index := c.libraries.Index(instr.Library, instr.Function)

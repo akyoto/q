@@ -1,13 +1,8 @@
 package core
 
 import (
-	"slices"
-
-	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
-	"git.urbach.dev/cli/q/src/x86"
 )
 
 // Compile turns a function into machine code.
@@ -64,84 +59,5 @@ func (f *Function) Compile() {
 		return
 	}
 
-	f.Assembler.Append(&asm.Label{Name: f.UniqueName})
-
-	if !f.IsLeaf() && f.UniqueName != "core.init" {
-		f.Assembler.Append(&asm.FunctionStart{})
-	}
-
-	for instr := range f.Values {
-		switch instr := instr.(type) {
-		case *ssa.Call:
-			arg := instr.Arguments[0].(*ssa.Function)
-			fn := f.All.Functions[arg.UniqueName]
-
-			if fn.IsExtern() {
-				f.mv(instr.Arguments[1:], f.CPU.ExternCall)
-				f.Assembler.Append(&asm.MoveRegisterRegister{Destination: x86.R5, Source: x86.SP})
-				f.Assembler.Append(&asm.AndRegisterNumber{Destination: x86.SP, Source: x86.SP, Number: -16})
-				f.Assembler.Append(&asm.SubRegisterNumber{Destination: x86.SP, Source: x86.SP, Number: 32})
-				f.Assembler.Append(&asm.CallExtern{Library: fn.Package, Function: fn.Name})
-				f.Assembler.Append(&asm.MoveRegisterRegister{Destination: x86.SP, Source: x86.R5})
-			} else {
-				f.mv(instr.Arguments[1:], f.CPU.Call)
-				f.Assembler.Append(&asm.Call{Label: fn.UniqueName})
-			}
-
-		case *ssa.Syscall:
-			f.mv(instr.Arguments, f.CPU.Syscall)
-			f.Assembler.Append(&asm.Syscall{})
-
-		case *ssa.Return:
-			f.Assembler.Append(&asm.Return{})
-		}
-	}
-
-	if !f.IsLeaf() && f.UniqueName != "core.init" {
-		f.Assembler.Append(&asm.FunctionEnd{})
-	}
-
-	if f.UniqueName != "core.exit" {
-		f.Assembler.Append(&asm.Return{})
-	}
-}
-
-func (f *Function) mv(args []ssa.Value, registers []cpu.Register) {
-	extra := 0
-
-	for _, arg := range args {
-		switch arg.(type) {
-		case *ssa.Bytes:
-			extra++
-		}
-	}
-
-	for i, arg := range slices.Backward(args) {
-		switch arg := arg.(type) {
-		case *ssa.Int:
-			f.Assembler.Append(&asm.MoveRegisterNumber{
-				Destination: registers[i+extra],
-				Number:      arg.Int,
-			})
-		case *ssa.Parameter:
-			f.Assembler.Append(&asm.MoveRegisterRegister{
-				Destination: registers[i+extra],
-				Source:      f.CPU.Call[arg.Index],
-			})
-		case *ssa.Bytes:
-			f.Assembler.SetData("data0", arg.Bytes)
-
-			f.Assembler.Append(&asm.MoveRegisterNumber{
-				Destination: registers[i+extra],
-				Number:      len(arg.Bytes),
-			})
-
-			extra--
-
-			f.Assembler.Append(&asm.MoveRegisterLabel{
-				Destination: registers[i+extra],
-				Label:       "data0",
-			})
-		}
-	}
+	f.ssaToAsm()
 }
