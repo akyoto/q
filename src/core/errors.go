@@ -63,6 +63,21 @@ func (err *UnknownIdentifier) Error() string {
 	return fmt.Sprintf("Unknown identifier '%s'", err.Name)
 }
 
+// UnknownStructField represents unknown struct fields.
+type UnknownStructField struct {
+	StructName       string
+	FieldName        string
+	CorrectFieldName string
+}
+
+func (err *UnknownStructField) Error() string {
+	if err.CorrectFieldName != "" {
+		return fmt.Sprintf("Unknown struct field '%s' in '%s', did you mean '%s'?", err.FieldName, err.StructName, err.CorrectFieldName)
+	}
+
+	return fmt.Sprintf("Unknown struct field '%s' in '%s'", err.FieldName, err.StructName)
+}
+
 // UnusedValue error is created when a value is never used.
 type UnusedValue struct {
 	Value string

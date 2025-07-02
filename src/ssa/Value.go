@@ -6,13 +6,24 @@ import (
 )
 
 type Value interface {
-	AddUse(Value)
-	Alive() int
-	Dependencies() []Value
-	End() token.Position
-	Equals(Value) bool
+	// Essentials
+	Debug() string
+	ID() int
 	IsConst() bool
+	SetID(int)
 	String() string
-	Start() token.Position
 	Type() types.Type
+
+	// Arguments
+	Dependencies() []Value
+	Equals(Value) bool
+
+	// Liveness
+	AddUser(Value)
+	CountUsers() int
+
+	// Source
+	SetSource(token.List)
+	Start() token.Position
+	End() token.Position
 }

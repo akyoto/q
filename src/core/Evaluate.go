@@ -27,8 +27,8 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				}
 
 				f.Dependencies.Add(function)
-				v := f.AppendFunction(function.UniqueName, function.Type)
-				v.Source = ssa.Source(expr.Source)
+				v := f.AppendFunction(function.UniqueName, function.Type, function.IsExtern())
+				v.SetSource(expr.Source)
 				return v, nil
 			}
 
@@ -42,14 +42,25 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			}
 
 			v := f.AppendInt(number)
-			v.Source = ssa.Source(expr.Source)
+			v.SetSource(expr.Source)
 			return v, nil
 
 		case token.String:
 			data := expr.Token.Bytes(f.File.Bytes)
 			data = Unescape(data)
-			v := f.AppendBytes(data)
-			v.Source = ssa.Source(expr.Source)
+
+			length := f.AppendInt(len(data))
+			length.SetSource(expr.Source)
+
+			pointer := f.AppendBytes(data)
+			pointer.SetSource(expr.Source)
+
+			v := f.Append(&ssa.Struct{
+				Arguments: []ssa.Value{pointer, length},
+				Typ:       types.String,
+			})
+
+			v.SetSource(expr.Source)
 			return v, nil
 		}
 
@@ -109,7 +120,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				return nil, errors.New(&ParameterCountMismatch{Function: name, Count: len(parameters), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
 			}
 
-			for i, param := range parameters {
+			for i, param := range slices.Backward(parameters) {
 				if !types.Is(param.Type(), fn.Input[i].Typ) {
 					return nil, errors.New(&TypeMismatch{
 						Encountered:   param.Type().Name(),
@@ -130,22 +141,39 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 	case token.Dot:
 		left := expr.Children[0]
 		right := expr.Children[1]
-		label := fmt.Sprintf("%s.%s", left.String(f.File.Bytes), right.String(f.File.Bytes))
+		leftText := left.String(f.File.Bytes)
+		rightText := right.String(f.File.Bytes)
+		identifier, exists := f.Identifiers[leftText]
+
+		if exists {
+			structure := identifier.Type().(*types.Struct)
+			field := structure.FieldByName(rightText)
+
+			if field == nil {
+				return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Token.Position)
+			}
+
+			v := f.Append(&ssa.StructField{Struct: identifier, Field: field})
+			v.SetSource(expr.Source)
+			return v, nil
+		}
+
+		label := fmt.Sprintf("%s.%s", leftText, rightText)
 		function, exists := f.All.Functions[label]
 
-		if !exists {
-			return nil, errors.New(&UnknownIdentifier{Name: label}, f.File, left.Token.Position)
+		if exists {
+			if function.IsExtern() {
+				f.Assembler.Libraries = f.Assembler.Libraries.Append(function.Package, function.Name)
+			} else {
+				f.Dependencies.Add(function)
+			}
+
+			v := f.AppendFunction(function.UniqueName, function.Type, function.IsExtern())
+			v.SetSource(expr.Source)
+			return v, nil
 		}
 
-		if function.IsExtern() {
-			f.Assembler.Libraries = f.Assembler.Libraries.Append(function.Package, function.Name)
-		} else {
-			f.Dependencies.Add(function)
-		}
-
-		v := f.AppendFunction(function.UniqueName, function.Type)
-		v.Source = ssa.Source(expr.Source)
-		return v, nil
+		return nil, errors.New(&UnknownIdentifier{Name: label}, f.File, left.Token.Position)
 	}
 
 	return nil, nil

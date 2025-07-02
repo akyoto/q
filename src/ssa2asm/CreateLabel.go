@@ -1,4 +1,4 @@
-package core
+package ssa2asm
 
 import (
 	"strconv"
@@ -8,7 +8,7 @@ import (
 )
 
 // CreateLabel creates a label that is tied to this function by using a suffix.
-func (f *Function) CreateLabel(prefix string, count counter) *asm.Label {
+func (f *Compiler) CreateLabel(prefix string, count Counter) *asm.Label {
 	tmp := strings.Builder{}
 	tmp.WriteString(prefix)
 	tmp.WriteString(" ")

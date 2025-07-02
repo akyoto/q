@@ -12,12 +12,24 @@ var (
 	Int8       = &Base{name: "int8", size: 1}
 	Float64    = &Base{name: "float64", size: 8}
 	Float32    = &Base{name: "float32", size: 4}
-	String     = &Array{Of: Byte}
 	UInt64     = &Base{name: "uint64", size: 8}
 	UInt32     = &Base{name: "uint32", size: 4}
 	UInt16     = &Base{name: "uint16", size: 2}
 	UInt8      = &Base{name: "uint8", size: 1}
 	Void       = &Base{name: "void", size: 0}
+)
+
+var (
+	CString = &Pointer{To: Byte}
+	String  = &Struct{
+		Package:    "",
+		UniqueName: "string",
+		name:       "string",
+		Fields: []*Field{
+			{Name: "ptr", Type: CString, Index: 0, Offset: 0},
+			{Name: "len", Type: Int, Index: 1, Offset: 8},
+		},
+	}
 )
 
 var (

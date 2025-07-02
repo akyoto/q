@@ -19,5 +19,5 @@ func TestBytes(t *testing.T) {
 	assert.False(t, hello.Equals(one))
 	assert.True(t, hello.Equals(helloDup))
 	assert.Equal(t, hello.String(), "\"Hello\"")
-	assert.True(t, types.Is(hello.Type(), types.String))
+	assert.True(t, types.Is(hello.Type(), types.CString))
 }

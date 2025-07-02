@@ -8,6 +8,7 @@ import (
 )
 
 type Bytes struct {
+	Id
 	Bytes []byte
 	Liveness
 	Source
@@ -31,10 +32,14 @@ func (v *Bytes) IsConst() bool {
 	return true
 }
 
+func (v *Bytes) Debug() string {
+	return v.String()
+}
+
 func (v *Bytes) String() string {
 	return strconv.Quote(string(v.Bytes))
 }
 
 func (v *Bytes) Type() types.Type {
-	return types.String
+	return types.CString
 }

@@ -1,13 +1,13 @@
 package ssa
 
 type Liveness struct {
-	alive int
+	users []Value
 }
 
-func (v *Liveness) AddUse(user Value) {
-	v.alive++
+func (v *Liveness) AddUser(user Value) {
+	v.users = append(v.users, user)
 }
 
-func (v *Liveness) Alive() int {
-	return v.alive
+func (v *Liveness) CountUsers() int {
+	return len(v.users)
 }

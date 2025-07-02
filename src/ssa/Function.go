@@ -5,6 +5,8 @@ import "git.urbach.dev/cli/q/src/types"
 type Function struct {
 	UniqueName string
 	Typ        *types.Function
+	IsExtern   bool
+	Id
 	Liveness
 	Source
 }
@@ -25,6 +27,10 @@ func (a *Function) Equals(v Value) bool {
 
 func (v *Function) IsConst() bool {
 	return true
+}
+
+func (v *Function) Debug() string {
+	return v.String()
 }
 
 func (v *Function) String() string {

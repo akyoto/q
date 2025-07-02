@@ -13,7 +13,7 @@ func TestName(t *testing.T) {
 	assert.Equal(t, types.AnyPointer.Name(), "*any")
 	assert.Equal(t, (&types.Pointer{To: types.Int}).Name(), "*int64")
 	assert.Equal(t, (&types.Array{Of: types.Int}).Name(), "[]int64")
-	assert.Equal(t, types.String.Name(), "[]uint8")
+	assert.Equal(t, types.String.Name(), "string")
 }
 
 func TestSize(t *testing.T) {
@@ -24,7 +24,7 @@ func TestSize(t *testing.T) {
 	assert.Equal(t, types.Int64.Size(), 8)
 	assert.Equal(t, types.AnyArray.Size(), 8)
 	assert.Equal(t, types.AnyPointer.Size(), 8)
-	assert.Equal(t, types.String.Size(), 8)
+	assert.Equal(t, types.String.Size(), 16)
 	assert.Equal(t, (&types.Pointer{To: types.Int}).Size(), 8)
 }
 

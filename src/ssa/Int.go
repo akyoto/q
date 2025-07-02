@@ -8,6 +8,7 @@ import (
 
 type Int struct {
 	Int int
+	Id
 	Liveness
 	Source
 }
@@ -28,6 +29,10 @@ func (a *Int) Equals(v Value) bool {
 
 func (v *Int) IsConst() bool {
 	return true
+}
+
+func (v *Int) Debug() string {
+	return v.String()
 }
 
 func (v *Int) String() string {

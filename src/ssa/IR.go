@@ -1,10 +1,13 @@
 package ssa
 
-import "git.urbach.dev/cli/q/src/types"
+import (
+	"git.urbach.dev/cli/q/src/types"
+)
 
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
+	nextId int
 }
 
 // AddBlock adds a new block to the function.
@@ -31,35 +34,29 @@ func (f *IR) Append(instr Value) Value {
 		}
 	}
 
+	instr.SetID(f.nextId)
+	f.nextId++
 	return f.Blocks[len(f.Blocks)-1].Append(instr)
 }
 
 // AppendInt adds a new integer value to the last block.
-func (f *IR) AppendInt(x int) *Int {
-	v := &Int{Int: x}
-	f.Append(v)
-	return v
+func (f *IR) AppendInt(x int) Value {
+	return f.Append(&Int{Int: x})
 }
 
 // AppendFunction adds a new function value to the last block.
-func (f *IR) AppendFunction(name string, typ *types.Function) *Function {
-	v := &Function{UniqueName: name, Typ: typ}
-	f.Append(v)
-	return v
+func (f *IR) AppendFunction(name string, typ *types.Function, extern bool) Value {
+	return f.Append(&Function{UniqueName: name, Typ: typ, IsExtern: extern})
 }
 
 // AppendBytes adds a new byte slice value to the last block.
-func (f *IR) AppendBytes(s []byte) *Bytes {
-	v := &Bytes{Bytes: s}
-	f.Append(v)
-	return v
+func (f *IR) AppendBytes(s []byte) Value {
+	return f.Append(&Bytes{Bytes: s})
 }
 
 // AppendString adds a new string value to the last block.
-func (f *IR) AppendString(s string) *Bytes {
-	v := &Bytes{Bytes: []byte(s)}
-	f.Append(v)
-	return v
+func (f *IR) AppendString(s string) Value {
+	return f.Append(&Bytes{Bytes: []byte(s)})
 }
 
 // Values yields on each value.

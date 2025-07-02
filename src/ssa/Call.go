@@ -1,13 +1,14 @@
 package ssa
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 
 	"git.urbach.dev/cli/q/src/types"
 )
 
 type Call struct {
+	Id
 	Arguments
 	Liveness
 	Source
@@ -27,14 +28,42 @@ func (v *Call) IsConst() bool {
 	return false
 }
 
-func (v *Call) String() string {
-	args := make([]string, 0, len(v.Arguments)-1)
+func (v *Call) Debug() string {
+	tmp := strings.Builder{}
+	tmp.WriteString("%")
+	tmp.WriteString(strconv.Itoa(v.Arguments[0].ID()))
+	tmp.WriteString("(")
+	args := v.Arguments[1:]
 
-	for _, arg := range v.Arguments[1:] {
-		args = append(args, arg.String())
+	for i, arg := range args {
+		tmp.WriteString("%")
+		tmp.WriteString(strconv.Itoa(arg.ID()))
+
+		if i != len(args)-1 {
+			tmp.WriteString(", ")
+		}
 	}
 
-	return fmt.Sprintf("%s(%s)", v.Arguments[0].String(), strings.Join(args, ", "))
+	tmp.WriteString(")")
+	return tmp.String()
+}
+
+func (v *Call) String() string {
+	tmp := strings.Builder{}
+	tmp.WriteString(v.Arguments[0].String())
+	tmp.WriteString("(")
+	args := v.Arguments[1:]
+
+	for i, arg := range args {
+		tmp.WriteString(arg.String())
+
+		if i != len(args)-1 {
+			tmp.WriteString(", ")
+		}
+	}
+
+	tmp.WriteString(")")
+	return tmp.String()
 }
 
 func (v *Call) Type() types.Type {

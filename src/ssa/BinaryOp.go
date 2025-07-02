@@ -12,6 +12,7 @@ type BinaryOp struct {
 	Left  Value
 	Right Value
 	Op    token.Kind
+	Id
 	Liveness
 	Source
 }
@@ -40,6 +41,10 @@ func (a *BinaryOp) Equals(v Value) bool {
 
 func (v *BinaryOp) IsConst() bool {
 	return true
+}
+
+func (v *BinaryOp) Debug() string {
+	return fmt.Sprintf("%%%d %s %%%d", v.Left.ID(), expression.Operators[v.Op].Symbol, v.Right.ID())
 }
 
 func (v *BinaryOp) String() string {

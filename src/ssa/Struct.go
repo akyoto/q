@@ -7,15 +7,16 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-type Syscall struct {
+type Struct struct {
+	Typ *types.Struct
 	Id
 	Arguments
 	Liveness
 	Source
 }
 
-func (a *Syscall) Equals(v Value) bool {
-	b, sameType := v.(*Syscall)
+func (a *Struct) Equals(v Value) bool {
+	b, sameType := v.(*Struct)
 
 	if !sameType {
 		return false
@@ -24,13 +25,14 @@ func (a *Syscall) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
-func (v *Syscall) IsConst() bool {
-	return false
+func (v *Struct) IsConst() bool {
+	return true
 }
 
-func (v *Syscall) Debug() string {
+func (v *Struct) Debug() string {
 	tmp := strings.Builder{}
-	tmp.WriteString("syscall(")
+	tmp.WriteString(v.Typ.Name())
+	tmp.WriteString("{")
 
 	for i, arg := range v.Arguments {
 		tmp.WriteString("%")
@@ -41,13 +43,14 @@ func (v *Syscall) Debug() string {
 		}
 	}
 
-	tmp.WriteString(")")
+	tmp.WriteString("}")
 	return tmp.String()
 }
 
-func (v *Syscall) String() string {
+func (v *Struct) String() string {
 	tmp := strings.Builder{}
-	tmp.WriteString("syscall(")
+	tmp.WriteString(v.Typ.Name())
+	tmp.WriteString("{")
 
 	for i, arg := range v.Arguments {
 		tmp.WriteString(arg.String())
@@ -57,10 +60,10 @@ func (v *Syscall) String() string {
 		}
 	}
 
-	tmp.WriteString(")")
+	tmp.WriteString("}")
 	return tmp.String()
 }
 
-func (v *Syscall) Type() types.Type {
-	return types.Any
+func (v *Struct) Type() types.Type {
+	return v.Typ
 }

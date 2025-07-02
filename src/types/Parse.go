@@ -45,6 +45,8 @@ func Parse[T ~[]token.Token](tokens T, source []byte) Type {
 	}
 
 	switch tokens[0].String(source) {
+	case "string":
+		return String
 	case "int":
 		return Int
 	case "int64":

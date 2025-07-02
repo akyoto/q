@@ -1,4 +1,4 @@
-write(_ []byte) -> (written int) {
+write(_ string) -> (written int) {
 	return 0
 }
 

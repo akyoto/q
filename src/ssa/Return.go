@@ -1,19 +1,18 @@
 package ssa
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 
 	"git.urbach.dev/cli/q/src/types"
 )
 
 type Return struct {
+	Id
 	Arguments
 	Source
+	NoLiveness
 }
-
-func (a *Return) AddUse(user Value) { panic("return is not a value") }
-func (a *Return) Alive() int        { return 0 }
 
 func (a *Return) Equals(v Value) bool {
 	b, sameType := v.(*Return)
@@ -39,18 +38,43 @@ func (v *Return) IsConst() bool {
 	return false
 }
 
+func (v *Return) Debug() string {
+	if len(v.Arguments) == 0 {
+		return "return"
+	}
+
+	tmp := strings.Builder{}
+	tmp.WriteString("return ")
+
+	for i, arg := range v.Arguments {
+		tmp.WriteString("%")
+		tmp.WriteString(strconv.Itoa(arg.ID()))
+
+		if i != len(v.Arguments)-1 {
+			tmp.WriteString(", ")
+		}
+	}
+
+	return tmp.String()
+}
+
 func (v *Return) String() string {
 	if len(v.Arguments) == 0 {
 		return "return"
 	}
 
-	args := make([]string, 0, len(v.Arguments))
+	tmp := strings.Builder{}
+	tmp.WriteString("return ")
 
-	for _, arg := range v.Arguments {
-		args = append(args, arg.String())
+	for i, arg := range v.Arguments {
+		tmp.WriteString(arg.String())
+
+		if i != len(v.Arguments)-1 {
+			tmp.WriteString(", ")
+		}
 	}
 
-	return fmt.Sprintf("return %s", strings.Join(args, ", "))
+	return tmp.String()
 }
 
 func (v *Return) Type() types.Type {

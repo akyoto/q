@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/ssa2asm"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -15,9 +15,9 @@ import (
 // Function is the smallest unit of code.
 type Function struct {
 	ssa.IR
+	ssa2asm.Compiler
 	Name         string
 	Package      string
-	UniqueName   string
 	File         *fs.File
 	Input        []*ssa.Parameter
 	Output       []*ssa.Parameter
@@ -25,19 +25,16 @@ type Function struct {
 	Identifiers  map[string]ssa.Value
 	All          *Environment
 	Dependencies set.Ordered[*Function]
-	Assembler    asm.Assembler
-	CPU          *cpu.CPU
 	Type         *types.Function
 	Err          error
-	count        count
 }
 
 // NewFunction creates a new function.
 func NewFunction(name string, pkg string, file *fs.File) *Function {
 	return &Function{
-		Name:        name,
-		Package:     pkg,
-		UniqueName:  fmt.Sprintf("%s.%s", pkg, name),
+		Name:    name,
+		Package: pkg,
+
 		File:        file,
 		Identifiers: make(map[string]ssa.Value, 8),
 		IR: ssa.IR{
@@ -45,8 +42,11 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 				{Instructions: make([]ssa.Value, 0, 8)},
 			},
 		},
-		Assembler: asm.Assembler{
-			Instructions: make([]asm.Instruction, 0, 8),
+		Compiler: ssa2asm.Compiler{
+			UniqueName: fmt.Sprintf("%s.%s", pkg, name),
+			Assembler: asm.Assembler{
+				Instructions: make([]asm.Instruction, 0, 8),
+			},
 		},
 	}
 }

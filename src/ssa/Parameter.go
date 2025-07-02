@@ -10,6 +10,7 @@ type Parameter struct {
 	Index uint8
 	Name  string
 	Typ   types.Type
+	Id
 	Liveness
 	Source
 }
@@ -30,6 +31,10 @@ func (a *Parameter) Equals(v Value) bool {
 
 func (v *Parameter) IsConst() bool {
 	return true
+}
+
+func (v *Parameter) Debug() string {
+	return v.String()
 }
 
 func (v *Parameter) String() string {

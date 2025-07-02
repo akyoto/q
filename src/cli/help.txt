@@ -5,7 +5,6 @@ Usage:
 Commands:
 
     build [directory | file]       build an executable
-
         --verbose, -v              show everything
 
     run [directory | file]         build and run the executable
