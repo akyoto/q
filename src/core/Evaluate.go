@@ -122,6 +122,21 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 			for i, param := range slices.Backward(parameters) {
 				if !types.Is(param.Type(), fn.Input[i].Typ) {
+					_, isPointer := fn.Input[i].Typ.(*types.Pointer)
+
+					if isPointer {
+						number, isInt := param.(*ssa.Int)
+
+						if isInt && number.Int == 0 {
+							continue
+						}
+					}
+
+					// Temporary hack to allow int64 -> uint32 conversion
+					if types.Is(param.Type(), types.AnyInt) && types.Is(fn.Input[i].Typ, types.AnyInt) {
+						continue
+					}
+
 					return nil, errors.New(&TypeMismatch{
 						Encountered:   param.Type().Name(),
 						Expected:      fn.Input[i].Typ.Name(),

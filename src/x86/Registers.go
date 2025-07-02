@@ -22,8 +22,9 @@ const (
 )
 
 var CPU = cpu.CPU{
-	Call:       []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
-	Syscall:    []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
-	ExternCall: []cpu.Register{R1, R2, R8, R9},
-	Return:     []cpu.Register{R0, R7, R6},
+	Call:               []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
+	Syscall:            []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
+	ExternCall:         []cpu.Register{R1, R2, R8, R9},
+	ExternCallVolatile: []cpu.Register{R0, R1, R2, R8, R9, R10, R11},
+	Return:             []cpu.Register{R0, R7, R6},
 }
