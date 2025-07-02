@@ -50,5 +50,15 @@ func (f *Compiler) ValueToRegister(instr ssa.Value, destination cpu.Register) {
 			Destination: destination,
 			Source:      source,
 		})
+
+	case *ssa.Syscall:
+		if destination == f.CPU.Return[0] {
+			return
+		}
+
+		f.Assembler.Append(&asm.MoveRegisterRegister{
+			Destination: destination,
+			Source:      f.CPU.Return[0],
+		})
 	}
 }
