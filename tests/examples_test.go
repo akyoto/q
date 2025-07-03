@@ -49,7 +49,7 @@ func run(t *testing.T, path string, input string, expectedOutput string, expecte
 	assert.Nil(t, err)
 
 	tmpDir := filepath.Join(os.TempDir(), "q", "tests")
-	err = os.MkdirAll(tmpDir, 0755)
+	err = os.MkdirAll(tmpDir, 0o755)
 	assert.Nil(t, err)
 
 	executable := b.Executable()

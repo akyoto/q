@@ -51,5 +51,5 @@ func WriteFile(executable string, b *build.Build, env *core.Environment) error {
 		return err
 	}
 
-	return os.Chmod(executable, 0755)
+	return os.Chmod(executable, 0o755)
 }

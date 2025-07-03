@@ -13,7 +13,7 @@ import (
 
 func TestWriteFile(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "q", "tests")
-	err := os.MkdirAll(tmpDir, 0755)
+	err := os.MkdirAll(tmpDir, 0o755)
 	assert.Nil(t, err)
 
 	fromPath := "../../examples/hello/hello.q"
@@ -21,7 +21,7 @@ func TestWriteFile(t *testing.T) {
 	assert.Nil(t, err)
 
 	toPath := filepath.Join(tmpDir, "hello.q")
-	err = os.WriteFile(toPath, contents, 0755)
+	err = os.WriteFile(toPath, contents, 0o755)
 	assert.Nil(t, err)
 
 	b := build.New(toPath)
