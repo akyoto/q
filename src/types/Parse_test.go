@@ -28,6 +28,7 @@ func TestParse(t *testing.T) {
 		{"float", types.Float},
 		{"float64", types.Float64},
 		{"float32", types.Float32},
+		{"string", types.String},
 		{"any", types.Any},
 		{"*any", types.AnyPointer},
 		{"*byte", &types.Pointer{To: types.Byte}},
