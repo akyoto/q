@@ -7,7 +7,7 @@ import (
 
 type Value interface {
 	// Essentials
-	Debug() string
+	Debug(bool) string
 	ID() int
 	IsConst() bool
 	SetID(int)

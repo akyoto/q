@@ -29,14 +29,18 @@ func (v *Struct) IsConst() bool {
 	return true
 }
 
-func (v *Struct) Debug() string {
+func (v *Struct) Debug(expand bool) string {
 	tmp := strings.Builder{}
 	tmp.WriteString(v.Typ.Name())
 	tmp.WriteString("{")
 
 	for i, arg := range v.Arguments {
-		tmp.WriteString("%")
-		tmp.WriteString(strconv.Itoa(arg.ID()))
+		if expand {
+			tmp.WriteString(arg.String())
+		} else {
+			tmp.WriteString("%")
+			tmp.WriteString(strconv.Itoa(arg.ID()))
+		}
 
 		if i != len(v.Arguments)-1 {
 			tmp.WriteString(", ")
@@ -48,20 +52,7 @@ func (v *Struct) Debug() string {
 }
 
 func (v *Struct) String() string {
-	tmp := strings.Builder{}
-	tmp.WriteString(v.Typ.Name())
-	tmp.WriteString("{")
-
-	for i, arg := range v.Arguments {
-		tmp.WriteString(arg.String())
-
-		if i != len(v.Arguments)-1 {
-			tmp.WriteString(", ")
-		}
-	}
-
-	tmp.WriteString("}")
-	return tmp.String()
+	return v.Debug(false)
 }
 
 func (v *Struct) Type() types.Type {

@@ -31,7 +31,7 @@ func (v *Int) IsConst() bool {
 	return true
 }
 
-func (v *Int) Debug() string {
+func (v *Int) Debug(expand bool) string {
 	return v.String()
 }
 

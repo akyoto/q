@@ -38,7 +38,7 @@ func (v *Return) IsConst() bool {
 	return false
 }
 
-func (v *Return) Debug() string {
+func (v *Return) Debug(expand bool) string {
 	if len(v.Arguments) == 0 {
 		return "return"
 	}
@@ -47,8 +47,12 @@ func (v *Return) Debug() string {
 	tmp.WriteString("return ")
 
 	for i, arg := range v.Arguments {
-		tmp.WriteString("%")
-		tmp.WriteString(strconv.Itoa(arg.ID()))
+		if expand {
+			tmp.WriteString(arg.String())
+		} else {
+			tmp.WriteString("%")
+			tmp.WriteString(strconv.Itoa(arg.ID()))
+		}
 
 		if i != len(v.Arguments)-1 {
 			tmp.WriteString(", ")
@@ -59,22 +63,7 @@ func (v *Return) Debug() string {
 }
 
 func (v *Return) String() string {
-	if len(v.Arguments) == 0 {
-		return "return"
-	}
-
-	tmp := strings.Builder{}
-	tmp.WriteString("return ")
-
-	for i, arg := range v.Arguments {
-		tmp.WriteString(arg.String())
-
-		if i != len(v.Arguments)-1 {
-			tmp.WriteString(", ")
-		}
-	}
-
-	return tmp.String()
+	return v.Debug(true)
 }
 
 func (v *Return) Type() types.Type {

@@ -32,12 +32,16 @@ func (v *StructField) IsConst() bool {
 	return true
 }
 
-func (v *StructField) Debug() string {
+func (v *StructField) Debug(expand bool) string {
+	if expand {
+		return fmt.Sprintf("%s.%s", v.Struct, v.Field)
+	}
+
 	return fmt.Sprintf("%%%d.%s", v.Struct.ID(), v.Field)
 }
 
 func (v *StructField) String() string {
-	return fmt.Sprintf("%s.%s", v.Struct, v.Field)
+	return v.Debug(true)
 }
 
 func (v *StructField) Type() types.Type {

@@ -28,13 +28,17 @@ func (v *Syscall) IsConst() bool {
 	return false
 }
 
-func (v *Syscall) Debug() string {
+func (v *Syscall) Debug(expand bool) string {
 	tmp := strings.Builder{}
 	tmp.WriteString("syscall(")
 
 	for i, arg := range v.Arguments {
-		tmp.WriteString("%")
-		tmp.WriteString(strconv.Itoa(arg.ID()))
+		if expand {
+			tmp.WriteString(arg.String())
+		} else {
+			tmp.WriteString("%")
+			tmp.WriteString(strconv.Itoa(arg.ID()))
+		}
 
 		if i != len(v.Arguments)-1 {
 			tmp.WriteString(", ")
@@ -46,19 +50,7 @@ func (v *Syscall) Debug() string {
 }
 
 func (v *Syscall) String() string {
-	tmp := strings.Builder{}
-	tmp.WriteString("syscall(")
-
-	for i, arg := range v.Arguments {
-		tmp.WriteString(arg.String())
-
-		if i != len(v.Arguments)-1 {
-			tmp.WriteString(", ")
-		}
-	}
-
-	tmp.WriteString(")")
-	return tmp.String()
+	return v.Debug(true)
 }
 
 func (v *Syscall) Type() types.Type {

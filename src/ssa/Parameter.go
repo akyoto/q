@@ -33,7 +33,7 @@ func (v *Parameter) IsConst() bool {
 	return true
 }
 
-func (v *Parameter) Debug() string {
+func (v *Parameter) Debug(expand bool) string {
 	return v.String()
 }
 

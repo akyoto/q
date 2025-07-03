@@ -32,7 +32,7 @@ func (v *Bytes) IsConst() bool {
 	return true
 }
 
-func (v *Bytes) Debug() string {
+func (v *Bytes) Debug(expand bool) string {
 	return v.String()
 }
 

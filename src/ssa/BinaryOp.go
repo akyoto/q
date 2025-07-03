@@ -43,12 +43,16 @@ func (v *BinaryOp) IsConst() bool {
 	return true
 }
 
-func (v *BinaryOp) Debug() string {
+func (v *BinaryOp) Debug(expand bool) string {
+	if expand {
+		return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
+	}
+
 	return fmt.Sprintf("%%%d %s %%%d", v.Left.ID(), expression.Operators[v.Op].Symbol, v.Right.ID())
 }
 
 func (v *BinaryOp) String() string {
-	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
+	return v.Debug(true)
 }
 
 func (v *BinaryOp) Type() types.Type {

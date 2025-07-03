@@ -29,7 +29,7 @@ func (v *Function) IsConst() bool {
 	return true
 }
 
-func (v *Function) Debug() string {
+func (v *Function) Debug(expand bool) string {
 	return v.String()
 }
 
