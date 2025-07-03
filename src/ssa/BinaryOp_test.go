@@ -11,12 +11,12 @@ import (
 
 func TestBinaryOp(t *testing.T) {
 	fn := ssa.IR{}
-	a := fn.AppendInt(1)
-	b := fn.AppendInt(2)
+	a := fn.Append(&ssa.Int{Int: 1})
+	b := fn.Append(&ssa.Int{Int: 2})
 	c := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: a, Right: b})
 	fn.AddBlock()
-	d := fn.AppendInt(3)
-	e := fn.AppendInt(4)
+	d := fn.Append(&ssa.Int{Int: 3})
+	e := fn.Append(&ssa.Int{Int: 4})
 	f := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: d, Right: e})
 
 	assert.Equal(t, c.String(), "1 + 2")
@@ -26,11 +26,11 @@ func TestBinaryOp(t *testing.T) {
 
 func TestBinaryOpEquals(t *testing.T) {
 	fn := ssa.IR{}
-	one := fn.AppendInt(1)
-	two := fn.AppendInt(2)
+	one := fn.Append(&ssa.Int{Int: 1})
+	two := fn.Append(&ssa.Int{Int: 2})
 	binOp := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: one, Right: two})
-	oneDup := fn.AppendInt(1)
-	twoDup := fn.AppendInt(2)
+	oneDup := fn.Append(&ssa.Int{Int: 1})
+	twoDup := fn.Append(&ssa.Int{Int: 2})
 	binOpDup := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: oneDup, Right: twoDup})
 	binOpDiff := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: oneDup, Right: oneDup})
 

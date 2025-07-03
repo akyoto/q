@@ -1,9 +1,5 @@
 package ssa
 
-import (
-	"git.urbach.dev/cli/q/src/types"
-)
-
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
@@ -26,12 +22,10 @@ func (f *IR) Append(instr Value) Value {
 		f.AddBlock()
 	}
 
-	if instr.IsConst() {
-		for existing := range f.Values {
-			if existing.IsConst() && instr.Equals(existing) {
-				return existing
-			}
-		}
+	existing := f.FindExisting(instr)
+
+	if existing != nil {
+		return existing
 	}
 
 	instr.SetID(f.nextId)
@@ -39,24 +33,19 @@ func (f *IR) Append(instr Value) Value {
 	return f.Blocks[len(f.Blocks)-1].Append(instr)
 }
 
-// AppendInt adds a new integer value to the last block.
-func (f *IR) AppendInt(x int) Value {
-	return f.Append(&Int{Int: x})
-}
+// FindExisting returns an equal instruction that's already appended or `nil` if none could be found.
+func (f *IR) FindExisting(instr Value) Value {
+	if !instr.IsConst() {
+		return nil
+	}
 
-// AppendFunction adds a new function value to the last block.
-func (f *IR) AppendFunction(name string, typ *types.Function, extern bool) Value {
-	return f.Append(&Function{UniqueName: name, Typ: typ, IsExtern: extern})
-}
+	for existing := range f.Values {
+		if existing.IsConst() && instr.Equals(existing) {
+			return existing
+		}
+	}
 
-// AppendBytes adds a new byte slice value to the last block.
-func (f *IR) AppendBytes(s []byte) Value {
-	return f.Append(&Bytes{Bytes: s})
-}
-
-// AppendString adds a new string value to the last block.
-func (f *IR) AppendString(s string) Value {
-	return f.Append(&Bytes{Bytes: []byte(s)})
+	return nil
 }
 
 // Values yields on each value.

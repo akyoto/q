@@ -13,7 +13,7 @@ func TestBytes(t *testing.T) {
 	hello := fn.Append(&ssa.Bytes{Bytes: []byte("Hello")})
 	world := fn.Append(&ssa.Bytes{Bytes: []byte("World")})
 	helloDup := fn.Append(&ssa.Bytes{Bytes: []byte("Hello")})
-	one := fn.AppendInt(1)
+	one := fn.Append(&ssa.Int{Int: 1})
 
 	assert.False(t, hello.Equals(world))
 	assert.False(t, hello.Equals(one))

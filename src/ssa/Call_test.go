@@ -12,7 +12,7 @@ func TestCall(t *testing.T) {
 	fn := ssa.IR{}
 	myfunc := fn.Append(&ssa.Function{UniqueName: "myfunc", Typ: &types.Function{}})
 	call := fn.Append(&ssa.Call{Arguments: ssa.Arguments{myfunc}})
-	one := fn.AppendInt(1)
+	one := fn.Append(&ssa.Int{Int: 1})
 	call2 := fn.Append(&ssa.Call{Arguments: ssa.Arguments{myfunc, one}})
 
 	assert.True(t, call.Type() == types.Void)
@@ -31,8 +31,8 @@ func TestCallEquals(t *testing.T) {
 		},
 	})
 
-	one := fn.AppendInt(1)
-	two := fn.AppendInt(2)
+	one := fn.Append(&ssa.Int{Int: 1})
+	two := fn.Append(&ssa.Int{Int: 2})
 	call1 := fn.Append(&ssa.Call{Arguments: ssa.Arguments{sum, one, two}})
 	call2 := fn.Append(&ssa.Call{Arguments: ssa.Arguments{sum, one, two}})
 
@@ -51,8 +51,8 @@ func TestCallReturnType(t *testing.T) {
 		},
 	})
 
-	one := fn.AppendInt(1)
-	two := fn.AppendInt(2)
+	one := fn.Append(&ssa.Int{Int: 1})
+	two := fn.Append(&ssa.Int{Int: 2})
 	call := fn.Append(&ssa.Call{Arguments: ssa.Arguments{sum, one, two}})
 
 	assert.Equal(t, call.String(), "sum(1, 2)")

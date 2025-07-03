@@ -11,9 +11,9 @@ import (
 func TestReturn(t *testing.T) {
 	fn := ssa.IR{}
 	ret := fn.Append(&ssa.Return{})
-	one := fn.AppendInt(1)
+	one := fn.Append(&ssa.Int{Int: 1})
 	ret2 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{one}})
-	two := fn.AppendInt(2)
+	two := fn.Append(&ssa.Int{Int: 2})
 	ret3 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{one, two}})
 	ret4 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{two, one}})
 	ret5 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{one, two}})

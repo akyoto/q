@@ -11,9 +11,9 @@ import (
 func TestSyscall(t *testing.T) {
 	fn := ssa.IR{}
 	syscall := fn.Append(&ssa.Syscall{})
-	one := fn.AppendInt(1)
+	one := fn.Append(&ssa.Int{Int: 1})
 	syscall2 := fn.Append(&ssa.Syscall{Arguments: ssa.Arguments{one}})
-	two := fn.AppendInt(2)
+	two := fn.Append(&ssa.Int{Int: 2})
 	syscall3 := fn.Append(&ssa.Syscall{Arguments: ssa.Arguments{one, two}})
 	syscall4 := fn.Append(&ssa.Syscall{Arguments: ssa.Arguments{one, two}})
 

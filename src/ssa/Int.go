@@ -1,7 +1,7 @@
 package ssa
 
 import (
-	"fmt"
+	"strconv"
 
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -36,7 +36,7 @@ func (v *Int) Debug(expand bool) string {
 }
 
 func (v *Int) String() string {
-	return fmt.Sprintf("%d", v.Int)
+	return strconv.Itoa(v.Int)
 }
 
 func (v *Int) Type() types.Type {
