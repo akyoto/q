@@ -25,34 +25,44 @@ func (f *Compiler) ValueToRegister(instr ssa.Value, destination cpu.Register) {
 	case *ssa.Call:
 		fn := instr.Arguments[0].(*ssa.Function)
 		args := instr.Arguments[1:]
+		offset := 0
 
-		if fn.IsExtern {
-			for i := range slices.Backward(args) {
-				f.ValueToRegister(args[i], f.CPU.ExternCall[i])
-			}
+		for i := range slices.Backward(args) {
+			structure, isStruct := args[i].(*ssa.Struct)
 
-			dot := strings.IndexByte(fn.UniqueName, '.')
-			library := fn.UniqueName[:dot]
-			function := fn.UniqueName[dot+1:]
-			f.Assembler.Append(&asm.CallExtern{Library: library, Function: function})
-		} else {
-			offset := 0
-
-			for i := range slices.Backward(args) {
-				structure, isStruct := args[i].(*ssa.Struct)
-
-				if isStruct {
-					for _, field := range structure.Arguments {
-						f.ValueToRegister(field, f.CPU.Call[offset+i])
-						i++
-					}
-				} else {
-					f.ValueToRegister(args[i], f.CPU.Call[offset+i])
+			if isStruct {
+				for _, field := range structure.Arguments {
+					f.ValueToRegister(field, f.CPU.Call[offset+i])
+					i++
 				}
+			} else {
+				f.ValueToRegister(args[i], f.CPU.Call[offset+i])
 			}
-
-			f.Assembler.Append(&asm.Call{Label: fn.UniqueName})
 		}
+
+		f.Assembler.Append(&asm.Call{Label: fn.UniqueName})
+
+		if destination == f.CPU.Return[0] {
+			return
+		}
+
+		f.Assembler.Append(&asm.MoveRegisterRegister{
+			Destination: destination,
+			Source:      f.CPU.Return[0],
+		})
+
+	case *ssa.CallExtern:
+		fn := instr.Arguments[0].(*ssa.Function)
+		args := instr.Arguments[1:]
+
+		for i := range slices.Backward(args) {
+			f.ValueToRegister(args[i], f.CPU.ExternCall[i])
+		}
+
+		dot := strings.IndexByte(fn.UniqueName, '.')
+		library := fn.UniqueName[:dot]
+		function := fn.UniqueName[dot+1:]
+		f.Assembler.Append(&asm.CallExtern{Library: library, Function: function})
 
 		if destination == f.CPU.Return[0] {
 			return

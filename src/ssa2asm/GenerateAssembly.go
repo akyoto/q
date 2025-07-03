@@ -21,7 +21,7 @@ func (f *Compiler) GenerateAssembly(ir ssa.IR, isLeaf bool) {
 		}
 
 		switch instr := instr.(type) {
-		case *ssa.Call, *ssa.Syscall:
+		case *ssa.Call, *ssa.CallExtern, *ssa.Syscall:
 			f.ValueToRegister(instr, f.CPU.Return[0])
 
 		case *ssa.Return:

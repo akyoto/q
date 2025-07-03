@@ -145,12 +145,11 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				}
 			}
 
-			call := &ssa.Call{
-				Arguments: args,
-				Source:    ssa.Source(expr.Source),
+			if fn.IsExtern() {
+				return f.Append(&ssa.CallExtern{Arguments: args, Source: ssa.Source(expr.Source)}), nil
 			}
 
-			return f.Append(call), nil
+			return f.Append(&ssa.Call{Arguments: args, Source: ssa.Source(expr.Source)}), nil
 		}
 
 	case token.Dot:
