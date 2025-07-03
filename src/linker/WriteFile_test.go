@@ -28,11 +28,11 @@ func TestWriteFile(t *testing.T) {
 	env, err := compiler.Compile(b)
 	assert.Nil(t, err)
 
-	b.SetArch(build.ARM)
+	b.Arch = build.ARM
 	err = linker.WriteFile(b.Executable(), b, env)
 	assert.Nil(t, err)
 
-	b.SetArch(build.X86)
+	b.Arch = build.X86
 	err = linker.WriteFile(b.Executable(), b, env)
 	assert.Nil(t, err)
 }

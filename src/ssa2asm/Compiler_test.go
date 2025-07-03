@@ -17,7 +17,7 @@ func TestHelloExample(t *testing.T) {
 		b.OS = os
 
 		for _, arch := range architectures {
-			b.SetArch(arch)
+			b.Arch = arch
 			_, err := compiler.Compile(b)
 			assert.Nil(t, err)
 		}

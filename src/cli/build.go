@@ -46,9 +46,9 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 
 			switch args[i] {
 			case "arm":
-				b.SetArch(build.ARM)
+				b.Arch = build.ARM
 			case "x86":
-				b.SetArch(build.X86)
+				b.Arch = build.X86
 			default:
 				return b, &invalidValueError{Value: args[i], Parameter: "arch"}
 			}

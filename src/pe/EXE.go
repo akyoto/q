@@ -20,7 +20,7 @@ type EXE struct {
 
 // Write writes the EXE file to the given writer.
 func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte, libs dll.List) {
-	x := exe.New(HeaderEnd, b.FileAlign, b.MemoryAlign)
+	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign())
 	x.InitSections(codeBytes, dataBytes, nil)
 	code := x.Sections[0]
 	data := x.Sections[1]
@@ -36,7 +36,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 	imports.Bytes = buffer.Bytes()
 	importDirectoryStart := dllDataStart + len(dllData)
 	importDirectorySize := DLLImportSize * len(dllImports)
-	imageSize := exe.Align(imports.MemoryOffset+len(imports.Bytes), b.MemoryAlign)
+	imageSize := exe.Align(imports.MemoryOffset+len(imports.Bytes), b.MemoryAlign())
 
 	if libs.Contains("user32") {
 		subSystem = IMAGE_SUBSYSTEM_WINDOWS_GUI
@@ -67,8 +67,8 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			AddressOfEntryPoint:         uint32(code.MemoryOffset),
 			BaseOfCode:                  uint32(code.MemoryOffset),
 			ImageBase:                   BaseAddress,
-			SectionAlignment:            uint32(b.MemoryAlign), // power of 2, must be greater than or equal to FileAlignment
-			FileAlignment:               uint32(b.FileAlign),   // power of 2
+			SectionAlignment:            uint32(b.MemoryAlign()), // power of 2, must be greater than or equal to FileAlignment
+			FileAlignment:               uint32(b.FileAlign()),   // power of 2
 			MajorOperatingSystemVersion: 0x06,
 			MinorOperatingSystemVersion: 0,
 			MajorImageVersion:           0,

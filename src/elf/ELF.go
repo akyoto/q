@@ -18,7 +18,7 @@ type ELF struct {
 
 // Write writes the ELF64 format to the given writer.
 func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, b.FileAlign, b.MemoryAlign)
+	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign())
 	x.InitSections(codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
@@ -52,7 +52,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			VirtualAddress: int64(code.MemoryOffset),
 			SizeInFile:     int64(len(code.Bytes)),
 			SizeInMemory:   int64(len(code.Bytes)),
-			Align:          int64(b.MemoryAlign),
+			Align:          int64(b.MemoryAlign()),
 		},
 		DataHeader: ProgramHeader{
 			Type:           ProgramTypeLOAD,
@@ -61,7 +61,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			VirtualAddress: int64(data.MemoryOffset),
 			SizeInFile:     int64(len(data.Bytes)),
 			SizeInMemory:   int64(len(data.Bytes)),
-			Align:          int64(b.MemoryAlign),
+			Align:          int64(b.MemoryAlign()),
 		},
 	}
 

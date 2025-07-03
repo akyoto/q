@@ -59,7 +59,7 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 		}
 	}
 
-	x := exe.New(elf.HeaderEnd, b.FileAlign, b.MemoryAlign)
+	x := exe.New(elf.HeaderEnd, b.FileAlign(), b.MemoryAlign())
 	x.InitSections(c.code, c.data, nil)
 	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
 
