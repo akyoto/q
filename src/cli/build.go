@@ -41,7 +41,7 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 			i++
 
 			if i >= len(args) {
-				return b, &expectedParameterError{Parameter: "arch"}
+				return b, &ExpectedParameter{Parameter: "arch"}
 			}
 
 			switch args[i] {
@@ -50,7 +50,7 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 			case "x86":
 				b.Arch = build.X86
 			default:
-				return b, &invalidValueError{Value: args[i], Parameter: "arch"}
+				return b, &InvalidValue{Value: args[i], Parameter: "arch"}
 			}
 
 		case "--dry":
@@ -60,7 +60,7 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 			i++
 
 			if i >= len(args) {
-				return b, &expectedParameterError{Parameter: "os"}
+				return b, &ExpectedParameter{Parameter: "os"}
 			}
 
 			switch args[i] {
@@ -71,7 +71,7 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 			case "windows":
 				b.OS = build.Windows
 			default:
-				return b, &invalidValueError{Value: args[i], Parameter: "os"}
+				return b, &InvalidValue{Value: args[i], Parameter: "os"}
 			}
 
 		case "-v", "--verbose":
@@ -79,7 +79,7 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 
 		default:
 			if strings.HasPrefix(args[i], "-") {
-				return b, &unknownParameterError{Parameter: args[i]}
+				return b, &UnknownParameter{Parameter: args[i]}
 			}
 
 			b.Files = append(b.Files, args[i])
@@ -87,11 +87,11 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 	}
 
 	if b.OS == build.UnknownOS {
-		return b, &invalidValueError{Value: runtime.GOOS, Parameter: "os"}
+		return b, &InvalidValue{Value: runtime.GOOS, Parameter: "os"}
 	}
 
 	if b.Arch == build.UnknownArch {
-		return b, &invalidValueError{Value: runtime.GOARCH, Parameter: "arch"}
+		return b, &InvalidValue{Value: runtime.GOARCH, Parameter: "arch"}
 	}
 
 	if len(b.Files) == 0 {

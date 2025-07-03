@@ -17,9 +17,9 @@ func exit(err error) int {
 
 	var (
 		exit              *exec.ExitError
-		expectedParameter *expectedParameterError
-		unknownParameter  *unknownParameterError
-		invalidValue      *invalidValueError
+		expectedParameter *ExpectedParameter
+		unknownParameter  *UnknownParameter
+		invalidValue      *InvalidValue
 	)
 
 	if errors.As(err, &exit) {
