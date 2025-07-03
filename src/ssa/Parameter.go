@@ -38,7 +38,7 @@ func (v *Parameter) Debug() string {
 }
 
 func (v *Parameter) String() string {
-	return fmt.Sprintf("in[%d]", v.Index)
+	return fmt.Sprintf("args[%d]", v.Index)
 }
 
 func (v *Parameter) Type() types.Type {
