@@ -6,14 +6,14 @@ type Function struct {
 	UniqueName string
 	Typ        *types.Function
 	IsExtern   bool
-	Id
 	Liveness
 	Source
 }
 
-func (v *Function) Dependencies() []Value {
-	return nil
-}
+func (v *Function) Inputs() []Value  { return nil }
+func (v *Function) IsConst() bool    { return true }
+func (v *Function) String() string   { return v.UniqueName }
+func (v *Function) Type() types.Type { return v.Typ }
 
 func (a *Function) Equals(v Value) bool {
 	b, sameType := v.(*Function)
@@ -23,20 +23,4 @@ func (a *Function) Equals(v Value) bool {
 	}
 
 	return a.UniqueName == b.UniqueName
-}
-
-func (v *Function) IsConst() bool {
-	return true
-}
-
-func (v *Function) Debug(expand bool) string {
-	return v.String()
-}
-
-func (v *Function) String() string {
-	return v.UniqueName
-}
-
-func (v *Function) Type() types.Type {
-	return v.Typ
 }

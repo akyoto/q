@@ -15,7 +15,7 @@ func showSSA(root *core.Function) {
 		for _, block := range f.Blocks {
 			for i, instr := range block.Instructions {
 				ansi.Dim.Printf("%%%-1d = ", i)
-				fmt.Printf("%-30s ", instr.Debug(false))
+				fmt.Printf("%-30s ", instr.String())
 				ansi.Dim.Printf(" %-30s", instr.Type().Name())
 				fmt.Println()
 			}

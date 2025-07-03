@@ -10,14 +10,14 @@ type Parameter struct {
 	Index uint8
 	Name  string
 	Typ   types.Type
-	Id
 	Liveness
 	Source
 }
 
-func (v *Parameter) Dependencies() []Value {
-	return nil
-}
+func (v *Parameter) Inputs() []Value  { return nil }
+func (v *Parameter) IsConst() bool    { return true }
+func (v *Parameter) String() string   { return fmt.Sprintf("args[%d]", v.Index) }
+func (v *Parameter) Type() types.Type { return v.Typ }
 
 func (a *Parameter) Equals(v Value) bool {
 	b, sameType := v.(*Parameter)
@@ -27,20 +27,4 @@ func (a *Parameter) Equals(v Value) bool {
 	}
 
 	return a.Index == b.Index
-}
-
-func (v *Parameter) IsConst() bool {
-	return true
-}
-
-func (v *Parameter) Debug(expand bool) string {
-	return v.String()
-}
-
-func (v *Parameter) String() string {
-	return fmt.Sprintf("args[%d]", v.Index)
-}
-
-func (v *Parameter) Type() types.Type {
-	return v.Typ
 }

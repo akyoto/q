@@ -12,14 +12,13 @@ type BinaryOp struct {
 	Left  Value
 	Right Value
 	Op    token.Kind
-	Id
 	Liveness
 	Source
 }
 
-func (v *BinaryOp) Dependencies() []Value {
-	return []Value{v.Left, v.Right}
-}
+func (v *BinaryOp) Inputs() []Value  { return []Value{v.Left, v.Right} }
+func (v *BinaryOp) IsConst() bool    { return v.Left.IsConst() && v.Right.IsConst() }
+func (v *BinaryOp) Type() types.Type { return v.Left.Type() }
 
 func (a *BinaryOp) Equals(v Value) bool {
 	b, sameType := v.(*BinaryOp)
@@ -39,22 +38,6 @@ func (a *BinaryOp) Equals(v Value) bool {
 	return true
 }
 
-func (v *BinaryOp) IsConst() bool {
-	return true
-}
-
-func (v *BinaryOp) Debug(expand bool) string {
-	if expand {
-		return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
-	}
-
-	return fmt.Sprintf("%%%d %s %%%d", v.Left.ID(), expression.Operators[v.Op].Symbol, v.Right.ID())
-}
-
 func (v *BinaryOp) String() string {
-	return v.Debug(true)
-}
-
-func (v *BinaryOp) Type() types.Type {
-	return v.Left.Type()
+	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
 }

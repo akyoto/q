@@ -91,7 +91,7 @@ func (f *Compiler) ValueToRegister(instr ssa.Value, destination cpu.Register) {
 			Source:      source,
 		})
 
-	case *ssa.StructField:
+	case *ssa.Field:
 		parameter := instr.Struct.(*ssa.Parameter)
 		field := instr.Field
 		source := f.CPU.Call[parameter.Index+field.Index]

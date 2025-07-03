@@ -1,18 +1,18 @@
 package ssa
 
 import (
-	"strconv"
-	"strings"
+	"fmt"
 
 	"git.urbach.dev/cli/q/src/types"
 )
 
 type Call struct {
-	Id
 	Arguments
 	Liveness
 	Source
 }
+
+func (v *Call) IsConst() bool { return false }
 
 func (a *Call) Equals(v Value) bool {
 	b, sameType := v.(*Call)
@@ -24,42 +24,8 @@ func (a *Call) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
-func (v *Call) IsConst() bool {
-	return false
-}
-
-func (v *Call) Debug(expand bool) string {
-	tmp := strings.Builder{}
-
-	if expand {
-		tmp.WriteString(v.Arguments[0].String())
-	} else {
-		tmp.WriteString("%")
-		tmp.WriteString(strconv.Itoa(v.Arguments[0].ID()))
-	}
-
-	tmp.WriteString("(")
-	args := v.Arguments[1:]
-
-	for i, arg := range args {
-		if expand {
-			tmp.WriteString(arg.String())
-		} else {
-			tmp.WriteString("%")
-			tmp.WriteString(strconv.Itoa(arg.ID()))
-		}
-
-		if i != len(args)-1 {
-			tmp.WriteString(", ")
-		}
-	}
-
-	tmp.WriteString(")")
-	return tmp.String()
-}
-
 func (v *Call) String() string {
-	return v.Debug(true)
+	return fmt.Sprintf("%s(%s)", v.Arguments[0].String(), v.Arguments[1:].String())
 }
 
 func (v *Call) Type() types.Type {

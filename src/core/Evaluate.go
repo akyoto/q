@@ -149,10 +149,10 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 		if fn.IsExtern() {
-			v := f.Append(&ssa.CallExtern{
+			v := f.Append(&ssa.CallExtern{Call: ssa.Call{
 				Arguments: args,
 				Source:    ssa.Source(expr.Source),
-			})
+			}})
 
 			return v, nil
 		}
@@ -179,7 +179,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Token.Position)
 			}
 
-			v := f.Append(&ssa.StructField{
+			v := f.Append(&ssa.Field{
 				Struct: identifier,
 				Field:  field,
 				Source: ssa.Source(expr.Source),

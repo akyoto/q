@@ -3,7 +3,6 @@ package ssa
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
-	nextId int
 }
 
 // AddBlock adds a new block to the function.
@@ -28,8 +27,6 @@ func (f *IR) Append(instr Value) Value {
 		return existing
 	}
 
-	instr.SetID(f.nextId)
-	f.nextId++
 	return f.Blocks[len(f.Blocks)-1].Append(instr)
 }
 

@@ -7,7 +7,7 @@ type Block struct {
 
 // Append adds a new instruction to the block.
 func (block *Block) Append(instr Value) Value {
-	for _, dep := range instr.Dependencies() {
+	for _, dep := range instr.Inputs() {
 		dep.(HasLiveness).AddUser(instr)
 	}
 
