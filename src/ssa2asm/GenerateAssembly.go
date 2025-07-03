@@ -16,7 +16,9 @@ func (f *Compiler) GenerateAssembly(ir ssa.IR, isLeaf bool) {
 	}
 
 	for instr := range ir.Values {
-		if instr.CountUsers() != 0 {
+		live, isLive := instr.(ssa.HasLiveness)
+
+		if isLive && len(live.Users()) > 0 {
 			continue
 		}
 

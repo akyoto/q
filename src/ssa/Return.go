@@ -11,7 +11,6 @@ type Return struct {
 	Id
 	Arguments
 	Source
-	NoLiveness
 }
 
 func (a *Return) Equals(v Value) bool {

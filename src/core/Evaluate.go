@@ -144,7 +144,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 					Encountered:   param.Type().Name(),
 					Expected:      fn.Input[i].Typ.Name(),
 					ParameterName: fn.Input[i].Name,
-				}, f.File, param.Start())
+				}, f.File, param.(ssa.HasSource).Start())
 			}
 		}
 
