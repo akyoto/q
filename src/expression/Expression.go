@@ -25,18 +25,6 @@ func (expr *Expression) AddChild(child *Expression) {
 	child.Parent = expr
 }
 
-// Reset resets all values to the default.
-func (expr *Expression) Reset() {
-	expr.Parent = nil
-
-	if expr.Children != nil {
-		expr.Children = expr.Children[:0]
-	}
-
-	expr.Token.Reset()
-	expr.precedence = 0
-}
-
 // EachLeaf iterates through all leaves in the tree.
 func (expr *Expression) EachLeaf(call func(*Expression) error) error {
 	if expr.IsLeaf() {
@@ -54,15 +42,15 @@ func (expr *Expression) EachLeaf(call func(*Expression) error) error {
 	return nil
 }
 
-// RemoveChild removes a child from the expression.
-func (expr *Expression) RemoveChild(child *Expression) {
+// Index returns the position of the child or `-1` if it's not a child of this expression.
+func (expr *Expression) Index(child *Expression) int {
 	for i, c := range expr.Children {
 		if c == child {
-			expr.Children = append(expr.Children[:i], expr.Children[i+1:]...)
-			child.Parent = nil
-			return
+			return i
 		}
 	}
+
+	return -1
 }
 
 // InsertAbove replaces this expression in its parent's children with the given new parent,
@@ -85,6 +73,30 @@ func (expr *Expression) IsLeaf() bool {
 // LastChild returns the last child.
 func (expr *Expression) LastChild() *Expression {
 	return expr.Children[len(expr.Children)-1]
+}
+
+// RemoveChild removes a child from the expression.
+func (expr *Expression) RemoveChild(child *Expression) {
+	for i, c := range expr.Children {
+		if c == child {
+			expr.Children = append(expr.Children[:i], expr.Children[i+1:]...)
+			child.Parent = nil
+			return
+		}
+	}
+}
+
+// Reset resets all values to the default.
+func (expr *Expression) Reset() {
+	expr.Parent = nil
+
+	if expr.Children != nil {
+		expr.Children = expr.Children[:0]
+	}
+
+	expr.Token.Reset()
+	expr.Source = nil
+	expr.precedence = 0
 }
 
 // String generates a textual representation of the expression.

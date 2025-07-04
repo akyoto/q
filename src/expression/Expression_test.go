@@ -45,6 +45,17 @@ func TestNilGroup(t *testing.T) {
 	assert.Nil(t, expr)
 }
 
+func TestIndex(t *testing.T) {
+	src := []byte("1+2")
+	tokens := token.Tokenize(src)
+	expr := expression.Parse(tokens)
+	left := expr.Children[0]
+	right := expr.Children[1]
+	assert.Equal(t, expr.Index(left), 0)
+	assert.Equal(t, expr.Index(right), 1)
+	assert.Equal(t, expr.Index(expr), -1)
+}
+
 func TestRemoveChild(t *testing.T) {
 	src := []byte("(1+2-3*4)+(5*6-7+8)")
 	tokens := token.Tokenize(src)
