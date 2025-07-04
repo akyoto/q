@@ -20,7 +20,7 @@ func WriteFile(executable string, b *build.Build, env *core.Environment) error {
 		return err
 	}
 
-	init := env.Functions["core.init"]
+	init := env.Functions["run.init"]
 	traversed := make(map[*core.Function]bool, len(env.Functions))
 
 	final := asm.Assembler{

@@ -1,5 +1,7 @@
 package ssa
 
+import "slices"
+
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
@@ -30,13 +32,24 @@ func (f *IR) Append(instr Value) Value {
 	return f.Blocks[len(f.Blocks)-1].Append(instr)
 }
 
+// CountValues returns the total number of values.
+func (f *IR) CountValues() int {
+	count := 0
+
+	for _, block := range f.Blocks {
+		count += len(block.Instructions)
+	}
+
+	return count
+}
+
 // FindExisting returns an equal instruction that's already appended or `nil` if none could be found.
 func (f *IR) FindExisting(instr Value) Value {
 	if !instr.IsConst() {
 		return nil
 	}
 
-	for existing := range f.Values {
+	for _, existing := range f.Values {
 		if existing.IsConst() && instr.Equals(existing) {
 			return existing
 		}
@@ -46,10 +59,29 @@ func (f *IR) FindExisting(instr Value) Value {
 }
 
 // Values yields on each value.
-func (f *IR) Values(yield func(Value) bool) {
+func (f *IR) Values(yield func(int, Value) bool) {
+	index := 0
+
 	for _, block := range f.Blocks {
 		for _, instr := range block.Instructions {
-			if !yield(instr) {
+			if !yield(index, instr) {
+				return
+			}
+
+			index++
+		}
+	}
+}
+
+// ValuesBackward yields on each value from the end towards the start.
+func (f *IR) ValuesBackward(yield func(int, Value) bool) {
+	index := f.CountValues()
+
+	for _, block := range slices.Backward(f.Blocks) {
+		for _, instr := range slices.Backward(block.Instructions) {
+			index--
+
+			if !yield(index, instr) {
 				return
 			}
 		}

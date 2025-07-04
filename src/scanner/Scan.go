@@ -19,7 +19,7 @@ func Scan(b *build.Build) (*core.Environment, error) {
 	}
 
 	go func() {
-		s.queueDirectory(filepath.Join(global.Library, "core"), "core")
+		s.queueDirectory(filepath.Join(global.Library, "run"), "run")
 		s.queue(b.Files...)
 		s.group.Wait()
 		close(s.functions)

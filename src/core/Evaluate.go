@@ -180,7 +180,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			}
 
 			v := f.Append(&ssa.Field{
-				Struct: identifier,
+				Object: identifier,
 				Field:  field,
 				Source: ssa.Source(expr.Source),
 			})

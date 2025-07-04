@@ -18,7 +18,7 @@ func Compile(b *build.Build) (*core.Environment, error) {
 	}
 
 	// Check for existence of `init`
-	init, exists := all.Functions["core.init"]
+	init, exists := all.Functions["run.init"]
 
 	if !exists {
 		return nil, MissingInitFunction

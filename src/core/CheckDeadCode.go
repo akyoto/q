@@ -7,7 +7,7 @@ import (
 
 // CheckDeadCode checks for dead values.
 func (f *Function) CheckDeadCode() error {
-	for instr := range f.Values {
+	for _, instr := range f.Values {
 		if !instr.IsConst() {
 			continue
 		}
