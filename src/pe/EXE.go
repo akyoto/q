@@ -20,8 +20,7 @@ type EXE struct {
 
 // Write writes the EXE file to the given writer.
 func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte, libs dll.List) {
-	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign())
-	x.InitSections(codeBytes, dataBytes, nil)
+	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), codeBytes, dataBytes, nil)
 	code := x.Sections[0]
 	data := x.Sections[1]
 	imports := x.Sections[2]
