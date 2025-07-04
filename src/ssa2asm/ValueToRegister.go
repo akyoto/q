@@ -12,6 +12,16 @@ import (
 // ValueToRegister moves a value into the given `destination` register.
 func (f *Compiler) ValueToRegister(instr ssa.Value, destination cpu.Register) {
 	switch instr := instr.(type) {
+	case *ssa.BinaryOp:
+		f.ValueToRegister(instr.Left, destination)
+		f.ValueToRegister(instr.Right, 7)
+
+		f.Assembler.Append(&asm.AddRegisterRegister{
+			Destination: destination,
+			Source:      destination,
+			Operand:     7,
+		})
+
 	case *ssa.Bytes:
 		f.Count.Data++
 		label := f.CreateLabel("data", f.Count.Data)

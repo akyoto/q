@@ -16,6 +16,8 @@ func (c *compiler) append(code uint32) {
 
 func (c *compilerARM) Compile(instr Instruction) {
 	switch instr := instr.(type) {
+	case *AddRegisterRegister:
+		c.append(arm.AddRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Call:
 		start := len(c.code)
 		c.append(arm.Call(0))

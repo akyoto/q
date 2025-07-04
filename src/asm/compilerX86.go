@@ -14,18 +14,18 @@ type compilerX86 struct {
 
 func (c *compilerX86) Compile(instr Instruction) {
 	switch instr := instr.(type) {
+	case *AddRegisterRegister:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.AddRegisterRegister(c.code, instr.Destination, instr.Operand)
 	case *AndRegisterNumber:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.AndRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *SubRegisterNumber:
-		if instr.Destination != instr.Source {
-			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-		}
-
-		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Call:
 		c.code = x86.Call(c.code, 0)
 		end := len(c.code)
@@ -102,6 +102,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 	case *Return:
 		c.code = x86.Return(c.code)
+	case *SubRegisterNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	default:

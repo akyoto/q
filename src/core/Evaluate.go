@@ -211,6 +211,32 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		return nil, errors.New(&UnknownIdentifier{Name: label}, f.File, left.Token.Position)
 
 	default:
+		if expr.Token.IsOperator() {
+			left := expr.Children[0]
+			right := expr.Children[1]
+
+			leftValue, err := f.Evaluate(left)
+
+			if err != nil {
+				return nil, err
+			}
+
+			rightValue, err := f.Evaluate(right)
+
+			if err != nil {
+				return nil, err
+			}
+
+			v := f.Append(&ssa.BinaryOp{
+				Left:   leftValue,
+				Right:  rightValue,
+				Op:     expr.Token.Kind,
+				Source: ssa.Source(expr.Source),
+			})
+
+			return v, nil
+		}
+
 		panic("not implemented")
 	}
 }

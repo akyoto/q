@@ -4,6 +4,12 @@ import "git.urbach.dev/cli/q/src/cpu"
 
 type Instruction interface{}
 
+type AddRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type AndRegisterNumber struct {
 	Destination cpu.Register
 	Source      cpu.Register
