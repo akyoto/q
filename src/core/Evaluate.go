@@ -28,12 +28,12 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 				f.Dependencies.Add(function)
 
-				v := f.Append(&ssa.Function{
+				v := &ssa.Function{
 					UniqueName: function.UniqueName,
 					Typ:        function.Type,
 					IsExtern:   function.IsExtern(),
 					Source:     ssa.Source(expr.Source),
-				})
+				}
 
 				return v, nil
 			}
@@ -204,12 +204,12 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				f.Dependencies.Add(function)
 			}
 
-			v := f.Append(&ssa.Function{
+			v := &ssa.Function{
 				UniqueName: function.UniqueName,
 				Typ:        function.Type,
 				IsExtern:   function.IsExtern(),
 				Source:     ssa.Source(expr.Source),
-			})
+			}
 
 			return v, nil
 		}
