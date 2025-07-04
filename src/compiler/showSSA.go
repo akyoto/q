@@ -12,13 +12,10 @@ func showSSA(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
 		ansi.Yellow.Println(f.UniqueName + ":")
 
-		for _, block := range f.Blocks {
-			for i, instr := range block.Instructions {
-				ansi.Dim.Printf("%%%-1d = ", i)
-				fmt.Printf("%-30s ", instr.String())
-				ansi.Dim.Printf(" %-30s", instr.Type().Name())
-				fmt.Println()
-			}
+		for i, step := range f.Steps {
+			ansi.Dim.Printf("%%%d = ", i)
+			fmt.Print(step.Value.String())
+			ansi.Dim.Printf(" %s %s %s\n", step.Value.Type().Name(), step.Register, step.Live)
 		}
 
 		fmt.Println()

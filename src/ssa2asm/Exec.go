@@ -114,9 +114,9 @@ func (f *Compiler) Exec(step *Step) {
 		})
 
 	case *ssa.Field:
-		parameter := instr.Object.(*ssa.Parameter)
-		field := instr.Field
-		source := f.CPU.Call[parameter.Index+field.Index]
+		structure := instr.Object.(*ssa.Struct)
+		field := structure.Arguments[instr.Field.Index]
+		source := f.ValueToStep[field].Register
 
 		if step.Register == -1 || step.Register == source {
 			return

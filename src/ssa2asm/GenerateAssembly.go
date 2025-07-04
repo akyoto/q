@@ -13,9 +13,9 @@ func (f *Compiler) GenerateAssembly(ir ssa.IR, isLeaf bool) {
 		f.Assembler.Append(&asm.FunctionStart{})
 	}
 
-	steps := f.CreateSteps(ir)
+	f.Steps = f.CreateSteps(ir)
 
-	for _, step := range steps {
+	for _, step := range f.Steps {
 		f.Exec(&step)
 	}
 

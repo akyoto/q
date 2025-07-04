@@ -9,6 +9,7 @@ import (
 type Compiler struct {
 	UniqueName  string
 	Assembler   asm.Assembler
+	Steps       []Step
 	ValueToStep map[ssa.Value]*Step
 	CPU         *cpu.CPU
 	Count       Count

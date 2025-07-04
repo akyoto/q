@@ -65,6 +65,12 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 		}
 
 		liveStart := i
+		_, isParam := instr.(*ssa.Parameter)
+
+		if isParam {
+			liveStart = 0
+		}
+
 		liveEnd := f.ValueToStep[users[len(users)-1]].Index
 		instrStep := f.ValueToStep[instr]
 
@@ -79,12 +85,19 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 				continue
 			}
 
+			oldRegister := cpu.Register(-1)
+			liveParam, isParam := live.Value.(*ssa.Parameter)
+
+			if isParam {
+				oldRegister = f.CPU.Call[liveParam.Index]
+			}
+
 			for _, existing := range step.Live[:liveIndex] {
 				if existing.Register == -1 {
 					continue
 				}
 
-				if existing.Register == live.Register {
+				if existing.Register == live.Register || existing.Register == oldRegister {
 					a := existing.Index
 					b := live.Index
 					freeRegister := cpu.Register(15)

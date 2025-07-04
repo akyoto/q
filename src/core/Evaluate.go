@@ -169,27 +169,33 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		right := expr.Children[1]
 		leftText := left.String(f.File.Bytes)
 		rightText := right.String(f.File.Bytes)
-		identifier, exists := f.Identifiers[leftText]
+		fullName := fmt.Sprintf("%s.%s", leftText, rightText)
+		identifier, exists := f.Identifiers[fullName]
 
 		if exists {
-			structure := identifier.Type().(*types.Struct)
-			field := structure.FieldByName(rightText)
-
-			if field == nil {
-				return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Token.Position)
-			}
-
-			v := f.Append(&ssa.Field{
-				Object: identifier,
-				Field:  field,
-				Source: ssa.Source(expr.Source),
-			})
-
-			return v, nil
+			return identifier, nil
 		}
 
-		label := fmt.Sprintf("%s.%s", leftText, rightText)
-		function, exists := f.All.Functions[label]
+		// identifier, exists := f.Identifiers[leftText]
+
+		// if exists {
+		// 	structType := identifier.Type().(*types.Struct)
+		// 	field := structType.FieldByName(rightText)
+
+		// 	if field == nil {
+		// 		return nil, errors.New(&UnknownStructField{StructName: structType.Name(), FieldName: rightText}, f.File, right.Token.Position)
+		// 	}
+
+		// 	v := f.Append(&ssa.Field{
+		// 		Object: identifier,
+		// 		Field:  field,
+		// 		Source: ssa.Source(expr.Source),
+		// 	})
+
+		// 	return v, nil
+		// }
+
+		function, exists := f.All.Functions[fullName]
 
 		if exists {
 			if function.IsExtern() {
@@ -208,7 +214,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			return v, nil
 		}
 
-		return nil, errors.New(&UnknownIdentifier{Name: label}, f.File, left.Token.Position)
+		return nil, errors.New(&UnknownIdentifier{Name: fullName}, f.File, left.Token.Position)
 
 	default:
 		if expr.Token.IsOperator() {
