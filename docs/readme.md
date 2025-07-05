@@ -1,14 +1,11 @@
-# q
+<p align="center"><img alt="q logo" src="logo.svg"></p>
 
-A programming language including compiler, assembler and linker with the following goals:
+> [!NOTE]
+> `q` is under heavy development and not ready for production yet.
+>
+> Feel free to [get in touch](https://urbach.dev/contact) if you are interested in helping out.
 
-- Fast compilation
-- High performance
-- Tiny executables
-
-## Installation
-
-Build:
+## ⚡️ Installation
 
 ```shell
 git clone https://git.urbach.dev/cli/q
@@ -16,43 +13,26 @@ cd q
 go build
 ```
 
-Symlink:
+To symlink the compiler as `q`:
 
 ```shell
 ln -s $PWD/q ~/.local/bin/q
 ```
 
-## Usage
-
-Build:
+## 🚀 Usage
 
 ```shell
 q build examples/hello
-```
-
-Run:
-
-```shell
 ./examples/hello/hello
 ```
 
-## Tests
-
-To run all tests:
+## 🚦 Tests
 
 ```shell
 go run gotest.tools/gotestsum@latest
 ```
 
-Every package must pass its unit tests.
-
-The code coverage should ideally be around 80-100% for each package.
-
-Integration tests that test the output of the produced executables are located in the dedicated `tests` directory.
-
-## Platforms
-
-### Matrix
+## 💻 Platforms
 
 |         | arm64  | x86-64 |
 | ------- | ------ | ------ |
@@ -62,22 +42,7 @@ Integration tests that test the output of the produced executables are located i
 
 Those marked with a star are supported in theory but there are no developer machines to test them.
 
-### Cross compilation
-
-Compilation for a different target is supported out of the box:
-
-```shell
-q build examples/hello --os linux
-q build examples/hello --os mac
-q build examples/hello --os windows
-```
-
-```shell
-q build examples/hello --arch x86
-q build examples/hello --arch arm
-```
-
-## Security
+## 🔑 Security
 
 ### PIE
 
@@ -92,16 +57,10 @@ Code and data are separated into different memory pages and loaded with differen
 | Code   | ✔️   | ✔️      | ❌    |
 | Data   | ✔️   | ❌      | ❌    |
 
-## Status
-
-`q` is under heavy development and not ready for production yet.
-
-Feel free to [get in touch](https://urbach.dev/contact) if you are interested in helping out.
-
-## License
+## 🧾 License
 
 Please see the [license documentation](https://urbach.dev/license).
 
-## Copyright
+## 🧔 Copyright
 
 © 2025 Eduard Urbach

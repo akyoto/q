@@ -5,6 +5,8 @@ Usage:
 Commands:
 
     build [directory | file]       build an executable
+        --arch [arch]              cross-compile for ISA: [x86|arm]
+        --os [os]                  cross-compile for OS: [linux|mac|windows]
         --verbose, -v              show everything
 
     run [directory | file]         build and run the executable

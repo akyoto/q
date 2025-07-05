@@ -6,4 +6,5 @@
 !*.sum
 !*.md
 !*.txt
+!*.svg
 !.gitignore
