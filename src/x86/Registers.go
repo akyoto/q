@@ -21,10 +21,33 @@ const (
 	R15
 )
 
-var CPU = cpu.CPU{
-	Call:               []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
-	Syscall:            []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
-	ExternCall:         []cpu.Register{R1, R2, R8, R9},
-	ExternCallVolatile: []cpu.Register{R0, R1, R2, R8, R9, R10, R11},
-	Return:             []cpu.Register{R0, R7, R6},
-}
+var (
+	LinuxCPU = cpu.CPU{
+		Call: cpu.ABI{
+			In:       []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
+			Out:      []cpu.Register{R0, R7, R6},
+			Volatile: []cpu.Register{R0, R1, R2, R6, R7, R8, R9, R10, R11},
+		},
+		ExternCall: cpu.ABI{
+			In:       []cpu.Register{R7, R6, R2, R1, R8, R9},
+			Out:      []cpu.Register{R0, R2},
+			Volatile: []cpu.Register{R0, R1, R2, R6, R7, R8, R9, R10, R11},
+		},
+		Syscall: cpu.ABI{
+			In:       []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
+			Out:      []cpu.Register{R0},
+			Volatile: []cpu.Register{R0, R7, R6},
+		},
+	}
+
+	MacCPU = LinuxCPU
+
+	WindowsCPU = cpu.CPU{
+		Call: LinuxCPU.Call,
+		ExternCall: cpu.ABI{
+			In:       []cpu.Register{R1, R2, R8, R9},
+			Out:      []cpu.Register{R0},
+			Volatile: []cpu.Register{R0, R1, R2, R8, R9, R10, R11},
+		},
+	}
+)

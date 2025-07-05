@@ -72,9 +72,23 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 
 	switch s.build.Arch {
 	case build.ARM:
-		function.CPU = &arm.CPU
+		switch s.build.OS {
+		case build.Linux:
+			function.CPU = &arm.LinuxCPU
+		case build.Mac:
+			function.CPU = &arm.MacCPU
+		case build.Windows:
+			function.CPU = &arm.WindowsCPU
+		}
 	case build.X86:
-		function.CPU = &x86.CPU
+		switch s.build.OS {
+		case build.Linux:
+			function.CPU = &x86.LinuxCPU
+		case build.Mac:
+			function.CPU = &x86.MacCPU
+		case build.Windows:
+			function.CPU = &x86.WindowsCPU
+		}
 	}
 
 	function.Body = tokens[bodyStart:i]

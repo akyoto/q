@@ -35,9 +35,9 @@ func (f *Compiler) Exec(step *Step) {
 
 			if isStruct {
 				for _, field := range structure.Arguments {
-					if f.ValueToStep[field].Register != f.CPU.Call[offset+i] {
+					if f.ValueToStep[field].Register != f.CPU.Call.In[offset+i] {
 						f.Assembler.Append(&asm.MoveRegisterRegister{
-							Destination: f.CPU.Call[offset+i],
+							Destination: f.CPU.Call.In[offset+i],
 							Source:      f.ValueToStep[field].Register,
 						})
 					}
@@ -47,9 +47,9 @@ func (f *Compiler) Exec(step *Step) {
 
 				offset--
 			} else {
-				if f.ValueToStep[arg].Register != f.CPU.Call[offset+i] {
+				if f.ValueToStep[arg].Register != f.CPU.Call.In[offset+i] {
 					f.Assembler.Append(&asm.MoveRegisterRegister{
-						Destination: f.CPU.Call[offset+i],
+						Destination: f.CPU.Call.In[offset+i],
 						Source:      f.ValueToStep[arg].Register,
 					})
 				}
@@ -59,22 +59,22 @@ func (f *Compiler) Exec(step *Step) {
 		fn := instr.Arguments[0].(*ssa.Function)
 		f.Assembler.Append(&asm.Call{Label: fn.UniqueName})
 
-		if step.Register == -1 || step.Register == f.CPU.Return[0] {
+		if step.Register == -1 || step.Register == f.CPU.Call.Out[0] {
 			return
 		}
 
 		f.Assembler.Append(&asm.MoveRegisterRegister{
 			Destination: step.Register,
-			Source:      f.CPU.Return[0],
+			Source:      f.CPU.Call.Out[0],
 		})
 
 	case *ssa.CallExtern:
 		args := instr.Arguments[1:]
 
 		for i, arg := range args {
-			if f.ValueToStep[arg].Register != f.CPU.ExternCall[i] {
+			if f.ValueToStep[arg].Register != f.CPU.ExternCall.In[i] {
 				f.Assembler.Append(&asm.MoveRegisterRegister{
-					Destination: f.CPU.ExternCall[i],
+					Destination: f.CPU.ExternCall.In[i],
 					Source:      f.ValueToStep[arg].Register,
 				})
 			}
@@ -86,13 +86,13 @@ func (f *Compiler) Exec(step *Step) {
 		function := fn.UniqueName[dot+1:]
 		f.Assembler.Append(&asm.CallExtern{Library: library, Function: function})
 
-		if step.Register == -1 || step.Register == f.CPU.Return[0] {
+		if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {
 			return
 		}
 
 		f.Assembler.Append(&asm.MoveRegisterRegister{
 			Destination: step.Register,
-			Source:      f.CPU.Return[0],
+			Source:      f.CPU.ExternCall.Out[0],
 		})
 
 	case *ssa.Int:
@@ -102,7 +102,7 @@ func (f *Compiler) Exec(step *Step) {
 		})
 
 	case *ssa.Parameter:
-		source := f.CPU.Call[instr.Index]
+		source := f.CPU.Call.In[instr.Index]
 
 		if step.Register == -1 || step.Register == source {
 			return
@@ -129,9 +129,9 @@ func (f *Compiler) Exec(step *Step) {
 
 	case *ssa.Syscall:
 		for i, arg := range instr.Arguments {
-			if f.ValueToStep[arg].Register != f.CPU.Syscall[i] {
+			if f.ValueToStep[arg].Register != f.CPU.Syscall.In[i] {
 				f.Assembler.Append(&asm.MoveRegisterRegister{
-					Destination: f.CPU.Syscall[i],
+					Destination: f.CPU.Syscall.In[i],
 					Source:      f.ValueToStep[arg].Register,
 				})
 			}
@@ -139,13 +139,13 @@ func (f *Compiler) Exec(step *Step) {
 
 		f.Assembler.Append(&asm.Syscall{})
 
-		if step.Register == -1 || step.Register == f.CPU.Return[0] {
+		if step.Register == -1 || step.Register == f.CPU.Syscall.Out[0] {
 			return
 		}
 
 		f.Assembler.Append(&asm.MoveRegisterRegister{
 			Destination: step.Register,
-			Source:      f.CPU.Return[0],
+			Source:      f.CPU.Syscall.Out[0],
 		})
 	}
 }

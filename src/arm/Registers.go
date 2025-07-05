@@ -41,10 +41,37 @@ const (
 	ZR = SP // Zero register uses the same numerical value as SP
 )
 
-var CPU = cpu.CPU{
-	Call:               []cpu.Register{X0, X1, X2, X3, X4, X5, X6},
-	Syscall:            []cpu.Register{X8, X0, X1, X2, X3, X4, X5},
-	ExternCall:         []cpu.Register{X0, X1, X2, X3, X4, X5, X6, X7},
-	ExternCallVolatile: []cpu.Register{X0, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14, X15, X16, X17},
-	Return:             []cpu.Register{X0, X1, X2},
-}
+var (
+	LinuxCPU = cpu.CPU{
+		Call: cpu.ABI{
+			In:       []cpu.Register{X0, X1, X2, X3, X4, X5, X6},
+			Out:      []cpu.Register{X0, X1, X2},
+			Volatile: []cpu.Register{X0, X1, X2, X3, X4, X5, X6},
+		},
+		ExternCall: cpu.ABI{
+			In:       []cpu.Register{X0, X1, X2, X3, X4, X5, X6, X7},
+			Out:      []cpu.Register{X0, X1},
+			Volatile: []cpu.Register{X0, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14, X15, X16, X17},
+		},
+		Syscall: cpu.ABI{
+			In:       []cpu.Register{X8, X0, X1, X2, X3, X4, X5},
+			Out:      []cpu.Register{X0},
+			Volatile: []cpu.Register{X0, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14, X15, X16, X17},
+		},
+	}
+
+	MacCPU = cpu.CPU{
+		Call:       LinuxCPU.Call,
+		ExternCall: LinuxCPU.ExternCall,
+		Syscall: cpu.ABI{
+			In:       []cpu.Register{X16, X0, X1, X2, X3, X4, X5, X6, X7},
+			Out:      LinuxCPU.Syscall.Out,
+			Volatile: LinuxCPU.Syscall.Volatile,
+		},
+	}
+
+	WindowsCPU = cpu.CPU{
+		Call:       LinuxCPU.Call,
+		ExternCall: LinuxCPU.ExternCall,
+	}
+)

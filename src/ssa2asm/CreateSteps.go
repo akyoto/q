@@ -29,32 +29,32 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 
 				if isStruct {
 					for _, field := range structure.Arguments {
-						f.ValueToStep[field].Hint(f.CPU.Call[offset+r])
+						f.ValueToStep[field].Hint(f.CPU.Call.In[offset+r])
 						offset++
 					}
 
 					offset--
 				} else {
-					f.ValueToStep[param].Hint(f.CPU.Call[offset+r])
+					f.ValueToStep[param].Hint(f.CPU.Call.In[offset+r])
 				}
 			}
 
 		case *ssa.CallExtern:
 			for r, param := range instr.Arguments[1:] {
-				f.ValueToStep[param].Hint(f.CPU.ExternCall[r])
+				f.ValueToStep[param].Hint(f.CPU.ExternCall.In[r])
 			}
 
 		case *ssa.Parameter:
-			f.ValueToStep[instr].Register = f.CPU.Call[instr.Index]
+			f.ValueToStep[instr].Register = f.CPU.Call.In[instr.Index]
 
 		case *ssa.Return:
 			for r, param := range instr.Arguments {
-				f.ValueToStep[param].Hint(f.CPU.Return[r])
+				f.ValueToStep[param].Hint(f.CPU.Call.Out[r])
 			}
 
 		case *ssa.Syscall:
 			for r, param := range slices.Backward(instr.Arguments) {
-				f.ValueToStep[param].Hint(f.CPU.Syscall[r])
+				f.ValueToStep[param].Hint(f.CPU.Syscall.In[r])
 			}
 		}
 
@@ -89,7 +89,7 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 			liveParam, isParam := live.Value.(*ssa.Parameter)
 
 			if isParam {
-				oldRegister = f.CPU.Call[liveParam.Index]
+				oldRegister = f.CPU.Call.In[liveParam.Index]
 			}
 
 			for _, existing := range step.Live[:liveIndex] {
