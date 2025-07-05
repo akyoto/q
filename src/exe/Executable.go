@@ -19,8 +19,12 @@ func New(headerEnd int, fileAlign int, memoryAlign int, congruent bool, raw ...[
 		congruent:   congruent,
 	}
 
-	for i, data := range raw {
-		exe.Sections[i] = &Section{Bytes: data}
+	for i, section := range raw {
+		if len(section) == 0 {
+			section = []byte{0}
+		}
+
+		exe.Sections[i] = &Section{Bytes: section}
 	}
 
 	exe.Update()
