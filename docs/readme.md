@@ -1,11 +1,21 @@
-<p align="center"><img alt="q logo" src="logo.svg"></p>
+<div align="center">
+	<img src="logo.svg" width="128" alt="q logo">
+	<h1>The Q Programming Language</h1>
+</div>
 
 > [!NOTE]
 > `q` is under heavy development and not ready for production yet.
 >
 > Feel free to [get in touch](https://urbach.dev/contact) if you are interested in helping out.
 
-## ⚡️ Installation
+## Features
+
+* High performance (`ssa` and `asm` optimizations)
+* Tiny executables ("Hello World" is ~500 bytes)
+* Fast compilation (5-10x faster than most)
+* No dependencies (no llvm, no libc)
+
+## Installation
 
 ```shell
 git clone https://git.urbach.dev/cli/q
@@ -13,26 +23,19 @@ cd q
 go build
 ```
 
-To symlink the compiler as `q`:
+## Usage
 
 ```shell
-ln -s $PWD/q ~/.local/bin/q
+q run examples/hello
 ```
 
-## 🚀 Usage
-
-```shell
-q build examples/hello
-./examples/hello/hello
-```
-
-## 🚦 Tests
+## Tests
 
 ```shell
 go run gotest.tools/gotestsum@latest
 ```
 
-## 💻 Platforms
+## Platforms
 
 |         | arm64  | x86-64 |
 | ------- | ------ | ------ |
@@ -42,7 +45,7 @@ go run gotest.tools/gotestsum@latest
 
 Those marked with a star are supported in theory but there are no developer machines to test them.
 
-## 🔑 Security
+## Security
 
 ### PIE
 
@@ -57,10 +60,10 @@ Code and data are separated into different memory pages and loaded with differen
 | Code   | ✔️   | ✔️      | ❌    |
 | Data   | ✔️   | ❌      | ❌    |
 
-## 🧾 License
+## License
 
 Please see the [license documentation](https://urbach.dev/license).
 
-## 🧔 Copyright
+## Copyright
 
 © 2025 Eduard Urbach
