@@ -32,6 +32,12 @@ func (c *compilerARM) Compile(instr Instruction) {
 			offset := (address - start) / 4
 			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Call(offset))
 		})
+	case *CallExtern:
+		panic("not implemented")
+	case *CallExternStart:
+		panic("not implemented")
+	case *CallExternEnd:
+		panic("not implemented")
 	case *Jump:
 		start := len(c.code)
 		c.append(arm.Jump(0))
@@ -76,6 +82,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:
 		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
+	case *PushRegister:
+		panic("not implemented")
 	case *Return:
 		c.append(arm.Return())
 	case *Syscall:

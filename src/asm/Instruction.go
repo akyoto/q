@@ -25,6 +25,9 @@ type CallExtern struct {
 	Function string
 }
 
+type CallExternStart struct{}
+type CallExternEnd struct{}
+
 type FunctionStart struct{}
 type FunctionEnd struct{}
 
@@ -49,6 +52,10 @@ type MoveRegisterNumber struct {
 type MoveRegisterRegister struct {
 	Destination cpu.Register
 	Source      cpu.Register
+}
+
+type PushRegister struct {
+	Register cpu.Register
 }
 
 type Return struct{}

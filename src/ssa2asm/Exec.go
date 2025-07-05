@@ -69,10 +69,15 @@ func (f *Compiler) Exec(step *Step) {
 		})
 
 	case *ssa.CallExtern:
+		f.Assembler.Append(&asm.CallExternStart{})
 		args := instr.Arguments[1:]
 
 		for i, arg := range args {
-			if f.ValueToStep[arg].Register != f.CPU.ExternCall.In[i] {
+			if i >= len(f.CPU.ExternCall.In) {
+				f.Assembler.Append(&asm.PushRegister{
+					Register: f.ValueToStep[arg].Register,
+				})
+			} else if f.ValueToStep[arg].Register != f.CPU.ExternCall.In[i] {
 				f.Assembler.Append(&asm.MoveRegisterRegister{
 					Destination: f.CPU.ExternCall.In[i],
 					Source:      f.ValueToStep[arg].Register,
@@ -85,6 +90,7 @@ func (f *Compiler) Exec(step *Step) {
 		library := fn.UniqueName[:dot]
 		function := fn.UniqueName[dot+1:]
 		f.Assembler.Append(&asm.CallExtern{Library: library, Function: function})
+		f.Assembler.Append(&asm.CallExternEnd{})
 
 		if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {
 			return

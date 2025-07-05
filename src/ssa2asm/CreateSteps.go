@@ -41,6 +41,12 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 
 		case *ssa.CallExtern:
 			for r, param := range instr.Arguments[1:] {
+				if r >= len(f.CPU.ExternCall.In) {
+					// Temporary hack to allow arguments 5 and 6 to be hinted as r10 and r11, then pushed later.
+					f.ValueToStep[param].Hint(f.CPU.ExternCall.Volatile[1+r])
+					continue
+				}
+
 				f.ValueToStep[param].Hint(f.CPU.ExternCall.In[r])
 			}
 

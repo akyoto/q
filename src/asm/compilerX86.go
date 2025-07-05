@@ -41,12 +41,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(c.code[end-4:end], uint32(offset))
 		})
 	case *CallExtern:
-		c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
-		c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
-		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
 		c.code = x86.CallAt(c.code, 0)
 		end := len(c.code)
-		c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
 
 		c.Defer(func() {
 			index := c.libraries.Index(instr.Library, instr.Function)
@@ -59,6 +55,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 			offset := address - end
 			binary.LittleEndian.PutUint32(c.code[end-4:end], uint32(offset))
 		})
+	case *CallExternStart:
+		c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
+		c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
+		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
+	case *CallExternEnd:
+		c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
 	case *FunctionStart:
 	case *FunctionEnd:
 	case *Jump:
@@ -100,6 +102,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:
 		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+	case *PushRegister:
+		c.code = x86.PushRegister(c.code, instr.Register)
 	case *Return:
 		c.code = x86.Return(c.code)
 	case *SubRegisterNumber:
