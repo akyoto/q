@@ -3,10 +3,10 @@ package cli
 import (
 	"fmt"
 	"os"
-	"os/exec"
 
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/linker"
+	"git.urbach.dev/cli/q/src/memfile"
 )
 
 // run builds and runs the executable.
@@ -17,23 +17,20 @@ func run(args []string) int {
 		return exit(err)
 	}
 
-	result, err := compiler.Compile(b)
+	env, err := compiler.Compile(b)
 
 	if err != nil {
 		return exit(err)
 	}
 
-	err = linker.WriteFile(b.Executable(), b, result)
+	file, err := memfile.New(b.Executable())
 
 	if err != nil {
 		return exit(err)
 	}
 
-	cmd := exec.Command(b.Executable())
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
+	linker.Write(file, b, env)
+	err = memfile.Exec(file)
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

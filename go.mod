@@ -7,4 +7,4 @@ require (
 	git.urbach.dev/go/color v0.0.0-20250606151219-222306e0b534
 )
 
-require golang.org/x/sys v0.33.0 // indirect
+require golang.org/x/sys v0.33.0

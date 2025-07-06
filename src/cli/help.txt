@@ -9,5 +9,5 @@ Commands:
         --os [os]                  cross-compile for OS: [linux|mac|windows]
         --verbose, -v              show everything
 
-    run [directory | file]         build and run the executable
+    run [directory | file]         build and run the executable in memory
     help                           show this help
