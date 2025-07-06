@@ -7,6 +7,7 @@ import (
 )
 
 type Call struct {
+	Func *Function
 	Arguments
 	Liveness
 	Source
@@ -25,15 +26,13 @@ func (a *Call) Equals(v Value) bool {
 }
 
 func (v *Call) String() string {
-	return fmt.Sprintf("%s(%s)", v.Arguments[0].String(), v.Arguments[1:].String())
+	return fmt.Sprintf("%s(%s)", v.Func.UniqueName, v.Arguments.String())
 }
 
 func (v *Call) Type() types.Type {
-	typ := v.Arguments[0].(*Function).Typ
-
-	if len(typ.Output) == 0 {
+	if len(v.Func.Typ.Output) == 0 {
 		return types.Void
 	}
 
-	return typ.Output[0]
+	return v.Func.Typ.Output[0]
 }

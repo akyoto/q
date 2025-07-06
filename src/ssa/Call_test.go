@@ -10,10 +10,10 @@ import (
 
 func TestCall(t *testing.T) {
 	fn := ssa.IR{}
-	myfunc := fn.Append(&ssa.Function{UniqueName: "myfunc", Typ: &types.Function{}})
-	call := fn.Append(&ssa.Call{Arguments: ssa.Arguments{myfunc}})
+	myfunc := &ssa.Function{UniqueName: "myfunc", Typ: &types.Function{}}
+	call := fn.Append(&ssa.Call{Func: myfunc, Arguments: ssa.Arguments{}})
 	one := fn.Append(&ssa.Int{Int: 1})
-	call2 := fn.Append(&ssa.Call{Arguments: ssa.Arguments{myfunc, one}})
+	call2 := fn.Append(&ssa.Call{Func: myfunc, Arguments: ssa.Arguments{one}})
 
 	assert.True(t, call.Type() == types.Void)
 	assert.Equal(t, call.String(), "myfunc()")
@@ -23,18 +23,18 @@ func TestCall(t *testing.T) {
 func TestCallEquals(t *testing.T) {
 	fn := ssa.IR{}
 
-	sum := fn.Append(&ssa.Function{
+	sum := &ssa.Function{
 		UniqueName: "sum",
 		Typ: &types.Function{
 			Input:  []types.Type{types.Int, types.Int},
 			Output: []types.Type{types.Int},
 		},
-	})
+	}
 
 	one := fn.Append(&ssa.Int{Int: 1})
 	two := fn.Append(&ssa.Int{Int: 2})
-	call1 := fn.Append(&ssa.Call{Arguments: ssa.Arguments{sum, one, two}})
-	call2 := fn.Append(&ssa.Call{Arguments: ssa.Arguments{sum, one, two}})
+	call1 := fn.Append(&ssa.Call{Func: sum, Arguments: ssa.Arguments{one, two}})
+	call2 := fn.Append(&ssa.Call{Func: sum, Arguments: ssa.Arguments{one, two}})
 
 	assert.False(t, call1.Equals(one))
 	assert.True(t, call1.Equals(call2))
@@ -43,17 +43,17 @@ func TestCallEquals(t *testing.T) {
 func TestCallReturnType(t *testing.T) {
 	fn := ssa.IR{}
 
-	sum := fn.Append(&ssa.Function{
+	sum := &ssa.Function{
 		UniqueName: "sum",
 		Typ: &types.Function{
 			Input:  []types.Type{types.Int, types.Int},
 			Output: []types.Type{types.Int},
 		},
-	})
+	}
 
 	one := fn.Append(&ssa.Int{Int: 1})
 	two := fn.Append(&ssa.Int{Int: 2})
-	call := fn.Append(&ssa.Call{Arguments: ssa.Arguments{sum, one, two}})
+	call := fn.Append(&ssa.Call{Func: sum, Arguments: ssa.Arguments{one, two}})
 
 	assert.Equal(t, call.String(), "sum(1, 2)")
 	assert.True(t, call.Type() == types.Int)

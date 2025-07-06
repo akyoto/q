@@ -27,37 +27,20 @@ func (f *Compiler) Exec(step *Step) {
 		})
 
 	case *ssa.Call:
-		args := instr.Arguments[1:]
-		offset := 0
+		args := instr.Arguments
 
 		for i, arg := range args {
-			structure, isStruct := args[i].(*ssa.Struct)
-
-			if isStruct {
-				for _, field := range structure.Arguments {
-					if f.ValueToStep[field].Register != f.CPU.Call.In[offset+i] {
-						f.Assembler.Append(&asm.MoveRegisterRegister{
-							Destination: f.CPU.Call.In[offset+i],
-							Source:      f.ValueToStep[field].Register,
-						})
-					}
-
-					offset++
-				}
-
-				offset--
-			} else {
-				if f.ValueToStep[arg].Register != f.CPU.Call.In[offset+i] {
-					f.Assembler.Append(&asm.MoveRegisterRegister{
-						Destination: f.CPU.Call.In[offset+i],
-						Source:      f.ValueToStep[arg].Register,
-					})
-				}
+			if f.ValueToStep[arg].Register == f.CPU.Call.In[i] {
+				continue
 			}
+
+			f.Assembler.Append(&asm.MoveRegisterRegister{
+				Destination: f.CPU.Call.In[i],
+				Source:      f.ValueToStep[arg].Register,
+			})
 		}
 
-		fn := instr.Arguments[0].(*ssa.Function)
-		f.Assembler.Append(&asm.Call{Label: fn.UniqueName})
+		f.Assembler.Append(&asm.Call{Label: instr.Func.UniqueName})
 
 		if step.Register == -1 || step.Register == f.CPU.Call.Out[0] {
 			return
@@ -70,25 +53,30 @@ func (f *Compiler) Exec(step *Step) {
 
 	case *ssa.CallExtern:
 		f.Assembler.Append(&asm.CallExternStart{})
-		args := instr.Arguments[1:]
+		args := instr.Arguments
 
 		for i, arg := range args {
 			if i >= len(f.CPU.ExternCall.In) {
 				f.Assembler.Append(&asm.PushRegister{
 					Register: f.ValueToStep[arg].Register,
 				})
-			} else if f.ValueToStep[arg].Register != f.CPU.ExternCall.In[i] {
-				f.Assembler.Append(&asm.MoveRegisterRegister{
-					Destination: f.CPU.ExternCall.In[i],
-					Source:      f.ValueToStep[arg].Register,
-				})
+
+				continue
 			}
+
+			if f.ValueToStep[arg].Register == f.CPU.ExternCall.In[i] {
+				continue
+			}
+
+			f.Assembler.Append(&asm.MoveRegisterRegister{
+				Destination: f.CPU.ExternCall.In[i],
+				Source:      f.ValueToStep[arg].Register,
+			})
 		}
 
-		fn := instr.Arguments[0].(*ssa.Function)
-		dot := strings.IndexByte(fn.UniqueName, '.')
-		library := fn.UniqueName[:dot]
-		function := fn.UniqueName[dot+1:]
+		dot := strings.IndexByte(instr.Func.UniqueName, '.')
+		library := instr.Func.UniqueName[:dot]
+		function := instr.Func.UniqueName[dot+1:]
 		f.Assembler.Append(&asm.CallExtern{Library: library, Function: function})
 		f.Assembler.Append(&asm.CallExternEnd{})
 

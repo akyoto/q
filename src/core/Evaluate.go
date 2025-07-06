@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"slices"
 
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
@@ -68,11 +67,11 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				Source: ssa.Source(expr.Source),
 			})
 
-			v := f.Append(&ssa.Struct{
+			v := &ssa.Struct{
 				Arguments: []ssa.Value{pointer, length},
 				Typ:       types.String,
 				Source:    ssa.Source(expr.Source),
-			})
+			}
 
 			return v, nil
 		}
@@ -82,31 +81,13 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 	switch expr.Token.Kind {
 	case token.Call:
-		children := expr.Children
-		isSyscall := false
-
-		if children[0].Token.Kind == token.Identifier {
-			funcName := children[0].String(f.File.Bytes)
-
-			if funcName == "syscall" {
-				children = children[1:]
-				isSyscall = true
-			}
-		}
-
-		args := make([]ssa.Value, len(children))
-
-		for i, child := range slices.Backward(children) {
-			value, err := f.Evaluate(child)
+		if expr.Children[0].Token.Kind == token.Identifier && expr.Children[0].String(f.File.Bytes) == "syscall" {
+			args, err := f.Decompose(expr.Children[1:], nil)
 
 			if err != nil {
 				return nil, err
 			}
 
-			args[i] = value
-		}
-
-		if isSyscall {
 			syscall := &ssa.Syscall{
 				Arguments: args,
 				Source:    ssa.Source(expr.Source),
@@ -115,41 +96,29 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			return f.Append(syscall), nil
 		}
 
-		name := args[0].(*ssa.Function).UniqueName
-		fn := f.All.Functions[name]
-		parameters := args[1:]
+		funcValue, err := f.Evaluate(expr.Children[0])
 
-		if len(parameters) != len(fn.Input) {
-			return nil, errors.New(&ParameterCountMismatch{Function: name, Count: len(parameters), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
+		if err != nil {
+			return nil, err
 		}
 
-		for i, param := range slices.Backward(parameters) {
-			if !types.Is(param.Type(), fn.Input[i].Typ) {
-				_, isPointer := fn.Input[i].Typ.(*types.Pointer)
+		ssaFunc := funcValue.(*ssa.Function)
+		fn := f.All.Functions[ssaFunc.UniqueName]
+		inputExpressions := expr.Children[1:]
 
-				if isPointer {
-					number, isInt := param.(*ssa.Int)
+		if len(inputExpressions) != len(fn.Input) {
+			return nil, errors.New(&ParameterCountMismatch{Function: fn.UniqueName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
+		}
 
-					if isInt && number.Int == 0 {
-						continue
-					}
-				}
+		args, err := f.Decompose(inputExpressions, fn.Input)
 
-				// Temporary hack to allow int64 -> uint32 conversion
-				if types.Is(param.Type(), types.AnyInt) && types.Is(fn.Input[i].Typ, types.AnyInt) {
-					continue
-				}
-
-				return nil, errors.New(&TypeMismatch{
-					Encountered:   param.Type().Name(),
-					Expected:      fn.Input[i].Typ.Name(),
-					ParameterName: fn.Input[i].Name,
-				}, f.File, param.(ssa.HasSource).Start())
-			}
+		if err != nil {
+			return nil, err
 		}
 
 		if fn.IsExtern() {
 			v := f.Append(&ssa.CallExtern{Call: ssa.Call{
+				Func:      ssaFunc,
 				Arguments: args,
 				Source:    ssa.Source(expr.Source),
 			}})
@@ -158,6 +127,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 		v := f.Append(&ssa.Call{
+			Func:      ssaFunc,
 			Arguments: args,
 			Source:    ssa.Source(expr.Source),
 		})
@@ -175,25 +145,6 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		if exists {
 			return identifier, nil
 		}
-
-		// identifier, exists := f.Identifiers[leftText]
-
-		// if exists {
-		// 	structType := identifier.Type().(*types.Struct)
-		// 	field := structType.FieldByName(rightText)
-
-		// 	if field == nil {
-		// 		return nil, errors.New(&UnknownStructField{StructName: structType.Name(), FieldName: rightText}, f.File, right.Token.Position)
-		// 	}
-
-		// 	v := f.Append(&ssa.Field{
-		// 		Object: identifier,
-		// 		Field:  field,
-		// 		Source: ssa.Source(expr.Source),
-		// 	})
-
-		// 	return v, nil
-		// }
 
 		function, exists := f.All.Functions[fullName]
 

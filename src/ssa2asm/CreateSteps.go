@@ -1,8 +1,6 @@
 package ssa2asm
 
 import (
-	"slices"
-
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 )
@@ -22,25 +20,12 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 	for i, instr := range ir.Values {
 		switch instr := instr.(type) {
 		case *ssa.Call:
-			offset := 0
-
-			for r, param := range instr.Arguments[1:] {
-				structure, isStruct := param.(*ssa.Struct)
-
-				if isStruct {
-					for _, field := range structure.Arguments {
-						f.ValueToStep[field].Hint(f.CPU.Call.In[offset+r])
-						offset++
-					}
-
-					offset--
-				} else {
-					f.ValueToStep[param].Hint(f.CPU.Call.In[offset+r])
-				}
+			for paramIndex, param := range instr.Arguments {
+				f.ValueToStep[param].Hint(f.CPU.Call.In[paramIndex])
 			}
 
 		case *ssa.CallExtern:
-			for r, param := range instr.Arguments[1:] {
+			for r, param := range instr.Arguments {
 				if r >= len(f.CPU.ExternCall.In) {
 					// Temporary hack to allow arguments 5 and 6 to be hinted as r10 and r11, then pushed later.
 					f.ValueToStep[param].Hint(f.CPU.ExternCall.Volatile[1+r])
@@ -59,7 +44,7 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 			}
 
 		case *ssa.Syscall:
-			for r, param := range slices.Backward(instr.Arguments) {
+			for r, param := range instr.Arguments {
 				f.ValueToStep[param].Hint(f.CPU.Syscall.In[r])
 			}
 		}

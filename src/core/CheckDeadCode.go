@@ -16,7 +16,8 @@ func (f *Function) CheckDeadCode() error {
 			continue
 		}
 
-		return errors.New(&UnusedValue{Value: instr.String()}, f.File, instr.(ssa.HasSource).Start())
+		source := instr.(ssa.HasSource)
+		return errors.New(&UnusedValue{Value: string(f.File.Bytes[source.Start():source.End()])}, f.File, source.Start())
 	}
 
 	return nil
