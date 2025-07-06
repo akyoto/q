@@ -2,6 +2,7 @@ package asm
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	"git.urbach.dev/cli/q/src/arm"
 )
@@ -33,11 +34,24 @@ func (c *compilerARM) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Call(offset))
 		})
 	case *CallExtern:
-		panic("not implemented")
+		start := len(c.code)
+		c.append(arm.LoadAddress(arm.X0, 0))
+		c.append(arm.LoadRegister(arm.X0, arm.X0, 0, 8))
+		c.append(arm.CallRegister(arm.X0))
+
+		c.Defer(func() {
+			index := c.libraries.Index(instr.Library, instr.Function)
+
+			if index == -1 {
+				panic(fmt.Sprintf("unknown extern function '%s' in library '%s'", instr.Function, instr.Library))
+			}
+
+			address := c.importsStart + index*8
+			offset := address - start
+			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.LoadAddress(arm.X0, offset))
+		})
 	case *CallExternStart:
-		panic("not implemented")
 	case *CallExternEnd:
-		panic("not implemented")
 	case *Jump:
 		start := len(c.code)
 		c.append(arm.Jump(0))
