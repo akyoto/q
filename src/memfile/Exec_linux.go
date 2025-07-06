@@ -35,7 +35,7 @@ func Exec(file *os.File) error {
 
 	_, _, errno := syscall.Syscall6(
 		unix.SYS_EXECVEAT,
-		uintptr(file.Fd()),
+		file.Fd(),
 		uintptr(unsafe.Pointer(empty)),
 		uintptr(unsafe.Pointer(&argvp[0])),
 		uintptr(unsafe.Pointer(&envvp[0])),
