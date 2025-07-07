@@ -13,6 +13,7 @@
 * High performance (`ssa` and `asm` optimizations)
 * Tiny executables ("Hello World" is ~500 bytes)
 * Fast compilation (5-10x faster than most)
+* Unix scripting (JIT compilation)
 * No dependencies (no llvm, no libc)
 
 ## Installation
@@ -25,9 +26,40 @@ go build
 
 ## Usage
 
+Quick test:
+
 ```shell
 q run examples/hello
 ```
+
+Build an executable:
+
+```shell
+q build examples/hello
+```
+
+Cross-compile for another OS:
+
+```shell
+q build examples/hello --os windows
+```
+
+### Unix scripts
+
+The compiler is actually so fast that it's possible to use `q` for scripting. Create a new file:
+
+```q
+#!/usr/bin/env q
+
+import io
+
+main() {
+	io.write("Hello\n")
+}
+```
+
+Add permissions via `chmod +x`. The file can be executed from anywhere now.
+The machine code is run directly from memory if the OS supports it.
 
 ## Tests
 

@@ -41,6 +41,7 @@ func (s *scanner) scanFile(path string, pkg string) error {
 			return nil
 		case token.Invalid:
 			return errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+		case token.Script:
 		default:
 			return errors.New(&InvalidTopLevel{Instruction: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
 		}

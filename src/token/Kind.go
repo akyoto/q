@@ -12,6 +12,7 @@ const (
 	Rune                              // Rune is a single unicode code point.
 	String                            // String is an uninterpreted series of characters in the source code.
 	Comment                           // Comment is a comment.
+	Script                            // Script is a shebang line.
 	GroupStart                        // (
 	GroupEnd                          // )
 	BlockStart                        // {

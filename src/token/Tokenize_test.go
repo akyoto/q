@@ -480,6 +480,20 @@ func TestComment(t *testing.T) {
 }
 
 func TestInvalid(t *testing.T) {
+	tokens := token.Tokenize([]byte(`@@`))
+
+	expected := []token.Kind{
+		token.Invalid,
+		token.Invalid,
+		token.EOF,
+	}
+
+	for i, kind := range expected {
+		assert.Equal(t, tokens[i].Kind, kind)
+	}
+}
+
+func TestInvalidScript(t *testing.T) {
 	tokens := token.Tokenize([]byte(`##`))
 
 	expected := []token.Kind{
@@ -567,6 +581,19 @@ func TestRune(t *testing.T) {
 
 	expected := []token.Kind{
 		token.Rune,
+		token.EOF,
+	}
+
+	for i, kind := range expected {
+		assert.Equal(t, tokens[i].Kind, kind)
+	}
+}
+
+func TestScript(t *testing.T) {
+	tokens := token.Tokenize([]byte("#!/usr/bin/env q"))
+
+	expected := []token.Kind{
+		token.Script,
 		token.EOF,
 	}
 

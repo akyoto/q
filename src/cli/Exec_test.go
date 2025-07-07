@@ -16,18 +16,19 @@ func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--os", "mac", "--arch", "x86"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--os", "windows", "--arch", "arm"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--os", "windows", "--arch", "x86"}), 0)
-	assert.Equal(t, cli.Exec([]string{"run", "../../examples/hello"}), 0)
 	assert.Equal(t, cli.Exec([]string{"help"}), 0)
+	assert.Equal(t, cli.Exec([]string{"run", "../../examples/hello"}), 0)
+	assert.Equal(t, cli.Exec([]string{"../../examples/script/script.q"}), 0)
 }
 
 func TestExecErrors(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build"}), 1)
 	assert.Equal(t, cli.Exec([]string{"run"}), 1)
+	assert.Equal(t, cli.Exec([]string{"_"}), 1)
 }
 
 func TestExecWrongParameters(t *testing.T) {
 	assert.Equal(t, cli.Exec(nil), 2)
-	assert.Equal(t, cli.Exec([]string{"_"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "--invalid-parameter"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--invalid-parameter"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--os"}), 2)

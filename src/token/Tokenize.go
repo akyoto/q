@@ -37,6 +37,9 @@ func Tokenize(buffer []byte) List {
 		case '0':
 			tokens, i = zero(tokens, buffer, i)
 			continue
+		case '#':
+			tokens, i = hash(tokens, buffer, i)
+			continue
 		default:
 			if isIdentifierStart(buffer[i]) {
 				tokens, i = identifier(tokens, buffer, i)
