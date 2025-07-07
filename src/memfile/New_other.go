@@ -10,7 +10,7 @@ import (
 
 // New creates a new anonymous in-memory file.
 func New(name string) (*os.File, error) {
-	pattern := ""
+	pattern := "*"
 
 	if global.OS == "windows" {
 		pattern = "*.exe"
