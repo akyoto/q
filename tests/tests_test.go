@@ -5,6 +5,7 @@ import (
 )
 
 var tests = []testRun{
+	{"script", "", "Hello\n", 0},
 	{"sum", "", "", 10},
 }
 
