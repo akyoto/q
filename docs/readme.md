@@ -24,6 +24,12 @@ cd q
 go build
 ```
 
+Add a symlink in `~/.local/bin` or `/usr/local/bin`:
+
+```shell
+ln -s $PWD/q ~/.local/bin/q
+```
+
 ## Usage
 
 Quick test:
@@ -46,7 +52,7 @@ q build examples/hello --os windows
 
 ### Unix scripts
 
-The compiler is actually so fast that it's possible to use `q` for scripting. Create a new file:
+The compiler is actually so fast that it's possible to use `q` for scripting. Create a new file...
 
 ```q
 #!/usr/bin/env q
@@ -58,8 +64,9 @@ main() {
 }
 ```
 
-Add permissions via `chmod +x`. The file can be executed from anywhere now.
-The machine code is run directly from memory if the OS supports it.
+...and add exec permissions via `chmod +x`. The file can be executed from anywhere now.
+
+The generated machine code is run directly from memory if the OS supports it.
 
 ## Tests
 
