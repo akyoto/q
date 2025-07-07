@@ -21,6 +21,7 @@ func Exec(file *os.File) error {
 		return err
 	}
 
+	defer os.Remove(file.Name())
 	cmd := exec.Command(file.Name())
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
