@@ -2,7 +2,8 @@
 
 ## Notes
 
-MacOS requires including the headers in the __TEXT segment.
+- Headers must be included in the __TEXT segment.
+- Load command size must be divisible by 8.
 
 ## Links
 

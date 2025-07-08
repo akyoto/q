@@ -8,7 +8,7 @@ const (
 	LcThread             LoadCommand = 0x4
 	LcUnixthread         LoadCommand = 0x5
 	LcDysymtab           LoadCommand = 0xB
-	LcDylib              LoadCommand = 0xC
+	LcLoadDylib          LoadCommand = 0xC
 	LcIdDylib            LoadCommand = 0xD
 	LcLoadDylinker       LoadCommand = 0xE
 	LcIdDylinker         LoadCommand = 0xF
