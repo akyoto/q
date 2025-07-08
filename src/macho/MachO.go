@@ -14,7 +14,6 @@ type MachO struct {
 	PageZero        Segment64
 	CodeHeader      Segment64
 	DataHeader      Segment64
-	ImportsHeader   Segment64
 	MainHeader      Main
 	InfoHeader      DyldInfoCommand
 	LinkerHeader    DylinkerCommand
@@ -23,10 +22,9 @@ type MachO struct {
 
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), codeBytes, dataBytes, nil)
+	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
-	imports := x.Sections[2]
 	arch, microArch := Arch(b.Arch)
 
 	m := &MachO{
@@ -35,9 +33,9 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			Architecture:      arch,
 			MicroArchitecture: microArch,
 			Type:              TypeExecute,
-			NumCommands:       8,
+			NumCommands:       NumCommands,
 			SizeCommands:      uint32(SizeCommands),
-			Flags:             FlagNoUndefs | FlagPIE | FlagNoHeapExecution,
+			Flags:             FlagNoUndefs | FlagDyldLink | FlagTwoLevel | FlagPIE | FlagNoHeapExecution,
 			Reserved:          0,
 		},
 		PageZero: Segment64{
@@ -79,19 +77,6 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			MaxProt:      ProtReadable,
 			InitProt:     ProtReadable,
 		},
-		ImportsHeader: Segment64{
-			LoadCommand:  LcSegment64,
-			Length:       Segment64Size,
-			Name:         [16]byte{'_', '_', 'L', 'I', 'N', 'K', 'E', 'D', 'I', 'T'},
-			Address:      uint64(BaseAddress + imports.MemoryOffset),
-			SizeInMemory: uint64(len(imports.Bytes)),
-			Offset:       uint64(imports.FileOffset),
-			SizeInFile:   uint64(len(imports.Bytes)),
-			NumSections:  0,
-			Flag:         0,
-			MaxProt:      ProtReadable,
-			InitProt:     ProtReadable,
-		},
 		MainHeader: Main{
 			LoadCommand:     LcMain,
 			Length:          MainSize,
@@ -99,10 +84,8 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			StackSize:       0,
 		},
 		InfoHeader: DyldInfoCommand{
-			LoadCommand:  LcDyldInfoOnly,
-			Length:       DyldInfoCommandSize,
-			RebaseOffset: uint32(imports.FileOffset),
-			RebaseSize:   uint32(len(imports.Bytes)),
+			LoadCommand: LcDyldInfoOnly,
+			Length:      DyldInfoCommandSize,
 		},
 		LinkerHeader: DylinkerCommand{
 			LoadCommand: LcLoadDylinker,
@@ -120,7 +103,6 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 	binary.Write(writer, binary.LittleEndian, &m.PageZero)
 	binary.Write(writer, binary.LittleEndian, &m.CodeHeader)
 	binary.Write(writer, binary.LittleEndian, &m.DataHeader)
-	binary.Write(writer, binary.LittleEndian, &m.ImportsHeader)
 	binary.Write(writer, binary.LittleEndian, &m.MainHeader)
 	binary.Write(writer, binary.LittleEndian, &m.InfoHeader)
 	binary.Write(writer, binary.LittleEndian, &m.LinkerHeader)
@@ -131,6 +113,4 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 	writer.Write(code.Bytes)
 	writer.Seek(int64(data.Padding), io.SeekCurrent)
 	writer.Write(data.Bytes)
-	writer.Seek(int64(imports.Padding), io.SeekCurrent)
-	writer.Write(imports.Bytes)
 }
