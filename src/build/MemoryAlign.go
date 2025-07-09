@@ -4,7 +4,15 @@ package build
 func (build *Build) MemoryAlign() int {
 	switch build.Arch {
 	case ARM:
-		return 0x4000
+		switch build.OS {
+		case Linux:
+			return 0x10000
+		case Mac:
+			return 0x4000
+		default:
+			return 0x1000
+		}
+
 	default:
 		return 0x1000
 	}
