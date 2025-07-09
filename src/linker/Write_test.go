@@ -18,6 +18,6 @@ func TestWrite(t *testing.T) {
 		assert.Nil(t, err)
 
 		writer := &exe.Discard{}
-		linker.Write(writer, b, env)
+		linker.Write(writer, env)
 	})
 }

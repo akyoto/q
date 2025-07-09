@@ -13,7 +13,7 @@ import (
 )
 
 // Write writes an executable to the given writer.
-func Write(writer io.WriteSeeker, b *build.Build, env *core.Environment) {
+func Write(writer io.WriteSeeker, env *core.Environment) {
 	program := asm.Assembler{
 		Instructions: make([]asm.Instruction, 0, 32),
 		Data:         make(data.Data, 32),
@@ -28,14 +28,14 @@ func Write(writer io.WriteSeeker, b *build.Build, env *core.Environment) {
 		program.Merge(&f.Assembler)
 	})
 
-	code, data, libs := program.Compile(b)
+	code, data, libs := program.Compile(env.Build)
 
-	switch b.OS {
+	switch env.Build.OS {
 	case build.Linux:
-		elf.Write(writer, b, code, data)
+		elf.Write(writer, env.Build, code, data)
 	case build.Mac:
-		macho.Write(writer, b, code, data)
+		macho.Write(writer, env.Build, code, data)
 	case build.Windows:
-		pe.Write(writer, b, code, data, libs)
+		pe.Write(writer, env.Build, code, data, libs)
 	}
 }

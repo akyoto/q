@@ -33,7 +33,7 @@ func (test *testRun) Run(t *testing.T, path string) {
 
 		executable := b.Executable()
 		executable = filepath.Join(tmpDir, filepath.Base(executable))
-		err = linker.WriteFile(executable, b, env)
+		err = linker.WriteFile(executable, env)
 		assert.Nil(t, err)
 
 		stat, err := os.Stat(executable)

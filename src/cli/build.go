@@ -17,7 +17,7 @@ func _build(args []string) int {
 		return exit(err)
 	}
 
-	result, err := compiler.Compile(b)
+	env, err := compiler.Compile(b)
 
 	if err != nil {
 		return exit(err)
@@ -27,7 +27,7 @@ func _build(args []string) int {
 		return 0
 	}
 
-	err = linker.WriteFile(b.Executable(), b, result)
+	err = linker.WriteFile(b.Executable(), env)
 	return exit(err)
 }
 

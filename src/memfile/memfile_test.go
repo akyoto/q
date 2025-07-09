@@ -33,7 +33,7 @@ func TestHelloExample(t *testing.T) {
 	env, err := compiler.Compile(b)
 	assert.Nil(t, err)
 
-	linker.Write(file, b, env)
+	linker.Write(file, env)
 	err = memfile.Exec(file)
 	assert.Nil(t, err)
 

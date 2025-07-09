@@ -32,9 +32,8 @@ type Function struct {
 // NewFunction creates a new function.
 func NewFunction(name string, pkg string, file *fs.File) *Function {
 	return &Function{
-		Name:    name,
-		Package: pkg,
-
+		Name:        name,
+		Package:     pkg,
 		File:        file,
 		Identifiers: make(map[string]ssa.Value, 8),
 		IR: ssa.IR{

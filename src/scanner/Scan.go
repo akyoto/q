@@ -28,6 +28,7 @@ func Scan(b *build.Build) (*core.Environment, error) {
 	}()
 
 	all := &core.Environment{
+		Build:     b,
 		Files:     make([]*fs.File, 0, 8),
 		Functions: make(map[string]*core.Function, 32),
 	}
