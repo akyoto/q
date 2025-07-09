@@ -27,7 +27,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 	subSystem := IMAGE_SUBSYSTEM_WINDOWS_CUI
 	arch := Arch(b.Arch)
 
-	importsData, dllData, dllImports, dllDataStart := importLibraries(libs, imports.FileOffset)
+	importsData, dllData, dllImports, dllDataStart := importLibraries(libs, imports.MemoryOffset)
 	buffer := bytes.Buffer{}
 	binary.Write(&buffer, binary.LittleEndian, &importsData)
 	binary.Write(&buffer, binary.LittleEndian, &dllData)
