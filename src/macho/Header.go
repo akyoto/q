@@ -11,5 +11,5 @@ type Header struct {
 	NumCommands       uint32
 	SizeCommands      uint32
 	Flags             HeaderFlags
-	Reserved          uint32
+	_                 uint32
 }

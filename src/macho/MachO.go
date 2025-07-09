@@ -12,8 +12,9 @@ import (
 type MachO struct {
 	Header
 	PageZero        Segment64
-	CodeHeader      Segment64
-	DataHeader      Segment64
+	CodeSegment     Segment64
+	CodeSection     Section64
+	DataSegment     Segment64
 	MainHeader      Main
 	InfoHeader      DyldInfoCommand
 	LinkerHeader    DylinkerCommand
@@ -36,7 +37,6 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			NumCommands:       NumCommands,
 			SizeCommands:      uint32(SizeCommands),
 			Flags:             FlagNoUndefs | FlagDyldLink | FlagTwoLevel | FlagPIE | FlagNoHeapExecution,
-			Reserved:          0,
 		},
 		PageZero: Segment64{
 			LoadCommand:  LcSegment64,
@@ -51,20 +51,29 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			MaxProt:      0,
 			InitProt:     0,
 		},
-		CodeHeader: Segment64{
+		CodeSegment: Segment64{
 			LoadCommand:  LcSegment64,
-			Length:       Segment64Size,
+			Length:       Segment64Size + Section64Size,
 			Name:         [16]byte{'_', '_', 'T', 'E', 'X', 'T'},
 			Address:      uint64(BaseAddress),
 			SizeInMemory: uint64(code.MemoryOffset + len(code.Bytes)),
 			Offset:       0,
 			SizeInFile:   uint64(code.FileOffset + len(code.Bytes)),
-			NumSections:  0,
+			NumSections:  1,
 			Flag:         0,
 			MaxProt:      ProtReadable | ProtExecutable,
 			InitProt:     ProtReadable | ProtExecutable,
 		},
-		DataHeader: Segment64{
+		CodeSection: Section64{
+			SectionName: [16]byte{'_', '_', 't', 'e', 'x', 't'},
+			SegmentName: [16]byte{'_', '_', 'T', 'E', 'X', 'T'},
+			Address:     uint64(BaseAddress + code.MemoryOffset),
+			Size:        uint64(len(code.Bytes)),
+			Offset:      uint32(code.FileOffset),
+			Align:       6,
+			Flags:       FlagPureInstructions,
+		},
+		DataSegment: Segment64{
 			LoadCommand:  LcSegment64,
 			Length:       Segment64Size,
 			Name:         [16]byte{'_', '_', 'D', 'A', 'T', 'A', '_', 'C', 'O', 'N', 'S', 'T'},
@@ -101,8 +110,9 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 
 	binary.Write(writer, binary.LittleEndian, &m.Header)
 	binary.Write(writer, binary.LittleEndian, &m.PageZero)
-	binary.Write(writer, binary.LittleEndian, &m.CodeHeader)
-	binary.Write(writer, binary.LittleEndian, &m.DataHeader)
+	binary.Write(writer, binary.LittleEndian, &m.CodeSegment)
+	binary.Write(writer, binary.LittleEndian, &m.CodeSection)
+	binary.Write(writer, binary.LittleEndian, &m.DataSegment)
 	binary.Write(writer, binary.LittleEndian, &m.MainHeader)
 	binary.Write(writer, binary.LittleEndian, &m.InfoHeader)
 	binary.Write(writer, binary.LittleEndian, &m.LinkerHeader)
