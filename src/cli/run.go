@@ -1,9 +1,6 @@
 package cli
 
 import (
-	"fmt"
-	"os"
-
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/linker"
 	"git.urbach.dev/cli/q/src/memfile"
@@ -33,7 +30,6 @@ func run(args []string) int {
 	err = memfile.Exec(file)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		return exit(err)
 	}
 
