@@ -1,6 +1,8 @@
 package ssa2asm
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 )
@@ -70,35 +72,50 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 		}
 	}
 
-	for i, step := range steps {
-		for liveIndex, live := range step.Live {
+	for stepIndex, step := range steps {
+		for i, live := range step.Live {
 			if live.Register == -1 {
 				continue
 			}
 
-			oldRegister := cpu.Register(-1)
-			liveParam, isParam := live.Value.(*ssa.Parameter)
+			var (
+				oldRegister       = cpu.Register(-1)
+				volatileRegisters []cpu.Register
+			)
 
-			if isParam {
-				oldRegister = f.CPU.Call.In[liveParam.Index]
+			switch instr := step.Value.(type) {
+			case *ssa.Call:
+				volatileRegisters = f.CPU.Call.Volatile
+			case *ssa.CallExtern:
+				volatileRegisters = f.CPU.ExternCall.Volatile
+			case *ssa.Parameter:
+				oldRegister = f.CPU.Call.In[instr.Index]
+			case *ssa.Syscall:
+				volatileRegisters = f.CPU.Syscall.Volatile
 			}
 
-			for _, existing := range step.Live[:liveIndex] {
-				if existing.Register == -1 {
+			if slices.Contains(volatileRegisters, live.Register) {
+				live.Register = f.findFreeRegister(steps[live.Index : stepIndex+1])
+				goto next
+			}
+
+			for _, previous := range step.Live[:i] {
+				if previous.Register == -1 {
 					continue
 				}
 
-				if existing.Register == live.Register || existing.Register == oldRegister {
-					a := existing.Index
-					b := live.Index
+				if previous.Register != live.Register && previous.Register != oldRegister {
+					continue
+				}
 
-					if a < b {
-						existing.Register = f.findFreeRegister(steps[existing.Index : i+1])
-					} else {
-						live.Register = f.findFreeRegister(steps[live.Index : i+1])
-					}
+				if previous.Index < live.Index {
+					previous.Register = f.findFreeRegister(steps[previous.Index : stepIndex+1])
+				} else {
+					live.Register = f.findFreeRegister(steps[live.Index : stepIndex+1])
+					goto next
 				}
 			}
+		next:
 		}
 	}
 
