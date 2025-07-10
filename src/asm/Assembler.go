@@ -6,8 +6,6 @@ import (
 	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/data"
 	"git.urbach.dev/cli/q/src/dll"
-	"git.urbach.dev/cli/q/src/elf"
-	"git.urbach.dev/cli/q/src/exe"
 )
 
 // Assembler contains a list of instructions.
@@ -36,13 +34,16 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 	data, dataLabels := a.Data.Finalize()
 
 	c := compiler{
-		code:                make([]byte, 0, len(a.Instructions)*8),
-		data:                data,
-		dataLabels:          dataLabels,
-		labels:              make(map[string]Address, 32),
-		libraries:           a.Libraries,
-		deferred:            make(map[int]func(int)),
-		deferredCodeChanges: make(map[int]func(int) bool),
+		patcher: patcher{
+			code:         make([]byte, 0, len(a.Instructions)*8),
+			earlyPatches: make([]*patch, 0, len(a.Instructions)/8),
+			latePatches:  make([]*patch, 0, len(a.Instructions)/8),
+			labels:       make(map[string]int, 32),
+		},
+		build:      b,
+		data:       data,
+		dataLabels: dataLabels,
+		libraries:  a.Libraries,
 	}
 
 	switch b.Arch {
@@ -61,28 +62,9 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 		}
 	}
 
-restart:
-	for start, call := range c.deferredCodeChanges {
-		if call(start) {
-			goto restart
-		}
-	}
-
-	x := exe.New(elf.HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), c.code, c.data, nil)
-	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
-
-	for dataLabel, address := range dataLabels {
-		c.labels[dataLabel] = dataSectionOffset + address
-	}
-
-	if b.OS == build.Windows {
-		c.importsStart = x.Sections[2].MemoryOffset - x.Sections[0].MemoryOffset
-	}
-
-	for start, call := range c.deferred {
-		call(start)
-	}
-
+	c.ApplyPatches(c.earlyPatches)
+	c.AddDataLabels()
+	c.ApplyPatches(c.latePatches)
 	return c.code, c.data, c.libraries
 }
 

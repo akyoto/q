@@ -20,26 +20,27 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *AddRegisterRegister:
 		c.append(arm.AddRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Call:
-		start := len(c.code)
 		c.append(arm.Call(0))
+		patch := c.PatchLast4Bytes()
 
-		c.Defer(start, func(start int) {
+		patch.apply = func(code []byte) []byte {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
 				panic("unknown label: " + instr.Label)
 			}
 
-			offset := (address - start) / 4
-			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Call(offset))
-		})
+			offset := (address - patch.start) / 4
+			binary.LittleEndian.PutUint32(code, arm.Call(offset))
+			return code
+		}
 	case *CallExtern:
-		start := len(c.code)
 		c.append(arm.LoadAddress(arm.X0, 0))
+		patch := c.PatchLast4Bytes()
 		c.append(arm.LoadRegister(arm.X0, arm.X0, 0, 8))
 		c.append(arm.CallRegister(arm.X0))
 
-		c.Defer(start, func(start int) {
+		patch.apply = func(code []byte) []byte {
 			index := c.libraries.Index(instr.Library, instr.Function)
 
 			if index == -1 {
@@ -47,30 +48,32 @@ func (c *compilerARM) Compile(instr Instruction) {
 			}
 
 			address := c.importsStart + index*8
-			offset := address - start
-			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.LoadAddress(arm.X0, offset))
-		})
+			offset := address - patch.start
+			binary.LittleEndian.PutUint32(code, arm.LoadAddress(arm.X0, offset))
+			return code
+		}
 	case *CallExternStart:
 	case *CallExternEnd:
 	case *Jump:
-		start := len(c.code)
 		c.append(arm.Jump(0))
+		patch := c.PatchLast4Bytes()
 
-		c.Defer(start, func(start int) {
+		patch.apply = func(code []byte) []byte {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
 				panic("unknown label: " + instr.Label)
 			}
 
-			offset := (address - start) / 4
+			offset := (address - patch.start) / 4
 
 			if offset != (offset & 0b11_11111111_11111111_11111111) {
 				panic("not implemented: long jumps")
 			}
 
-			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.Jump(offset))
-		})
+			binary.LittleEndian.PutUint32(code, arm.Jump(offset))
+			return code
+		}
 	case *FunctionStart:
 		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
 		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))
@@ -79,19 +82,20 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
 	case *MoveRegisterLabel:
-		start := len(c.code)
 		c.append(arm.LoadAddress(instr.Destination, 0))
+		patch := c.PatchLast4Bytes()
 
-		c.Defer(start, func(start int) {
+		patch.apply = func(code []byte) []byte {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
 				panic("unknown label: " + instr.Label)
 			}
 
-			offset := address - start
-			binary.LittleEndian.PutUint32(c.code[start:start+4], arm.LoadAddress(instr.Destination, offset))
-		})
+			offset := address - patch.start
+			binary.LittleEndian.PutUint32(code, arm.LoadAddress(instr.Destination, offset))
+			return code
+		}
 	case *MoveRegisterNumber:
 		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:

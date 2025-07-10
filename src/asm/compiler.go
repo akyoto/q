@@ -1,22 +1,32 @@
 package asm
 
-import "git.urbach.dev/cli/q/src/dll"
+import (
+	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/dll"
+	"git.urbach.dev/cli/q/src/elf"
+	"git.urbach.dev/cli/q/src/exe"
+)
 
 type compiler struct {
-	code                []byte
-	data                []byte
-	dataLabels          map[string]Address
-	labels              map[string]Address
-	libraries           dll.List
-	importsStart        int
-	deferred            map[int]func(int)
-	deferredCodeChanges map[int]func(int) bool
+	patcher
+	build        *build.Build
+	data         []byte
+	dataLabels   map[string]int
+	libraries    dll.List
+	importsStart int
 }
 
-func (c *compiler) Defer(address int, call func(int)) {
-	c.deferred[address] = call
-}
+// AddDataLabels adds the data labels to the existing labels.
+// This can only run after the code size is known.
+func (c *compiler) AddDataLabels() {
+	x := exe.New(elf.HeaderEnd, c.build.FileAlign(), c.build.MemoryAlign(), c.build.Congruent(), c.code, c.data, nil)
+	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
 
-func (c *compiler) DeferCodeChange(address int, call func(int) bool) {
-	c.deferredCodeChanges[address] = call
+	for dataLabel, address := range c.dataLabels {
+		c.labels[dataLabel] = dataSectionOffset + address
+	}
+
+	if c.build.OS == build.Windows {
+		c.importsStart = x.Sections[2].MemoryOffset - x.Sections[0].MemoryOffset
+	}
 }
