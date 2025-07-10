@@ -70,7 +70,7 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 		}
 	}
 
-	for _, step := range steps {
+	for i, step := range steps {
 		for liveIndex, live := range step.Live {
 			if live.Register == -1 {
 				continue
@@ -91,12 +91,11 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 				if existing.Register == live.Register || existing.Register == oldRegister {
 					a := existing.Index
 					b := live.Index
-					freeRegister := cpu.Register(15)
 
 					if a < b {
-						existing.Register = freeRegister
+						existing.Register = f.findFreeRegister(steps[existing.Index : i+1])
 					} else {
-						live.Register = freeRegister
+						live.Register = f.findFreeRegister(steps[live.Index : i+1])
 					}
 				}
 			}
