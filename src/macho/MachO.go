@@ -71,7 +71,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			Size:        uint64(len(code.Bytes)),
 			Offset:      uint32(code.FileOffset),
 			Align:       6,
-			Flags:       FlagPureInstructions,
+			Flags:       SectionPureInstructions,
 		},
 		DataSegment: Segment64{
 			LoadCommand:  LcSegment64,
@@ -82,7 +82,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			Offset:       uint64(data.FileOffset),
 			SizeInFile:   uint64(len(data.Bytes)),
 			NumSections:  0,
-			Flag:         0,
+			Flag:         SegmentReadOnly,
 			MaxProt:      ProtReadable,
 			InitProt:     ProtReadable,
 		},

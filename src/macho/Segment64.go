@@ -14,5 +14,5 @@ type Segment64 struct {
 	MaxProt      Prot
 	InitProt     Prot
 	NumSections  uint32
-	Flag         uint32
+	Flag         SegmentFlags
 }
