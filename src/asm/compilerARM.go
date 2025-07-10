@@ -23,7 +23,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		start := len(c.code)
 		c.append(arm.Call(0))
 
-		c.Defer(func() {
+		c.Defer(start, func(start int) {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
@@ -39,7 +39,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.LoadRegister(arm.X0, arm.X0, 0, 8))
 		c.append(arm.CallRegister(arm.X0))
 
-		c.Defer(func() {
+		c.Defer(start, func(start int) {
 			index := c.libraries.Index(instr.Library, instr.Function)
 
 			if index == -1 {
@@ -56,7 +56,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		start := len(c.code)
 		c.append(arm.Jump(0))
 
-		c.Defer(func() {
+		c.Defer(start, func(start int) {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
@@ -82,7 +82,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		start := len(c.code)
 		c.append(arm.LoadAddress(instr.Destination, 0))
 
-		c.Defer(func() {
+		c.Defer(start, func(start int) {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {

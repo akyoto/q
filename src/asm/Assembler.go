@@ -36,11 +36,13 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 	data, dataLabels := a.Data.Finalize()
 
 	c := compiler{
-		code:       make([]byte, 0, len(a.Instructions)*8),
-		data:       data,
-		dataLabels: dataLabels,
-		labels:     make(map[string]Address, 32),
-		libraries:  a.Libraries,
+		code:                make([]byte, 0, len(a.Instructions)*8),
+		data:                data,
+		dataLabels:          dataLabels,
+		labels:              make(map[string]Address, 32),
+		libraries:           a.Libraries,
+		deferred:            make(map[int]func(int)),
+		deferredCodeChanges: make(map[int]func(int) bool),
 	}
 
 	switch b.Arch {
@@ -59,6 +61,13 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 		}
 	}
 
+restart:
+	for start, call := range c.deferredCodeChanges {
+		if call(start) {
+			goto restart
+		}
+	}
+
 	x := exe.New(elf.HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), c.code, c.data, nil)
 	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
 
@@ -70,8 +79,8 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 		c.importsStart = x.Sections[2].MemoryOffset - x.Sections[0].MemoryOffset
 	}
 
-	for _, call := range c.deferred {
-		call()
+	for start, call := range c.deferred {
+		call(start)
 	}
 
 	return c.code, c.data, c.libraries

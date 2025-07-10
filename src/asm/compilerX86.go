@@ -3,6 +3,7 @@ package asm
 import (
 	"encoding/binary"
 	"fmt"
+	"slices"
 
 	"git.urbach.dev/cli/q/src/sizeof"
 	"git.urbach.dev/cli/q/src/x86"
@@ -30,7 +31,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.Call(c.code, 0)
 		end := len(c.code)
 
-		c.Defer(func() {
+		c.Defer(end, func(end int) {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
@@ -44,7 +45,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.CallAt(c.code, 0)
 		end := len(c.code)
 
-		c.Defer(func() {
+		c.Defer(end, func(end int) {
 			index := c.libraries.Index(instr.Library, instr.Function)
 
 			if index == -1 {
@@ -64,23 +65,97 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *FunctionStart:
 	case *FunctionEnd:
 	case *Jump:
+		start := len(c.code)
 		c.code = x86.Jump8(c.code, 0)
-		end := len(c.code)
 
-		c.Defer(func() {
+		c.DeferCodeChange(start, func(start int) bool {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
 				panic("unknown label: " + instr.Label)
 			}
 
-			offset := address - end
+			var (
+				end    int
+				offset int
+			)
 
-			if sizeof.Signed(offset) > 1 {
-				panic("not implemented: long jumps")
+			switch c.code[start] {
+			case 0x74, 0x75, 0x7C, 0x7D, 0x7E, 0x7F, 0xEB:
+				end = start + 2
+				offset = address - end
+
+				if sizeof.Signed(offset) == 1 {
+					c.code[end-1] = byte(offset)
+					return false
+				}
+			case 0xE9:
+				end = start + 5
+				offset = address - end
+				binary.LittleEndian.PutUint32(c.code[start+1:end], uint32(offset))
+				return false
+			case 0x0F:
+				end = start + 6
+				offset = address - end
+				binary.LittleEndian.PutUint32(c.code[start+2:end], uint32(offset))
+				return false
+			default:
+				return false
 			}
 
-			c.code[end-1] = byte(offset)
+			var jump []byte
+
+			switch c.code[start] {
+			case 0x74: // JE
+				jump = []byte{0x0F, 0x84}
+			case 0x75: // JNE
+				jump = []byte{0x0F, 0x85}
+			case 0x7C: // JL
+				jump = []byte{0x0F, 0x8C}
+			case 0x7D: // JGE
+				jump = []byte{0x0F, 0x8D}
+			case 0x7E: // JLE
+				jump = []byte{0x0F, 0x8E}
+			case 0x7F: // JG
+				jump = []byte{0x0F, 0x8F}
+			case 0xEB: // JMP
+				jump = []byte{0xE9}
+			default:
+				return false
+			}
+
+			oldSize := 2
+			newSize := len(jump) + 4
+			shift := newSize - oldSize
+			offset -= shift
+			jump = binary.LittleEndian.AppendUint32(jump, uint32(offset))
+
+			for key, address := range c.labels {
+				if address >= end {
+					c.labels[key] += shift
+				}
+			}
+
+			for address, call := range c.deferred {
+				if address >= end {
+					delete(c.deferred, address)
+					address += shift
+					c.deferred[address] = call
+				}
+			}
+
+			for address, call := range c.deferredCodeChanges {
+				if address >= end {
+					delete(c.deferredCodeChanges, address)
+					address += shift
+					c.deferredCodeChanges[address] = call
+				}
+			}
+
+			left := c.code[:start]
+			right := c.code[end:]
+			c.code = slices.Concat(left, jump, right)
+			return true
 		})
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
@@ -88,7 +163,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.LoadAddress(c.code, instr.Destination, 0)
 		end := len(c.code)
 
-		c.Defer(func() {
+		c.Defer(end, func(end int) {
 			address, exists := c.labels[instr.Label]
 
 			if !exists {
