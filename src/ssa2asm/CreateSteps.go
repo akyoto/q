@@ -7,16 +7,19 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
+func (f *Compiler) CreateSteps(ir ssa.IR) []*Step {
 	count := ir.CountValues()
-	steps := make([]Step, count)
+	storage := make([]Step, count)
+	steps := make([]*Step, count)
 	f.ValueToStep = make(map[ssa.Value]*Step, count)
 
 	for i, instr := range ir.Values {
-		steps[i].Index = i
-		steps[i].Value = instr
-		steps[i].Register = -1
-		f.ValueToStep[instr] = &steps[i]
+		step := &storage[i]
+		step.Index = i
+		step.Value = instr
+		step.Register = -1
+		steps[i] = step
+		f.ValueToStep[instr] = step
 	}
 
 	for i, instr := range ir.Values {
@@ -72,24 +75,49 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 		}
 	}
 
+	usedRegisters := 0
+	futureRegisters := 0
+
+	for i, step := range steps {
+		param, isParam := step.Value.(*ssa.Parameter)
+
+		if !isParam {
+			break
+		}
+
+		currentRegister := f.CPU.Call.In[param.Index]
+
+		if futureRegisters&(1<<currentRegister) != 0 {
+			bringToFront(steps[:i+1], i)
+
+			for h := range i + 1 {
+				steps[h].Index = h
+			}
+
+			if usedRegisters&(1<<step.Register) != 0 {
+				users := step.Value.Users()
+				alive := f.ValueToStep[users[len(users)-1]].Index
+				step.Register = f.findFreeRegister(steps[:alive+1])
+			}
+		}
+
+		usedRegisters |= (1 << currentRegister)
+		futureRegisters |= (1 << step.Register)
+	}
+
 	for stepIndex, step := range steps {
 		for i, live := range step.Live {
 			if live.Register == -1 {
 				continue
 			}
 
-			var (
-				oldRegister       = cpu.Register(-1)
-				volatileRegisters []cpu.Register
-			)
+			var volatileRegisters []cpu.Register
 
-			switch instr := step.Value.(type) {
+			switch step.Value.(type) {
 			case *ssa.Call:
 				volatileRegisters = f.CPU.Call.Volatile
 			case *ssa.CallExtern:
 				volatileRegisters = f.CPU.ExternCall.Volatile
-			case *ssa.Parameter:
-				oldRegister = f.CPU.Call.In[instr.Index]
 			case *ssa.Syscall:
 				volatileRegisters = f.CPU.Syscall.Volatile
 			}
@@ -104,7 +132,7 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 					continue
 				}
 
-				if previous.Register != live.Register && previous.Register != oldRegister {
+				if previous.Register != live.Register {
 					continue
 				}
 
