@@ -74,11 +74,6 @@ func (c *compilerARM) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, arm.Jump(offset))
 			return code
 		}
-	case *FunctionStart:
-		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
-		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))
-	case *FunctionEnd:
-		c.append(arm.LoadPair(arm.FP, arm.LR, arm.SP, 16))
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
 	case *MoveRegisterLabel:
@@ -104,6 +99,11 @@ func (c *compilerARM) Compile(instr Instruction) {
 		panic("not implemented")
 	case *Return:
 		c.append(arm.Return())
+	case *StackFrameStart:
+		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
+		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))
+	case *StackFrameEnd:
+		c.append(arm.LoadPair(arm.FP, arm.LR, arm.SP, 16))
 	case *Syscall:
 		c.append(arm.Syscall())
 	default:

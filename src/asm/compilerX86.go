@@ -63,8 +63,6 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
 	case *CallExternEnd:
 		c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
-	case *FunctionStart:
-	case *FunctionEnd:
 	case *Jump:
 		c.code = x86.Jump8(c.code, 0)
 
@@ -157,6 +155,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *StackFrameStart:
+	case *StackFrameEnd:
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	default:

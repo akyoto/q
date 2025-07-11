@@ -11,13 +11,13 @@ import (
 func TestAssembler(t *testing.T) {
 	a := &asm.Assembler{}
 	a.Append(&asm.Label{Name: "a"})
-	a.Append(&asm.FunctionStart{})
+	a.Append(&asm.StackFrameStart{})
 	a.Append(&asm.Call{Label: "b"})
 	a.Append(&asm.Call{Label: "c"})
 	a.Append(&asm.MoveRegisterLabel{Label: "b"})
 	a.Append(&asm.MoveRegisterNumber{Destination: 0, Number: 123})
 	a.Append(&asm.MoveRegisterRegister{Destination: 0, Source: 1})
-	a.Append(&asm.FunctionEnd{})
+	a.Append(&asm.StackFrameEnd{})
 	a.Append(&asm.Return{})
 
 	b := &asm.Assembler{}

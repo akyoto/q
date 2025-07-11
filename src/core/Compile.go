@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 
+	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -55,5 +56,11 @@ func (f *Function) Compile() {
 		return
 	}
 
-	f.GenerateAssembly(f.IR, f.IsLeaf())
+	stackFrame := false
+
+	if f.All.Build.Arch == build.ARM && !f.IsLeaf() && f.UniqueName != "run.init" {
+		stackFrame = true
+	}
+
+	f.GenerateAssembly(f.IR, stackFrame)
 }

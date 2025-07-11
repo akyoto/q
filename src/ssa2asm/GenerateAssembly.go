@@ -6,11 +6,11 @@ import (
 )
 
 // GenerateAssembly converts the SSA IR to assembler instructions.
-func (f *Compiler) GenerateAssembly(ir ssa.IR, isLeaf bool) {
+func (f *Compiler) GenerateAssembly(ir ssa.IR, stackFrame bool) {
 	f.Assembler.Append(&asm.Label{Name: f.UniqueName})
 
-	if !isLeaf && f.UniqueName != "run.init" {
-		f.Assembler.Append(&asm.FunctionStart{})
+	if stackFrame {
+		f.Assembler.Append(&asm.StackFrameStart{})
 	}
 
 	f.Steps = f.CreateSteps(ir)
@@ -19,8 +19,8 @@ func (f *Compiler) GenerateAssembly(ir ssa.IR, isLeaf bool) {
 		f.Exec(&step)
 	}
 
-	if !isLeaf && f.UniqueName != "run.init" {
-		f.Assembler.Append(&asm.FunctionEnd{})
+	if stackFrame {
+		f.Assembler.Append(&asm.StackFrameEnd{})
 	}
 
 	if f.UniqueName != "os.exit" {

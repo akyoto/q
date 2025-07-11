@@ -28,9 +28,6 @@ type CallExtern struct {
 type CallExternStart struct{}
 type CallExternEnd struct{}
 
-type FunctionStart struct{}
-type FunctionEnd struct{}
-
 type Jump struct {
 	Label string
 }
@@ -65,5 +62,8 @@ type SubRegisterNumber struct {
 	Source      cpu.Register
 	Number      int
 }
+
+type StackFrameStart struct{}
+type StackFrameEnd struct{}
 
 type Syscall struct{}
