@@ -94,7 +94,7 @@ func (f *Compiler) CreateSteps(ir ssa.IR) []Step {
 				volatileRegisters = f.CPU.Syscall.Volatile
 			}
 
-			if slices.Contains(volatileRegisters, live.Register) {
+			if live.Value != step.Value && slices.Contains(volatileRegisters, live.Register) {
 				live.Register = f.findFreeRegister(steps[live.Index : stepIndex+1])
 				goto next
 			}

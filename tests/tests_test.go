@@ -7,8 +7,8 @@ import (
 var tests = []testRun{
 	{"script", "", "Hello\n", 0},
 	{"sum-10", "", "", 10},
-	//{"sum-36", "", "", 36},
-	//{"volatile-call-registers", "", "Hello\nHello\nHello\n", 0},
+	{"sum-36", "", "", 36},
+	{"value-reuse", "", "Hello\nHello\nHello\n", 0},
 }
 
 func TestTests(t *testing.T) {

@@ -107,15 +107,6 @@ func (a *Assembler) Skip(instr Instruction) bool {
 	}
 
 	switch instr := instr.(type) {
-	case *FunctionEnd:
-		// Call + FunctionEnd can be replaced by a single Jump
-		call, isCall := a.Last().(*Call)
-
-		if isCall {
-			a.SetLast(&Jump{Label: call.Label})
-			return true
-		}
-
 	case *Label:
 		// Jump + Label can be replaced by just the Label if both addresses are equal
 		jump, isJump := a.Last().(*Jump)
