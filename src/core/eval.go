@@ -150,7 +150,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 
 		if exists {
 			if function.IsExtern() {
-				f.Assembler.Libraries = f.Assembler.Libraries.Append(function.Package, function.Name)
+				f.Assembler.Libraries.Append(function.Package, function.Name)
 			} else {
 				f.Dependencies.Add(function)
 			}

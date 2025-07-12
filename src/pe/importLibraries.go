@@ -8,7 +8,7 @@ func importLibraries(dlls dll.List, importsStart int) ([]uint64, []byte, []DLLIm
 	dllData := make([]byte, 0)
 	dllImports := []DLLImport{}
 
-	for _, library := range dlls {
+	for library := range dlls.All() {
 		functionsStart := len(imports) * 8
 		dllNamePos := len(dllData)
 		dllData = append(dllData, library.Name...)
