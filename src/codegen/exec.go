@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -55,13 +56,11 @@ func (f *Function) exec(step *step) {
 	case *ssa.CallExtern:
 		f.Assembler.Append(&asm.CallExternStart{})
 		args := instr.Arguments
+		var pushed []cpu.Register
 
 		for i, arg := range args {
 			if i >= len(f.CPU.ExternCall.In) {
-				f.Assembler.Append(&asm.PushRegister{
-					Register: f.ValueToStep[arg].Register,
-				})
-
+				pushed = append(pushed, f.ValueToStep[arg].Register)
 				continue
 			}
 
@@ -73,6 +72,10 @@ func (f *Function) exec(step *step) {
 				Destination: f.CPU.ExternCall.In[i],
 				Source:      f.ValueToStep[arg].Register,
 			})
+		}
+
+		if len(pushed) > 0 {
+			f.Assembler.Append(&asm.PushRegisters{Registers: pushed})
 		}
 
 		dot := strings.IndexByte(instr.Func.UniqueName, '.')

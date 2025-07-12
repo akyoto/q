@@ -5,11 +5,11 @@ import (
 )
 
 var tests = []testRun{
-	{"script", "", "Hello\n", 0},
 	{"sum-10", "", "", 10},
 	{"sum-36", "", "", 36},
-	{"swap", "", "", 3},
-	{"value-reuse", "", "Hello\nHello\nHello\n", 0},
+	{"param-swap", "", "", 3},
+	{"script", "", "Hello\n", 0},
+	{"hello-3", "", "Hello\nHello\nHello\n", 0},
 }
 
 func TestTests(t *testing.T) {

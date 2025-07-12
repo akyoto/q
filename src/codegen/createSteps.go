@@ -34,7 +34,7 @@ func (f *Function) createSteps(ir ssa.IR) []*step {
 			for r, param := range instr.Arguments {
 				if r >= len(f.CPU.ExternCall.In) {
 					// Temporary hack to allow arguments 5 and 6 to be hinted as r10 and r11, then pushed later.
-					f.ValueToStep[param].Hint(f.CPU.ExternCall.Volatile[1+r])
+					f.ValueToStep[param].Hint(f.CPU.ExternCall.Clobbered[1+r])
 					continue
 				}
 
@@ -112,18 +112,18 @@ func (f *Function) createSteps(ir ssa.IR) []*step {
 				continue
 			}
 
-			var volatileRegisters []cpu.Register
+			var clobbered []cpu.Register
 
 			switch step.Value.(type) {
 			case *ssa.Call:
-				volatileRegisters = f.CPU.Call.Volatile
+				clobbered = f.CPU.Call.Clobbered
 			case *ssa.CallExtern:
-				volatileRegisters = f.CPU.ExternCall.Volatile
+				clobbered = f.CPU.ExternCall.Clobbered
 			case *ssa.Syscall:
-				volatileRegisters = f.CPU.Syscall.Volatile
+				clobbered = f.CPU.Syscall.Clobbered
 			}
 
-			if live.Value != step.Value && slices.Contains(volatileRegisters, live.Register) {
+			if live.Value != step.Value && slices.Contains(clobbered, live.Register) {
 				live.Register = f.findFreeRegister(steps[live.Index : stepIndex+1])
 				goto next
 			}
@@ -145,6 +145,14 @@ func (f *Function) createSteps(ir ssa.IR) []*step {
 				}
 			}
 		next:
+		}
+	}
+
+	mustPreserve := f.CPU.Call.Preserved
+
+	for _, step := range f.Steps {
+		if slices.Contains(mustPreserve, step.Register) {
+			f.Preserved.Add(step.Register)
 		}
 	}
 

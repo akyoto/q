@@ -3,6 +3,7 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/cpu"
+	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -13,4 +14,5 @@ type Function struct {
 	ValueToStep map[ssa.Value]*step
 	CPU         *cpu.CPU
 	Count       count
+	Preserved   set.Ordered[cpu.Register]
 }

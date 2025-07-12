@@ -15,15 +15,25 @@ func (f *Function) GenerateAssembly(ir ssa.IR, stackFrame bool) {
 
 	f.Steps = f.createSteps(ir)
 
+	if f.Preserved.Count() > 0 {
+		f.Assembler.Append(&asm.PushRegisters{Registers: f.Preserved.Slice()})
+	}
+
 	for _, step := range f.Steps {
 		f.exec(step)
+	}
+
+	if f.FullName == "os.exit" {
+		return
+	}
+
+	if f.Preserved.Count() > 0 {
+		f.Assembler.Append(&asm.PopRegisters{Registers: f.Preserved.Slice()})
 	}
 
 	if stackFrame {
 		f.Assembler.Append(&asm.StackFrameEnd{})
 	}
 
-	if f.FullName != "os.exit" {
-		f.Assembler.Append(&asm.Return{})
-	}
+	f.Assembler.Append(&asm.Return{})
 }

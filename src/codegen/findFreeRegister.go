@@ -22,13 +22,13 @@ func (f *Function) findFreeRegister(steps []*step) cpu.Register {
 
 		switch instr := step.Value.(type) {
 		case *ssa.Call:
-			volatileRegisters = f.CPU.Call.Volatile
+			volatileRegisters = f.CPU.Call.Clobbered
 		case *ssa.CallExtern:
-			volatileRegisters = f.CPU.ExternCall.Volatile
+			volatileRegisters = f.CPU.ExternCall.Clobbered
 		case *ssa.Parameter:
 			usedRegisters |= (1 << f.CPU.Call.In[instr.Index])
 		case *ssa.Syscall:
-			volatileRegisters = f.CPU.Syscall.Volatile
+			volatileRegisters = f.CPU.Syscall.Clobbered
 		}
 
 		for _, volatile := range volatileRegisters {

@@ -51,8 +51,12 @@ type MoveRegisterRegister struct {
 	Source      cpu.Register
 }
 
-type PushRegister struct {
-	Register cpu.Register
+type PopRegisters struct {
+	Registers []cpu.Register
+}
+
+type PushRegisters struct {
+	Registers []cpu.Register
 }
 
 type Return struct{}

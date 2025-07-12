@@ -95,8 +95,28 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:
 		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
-	case *PushRegister:
-		panic("not implemented")
+	case *PopRegisters:
+		registers := instr.Registers
+		count := len(registers)
+
+		if count&1 != 0 {
+			count--
+			c.append(arm.LoadPair(registers[count], registers[count], arm.SP, 16))
+		}
+
+		for i := count - 2; i >= 0; i -= 2 {
+			c.append(arm.LoadPair(registers[i], registers[i+1], arm.SP, 16))
+		}
+	case *PushRegisters:
+		registers := instr.Registers
+
+		for i := 0; i < len(registers); i += 2 {
+			if i+1 < len(registers) {
+				c.append(arm.StorePair(registers[i], registers[i+1], arm.SP, -16))
+			} else {
+				c.append(arm.StorePair(registers[i], registers[i], arm.SP, -16))
+			}
+		}
 	case *Return:
 		c.append(arm.Return())
 	case *StackFrameStart:

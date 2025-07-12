@@ -3,6 +3,7 @@ package asm
 import (
 	"encoding/binary"
 	"fmt"
+	"slices"
 
 	"git.urbach.dev/cli/q/src/sizeof"
 	"git.urbach.dev/cli/q/src/x86"
@@ -145,8 +146,14 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:
 		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-	case *PushRegister:
-		c.code = x86.PushRegister(c.code, instr.Register)
+	case *PopRegisters:
+		for _, register := range slices.Backward(instr.Registers) {
+			c.code = x86.PopRegister(c.code, register)
+		}
+	case *PushRegisters:
+		for _, register := range instr.Registers {
+			c.code = x86.PushRegister(c.code, register)
+		}
 	case *Return:
 		c.code = x86.Return(c.code)
 	case *SubRegisterNumber:

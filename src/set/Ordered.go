@@ -36,3 +36,8 @@ func (set *Ordered[T]) All() iter.Seq[T] {
 func (set *Ordered[T]) Count() int {
 	return len(set.values)
 }
+
+// Slice returns the set of elements as a slice.
+func (set *Ordered[T]) Slice() []T {
+	return set.values
+}
