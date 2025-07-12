@@ -15,7 +15,7 @@ import (
 // Function is the smallest unit of code.
 type Function struct {
 	ssa.IR
-	codegen.Compiler
+	codegen.Function
 	Name         string
 	Package      string
 	File         *fs.File
@@ -41,7 +41,7 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 				{Instructions: make([]ssa.Value, 0, 8)},
 			},
 		},
-		Compiler: codegen.Compiler{
+		Function: codegen.Function{
 			FullName: fmt.Sprintf("%s.%s", pkg, name),
 			Assembler: asm.Assembler{
 				Instructions: make([]asm.Instruction, 0, 8),

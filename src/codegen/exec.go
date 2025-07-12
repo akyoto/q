@@ -7,7 +7,8 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-func (f *Compiler) Exec(step *Step) {
+// exec executes an instruction.
+func (f *Function) exec(step *step) {
 	switch instr := step.Value.(type) {
 	case *ssa.BinaryOp:
 		f.Assembler.Append(&asm.AddRegisterRegister{
@@ -18,7 +19,7 @@ func (f *Compiler) Exec(step *Step) {
 
 	case *ssa.Bytes:
 		f.Count.Data++
-		label := f.CreateLabel("data", f.Count.Data)
+		label := f.createLabel("data", f.Count.Data)
 		f.Assembler.SetData(label.Name, instr.Bytes)
 
 		f.Assembler.Append(&asm.MoveRegisterLabel{

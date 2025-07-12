@@ -1,7 +1,5 @@
 package ssa
 
-import "slices"
-
 // IR is a list of basic blocks.
 type IR struct {
 	Blocks []*Block
@@ -69,21 +67,6 @@ func (f *IR) Values(yield func(int, Value) bool) {
 			}
 
 			index++
-		}
-	}
-}
-
-// ValuesBackward yields on each value from the end towards the start.
-func (f *IR) ValuesBackward(yield func(int, Value) bool) {
-	index := f.CountValues()
-
-	for _, block := range slices.Backward(f.Blocks) {
-		for _, instr := range slices.Backward(block.Instructions) {
-			index--
-
-			if !yield(index, instr) {
-				return
-			}
 		}
 	}
 }

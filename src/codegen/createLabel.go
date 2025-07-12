@@ -7,8 +7,8 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 )
 
-// CreateLabel creates a label that is tied to this function by using a suffix.
-func (f *Compiler) CreateLabel(prefix string, count Counter) *asm.Label {
+// createLabel creates a label that is tied to this function by using a suffix.
+func (f *Function) createLabel(prefix string, count counter) *asm.Label {
 	tmp := strings.Builder{}
 	tmp.WriteString(prefix)
 	tmp.WriteString(" ")

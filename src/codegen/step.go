@@ -5,15 +5,15 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-type Step struct {
+type step struct {
 	Index    int
 	Value    ssa.Value
-	Live     []*Step
+	Live     []*step
 	Hints    []cpu.Register
 	Register cpu.Register
 }
 
-func (s *Step) Hint(reg cpu.Register) {
+func (s *step) Hint(reg cpu.Register) {
 	if len(s.Hints) == 0 {
 		s.Register = reg
 	}
@@ -21,6 +21,6 @@ func (s *Step) Hint(reg cpu.Register) {
 	s.Hints = append(s.Hints, reg)
 }
 
-func (s *Step) String() string {
+func (s *step) String() string {
 	return s.Value.String()
 }

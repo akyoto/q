@@ -6,11 +6,11 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-type Compiler struct {
+type Function struct {
 	FullName    string
 	Assembler   asm.Assembler
-	Steps       []*Step
-	ValueToStep map[ssa.Value]*Step
+	Steps       []*step
+	ValueToStep map[ssa.Value]*step
 	CPU         *cpu.CPU
-	Count       Count
+	Count       count
 }

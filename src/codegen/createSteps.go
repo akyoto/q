@@ -7,11 +7,12 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-func (f *Compiler) CreateSteps(ir ssa.IR) []*Step {
+// createSteps builds a series of instructions from the SSA values in the IR.
+func (f *Function) createSteps(ir ssa.IR) []*step {
 	count := ir.CountValues()
-	storage := make([]Step, count)
-	steps := make([]*Step, count)
-	f.ValueToStep = make(map[ssa.Value]*Step, count)
+	storage := make([]step, count)
+	steps := make([]*step, count)
+	f.ValueToStep = make(map[ssa.Value]*step, count)
 
 	for i, instr := range ir.Values {
 		step := &storage[i]

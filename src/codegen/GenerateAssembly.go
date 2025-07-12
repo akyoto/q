@@ -6,17 +6,17 @@ import (
 )
 
 // GenerateAssembly converts the SSA IR to assembler instructions.
-func (f *Compiler) GenerateAssembly(ir ssa.IR, stackFrame bool) {
+func (f *Function) GenerateAssembly(ir ssa.IR, stackFrame bool) {
 	f.Assembler.Append(&asm.Label{Name: f.FullName})
 
 	if stackFrame {
 		f.Assembler.Append(&asm.StackFrameStart{})
 	}
 
-	f.Steps = f.CreateSteps(ir)
+	f.Steps = f.createSteps(ir)
 
 	for _, step := range f.Steps {
-		f.Exec(step)
+		f.exec(step)
 	}
 
 	if stackFrame {

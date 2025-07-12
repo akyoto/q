@@ -6,7 +6,7 @@ import (
 )
 
 // findFreeRegister finds a free register within the given slice of steps.
-func (f *Compiler) findFreeRegister(steps []*Step) cpu.Register {
+func (f *Function) findFreeRegister(steps []*step) cpu.Register {
 	usedRegisters := 0
 
 	for _, step := range steps {
