@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/go/assert"
 )
 
@@ -22,7 +22,7 @@ func TestExamples(t *testing.T) {
 func BenchmarkExamples(b *testing.B) {
 	for _, test := range examples {
 		b.Run(test.Name, func(b *testing.B) {
-			example := build.New(filepath.Join("..", "examples", test.Name))
+			example := config.New(filepath.Join("..", "examples", test.Name))
 
 			for b.Loop() {
 				_, err := compiler.Compile(example)

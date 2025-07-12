@@ -7,12 +7,12 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// Decompose creates SSA values from expressions and decomposes structs into their individual fields.
-func (f *Function) Decompose(nodes []*expression.Expression, typeCheck []*ssa.Parameter) ([]ssa.Value, error) {
+// decompose creates SSA values from expressions and decomposes structs into their individual fields.
+func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Parameter) ([]ssa.Value, error) {
 	args := make([]ssa.Value, 0, len(nodes))
 
 	for i, node := range nodes {
-		value, err := f.Evaluate(node)
+		value, err := f.eval(node)
 
 		if err != nil {
 			return nil, err

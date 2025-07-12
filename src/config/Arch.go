@@ -1,4 +1,4 @@
-package build
+package config
 
 // Arch is a CPU architecture.
 type Arch uint8

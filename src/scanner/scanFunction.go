@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"git.urbach.dev/cli/q/src/arm"
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
@@ -71,22 +71,22 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 	}
 
 	switch s.build.Arch {
-	case build.ARM:
+	case config.ARM:
 		switch s.build.OS {
-		case build.Linux:
+		case config.Linux:
 			function.CPU = &arm.LinuxCPU
-		case build.Mac:
+		case config.Mac:
 			function.CPU = &arm.MacCPU
-		case build.Windows:
+		case config.Windows:
 			function.CPU = &arm.WindowsCPU
 		}
-	case build.X86:
+	case config.X86:
 		switch s.build.OS {
-		case build.Linux:
+		case config.Linux:
 			function.CPU = &x86.LinuxCPU
-		case build.Mac:
+		case config.Mac:
 			function.CPU = &x86.MacCPU
-		case build.Windows:
+		case config.Windows:
 			function.CPU = &x86.WindowsCPU
 		}
 	}

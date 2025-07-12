@@ -10,13 +10,13 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// ToNumber tries to convert the token into a numeric value.
-func (f *Function) ToNumber(t token.Token) (int, error) {
-	return ToNumber(t, f.File)
+// toNumber tries to convert the token into a numeric value.
+func (f *Function) toNumber(t token.Token) (int, error) {
+	return toNumber(t, f.File)
 }
 
-// ToNumber tries to convert the token into a numeric value.
-func ToNumber(t token.Token, file *fs.File) (int, error) {
+// toNumber tries to convert the token into a numeric value.
+func toNumber(t token.Token, file *fs.File) (int, error) {
 	switch t.Kind {
 	case token.Number:
 		var (
@@ -44,7 +44,7 @@ func ToNumber(t token.Token, file *fs.File) (int, error) {
 
 	case token.Rune:
 		r := t.Bytes(file.Bytes)
-		r = Unescape(r)
+		r = unescape(r)
 
 		if len(r) == 0 {
 			return 0, errors.New(InvalidRune, file, t.Position+1)

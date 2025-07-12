@@ -1,4 +1,4 @@
-package build
+package config
 
 import (
 	"git.urbach.dev/cli/q/src/global"

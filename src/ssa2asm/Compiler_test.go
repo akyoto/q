@@ -3,16 +3,16 @@ package ssa2asm_test
 import (
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/go/assert"
 )
 
 func TestHelloExample(t *testing.T) {
-	b := build.New("../../examples/hello")
+	build := config.New("../../examples/hello")
 
-	b.Matrix(func(b *build.Build) {
-		_, err := compiler.Compile(b)
+	build.Matrix(func(build *config.Build) {
+		_, err := compiler.Compile(build)
 		assert.Nil(t, err)
 	})
 }

@@ -42,7 +42,7 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 			},
 		},
 		Compiler: ssa2asm.Compiler{
-			UniqueName: fmt.Sprintf("%s.%s", pkg, name),
+			FullName: fmt.Sprintf("%s.%s", pkg, name),
 			Assembler: asm.Assembler{
 				Instructions: make([]asm.Instruction, 0, 8),
 			},
@@ -77,5 +77,5 @@ func (f *Function) IsLeaf() bool {
 
 // String returns the unique name.
 func (f *Function) String() string {
-	return f.UniqueName
+	return f.FullName
 }

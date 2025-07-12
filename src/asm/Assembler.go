@@ -3,7 +3,7 @@ package asm
 import (
 	"maps"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/data"
 	"git.urbach.dev/cli/q/src/dll"
 )
@@ -30,7 +30,7 @@ func (a *Assembler) Last() Instruction {
 }
 
 // Compile compiles the instructions to machine code.
-func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.List) {
+func (a *Assembler) Compile(build *config.Build) (code []byte, data []byte, libs dll.List) {
 	data, dataLabels := a.Data.Finalize()
 
 	c := compiler{
@@ -40,21 +40,21 @@ func (a *Assembler) Compile(b *build.Build) (code []byte, data []byte, libs dll.
 			latePatches:  make([]*patch, 0, len(a.Instructions)/8),
 			labels:       make(map[string]int, 32),
 		},
-		build:      b,
+		build:      build,
 		data:       data,
 		dataLabels: dataLabels,
 		libraries:  a.Libraries,
 	}
 
-	switch b.Arch {
-	case build.ARM:
+	switch build.Arch {
+	case config.ARM:
 		armc := compilerARM{compiler: &c}
 
 		for _, instr := range a.Instructions {
 			armc.Compile(instr)
 		}
 
-	case build.X86:
+	case config.X86:
 		x86c := compilerX86{compiler: &c}
 
 		for _, instr := range a.Instructions {

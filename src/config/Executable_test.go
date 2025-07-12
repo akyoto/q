@@ -1,4 +1,4 @@
-package build_test
+package config_test
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/global"
 	"git.urbach.dev/go/assert"
 )
@@ -22,7 +22,7 @@ func TestExecutable(t *testing.T) {
 				for _, file := range fileList {
 					global.OS = os
 					global.Arch = arch
-					b := build.New(file)
+					b := config.New(file)
 					exe := filepath.Base(b.Executable())
 
 					if os == "windows" {

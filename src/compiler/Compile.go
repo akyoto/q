@@ -3,15 +3,15 @@ package compiler
 import (
 	"maps"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/scanner"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // Compile waits for the scan to finish and compiles all functions.
-func Compile(b *build.Build) (*core.Environment, error) {
-	all, err := scanner.Scan(b)
+func Compile(build *config.Build) (*core.Environment, error) {
+	all, err := scanner.Scan(build)
 
 	if err != nil {
 		return nil, err
@@ -24,12 +24,16 @@ func Compile(b *build.Build) (*core.Environment, error) {
 		return nil, MissingInitFunction
 	}
 
+	all.Init = init
+
 	// Check for existence of `main`
-	_, exists = all.Functions["main.main"]
+	main, exists := all.Functions["main.main"]
 
 	if !exists {
 		return nil, MissingMainFunction
 	}
+
+	all.Main = main
 
 	// Resolve types
 	for _, f := range all.Functions {
@@ -62,7 +66,7 @@ func Compile(b *build.Build) (*core.Environment, error) {
 		}
 	}
 
-	if b.ShowSSA {
+	if build.ShowSSA {
 		showSSA(init)
 	}
 

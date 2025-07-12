@@ -1,4 +1,4 @@
-package build
+package config
 
 // Build describes the parameters for the "build" command.
 type Build struct {

@@ -8,7 +8,7 @@ import (
 
 // run builds and runs the executable.
 func run(args []string) int {
-	b, err := newBuildFromArgs(args)
+	b, err := newBuild(args)
 
 	if err != nil {
 		return exit(err)

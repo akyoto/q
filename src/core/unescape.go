@@ -2,8 +2,8 @@ package core
 
 import "bytes"
 
-// Unescape replaces the escape sequences in the contents of a string token with the respective characters.
-func Unescape(data []byte) []byte {
+// unescape replaces the escape sequences in the contents of a string token with the respective characters.
+func unescape(data []byte) []byte {
 	data = data[1 : len(data)-1]
 	escape := bytes.IndexByte(data, '\\')
 

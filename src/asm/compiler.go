@@ -1,7 +1,7 @@
 package asm
 
 import (
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/dll"
 	"git.urbach.dev/cli/q/src/elf"
 	"git.urbach.dev/cli/q/src/exe"
@@ -9,7 +9,7 @@ import (
 
 type compiler struct {
 	patcher
-	build        *build.Build
+	build        *config.Build
 	data         []byte
 	dataLabels   map[string]int
 	libraries    dll.List
@@ -26,7 +26,7 @@ func (c *compiler) AddDataLabels() {
 		c.labels[dataLabel] = dataSectionOffset + address
 	}
 
-	if c.build.OS == build.Windows {
+	if c.build.OS == config.Windows {
 		c.importsStart = x.Sections[2].MemoryOffset - x.Sections[0].MemoryOffset
 	}
 }

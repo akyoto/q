@@ -5,8 +5,8 @@ import (
 	"io/fs"
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/linker"
 	"git.urbach.dev/cli/q/src/memfile"
 	"git.urbach.dev/go/assert"
@@ -29,7 +29,7 @@ func TestHelloExample(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, file)
 
-	b := build.New("../../examples/hello")
+	b := config.New("../../examples/hello")
 	env, err := compiler.Compile(b)
 	assert.Nil(t, err)
 

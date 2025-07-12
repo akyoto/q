@@ -4,14 +4,14 @@ import (
 	"runtime"
 	"strings"
 
-	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/linker"
 )
 
-// _build parses the arguments and creates a build.
-func _build(args []string) int {
-	b, err := newBuildFromArgs(args)
+// build parses the arguments and creates a build.
+func build(args []string) int {
+	b, err := newBuild(args)
 
 	if err != nil {
 		return exit(err)
@@ -31,9 +31,9 @@ func _build(args []string) int {
 	return exit(err)
 }
 
-// newBuildFromArgs creates a new build with the given arguments.
-func newBuildFromArgs(args []string) (*build.Build, error) {
-	b := build.New()
+// newBuild creates a new build with the given arguments.
+func newBuild(args []string) (*config.Build, error) {
+	build := config.New()
 
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
@@ -41,62 +41,62 @@ func newBuildFromArgs(args []string) (*build.Build, error) {
 			i++
 
 			if i >= len(args) {
-				return b, &ExpectedParameter{Parameter: "arch"}
+				return nil, &ExpectedParameter{Parameter: "arch"}
 			}
 
 			switch args[i] {
 			case "arm":
-				b.Arch = build.ARM
+				build.Arch = config.ARM
 			case "x86":
-				b.Arch = build.X86
+				build.Arch = config.X86
 			default:
-				return b, &InvalidValue{Value: args[i], Parameter: "arch"}
+				return nil, &InvalidValue{Value: args[i], Parameter: "arch"}
 			}
 
 		case "--dry":
-			b.Dry = true
+			build.Dry = true
 
 		case "--os":
 			i++
 
 			if i >= len(args) {
-				return b, &ExpectedParameter{Parameter: "os"}
+				return nil, &ExpectedParameter{Parameter: "os"}
 			}
 
 			switch args[i] {
 			case "linux":
-				b.OS = build.Linux
+				build.OS = config.Linux
 			case "mac":
-				b.OS = build.Mac
+				build.OS = config.Mac
 			case "windows":
-				b.OS = build.Windows
+				build.OS = config.Windows
 			default:
-				return b, &InvalidValue{Value: args[i], Parameter: "os"}
+				return nil, &InvalidValue{Value: args[i], Parameter: "os"}
 			}
 
 		case "-v", "--verbose":
-			b.ShowSSA = true
+			build.ShowSSA = true
 
 		default:
 			if strings.HasPrefix(args[i], "-") {
-				return b, &UnknownParameter{Parameter: args[i]}
+				return nil, &UnknownParameter{Parameter: args[i]}
 			}
 
-			b.Files = append(b.Files, args[i])
+			build.Files = append(build.Files, args[i])
 		}
 	}
 
-	if b.OS == build.UnknownOS {
-		return b, &InvalidValue{Value: runtime.GOOS, Parameter: "os"}
+	if build.OS == config.UnknownOS {
+		return nil, &InvalidValue{Value: runtime.GOOS, Parameter: "os"}
 	}
 
-	if b.Arch == build.UnknownArch {
-		return b, &InvalidValue{Value: runtime.GOARCH, Parameter: "arch"}
+	if build.Arch == config.UnknownArch {
+		return nil, &InvalidValue{Value: runtime.GOARCH, Parameter: "arch"}
 	}
 
-	if len(b.Files) == 0 {
-		b.Files = append(b.Files, ".")
+	if len(build.Files) == 0 {
+		build.Files = append(build.Files, ".")
 	}
 
-	return b, nil
+	return build, nil
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/exe"
 )
 
@@ -17,8 +17,8 @@ type ELF struct {
 }
 
 // Write writes the ELF64 format to the given writer.
-func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), codeBytes, dataBytes)
+func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
 
@@ -31,7 +31,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			OSABI:                       0,
 			ABIVersion:                  0,
 			Type:                        TypeDynamic,
-			Architecture:                Arch(b.Arch),
+			Architecture:                Arch(build.Arch),
 			FileVersion:                 1,
 			EntryPointInMemory:          int64(code.MemoryOffset),
 			ProgramHeaderOffset:         HeaderSize,
@@ -51,7 +51,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			VirtualAddress: int64(code.MemoryOffset),
 			SizeInFile:     int64(len(code.Bytes)),
 			SizeInMemory:   int64(len(code.Bytes)),
-			Align:          int64(b.MemoryAlign()),
+			Align:          int64(build.MemoryAlign()),
 		},
 		DataHeader: ProgramHeader{
 			Type:           ProgramTypeLOAD,
@@ -60,7 +60,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			VirtualAddress: int64(data.MemoryOffset),
 			SizeInFile:     int64(len(data.Bytes)),
 			SizeInMemory:   int64(len(data.Bytes)),
-			Align:          int64(b.MemoryAlign()),
+			Align:          int64(build.MemoryAlign()),
 		},
 	}
 

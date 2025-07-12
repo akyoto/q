@@ -1,4 +1,4 @@
-package build
+package config
 
 // FileAlign returns the file alignment.
 func (build *Build) FileAlign() int {

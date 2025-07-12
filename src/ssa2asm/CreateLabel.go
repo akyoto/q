@@ -14,7 +14,7 @@ func (f *Compiler) CreateLabel(prefix string, count Counter) *asm.Label {
 	tmp.WriteString(" ")
 	tmp.WriteString(strconv.FormatUint(uint64(count), 10))
 	tmp.WriteString(" [")
-	tmp.WriteString(f.UniqueName)
+	tmp.WriteString(f.FullName)
 	tmp.WriteString("]")
 	return &asm.Label{Name: tmp.String()}
 }

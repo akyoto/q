@@ -10,8 +10,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// Evaluate converts an expression to an SSA value.
-func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
+// eval converts an expression to an SSA value.
+func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 	if expr.IsLeaf() {
 		switch expr.Token.Kind {
 		case token.Identifier:
@@ -28,7 +28,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 				f.Dependencies.Add(function)
 
 				v := &ssa.Function{
-					UniqueName: function.UniqueName,
+					UniqueName: function.FullName,
 					Typ:        function.Type,
 					IsExtern:   function.IsExtern(),
 					Source:     ssa.Source(expr.Source),
@@ -40,7 +40,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			return value, nil
 
 		case token.Number:
-			number, err := f.ToNumber(expr.Token)
+			number, err := f.toNumber(expr.Token)
 
 			if err != nil {
 				return nil, err
@@ -55,7 +55,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 		case token.String:
 			data := expr.Token.Bytes(f.File.Bytes)
-			data = Unescape(data)
+			data = unescape(data)
 
 			length := f.Append(&ssa.Int{
 				Int:    len(data),
@@ -82,7 +82,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 	switch expr.Token.Kind {
 	case token.Call:
 		if expr.Children[0].Token.Kind == token.Identifier && expr.Children[0].String(f.File.Bytes) == "syscall" {
-			args, err := f.Decompose(expr.Children[1:], nil)
+			args, err := f.decompose(expr.Children[1:], nil)
 
 			if err != nil {
 				return nil, err
@@ -96,7 +96,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			return f.Append(syscall), nil
 		}
 
-		funcValue, err := f.Evaluate(expr.Children[0])
+		funcValue, err := f.eval(expr.Children[0])
 
 		if err != nil {
 			return nil, err
@@ -107,10 +107,10 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 		inputExpressions := expr.Children[1:]
 
 		if len(inputExpressions) != len(fn.Input) {
-			return nil, errors.New(&ParameterCountMismatch{Function: fn.UniqueName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
+			return nil, errors.New(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
 		}
 
-		args, err := f.Decompose(inputExpressions, fn.Input)
+		args, err := f.decompose(inputExpressions, fn.Input)
 
 		if err != nil {
 			return nil, err
@@ -156,7 +156,7 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			}
 
 			v := &ssa.Function{
-				UniqueName: function.UniqueName,
+				UniqueName: function.FullName,
 				Typ:        function.Type,
 				IsExtern:   function.IsExtern(),
 				Source:     ssa.Source(expr.Source),
@@ -172,13 +172,13 @@ func (f *Function) Evaluate(expr *expression.Expression) (ssa.Value, error) {
 			left := expr.Children[0]
 			right := expr.Children[1]
 
-			leftValue, err := f.Evaluate(left)
+			leftValue, err := f.eval(left)
 
 			if err != nil {
 				return nil, err
 			}
 
-			rightValue, err := f.Evaluate(right)
+			rightValue, err := f.eval(right)
 
 			if err != nil {
 				return nil, err

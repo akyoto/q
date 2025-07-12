@@ -1,4 +1,4 @@
-package build
+package config
 
 // OS is an operating system.
 type OS uint8

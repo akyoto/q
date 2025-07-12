@@ -7,7 +7,7 @@ import (
 )
 
 type Compiler struct {
-	UniqueName  string
+	FullName    string
 	Assembler   asm.Assembler
 	Steps       []*Step
 	ValueToStep map[ssa.Value]*Step

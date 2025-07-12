@@ -5,8 +5,8 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-// CheckDeadCode checks for dead values.
-func (f *Function) CheckDeadCode() error {
+// checkDeadCode checks for dead values.
+func (f *Function) checkDeadCode() error {
 	for _, instr := range f.Values {
 		if !instr.IsConst() {
 			continue

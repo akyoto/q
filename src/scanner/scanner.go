@@ -3,7 +3,7 @@ package scanner
 import (
 	"sync"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/fs"
 )
@@ -13,7 +13,7 @@ type scanner struct {
 	functions chan *core.Function
 	files     chan *fs.File
 	errors    chan error
-	build     *build.Build
+	build     *config.Build
 	queued    sync.Map
 	group     sync.WaitGroup
 }

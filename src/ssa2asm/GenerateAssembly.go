@@ -7,7 +7,7 @@ import (
 
 // GenerateAssembly converts the SSA IR to assembler instructions.
 func (f *Compiler) GenerateAssembly(ir ssa.IR, stackFrame bool) {
-	f.Assembler.Append(&asm.Label{Name: f.UniqueName})
+	f.Assembler.Append(&asm.Label{Name: f.FullName})
 
 	if stackFrame {
 		f.Assembler.Append(&asm.StackFrameStart{})
@@ -23,7 +23,7 @@ func (f *Compiler) GenerateAssembly(ir ssa.IR, stackFrame bool) {
 		f.Assembler.Append(&asm.StackFrameEnd{})
 	}
 
-	if f.UniqueName != "os.exit" {
+	if f.FullName != "os.exit" {
 		f.Assembler.Append(&asm.Return{})
 	}
 }

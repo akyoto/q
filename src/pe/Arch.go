@@ -1,7 +1,7 @@
 package pe
 
 import (
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 )
 
 const (
@@ -11,11 +11,11 @@ const (
 )
 
 // Arch returns the CPU architecture used in the PE header.
-func Arch(arch build.Arch) uint16 {
+func Arch(arch config.Arch) uint16 {
 	switch arch {
-	case build.ARM:
+	case config.ARM:
 		return IMAGE_FILE_MACHINE_ARM64
-	case build.X86:
+	case config.X86:
 		return IMAGE_FILE_MACHINE_AMD64
 	default:
 		return 0

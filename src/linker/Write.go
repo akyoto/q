@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/data"
 	"git.urbach.dev/cli/q/src/elf"
@@ -19,7 +19,7 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 		Data:         make(data.Data, 32),
 	}
 
-	init := env.Functions["run.init"]
+	init := env.Init
 	traversed := make(map[*core.Function]bool, len(env.Functions))
 
 	// This will place the init function immediately after the entry point
@@ -28,14 +28,15 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 		program.Merge(&f.Assembler)
 	})
 
-	code, data, libs := program.Compile(env.Build)
+	build := env.Build
+	code, data, libs := program.Compile(build)
 
-	switch env.Build.OS {
-	case build.Linux:
-		elf.Write(writer, env.Build, code, data)
-	case build.Mac:
-		macho.Write(writer, env.Build, code, data)
-	case build.Windows:
-		pe.Write(writer, env.Build, code, data, libs)
+	switch build.OS {
+	case config.Linux:
+		elf.Write(writer, build, code, data)
+	case config.Mac:
+		macho.Write(writer, build, code, data)
+	case config.Windows:
+		pe.Write(writer, build, code, data, libs)
 	}
 }

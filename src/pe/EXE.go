@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/dll"
 	"git.urbach.dev/cli/q/src/exe"
 )
@@ -19,13 +19,13 @@ type EXE struct {
 }
 
 // Write writes the EXE file to the given writer.
-func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte, libs dll.List) {
-	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), codeBytes, dataBytes, nil)
+func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte, libs dll.List) {
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes, nil)
 	code := x.Sections[0]
 	data := x.Sections[1]
 	imports := x.Sections[2]
 	subSystem := IMAGE_SUBSYSTEM_WINDOWS_CUI
-	arch := Arch(b.Arch)
+	arch := Arch(build.Arch)
 
 	importsData, dllData, dllImports, dllDataStart := importLibraries(libs, imports.MemoryOffset)
 	buffer := bytes.Buffer{}
@@ -35,7 +35,7 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 	imports.Bytes = buffer.Bytes()
 	importDirectoryStart := dllDataStart + len(dllData)
 	importDirectorySize := DLLImportSize * len(dllImports)
-	imageSize := exe.Align(imports.MemoryOffset+len(imports.Bytes), b.MemoryAlign())
+	imageSize := exe.Align(imports.MemoryOffset+len(imports.Bytes), build.MemoryAlign())
 
 	if libs.Contains("user32") {
 		subSystem = IMAGE_SUBSYSTEM_WINDOWS_GUI
@@ -66,8 +66,8 @@ func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []
 			AddressOfEntryPoint:         uint32(code.MemoryOffset),
 			BaseOfCode:                  uint32(code.MemoryOffset),
 			ImageBase:                   BaseAddress,
-			SectionAlignment:            uint32(b.MemoryAlign()), // power of 2, must be greater than or equal to FileAlignment
-			FileAlignment:               uint32(b.FileAlign()),   // power of 2
+			SectionAlignment:            uint32(build.MemoryAlign()), // power of 2, must be greater than or equal to FileAlignment
+			FileAlignment:               uint32(build.FileAlign()),   // power of 2
 			MajorOperatingSystemVersion: 0x06,
 			MinorOperatingSystemVersion: 0,
 			MajorImageVersion:           0,

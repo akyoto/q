@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/go/assert"
 )
 
@@ -37,9 +37,9 @@ func TestAssembler(t *testing.T) {
 	final.Merge(b)
 	final.Merge(c)
 
-	code, _, _ := final.Compile(&build.Build{Arch: build.ARM})
+	code, _, _ := final.Compile(&config.Build{Arch: config.ARM})
 	assert.NotNil(t, code)
 
-	code, _, _ = final.Compile(&build.Build{Arch: build.X86})
+	code, _, _ = final.Compile(&config.Build{Arch: config.X86})
 	assert.NotNil(t, code)
 }

@@ -10,7 +10,7 @@ import (
 // showSSA shows the SSA IR.
 func showSSA(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
-		ansi.Yellow.Println(f.UniqueName + ":")
+		ansi.Yellow.Println(f.FullName + ":")
 
 		for i, step := range f.Steps {
 			ansi.Dim.Printf("%%%d = ", i)

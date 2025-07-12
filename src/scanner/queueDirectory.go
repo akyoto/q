@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/fs"
 )
 
@@ -34,32 +34,32 @@ func (s *scanner) queueDirectory(directory string, pkg string) {
 
 			switch condition {
 			case "linux":
-				if s.build.OS != build.Linux {
+				if s.build.OS != config.Linux {
 					return
 				}
 
 			case "mac":
-				if s.build.OS != build.Mac {
+				if s.build.OS != config.Mac {
 					return
 				}
 
 			case "unix":
-				if s.build.OS != build.Linux && s.build.OS != build.Mac {
+				if s.build.OS != config.Linux && s.build.OS != config.Mac {
 					return
 				}
 
 			case "windows":
-				if s.build.OS != build.Windows {
+				if s.build.OS != config.Windows {
 					return
 				}
 
 			case "x86":
-				if s.build.Arch != build.X86 {
+				if s.build.Arch != config.X86 {
 					return
 				}
 
 			case "arm":
-				if s.build.Arch != build.ARM {
+				if s.build.Arch != config.ARM {
 					return
 				}
 

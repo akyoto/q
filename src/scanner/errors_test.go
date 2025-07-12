@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/scanner"
 	"git.urbach.dev/go/assert"
 )
@@ -45,7 +45,7 @@ func TestErrors(t *testing.T) {
 		name := strings.TrimSuffix(test.File, ".q")
 
 		t.Run(name, func(t *testing.T) {
-			b := build.New(filepath.Join("testdata", "errors", test.File))
+			b := config.New(filepath.Join("testdata", "errors", test.File))
 			_, err := scanner.Scan(b)
 			assert.NotNil(t, err)
 			assert.Contains(t, err.Error(), test.ExpectedError.Error())

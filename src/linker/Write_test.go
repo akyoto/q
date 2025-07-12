@@ -3,18 +3,18 @@ package linker_test
 import (
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/exe"
 	"git.urbach.dev/cli/q/src/linker"
 	"git.urbach.dev/go/assert"
 )
 
 func TestWrite(t *testing.T) {
-	b := build.New("../../examples/hello")
+	build := config.New("../../examples/hello")
 
-	b.Matrix(func(b *build.Build) {
-		env, err := compiler.Compile(b)
+	build.Matrix(func(build *config.Build) {
+		env, err := compiler.Compile(build)
 		assert.Nil(t, err)
 
 		writer := &exe.Discard{}

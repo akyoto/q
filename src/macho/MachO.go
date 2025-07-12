@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"git.urbach.dev/cli/q/src/build"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/exe"
 )
 
@@ -22,11 +22,11 @@ type MachO struct {
 }
 
 // Write writes the Mach-O format to the given writer.
-func Write(writer io.WriteSeeker, b *build.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, b.FileAlign(), b.MemoryAlign(), b.Congruent(), codeBytes, dataBytes)
+func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
-	arch, microArch := Arch(b.Arch)
+	arch, microArch := Arch(build.Arch)
 
 	m := &MachO{
 		Header: Header{

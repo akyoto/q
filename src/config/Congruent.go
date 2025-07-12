@@ -1,4 +1,4 @@
-package build
+package config
 
 // Congruent returns true if the platform needs to force `virtual address % alignment == file offset % alignment`.
 func (build *Build) Congruent() bool {

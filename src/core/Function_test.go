@@ -3,22 +3,22 @@ package core_test
 import (
 	"testing"
 
-	"git.urbach.dev/cli/q/src/build"
 	"git.urbach.dev/cli/q/src/compiler"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/go/assert"
 )
 
 func TestFunction(t *testing.T) {
-	b := build.New("../../examples/hello")
+	b := config.New("../../examples/hello")
 	env, err := compiler.Compile(b)
 	assert.Nil(t, err)
 
 	main, exists := env.Functions["main.main"]
 	assert.True(t, exists)
 	assert.False(t, main.IsExtern())
-	assert.Equal(t, main.UniqueName, "main.main")
-	assert.Equal(t, main.String(), main.UniqueName)
+	assert.Equal(t, main.FullName, "main.main")
+	assert.Equal(t, main.String(), main.FullName)
 
 	deps := []*core.Function{}
 
@@ -27,6 +27,6 @@ func TestFunction(t *testing.T) {
 	})
 
 	assert.True(t, len(deps) >= 2)
-	assert.Equal(t, deps[0].UniqueName, "main.main")
-	assert.Equal(t, deps[1].UniqueName, "io.write")
+	assert.Equal(t, deps[0].FullName, "main.main")
+	assert.Equal(t, deps[1].FullName, "io.write")
 }

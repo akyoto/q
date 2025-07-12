@@ -10,7 +10,7 @@ func Exec(args []string) int {
 
 	switch args[0] {
 	case "build":
-		return _build(args[1:])
+		return build(args[1:])
 
 	case "run":
 		return run(args[1:])

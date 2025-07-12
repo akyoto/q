@@ -1,4 +1,4 @@
-package build
+package config
 
 // MemoryAlign returns the memory alignment.
 func (build *Build) MemoryAlign() int {
