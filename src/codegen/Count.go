@@ -1,4 +1,4 @@
-package ssa2asm
+package codegen
 
 // Counter is the data type for counters.
 type Counter uint16

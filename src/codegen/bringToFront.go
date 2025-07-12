@@ -1,4 +1,4 @@
-package ssa2asm
+package codegen
 
 // bringToFront brings the element at `index` within the `slice` to the front.
 func bringToFront[T any](slice []T, index int) {

@@ -1,4 +1,4 @@
-package ssa2asm_test
+package codegen_test
 
 import (
 	"testing"

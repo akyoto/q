@@ -1,4 +1,4 @@
-package ssa2asm
+package codegen
 
 import (
 	"strconv"
