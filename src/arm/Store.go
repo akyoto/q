@@ -5,8 +5,8 @@ import (
 )
 
 // StoreRegister writes the contents of the register to a memory address.
-func StoreRegister(source cpu.Register, base cpu.Register, offset int, length byte) uint32 {
-	common := memory(source, base, offset)
+func StoreRegister(source cpu.Register, base cpu.Register, mode AddressMode, offset int, length byte) uint32 {
+	common := memory(source, base, mode, offset)
 
 	switch length {
 	case 1:

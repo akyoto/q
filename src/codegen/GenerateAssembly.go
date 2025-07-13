@@ -13,7 +13,7 @@ func (f *Function) GenerateAssembly(ir ssa.IR, stackFrame bool) {
 		f.Assembler.Append(&asm.StackFrameStart{})
 	}
 
-	f.Steps = f.createSteps(ir)
+	f.createSteps(ir)
 
 	if f.Preserved.Count() > 0 {
 		f.Assembler.Append(&asm.PushRegisters{Registers: f.Preserved.Slice()})

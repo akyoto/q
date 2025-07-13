@@ -37,7 +37,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *CallExtern:
 		c.append(arm.LoadAddress(arm.X0, 0))
 		patch := c.PatchLast4Bytes()
-		c.append(arm.LoadRegister(arm.X0, arm.X0, 0, 8))
+		c.append(arm.LoadRegister(arm.X0, arm.X0, arm.UnscaledImmediate, 0, 8))
 		c.append(arm.CallRegister(arm.X0))
 
 		patch.apply = func(code []byte) []byte {
@@ -105,7 +105,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 
 		if count&1 != 0 {
 			count--
-			c.append(arm.LoadPair(registers[count], registers[count], arm.SP, 16))
+			c.append(arm.LoadRegister(registers[count], arm.SP, arm.PostIndex, 16, 8))
 		}
 
 		for i := count - 2; i >= 0; i -= 2 {
@@ -118,7 +118,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 			if i+1 < len(registers) {
 				c.append(arm.StorePair(registers[i], registers[i+1], arm.SP, -16))
 			} else {
-				c.append(arm.StorePair(registers[i], registers[i], arm.SP, -16))
+				c.append(arm.StoreRegister(registers[i], arm.SP, arm.PreIndex, -16, 8))
 			}
 		}
 	case *Return:

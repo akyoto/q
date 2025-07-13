@@ -4,9 +4,9 @@ import (
 	"git.urbach.dev/cli/q/src/cpu"
 )
 
-// memory encodes an instruction with a register, a base register and an offset.
-func memory(destination cpu.Register, base cpu.Register, imm9 int) uint32 {
-	return uint32(imm9&mask9)<<12 | uint32(base)<<5 | uint32(destination)
+// memory encodes an instruction with a register, a base register, an addressing mode and an offset.
+func memory(destination cpu.Register, base cpu.Register, mode AddressMode, imm9 int) uint32 {
+	return uint32(imm9&mask9)<<12 | uint32(mode<<10) | uint32(base)<<5 | uint32(destination)
 }
 
 // pair encodes an instruction using a register pair with memory.

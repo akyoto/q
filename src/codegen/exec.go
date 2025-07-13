@@ -44,6 +44,9 @@ func (f *Function) exec(step *step) {
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
+
+		default:
+			panic("not implemented")
 		}
 
 	case *ssa.Bytes:

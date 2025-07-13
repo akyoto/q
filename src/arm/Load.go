@@ -3,8 +3,8 @@ package arm
 import "git.urbach.dev/cli/q/src/cpu"
 
 // LoadRegister loads from memory into a register.
-func LoadRegister(destination cpu.Register, base cpu.Register, offset int, length byte) uint32 {
-	common := 1<<22 | memory(destination, base, offset)
+func LoadRegister(destination cpu.Register, base cpu.Register, mode AddressMode, offset int, length byte) uint32 {
+	common := 1<<22 | memory(destination, base, mode, offset)
 
 	switch length {
 	case 1:
