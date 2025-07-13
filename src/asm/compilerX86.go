@@ -64,6 +64,17 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
 	case *CallExternEnd:
 		c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
+	case *DivRegisterRegister:
+		if instr.Source != x86.R0 {
+			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
+		}
+
+		c.code = x86.ExtendR0ToR2(c.code)
+		c.code = x86.DivRegister(c.code, instr.Operand)
+
+		if instr.Destination != x86.R0 {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, x86.R0)
+		}
 	case *Jump:
 		c.code = x86.Jump8(c.code, 0)
 
@@ -146,6 +157,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:
 		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+	case *MulRegisterRegister:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.MulRegisterRegister(c.code, instr.Destination, instr.Operand)
 	case *PopRegisters:
 		for _, register := range slices.Backward(instr.Registers) {
 			c.code = x86.PopRegister(c.code, register)
@@ -162,6 +179,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *SubRegisterRegister:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.SubRegisterRegister(c.code, instr.Destination, instr.Operand)
 	case *StackFrameStart:
 	case *StackFrameEnd:
 	case *Syscall:

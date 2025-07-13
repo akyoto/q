@@ -50,7 +50,7 @@ func TestMulRegisterNumber(t *testing.T) {
 	}
 
 	for _, pattern := range usagePatterns {
-		t.Logf("mul %s, %x", pattern.Register, pattern.Number)
+		t.Logf("imul %s, %x", pattern.Register, pattern.Number)
 		code := x86.MulRegisterNumber(nil, pattern.Register, pattern.Number)
 		assert.DeepEqual(t, code, pattern.Code)
 	}
@@ -81,7 +81,7 @@ func TestMulRegisterRegister(t *testing.T) {
 	}
 
 	for _, pattern := range usagePatterns {
-		t.Logf("mul %s, %s", pattern.Left, pattern.Right)
+		t.Logf("imul %s, %s", pattern.Left, pattern.Right)
 		code := x86.MulRegisterRegister(nil, pattern.Left, pattern.Right)
 		assert.DeepEqual(t, code, pattern.Code)
 	}

@@ -54,6 +54,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *CallExternStart:
 	case *CallExternEnd:
+	case *DivRegisterRegister:
+		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Jump:
 		c.append(arm.Jump(0))
 		patch := c.PatchLast4Bytes()
@@ -95,6 +97,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *MoveRegisterRegister:
 		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
+	case *MulRegisterRegister:
+		c.append(arm.MulRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *PopRegisters:
 		registers := instr.Registers
 		count := len(registers)
@@ -119,6 +123,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *Return:
 		c.append(arm.Return())
+	case *SubRegisterRegister:
+		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *StackFrameStart:
 		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
 		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))

@@ -8,7 +8,7 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestDivSigned(t *testing.T) {
+func TestDivRegisterRegister(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register
 		Source      cpu.Register
@@ -20,7 +20,7 @@ func TestDivSigned(t *testing.T) {
 
 	for _, pattern := range usagePatterns {
 		t.Logf("sdiv %s, %s, %s", pattern.Destination, pattern.Source, pattern.Operand)
-		code := arm.DivSigned(pattern.Destination, pattern.Source, pattern.Operand)
+		code := arm.DivRegisterRegister(pattern.Destination, pattern.Source, pattern.Operand)
 		assert.Equal(t, code, pattern.Code)
 	}
 }

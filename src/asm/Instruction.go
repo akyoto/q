@@ -28,6 +28,12 @@ type CallExtern struct {
 type CallExternStart struct{}
 type CallExternEnd struct{}
 
+type DivRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type Jump struct {
 	Label string
 }
@@ -51,6 +57,12 @@ type MoveRegisterRegister struct {
 	Source      cpu.Register
 }
 
+type MulRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type PopRegisters struct {
 	Registers []cpu.Register
 }
@@ -60,6 +72,12 @@ type PushRegisters struct {
 }
 
 type Return struct{}
+
+type SubRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
 
 type SubRegisterNumber struct {
 	Destination cpu.Register

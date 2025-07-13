@@ -6,17 +6,45 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 )
 
 // exec executes an instruction.
 func (f *Function) exec(step *step) {
 	switch instr := step.Value.(type) {
 	case *ssa.BinaryOp:
-		f.Assembler.Append(&asm.AddRegisterRegister{
-			Destination: step.Register,
-			Source:      f.ValueToStep[instr.Left].Register,
-			Operand:     f.ValueToStep[instr.Right].Register,
-		})
+		left := f.ValueToStep[instr.Left]
+		right := f.ValueToStep[instr.Right]
+
+		switch instr.Op {
+		case token.Add:
+			f.Assembler.Append(&asm.AddRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
+		case token.Div:
+			f.Assembler.Append(&asm.DivRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
+		case token.Mul:
+			f.Assembler.Append(&asm.MulRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
+		case token.Sub:
+			f.Assembler.Append(&asm.SubRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		}
 
 	case *ssa.Bytes:
 		f.Count.Data++
