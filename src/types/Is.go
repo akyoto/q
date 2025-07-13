@@ -13,6 +13,11 @@ func Is(a Type, b Type) bool {
 		return true
 	}
 
+	// TODO: Remove this temporary hack to allow integers as pointers
+	if bIsPointer && a == AnyInt {
+		return true
+	}
+
 	aArray, aIsArray := a.(*Array)
 
 	if aIsArray && bIsPointer && (bPointer.To == Any || aArray.Of == bPointer.To) {
@@ -41,6 +46,11 @@ func Is(a Type, b Type) bool {
 		default:
 			return false
 		}
+	}
+
+	// TODO: Remove temporary hack to allow int64 -> uint32 conversion
+	if a == Int64 && (b == UInt64 || b == UInt32) {
+		return true
 	}
 
 	return false
