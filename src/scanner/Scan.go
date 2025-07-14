@@ -28,9 +28,9 @@ func Scan(build *config.Build) (*core.Environment, error) {
 	}()
 
 	all := &core.Environment{
-		Build:     build,
-		Files:     make([]*fs.File, 0, 8),
-		Functions: make(map[string]*core.Function, 32),
+		Build:    build,
+		Files:    make([]*fs.File, 0, 8),
+		Packages: make(map[string]*core.Package, 8),
 	}
 
 	for s.functions != nil || s.files != nil || s.errors != nil {
@@ -42,7 +42,18 @@ func Scan(build *config.Build) (*core.Environment, error) {
 			}
 
 			f.All = all
-			all.Functions[f.FullName] = f
+			_, exists := all.Packages[f.Package]
+
+			if !exists {
+				all.Packages[f.Package] = &core.Package{
+					Name:      f.Package,
+					Functions: make(map[string]*core.Function, 8),
+					IsExtern:  f.IsExtern(),
+				}
+			}
+
+			all.Packages[f.Package].Functions[f.Name] = f
+			all.NumFunctions++
 
 		case file, ok := <-s.files:
 			if !ok {

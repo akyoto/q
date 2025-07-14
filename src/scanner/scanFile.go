@@ -23,6 +23,7 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		Package: pkg,
 		Bytes:   contents,
 		Tokens:  tokens,
+		Imports: make(map[string]struct{}, 4),
 	}
 
 	s.files <- file

@@ -1,18 +1,22 @@
 package ssa
 
-import "git.urbach.dev/cli/q/src/types"
+import (
+	"fmt"
+
+	"git.urbach.dev/cli/q/src/types"
+)
 
 type Function struct {
-	UniqueName string
-	Typ        *types.Function
-	IsExtern   bool
+	Package  string
+	Name     string
+	Typ      *types.Function
+	IsExtern bool
 	Liveness
 	Source
 }
 
 func (v *Function) Inputs() []Value  { return nil }
 func (v *Function) IsConst() bool    { return true }
-func (v *Function) String() string   { return v.UniqueName }
 func (v *Function) Type() types.Type { return v.Typ }
 
 func (a *Function) Equals(v Value) bool {
@@ -22,5 +26,13 @@ func (a *Function) Equals(v Value) bool {
 		return false
 	}
 
-	return a.UniqueName == b.UniqueName
+	return a.Package == b.Package && a.Name == b.Name
+}
+
+func (v *Function) String() string {
+	if v.Package == "" {
+		return v.Name
+	}
+
+	return fmt.Sprintf("%s.%s", v.Package, v.Name)
 }

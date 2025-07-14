@@ -19,19 +19,20 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			value, exists := f.Identifiers[name]
 
 			if !exists {
-				function, exists := f.All.Functions[f.File.Package+"."+name]
+				function := f.All.Function(f.File.Package, name)
 
-				if !exists {
+				if function == nil {
 					return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
 				}
 
 				f.Dependencies.Add(function)
 
 				v := &ssa.Function{
-					UniqueName: function.FullName,
-					Typ:        function.Type,
-					IsExtern:   function.IsExtern(),
-					Source:     ssa.Source(expr.Source),
+					Package:  function.Package,
+					Name:     function.Name,
+					Typ:      function.Type,
+					IsExtern: function.IsExtern(),
+					Source:   ssa.Source(expr.Source),
 				}
 
 				return v, nil
@@ -103,7 +104,8 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 		ssaFunc := funcValue.(*ssa.Function)
-		fn := f.All.Functions[ssaFunc.UniqueName]
+		pkg := f.All.Packages[ssaFunc.Package]
+		fn := pkg.Functions[ssaFunc.Name]
 		inputExpressions := expr.Children[1:]
 
 		if len(inputExpressions) != len(fn.Input) {
@@ -146,26 +148,41 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			return identifier, nil
 		}
 
-		function, exists := f.All.Functions[fullName]
+		pkg, exists := f.All.Packages[leftText]
 
-		if exists {
-			if function.IsExtern() {
-				f.Assembler.Libraries.Append(function.Package, function.Name)
-			} else {
-				f.Dependencies.Add(function)
-			}
-
-			v := &ssa.Function{
-				UniqueName: function.FullName,
-				Typ:        function.Type,
-				IsExtern:   function.IsExtern(),
-				Source:     ssa.Source(expr.Source),
-			}
-
-			return v, nil
+		if !exists {
+			return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
 		}
 
-		return nil, errors.New(&UnknownIdentifier{Name: fullName}, f.File, left.Token.Position)
+		if !pkg.IsExtern && f != f.All.Init {
+			_, exists = f.File.Imports[leftText]
+
+			if !exists {
+				return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
+			}
+		}
+
+		function, exists := pkg.Functions[rightText]
+
+		if !exists {
+			return nil, errors.New(&UnknownIdentifier{Name: fullName}, f.File, left.Token.Position)
+		}
+
+		if function.IsExtern() {
+			f.Assembler.Libraries.Append(function.Package, function.Name)
+		} else {
+			f.Dependencies.Add(function)
+		}
+
+		v := &ssa.Function{
+			Package:  function.Package,
+			Name:     function.Name,
+			Typ:      function.Type,
+			IsExtern: function.IsExtern(),
+			Source:   ssa.Source(expr.Source),
+		}
+
+		return v, nil
 
 	default:
 		if expr.Token.IsOperator() {

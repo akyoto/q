@@ -22,6 +22,8 @@ var errs = []struct {
 	{"UnknownIdentifier3", &core.UnknownIdentifier{Name: "x"}},
 	{"UnknownIdentifier4", &core.UnknownIdentifier{Name: "unknown"}},
 	{"UnknownIdentifier5", &core.UnknownIdentifier{Name: "unknown"}},
+	{"UnknownIdentifier6", &core.UnknownIdentifier{Name: "os"}},
+	{"UnknownIdentifier7", &core.UnknownIdentifier{Name: "os.unknown"}},
 }
 
 func TestErrors(t *testing.T) {

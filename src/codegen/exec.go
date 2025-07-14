@@ -1,8 +1,6 @@
 package codegen
 
 import (
-	"strings"
-
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -73,7 +71,7 @@ func (f *Function) exec(step *step) {
 			})
 		}
 
-		f.Assembler.Append(&asm.Call{Label: instr.Func.UniqueName})
+		f.Assembler.Append(&asm.Call{Label: instr.Func.String()})
 
 		if step.Register == -1 || step.Register == f.CPU.Call.Out[0] {
 			return
@@ -109,10 +107,7 @@ func (f *Function) exec(step *step) {
 			f.Assembler.Append(&asm.PushRegisters{Registers: pushed})
 		}
 
-		dot := strings.IndexByte(instr.Func.UniqueName, '.')
-		library := instr.Func.UniqueName[:dot]
-		function := instr.Func.UniqueName[dot+1:]
-		f.Assembler.Append(&asm.CallExtern{Library: library, Function: function})
+		f.Assembler.Append(&asm.CallExtern{Library: instr.Func.Package, Function: instr.Func.Name})
 		f.Assembler.Append(&asm.CallExternEnd{})
 
 		if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {

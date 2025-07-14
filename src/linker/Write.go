@@ -20,7 +20,7 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 	}
 
 	init := env.Init
-	traversed := make(map[*core.Function]bool, len(env.Functions))
+	traversed := make(map[*core.Function]bool, env.NumFunctions)
 
 	// This will place the init function immediately after the entry point
 	// and also add everything the init function calls recursively.

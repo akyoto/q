@@ -14,8 +14,8 @@ func TestFunction(t *testing.T) {
 	env, err := compiler.Compile(b)
 	assert.Nil(t, err)
 
-	main, exists := env.Functions["main.main"]
-	assert.True(t, exists)
+	main := env.Function("main", "main")
+	assert.NotNil(t, main)
 	assert.False(t, main.IsExtern())
 	assert.Equal(t, main.FullName, "main.main")
 	assert.Equal(t, main.String(), main.FullName)

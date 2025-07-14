@@ -30,6 +30,7 @@ func (s *scanner) scanImport(file *fs.File, tokens token.List, i int) (int, erro
 		return i, errors.New(&IsNotDirectory{Path: fullPath}, file, tokens[i].Position)
 	}
 
+	file.Imports[packageName] = struct{}{}
 	s.queueDirectory(fullPath, packageName)
 	return i, nil
 }

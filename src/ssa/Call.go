@@ -26,7 +26,7 @@ func (a *Call) Equals(v Value) bool {
 }
 
 func (v *Call) String() string {
-	return fmt.Sprintf("%s(%s)", v.Func.UniqueName, v.Arguments.String())
+	return fmt.Sprintf("%s(%s)", v.Func.String(), v.Arguments.String())
 }
 
 func (v *Call) Type() types.Type {

@@ -1,8 +1,6 @@
 package compiler
 
 import (
-	"maps"
-
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/scanner"
@@ -17,26 +15,26 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		return nil, err
 	}
 
-	// Check for existence of `init`
-	init, exists := all.Functions["run.init"]
+	// Check for existence of `run.init`
+	init := all.Function("run", "init")
 
-	if !exists {
+	if init == nil {
 		return nil, MissingInitFunction
 	}
 
 	all.Init = init
 
-	// Check for existence of `main`
-	main, exists := all.Functions["main.main"]
+	// Check for existence of `main.main`
+	main := all.Function("main", "main")
 
-	if !exists {
+	if main == nil {
 		return nil, MissingMainFunction
 	}
 
 	all.Main = main
 
 	// Resolve types
-	for _, f := range all.Functions {
+	for f := range all.Functions() {
 		f.Type = &types.Function{
 			Input:  make([]types.Type, len(f.Input)),
 			Output: make([]types.Type, len(f.Output)),
@@ -58,9 +56,9 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		}
 	}
 
-	compileFunctions(maps.Values(all.Functions))
+	compileFunctions(all.Functions())
 
-	for _, f := range all.Functions {
+	for f := range all.Functions() {
 		if f.Err != nil {
 			return nil, f.Err
 		}
