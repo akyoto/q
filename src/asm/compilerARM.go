@@ -126,10 +126,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *SubRegisterRegister:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *StackFrameStart:
-		c.append(arm.StorePair(arm.FP, arm.LR, arm.SP, -16))
-		c.append(arm.MoveRegisterRegister(arm.FP, arm.SP))
+		c.append(arm.StoreRegister(arm.LR, arm.SP, arm.PreIndex, -16, 8))
 	case *StackFrameEnd:
-		c.append(arm.LoadPair(arm.FP, arm.LR, arm.SP, 16))
+		c.append(arm.LoadRegister(arm.LR, arm.SP, arm.PostIndex, 16, 8))
 	case *Syscall:
 		c.append(arm.Syscall())
 	default:
