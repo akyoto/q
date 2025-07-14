@@ -70,11 +70,12 @@ func Parse(tokens token.List) *Expression {
 
 			group := Parse(tokens[groupPosition:i])
 
-			if group == nil {
-				continue
+			if groupPosition != i {
+				group.Source = tokens[groupPosition:i]
+			} else {
+				group.Source = tokens[groupPosition-1 : i+1]
 			}
 
-			group.Source = tokens[groupPosition:i]
 			group.precedence = math.MaxInt8
 
 			if cursor == nil {
@@ -183,9 +184,10 @@ func Parse(tokens token.List) *Expression {
 		cursor = node
 	}
 
-	if root != nil {
-		root.Source = tokens
+	if root == nil {
+		root = New()
 	}
 
+	root.Source = tokens
 	return root
 }

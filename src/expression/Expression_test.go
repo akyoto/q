@@ -31,18 +31,18 @@ func TestEachLeaf(t *testing.T) {
 	assert.Equal(t, err.Error(), "error")
 }
 
-func TestNilExpression(t *testing.T) {
+func TestInvalidExpression(t *testing.T) {
 	src := []byte("")
 	tokens := token.Tokenize(src)
 	expr := expression.Parse(tokens)
-	assert.Nil(t, expr)
+	assert.Equal(t, expr.Token.Kind, token.Invalid)
 }
 
-func TestNilGroup(t *testing.T) {
+func TestInvalidGroup(t *testing.T) {
 	src := []byte("()")
 	tokens := token.Tokenize(src)
 	expr := expression.Parse(tokens)
-	assert.Nil(t, expr)
+	assert.Equal(t, expr.Token.Kind, token.Invalid)
 }
 
 func TestIndex(t *testing.T) {

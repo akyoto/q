@@ -15,6 +15,11 @@ var errs = []struct {
 	File          string
 	ExpectedError error
 }{
+	{"InvalidExpression.q", core.InvalidExpression},
+	{"InvalidExpression2.q", core.InvalidExpression},
+	{"InvalidExpression3.q", core.InvalidExpression},
+	{"InvalidExpression4.q", core.InvalidExpression},
+	{"InvalidExpression5.q", core.InvalidExpression},
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},
 	{"TypeMismatch.q", &core.TypeMismatch{Encountered: "string", Expected: "int64", ParameterName: "x", IsReturn: false}},
@@ -25,6 +30,7 @@ var errs = []struct {
 	{"UnknownIdentifier5.q", &core.UnknownIdentifier{Name: "unknown"}},
 	{"UnknownIdentifier6.q", &core.UnknownIdentifier{Name: "os"}},
 	{"UnknownIdentifier7.q", &core.UnknownIdentifier{Name: "os.unknown"}},
+	{"UnusedValue.q", &core.UnusedValue{Value: "2+3"}},
 }
 
 func TestErrors(t *testing.T) {

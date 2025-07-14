@@ -77,7 +77,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			return v, nil
 		}
 
-		return nil, errors.New(InvalidExpression, f.File, expr.Token.Position)
+		return nil, errors.New(InvalidExpression, f.File, expr.Source[0].Position)
 	}
 
 	switch expr.Token.Kind {
