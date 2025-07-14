@@ -10,14 +10,16 @@ func (f *Function) GenerateAssembly(ir ssa.IR, stackFrame bool, hasExternCalls b
 	f.createSteps(ir)
 	f.Assembler.Append(&asm.Label{Name: f.FullName})
 
-	if f.Preserved.Count() > 0 {
+	isInit := f.FullName == "run.init"
+	isExit := f.FullName == "os.exit"
+	needsFramePointer := !isInit && !isExit
+
+	if f.Preserved.Count() > 0 && !isInit {
 		f.Assembler.Append(&asm.PushRegisters{Registers: f.Preserved.Slice()})
 	}
 
-	isExit := f.FullName == "os.exit"
-
 	if stackFrame || hasExternCalls {
-		f.Assembler.Append(&asm.StackFrameStart{FramePointer: !isExit, ExternCalls: hasExternCalls})
+		f.Assembler.Append(&asm.StackFrameStart{FramePointer: needsFramePointer, ExternCalls: hasExternCalls})
 	}
 
 	for _, step := range f.Steps {
@@ -29,7 +31,11 @@ func (f *Function) GenerateAssembly(ir ssa.IR, stackFrame bool, hasExternCalls b
 	}
 
 	if stackFrame || hasExternCalls {
-		f.Assembler.Append(&asm.StackFrameEnd{FramePointer: !isExit})
+		f.Assembler.Append(&asm.StackFrameEnd{FramePointer: needsFramePointer})
+	}
+
+	if isInit {
+		return
 	}
 
 	if f.Preserved.Count() > 0 {
