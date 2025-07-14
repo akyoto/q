@@ -76,9 +76,9 @@ func TestAssembler(t *testing.T) {
 	f := &asm.Assembler{}
 	f.Libraries.Append("kernel32", "ExitProcess")
 	f.Append(&asm.Label{Name: "f"})
-	f.Append(&asm.CallExternStart{})
+	f.Append(&asm.StackFrameStart{FramePointer: true, ExternCalls: true})
 	f.Append(&asm.CallExtern{Library: "kernel32", Function: "ExitProcess"})
-	f.Append(&asm.CallExternEnd{})
+	f.Append(&asm.StackFrameEnd{FramePointer: true})
 	f.Append(&asm.Return{})
 
 	final := asm.Assembler{}

@@ -58,12 +58,6 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, uint32(offset))
 			return code
 		}
-	case *CallExternStart:
-		c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
-		c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
-		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
-	case *CallExternEnd:
-		c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
 	case *DivRegisterRegister:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
@@ -186,7 +180,20 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		c.code = x86.SubRegisterRegister(c.code, instr.Destination, instr.Operand)
 	case *StackFrameStart:
+		if instr.FramePointer {
+			c.code = x86.PushRegister(c.code, x86.R5)
+			c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
+		}
+
+		if instr.ExternCalls {
+			c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
+			c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
+		}
 	case *StackFrameEnd:
+		if instr.FramePointer {
+			c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
+			c.code = x86.PopRegister(c.code, x86.R5)
+		}
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	default:

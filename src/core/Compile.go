@@ -18,5 +18,5 @@ func (f *Function) Compile() {
 		return
 	}
 
-	f.GenerateAssembly(f.IR, f.needsStackFrame())
+	f.GenerateAssembly(f.IR, f.needsStackFrame(), f.Assembler.Libraries.Count() > 0)
 }

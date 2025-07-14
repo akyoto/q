@@ -85,7 +85,13 @@ type SubRegisterNumber struct {
 	Number      int
 }
 
-type StackFrameStart struct{}
-type StackFrameEnd struct{}
+type StackFrameStart struct {
+	FramePointer bool
+	ExternCalls  bool
+}
+
+type StackFrameEnd struct {
+	FramePointer bool
+}
 
 type Syscall struct{}

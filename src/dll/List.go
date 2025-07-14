@@ -50,6 +50,11 @@ func (list *List) Contains(dllName string) bool {
 	return false
 }
 
+// Count returns the number of libraries.
+func (list *List) Count() int {
+	return len(list.libs)
+}
+
 // Index returns the position of the given function name.
 func (list *List) Index(dllName string, funcName string) int {
 	index := 0

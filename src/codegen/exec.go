@@ -83,7 +83,6 @@ func (f *Function) exec(step *step) {
 		})
 
 	case *ssa.CallExtern:
-		f.Assembler.Append(&asm.CallExternStart{})
 		args := instr.Arguments
 		var pushed []cpu.Register
 
@@ -108,7 +107,10 @@ func (f *Function) exec(step *step) {
 		}
 
 		f.Assembler.Append(&asm.CallExtern{Library: instr.Func.Package, Function: instr.Func.Name})
-		f.Assembler.Append(&asm.CallExternEnd{})
+
+		if len(pushed) > 0 {
+			f.Assembler.Append(&asm.PopRegisters{Registers: pushed})
+		}
 
 		if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {
 			return
