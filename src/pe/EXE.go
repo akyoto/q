@@ -58,8 +58,8 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 		},
 		OptionalHeader64: OptionalHeader64{
 			Magic:                       0x020B, // PE32+ / 64-bit executable
-			MajorLinkerVersion:          0x0E,
-			MinorLinkerVersion:          0x16,
+			MajorLinkerVersion:          0,
+			MinorLinkerVersion:          0,
 			SizeOfCode:                  uint32(len(code.Bytes)),
 			SizeOfInitializedData:       0,
 			SizeOfUninitializedData:     0,
@@ -68,7 +68,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			ImageBase:                   BaseAddress,
 			SectionAlignment:            uint32(build.MemoryAlign()), // power of 2, must be greater than or equal to FileAlignment
 			FileAlignment:               uint32(build.FileAlign()),   // power of 2
-			MajorOperatingSystemVersion: 0x06,
+			MajorOperatingSystemVersion: 0x0A,
 			MinorOperatingSystemVersion: 0,
 			MajorImageVersion:           0,
 			MinorImageVersion:           0,
