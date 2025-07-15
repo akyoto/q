@@ -18,13 +18,19 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			name := expr.Token.String(f.File.Bytes)
 			value, exists := f.Identifiers[name]
 
-			if !exists {
-				function := f.All.Function(f.File.Package, name)
+			if exists {
+				return value, nil
+			}
 
-				if function == nil {
-					return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
-				}
+			_, exists = f.All.Packages[name]
 
+			if exists {
+				return &ssa.Package{Name: name}, nil
+			}
+
+			function := f.All.Function(f.File.Package, name)
+
+			if function != nil {
 				f.Dependencies.Add(function)
 
 				v := &ssa.Function{
@@ -38,7 +44,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 				return v, nil
 			}
 
-			return value, nil
+			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
 
 		case token.Number:
 			number, err := f.toNumber(expr.Token)
@@ -58,15 +64,15 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			data := expr.Token.Bytes(f.File.Bytes)
 			data = unescape(data)
 
-			length := f.Append(&ssa.Int{
+			length := &ssa.Int{
 				Int:    len(data),
 				Source: ssa.Source(expr.Source),
-			})
+			}
 
-			pointer := f.Append(&ssa.Bytes{
+			pointer := &ssa.Bytes{
 				Bytes:  data,
 				Source: ssa.Source(expr.Source),
-			})
+			}
 
 			v := &ssa.Struct{
 				Arguments: []ssa.Value{pointer, length},
@@ -141,48 +147,58 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 		right := expr.Children[1]
 		leftText := left.String(f.File.Bytes)
 		rightText := right.String(f.File.Bytes)
-		fullName := fmt.Sprintf("%s.%s", leftText, rightText)
-		identifier, exists := f.Identifiers[fullName]
+		leftValue, err := f.eval(left)
 
-		if exists {
-			return identifier, nil
+		if err != nil {
+			return nil, err
 		}
 
-		pkg, exists := f.All.Packages[leftText]
+		switch leftValue := leftValue.(type) {
+		case *ssa.Package:
+			pkg := f.All.Packages[leftText]
 
-		if !exists {
-			return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
-		}
+			if !pkg.IsExtern && f != f.All.Init {
+				_, exists := f.File.Imports[leftText]
 
-		if !pkg.IsExtern && f != f.All.Init {
-			_, exists = f.File.Imports[leftText]
+				if !exists {
+					return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
+				}
+			}
+
+			function, exists := pkg.Functions[rightText]
 
 			if !exists {
-				return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
+				return nil, errors.New(&UnknownIdentifier{Name: fmt.Sprintf("%s.%s", pkg.Name, rightText)}, f.File, left.Token.Position)
 			}
+
+			if function.IsExtern() {
+				f.Assembler.Libraries.Append(function.Package, function.Name)
+			} else {
+				f.Dependencies.Add(function)
+			}
+
+			v := &ssa.Function{
+				Package:  function.Package,
+				Name:     function.Name,
+				Typ:      function.Type,
+				IsExtern: function.IsExtern(),
+				Source:   ssa.Source(expr.Source),
+			}
+
+			return v, nil
+
+		case *ssa.Struct:
+			field := leftValue.Typ.FieldByName(rightText)
+
+			if field == nil {
+				panic("unknown field")
+			}
+
+			return f.Append(leftValue.Arguments[field.Index]), nil
+
+		default:
+			panic("not implemented")
 		}
-
-		function, exists := pkg.Functions[rightText]
-
-		if !exists {
-			return nil, errors.New(&UnknownIdentifier{Name: fullName}, f.File, left.Token.Position)
-		}
-
-		if function.IsExtern() {
-			f.Assembler.Libraries.Append(function.Package, function.Name)
-		} else {
-			f.Dependencies.Add(function)
-		}
-
-		v := &ssa.Function{
-			Package:  function.Package,
-			Name:     function.Name,
-			Typ:      function.Type,
-			IsExtern: function.IsExtern(),
-			Source:   ssa.Source(expr.Source),
-		}
-
-		return v, nil
 
 	default:
 		if expr.Token.IsOperator() {

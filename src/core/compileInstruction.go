@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -16,13 +17,11 @@ func (f *Function) compileInstruction(instr token.List) error {
 
 	expr := expression.Parse(instr)
 
-	if expr.Token.Kind == token.Define {
-		left := expr.Children[0]
-		right := expr.Children[1]
-		name := left.String(f.File.Bytes)
-		value, err := f.eval(right)
-		f.Identifiers[name] = value
-		return err
+	switch expr.Token.Kind {
+	case token.Define:
+		return f.compileDefinition(expr)
+	case token.String:
+		return errors.New(&UnusedValue{Value: expr.String(f.File.Bytes)}, f.File, expr.Token.Position)
 	}
 
 	_, err := f.eval(expr)

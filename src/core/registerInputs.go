@@ -19,6 +19,8 @@ func (f *Function) registerInputs() {
 		structType, isStructType := input.Typ.(*types.Struct)
 
 		if isStructType {
+			structure := &ssa.Struct{Typ: structType}
+
 			for _, field := range structType.Fields {
 				param := &ssa.Parameter{
 					Index:  uint8(offset + i),
@@ -27,12 +29,13 @@ func (f *Function) registerInputs() {
 					Source: input.Source,
 				}
 
-				f.Identifiers[param.Name] = param
 				f.Append(param)
+				structure.Arguments = append(structure.Arguments, param)
 				offset++
 			}
 
 			offset--
+			f.Identifiers[input.Name] = structure
 			continue
 		}
 

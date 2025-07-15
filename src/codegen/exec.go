@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -86,7 +88,7 @@ func (f *Function) exec(step *step) {
 		args := instr.Arguments
 		var pushed []cpu.Register
 
-		for i, arg := range args {
+		for i, arg := range slices.Backward(args) {
 			if i >= len(f.CPU.ExternCall.In) {
 				pushed = append(pushed, f.ValueToStep[arg].Register)
 				continue
@@ -122,6 +124,10 @@ func (f *Function) exec(step *step) {
 		})
 
 	case *ssa.Int:
+		if step.Register == -1 {
+			return
+		}
+
 		f.Assembler.Append(&asm.MoveRegisterNumber{
 			Destination: step.Register,
 			Number:      instr.Int,
