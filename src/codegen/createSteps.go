@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -20,7 +22,7 @@ func (f *Function) createSteps(ir ssa.IR) {
 		f.ValueToStep[instr] = step
 	}
 
-	for _, step := range f.Steps {
+	for _, step := range slices.Backward(f.Steps) {
 		f.createHints(step)
 		f.createLiveRanges(step)
 	}

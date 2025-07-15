@@ -11,6 +11,10 @@ var tests = []testRun{
 	{"hello-3", "", "Hello\nHello\nHello\n", 0},
 	{"param-swap", "", "", 3},
 	{"script", "", "Hello\n", 0},
+	{"math-5", "", "", 5},
+	{"math-10", "", "", 10},
+	{"math-3", "", "", 3},
+	{"math-2", "", "", 2},
 }
 
 func TestTests(t *testing.T) {

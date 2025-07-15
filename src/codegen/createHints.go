@@ -1,10 +1,15 @@
 package codegen
 
-import "git.urbach.dev/cli/q/src/ssa"
+import (
+	"git.urbach.dev/cli/q/src/ssa"
+)
 
 // createHints recommends registers that a value must reside in later on.
 func (f *Function) createHints(step *step) {
 	switch instr := step.Value.(type) {
+	case *ssa.BinaryOp:
+		f.ValueToStep[instr.Left].Hint(step.Register)
+
 	case *ssa.Call:
 		for paramIndex, param := range instr.Arguments {
 			f.ValueToStep[param].Hint(f.CPU.Call.In[paramIndex])
@@ -21,8 +26,17 @@ func (f *Function) createHints(step *step) {
 			f.ValueToStep[param].Hint(f.CPU.ExternCall.In[r])
 		}
 
+	case *ssa.Int:
+		if step.Register == -1 {
+			users := step.Value.Users()
+			alive := f.ValueToStep[users[len(users)-1]].Index
+			step.Register = f.findFreeRegister(f.Steps[step.Index:alive])
+		}
+
 	case *ssa.Parameter:
-		f.ValueToStep[instr].Register = f.CPU.Call.In[instr.Index]
+		if step.Register == -1 {
+			step.Register = f.CPU.Call.In[instr.Index]
+		}
 
 	case *ssa.Return:
 		for r, param := range instr.Arguments {
