@@ -1,7 +1,7 @@
 main() {
 	title := "Title\0"
 	message := "Message\0"
-	user32.MessageBoxA(0, message.ptr, title.ptr, 0x240040)
+	user32.MessageBoxA(0, message.ptr, title.ptr, 0)
 }
 
 extern {
