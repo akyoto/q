@@ -13,6 +13,9 @@ import (
 // exec executes an instruction.
 func (f *Function) exec(step *step) {
 	switch instr := step.Value.(type) {
+	case *ssa.Assert:
+		f.JumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
+
 	case *ssa.BinaryOp:
 		left := f.ValueToStep[instr.Left]
 		right := f.ValueToStep[instr.Right]
