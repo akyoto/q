@@ -10,6 +10,7 @@ import (
 
 func TestStruct(t *testing.T) {
 	fn := ssa.IR{}
+	fn.AddBlock("")
 	hello := []byte("Hello")
 	pointer := fn.Append(&ssa.Bytes{Bytes: hello})
 	length := fn.Append(&ssa.Int{Int: len(hello)})

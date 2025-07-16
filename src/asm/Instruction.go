@@ -1,6 +1,9 @@
 package asm
 
-import "git.urbach.dev/cli/q/src/cpu"
+import (
+	"git.urbach.dev/cli/q/src/cpu"
+	"git.urbach.dev/cli/q/src/token"
+)
 
 type Instruction interface{}
 
@@ -28,6 +31,11 @@ type CallExtern struct {
 type CallExternStart struct{}
 type CallExternEnd struct{}
 
+type CompareRegisterRegister struct {
+	SourceA cpu.Register
+	SourceB cpu.Register
+}
+
 type DivRegisterRegister struct {
 	Destination cpu.Register
 	Source      cpu.Register
@@ -35,7 +43,8 @@ type DivRegisterRegister struct {
 }
 
 type Jump struct {
-	Label string
+	Label     string
+	Condition token.Kind
 }
 
 type Label struct {

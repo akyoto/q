@@ -23,17 +23,7 @@ func (a *Return) Equals(v Value) bool {
 		return false
 	}
 
-	if len(a.Arguments) != len(b.Arguments) {
-		return false
-	}
-
-	for i := range a.Arguments {
-		if !a.Arguments[i].Equals(b.Arguments[i]) {
-			return false
-		}
-	}
-
-	return true
+	return a.Arguments.Equals(b.Arguments)
 }
 
 func (v *Return) String() string {

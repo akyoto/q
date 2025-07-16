@@ -10,6 +10,7 @@ import (
 
 func TestReturn(t *testing.T) {
 	fn := ssa.IR{}
+	fn.AddBlock("")
 	ret := fn.Append(&ssa.Return{})
 	one := fn.Append(&ssa.Int{Int: 1})
 	ret2 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{one}})
@@ -23,6 +24,7 @@ func TestReturn(t *testing.T) {
 	assert.Equal(t, ret2.String(), "return 1")
 	assert.Equal(t, ret3.String(), "return 1, 2")
 	assert.Equal(t, ret4.String(), "return 2, 1")
+	assert.Equal(t, ret5.String(), "return 1, 2")
 	assert.False(t, ret5.Equals(one))
 	assert.False(t, ret5.Equals(ret))
 	assert.False(t, ret5.Equals(ret4))

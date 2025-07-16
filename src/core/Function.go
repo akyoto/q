@@ -31,6 +31,8 @@ type Function struct {
 
 // NewFunction creates a new function.
 func NewFunction(name string, pkg string, file *fs.File) *Function {
+	fullName := fmt.Sprintf("%s.%s", pkg, name)
+
 	return &Function{
 		Name:        name,
 		Package:     pkg,
@@ -38,11 +40,14 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 		Identifiers: make(map[string]ssa.Value, 8),
 		IR: ssa.IR{
 			Blocks: []*ssa.Block{
-				{Instructions: make([]ssa.Value, 0, 8)},
+				{
+					Label:        fullName,
+					Instructions: make([]ssa.Value, 0, 8),
+				},
 			},
 		},
 		Function: codegen.Function{
-			FullName: fmt.Sprintf("%s.%s", pkg, name),
+			FullName: fullName,
 			Assembler: asm.Assembler{
 				Instructions: make([]asm.Instruction, 0, 8),
 			},

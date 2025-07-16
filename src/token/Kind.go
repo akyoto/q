@@ -78,3 +78,38 @@ const (
 	Switch                            // switch
 	___END_KEYWORDS___                // </keywords>
 )
+
+// IsAssignment returns true if the token is an assignment operator.
+func (k Kind) IsAssignment() bool {
+	return k > ___ASSIGNMENTS___ && k < ___END_ASSIGNMENTS___
+}
+
+// IsComparison returns true if the token is a comparison operator.
+func (k Kind) IsComparison() bool {
+	return k > ___COMPARISONS___ && k < ___END_COMPARISONS___
+}
+
+// IsExpressionStart returns true if the token starts an expression.
+func (k Kind) IsExpressionStart() bool {
+	return k == GroupStart || k == ArrayStart || k == BlockStart
+}
+
+// IsKeyword returns true if the token is a keyword.
+func (k Kind) IsKeyword() bool {
+	return k > ___KEYWORDS___ && k < ___END_KEYWORDS___
+}
+
+// IsNumeric returns true if the token is a number or rune.
+func (k Kind) IsNumeric() bool {
+	return k == Number || k == Rune
+}
+
+// IsOperator returns true if the token is an operator.
+func (k Kind) IsOperator() bool {
+	return k > ___OPERATORS___ && k < ___END_OPERATORS___
+}
+
+// IsUnaryOperator returns true if the token is a unary operator.
+func (k Kind) IsUnaryOperator() bool {
+	return k > ___UNARY___ && k < ___END_UNARY___
+}

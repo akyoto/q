@@ -8,11 +8,16 @@ import (
 )
 
 type Function struct {
-	FullName    string
-	Assembler   asm.Assembler
-	Steps       []*step
-	ValueToStep map[ssa.Value]*step
-	CPU         *cpu.CPU
-	Count       count
-	Preserved   set.Ordered[cpu.Register]
+	FullName          string
+	Assembler         asm.Assembler
+	Steps             []*step
+	ValueToStep       map[ssa.Value]*step
+	CPU               *cpu.CPU
+	Count             count
+	Preserved         set.Ordered[cpu.Register]
+	isInit            bool
+	isExit            bool
+	needsFramePointer bool
+	hasStackFrame     bool
+	hasExternCalls    bool
 }

@@ -1,46 +1,35 @@
 package codegen
 
 import (
-	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
 // GenerateAssembly converts the SSA IR to assembler instructions.
-func (f *Function) GenerateAssembly(ir ssa.IR, stackFrame bool, hasExternCalls bool) {
+func (f *Function) GenerateAssembly(ir ssa.IR, hasStackFrame bool, hasExternCalls bool) {
+	f.isInit = f.FullName == "run.init"
+	f.isExit = f.FullName == "os.exit"
+	f.needsFramePointer = !f.isInit && !f.isExit
+	f.hasStackFrame = hasStackFrame
+	f.hasExternCalls = hasExternCalls
+
+	// Transform SSA graph to a flat slice of steps we have to execute.
 	f.createSteps(ir)
-	f.Assembler.Append(&asm.Label{Name: f.FullName})
 
-	isInit := f.FullName == "run.init"
-	isExit := f.FullName == "os.exit"
-	needsFramePointer := !isInit && !isExit
-
-	if f.Preserved.Count() > 0 && !isInit {
-		f.Assembler.Append(&asm.PushRegisters{Registers: f.Preserved.Slice()})
-	}
-
-	if stackFrame || hasExternCalls {
-		f.Assembler.Append(&asm.StackFrameStart{FramePointer: needsFramePointer, ExternCalls: hasExternCalls})
-	}
+	// Execute all steps.
+	f.Enter()
 
 	for _, step := range f.Steps {
 		f.exec(step)
 	}
 
-	if isExit {
+	if len(f.Steps) == 0 {
+		f.Leave()
 		return
 	}
 
-	if stackFrame || hasExternCalls {
-		f.Assembler.Append(&asm.StackFrameEnd{FramePointer: needsFramePointer})
-	}
+	_, lastIsReturn := f.Steps[len(f.Steps)-1].Value.(*ssa.Return)
 
-	if isInit {
-		return
+	if !lastIsReturn {
+		f.Leave()
 	}
-
-	if f.Preserved.Count() > 0 {
-		f.Assembler.Append(&asm.PopRegisters{Registers: f.Preserved.Slice()})
-	}
-
-	f.Assembler.Append(&asm.Return{})
 }

@@ -50,7 +50,7 @@ func Parse(tokens token.List) *Expression {
 
 				node.precedence = precedence(node.Token.Kind)
 
-				if cursor.Token.IsOperator() && node.precedence > cursor.precedence {
+				if cursor.Token.Kind.IsOperator() && node.precedence > cursor.precedence {
 					cursor.LastChild().InsertAbove(node)
 				} else {
 					if cursor == root {
@@ -119,7 +119,7 @@ func Parse(tokens token.List) *Expression {
 			continue
 		}
 
-		if !t.IsOperator() {
+		if !t.Kind.IsOperator() {
 			continue
 		}
 
@@ -136,7 +136,7 @@ func Parse(tokens token.List) *Expression {
 		node.Source = tokens[i : i+1]
 		node.precedence = precedence(t.Kind)
 
-		if cursor.Token.IsOperator() {
+		if cursor.Token.Kind.IsOperator() {
 			oldPrecedence := cursor.precedence
 			newPrecedence := node.precedence
 

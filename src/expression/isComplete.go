@@ -19,7 +19,7 @@ func isComplete(expr *Expression) bool {
 		return true
 	}
 
-	if expr.Token.IsOperator() && len(expr.Children) == numOperands(expr.Token.Kind) {
+	if expr.Token.Kind.IsOperator() && len(expr.Children) == numOperands(expr.Token.Kind) {
 		return true
 	}
 

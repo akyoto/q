@@ -10,6 +10,7 @@ import (
 
 func TestSyscall(t *testing.T) {
 	fn := ssa.IR{}
+	fn.AddBlock("")
 	syscall := fn.Append(&ssa.Syscall{})
 	one := fn.Append(&ssa.Int{Int: 1})
 	syscall2 := fn.Append(&ssa.Syscall{Arguments: ssa.Arguments{one}})

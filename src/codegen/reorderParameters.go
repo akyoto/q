@@ -1,6 +1,8 @@
 package codegen
 
-import "git.urbach.dev/cli/q/src/ssa"
+import (
+	"git.urbach.dev/cli/q/src/ssa"
+)
 
 // reorderParameters reorders the sequence of parameter initialization and assigns new registers if needed.
 func (f *Function) reorderParameters() {

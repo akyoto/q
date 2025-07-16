@@ -19,6 +19,15 @@ var (
 	NoInputFiles               = errors.String("No input files")
 )
 
+// CouldNotImport error is created when a package import failed.
+type CouldNotImport struct {
+	Package string
+}
+
+func (err *CouldNotImport) Error() string {
+	return fmt.Sprintf("Could not import '%s'", err.Package)
+}
+
 // InvalidCharacter is created when an invalid character appears.
 type InvalidCharacter struct {
 	Character string

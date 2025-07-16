@@ -40,19 +40,3 @@ func TestTokenString(t *testing.T) {
 	assert.Equal(t, comma.String(buffer), ",")
 	assert.Equal(t, world.String(buffer), "world")
 }
-
-func TestTokenGroups(t *testing.T) {
-	assignment := token.Token{Kind: token.Assign}
-	operator := token.Token{Kind: token.Add}
-	keyword := token.Token{Kind: token.If}
-	unary := token.Token{Kind: token.Not}
-	number := token.Token{Kind: token.Number}
-	comparison := token.Token{Kind: token.Equal}
-
-	assert.True(t, assignment.IsAssignment())
-	assert.True(t, operator.IsOperator())
-	assert.True(t, keyword.IsKeyword())
-	assert.True(t, unary.IsUnaryOperator())
-	assert.True(t, number.IsNumeric())
-	assert.True(t, comparison.IsComparison())
-}

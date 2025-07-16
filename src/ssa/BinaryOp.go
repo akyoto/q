@@ -16,9 +16,8 @@ type BinaryOp struct {
 	Source
 }
 
-func (v *BinaryOp) Inputs() []Value  { return []Value{v.Left, v.Right} }
-func (v *BinaryOp) IsConst() bool    { return v.Left.IsConst() && v.Right.IsConst() }
-func (v *BinaryOp) Type() types.Type { return v.Left.Type() }
+func (v *BinaryOp) Inputs() []Value { return []Value{v.Left, v.Right} }
+func (v *BinaryOp) IsConst() bool   { return v.Left.IsConst() && v.Right.IsConst() }
 
 func (a *BinaryOp) Equals(v Value) bool {
 	b, sameType := v.(*BinaryOp)
@@ -27,17 +26,21 @@ func (a *BinaryOp) Equals(v Value) bool {
 		return false
 	}
 
-	if !a.Left.Equals(b.Left) {
+	if a.Op != b.Op {
 		return false
 	}
 
-	if !a.Right.Equals(b.Right) {
-		return false
-	}
-
-	return true
+	return a.Left.Equals(b.Left) && a.Right.Equals(b.Right)
 }
 
 func (v *BinaryOp) String() string {
 	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
+}
+
+func (v *BinaryOp) Type() types.Type {
+	if v.Op.IsComparison() {
+		return types.Bool
+	}
+
+	return v.Left.Type()
 }

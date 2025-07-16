@@ -3,18 +3,17 @@ package core
 // Compile turns a function into machine code.
 func (f *Function) Compile() {
 	f.registerInputs()
+	err := f.compileTokens(f.Body)
 
-	for instr := range f.Body.Instructions {
-		f.Err = f.compileInstruction(instr)
-
-		if f.Err != nil {
-			return
-		}
+	if err != nil {
+		f.Err = err
+		return
 	}
 
-	f.Err = f.checkDeadCode()
+	err = f.checkDeadCode()
 
-	if f.Err != nil {
+	if err != nil {
+		f.Err = err
 		return
 	}
 

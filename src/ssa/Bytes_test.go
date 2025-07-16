@@ -10,6 +10,7 @@ import (
 
 func TestBytes(t *testing.T) {
 	fn := ssa.IR{}
+	fn.AddBlock("")
 	hello := fn.Append(&ssa.Bytes{Bytes: []byte("Hello")})
 	world := fn.Append(&ssa.Bytes{Bytes: []byte("World")})
 	helloDup := fn.Append(&ssa.Bytes{Bytes: []byte("Hello")})

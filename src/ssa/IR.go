@@ -6,9 +6,10 @@ type IR struct {
 }
 
 // AddBlock adds a new block to the function.
-func (f *IR) AddBlock() *Block {
+func (f *IR) AddBlock(label string) *Block {
 	block := &Block{
 		Instructions: make([]Value, 0, 8),
+		Label:        label,
 	}
 
 	f.Blocks = append(f.Blocks, block)
@@ -17,10 +18,6 @@ func (f *IR) AddBlock() *Block {
 
 // Append adds a new value to the last block.
 func (f *IR) Append(instr Value) Value {
-	if len(f.Blocks) == 0 {
-		f.AddBlock()
-	}
-
 	existing := f.FindExisting(instr)
 
 	if existing != nil {

@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"git.urbach.dev/cli/q/src/sizeof"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/x86"
 )
 
@@ -58,6 +59,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, uint32(offset))
 			return code
 		}
+	case *CompareRegisterRegister:
+		c.code = x86.CompareRegisterRegister(c.code, instr.SourceA, instr.SourceB)
 	case *DivRegisterRegister:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
@@ -70,7 +73,22 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, x86.R0)
 		}
 	case *Jump:
-		c.code = x86.Jump8(c.code, 0)
+		switch instr.Condition {
+		case token.Equal:
+			c.code = x86.Jump8IfEqual(c.code, 0x00)
+		case token.NotEqual:
+			c.code = x86.Jump8IfNotEqual(c.code, 0x00)
+		case token.Greater:
+			c.code = x86.Jump8IfGreater(c.code, 0x00)
+		case token.GreaterEqual:
+			c.code = x86.Jump8IfGreaterOrEqual(c.code, 0x00)
+		case token.Less:
+			c.code = x86.Jump8IfLess(c.code, 0x00)
+		case token.LessEqual:
+			c.code = x86.Jump8IfLessOrEqual(c.code, 0x00)
+		default:
+			c.code = x86.Jump8(c.code, 0x00)
+		}
 
 		patch := &patch{
 			start: len(c.code) - 2,

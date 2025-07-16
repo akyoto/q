@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"git.urbach.dev/cli/q/src/arm"
+	"git.urbach.dev/cli/q/src/token"
 )
 
 type compilerARM struct {
@@ -54,6 +55,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *CallExternStart:
 	case *CallExternEnd:
+	case *CompareRegisterRegister:
+		c.append(arm.CompareRegisterRegister(instr.SourceA, instr.SourceB))
 	case *DivRegisterRegister:
 		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Jump:
@@ -73,7 +76,23 @@ func (c *compilerARM) Compile(instr Instruction) {
 				panic("not implemented: long jumps")
 			}
 
-			binary.LittleEndian.PutUint32(code, arm.Jump(offset))
+			switch instr.Condition {
+			case token.Equal:
+				binary.LittleEndian.PutUint32(code, arm.JumpIfEqual(offset))
+			case token.NotEqual:
+				binary.LittleEndian.PutUint32(code, arm.JumpIfNotEqual(offset))
+			case token.Greater:
+				binary.LittleEndian.PutUint32(code, arm.JumpIfGreater(offset))
+			case token.GreaterEqual:
+				binary.LittleEndian.PutUint32(code, arm.JumpIfGreaterOrEqual(offset))
+			case token.Less:
+				binary.LittleEndian.PutUint32(code, arm.JumpIfLess(offset))
+			case token.LessEqual:
+				binary.LittleEndian.PutUint32(code, arm.JumpIfLessOrEqual(offset))
+			default:
+				binary.LittleEndian.PutUint32(code, arm.Jump(offset))
+			}
+
 			return code
 		}
 	case *Label:

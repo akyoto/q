@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"fmt"
 	"slices"
 
 	"git.urbach.dev/cli/q/src/asm"
@@ -15,6 +16,11 @@ func (f *Function) exec(step *step) {
 	case *ssa.BinaryOp:
 		left := f.ValueToStep[instr.Left]
 		right := f.ValueToStep[instr.Right]
+
+		if instr.Op.IsComparison() {
+			f.Assembler.Append(&asm.CompareRegisterRegister{SourceA: left.Register, SourceB: right.Register})
+			return
+		}
 
 		switch instr.Op {
 		case token.Add:
@@ -46,7 +52,7 @@ func (f *Function) exec(step *step) {
 			})
 
 		default:
-			panic("not implemented")
+			panic(fmt.Sprintf("not implemented: %d", instr.Op))
 		}
 
 	case *ssa.Bytes:
@@ -123,6 +129,9 @@ func (f *Function) exec(step *step) {
 			Source:      f.CPU.ExternCall.Out[0],
 		})
 
+	case *ssa.If:
+		f.JumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, instr.Else.Label)
+
 	case *ssa.Int:
 		if step.Register == -1 {
 			return
@@ -131,6 +140,11 @@ func (f *Function) exec(step *step) {
 		f.Assembler.Append(&asm.MoveRegisterNumber{
 			Destination: step.Register,
 			Number:      instr.Int,
+		})
+
+	case *Label:
+		f.Assembler.Append(&asm.Label{
+			Name: instr.Name,
 		})
 
 	case *ssa.Parameter:
@@ -159,6 +173,24 @@ func (f *Function) exec(step *step) {
 			Source:      source,
 		})
 
+	case *ssa.Return:
+		defer f.Leave()
+
+		if len(instr.Arguments) == 0 {
+			return
+		}
+
+		retVal := f.ValueToStep[instr.Arguments[0]]
+
+		if retVal.Register == -1 || retVal.Register == f.CPU.Call.Out[0] {
+			return
+		}
+
+		f.Assembler.Append(&asm.MoveRegisterRegister{
+			Destination: f.CPU.Call.Out[0],
+			Source:      retVal.Register,
+		})
+
 	case *ssa.Syscall:
 		for i, arg := range instr.Arguments {
 			if f.ValueToStep[arg].Register != f.CPU.Syscall.In[i] {
@@ -179,5 +211,8 @@ func (f *Function) exec(step *step) {
 			Destination: step.Register,
 			Source:      f.CPU.Syscall.Out[0],
 		})
+
+	default:
+		panic("not implemented: " + instr.String())
 	}
 }

@@ -6,8 +6,8 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// compileReturn compiles a return instruction.
-func (f *Function) compileReturn(tokens token.List) error {
+// Return compiles a return instruction.
+func (f *Function) Return(tokens token.List) error {
 	expr := expression.Parse(tokens[1:])
 	value, err := f.eval(expr)
 

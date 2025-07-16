@@ -11,6 +11,7 @@ import (
 
 var examples = []testRun{
 	{"hello", "", "Hello\n", 0},
+	{"fibonacci", "", "", 55},
 }
 
 func TestExamples(t *testing.T) {

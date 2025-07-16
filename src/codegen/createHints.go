@@ -8,6 +8,10 @@ import (
 func (f *Function) createHints(step *step) {
 	switch instr := step.Value.(type) {
 	case *ssa.BinaryOp:
+		if instr.Op.IsComparison() {
+			return
+		}
+
 		f.ValueToStep[instr.Left].Hint(step.Register)
 
 	case *ssa.Call:

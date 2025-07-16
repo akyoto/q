@@ -201,7 +201,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 	default:
-		if expr.Token.IsOperator() {
+		if expr.Token.Kind.IsOperator() {
 			left := expr.Children[0]
 			right := expr.Children[1]
 
