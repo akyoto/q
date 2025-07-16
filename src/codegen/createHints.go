@@ -26,13 +26,6 @@ func (f *Function) createHints(step *step) {
 			f.ValueToStep[param].Hint(f.CPU.ExternCall.In[r])
 		}
 
-	case *ssa.Int:
-		if step.Register == -1 {
-			users := step.Value.Users()
-			alive := f.ValueToStep[users[len(users)-1]].Index
-			step.Register = f.findFreeRegister(f.Steps[step.Index:alive])
-		}
-
 	case *ssa.Parameter:
 		if step.Register == -1 {
 			step.Register = f.CPU.Call.In[instr.Index]
@@ -46,6 +39,15 @@ func (f *Function) createHints(step *step) {
 	case *ssa.Syscall:
 		for r, param := range instr.Arguments {
 			f.ValueToStep[param].Hint(f.CPU.Syscall.In[r])
+		}
+	}
+
+	if step.Register == -1 {
+		users := step.Value.Users()
+
+		if len(users) > 0 {
+			alive := f.ValueToStep[users[len(users)-1]].Index
+			step.Register = f.findFreeRegister(f.Steps[step.Index:alive])
 		}
 	}
 }

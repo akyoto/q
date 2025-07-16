@@ -3,13 +3,14 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 )
 
 // findFreeRegister finds a free register within the given slice of steps.
 func (f *Function) findFreeRegister(steps []*step) cpu.Register {
 	usedRegisters := 0
 
-	for _, step := range steps {
+	for i, step := range steps {
 		for _, live := range step.Live {
 			if live.Register == -1 {
 				continue
@@ -18,9 +19,17 @@ func (f *Function) findFreeRegister(steps []*step) cpu.Register {
 			usedRegisters |= (1 << live.Register)
 		}
 
+		if i == 0 {
+			continue
+		}
+
 		var volatileRegisters []cpu.Register
 
 		switch instr := step.Value.(type) {
+		case *ssa.BinaryOp:
+			if instr.Op == token.Div {
+				volatileRegisters = f.CPU.Division
+			}
 		case *ssa.Call:
 			volatileRegisters = f.CPU.Call.Clobbered
 		case *ssa.CallExtern:

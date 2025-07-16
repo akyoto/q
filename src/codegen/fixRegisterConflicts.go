@@ -33,7 +33,7 @@ func (f *Function) fixRegisterConflicts() {
 			}
 
 			if live.Value != step.Value && slices.Contains(clobbered, live.Register) {
-				live.Register = f.findFreeRegister(f.Steps[live.Index : stepIndex+1])
+				live.Register = f.findFreeRegister(f.Steps[live.Index:stepIndex])
 				continue
 			}
 
@@ -47,9 +47,9 @@ func (f *Function) fixRegisterConflicts() {
 				}
 
 				if previous.Index < live.Index {
-					previous.Register = f.findFreeRegister(f.Steps[previous.Index : stepIndex+1])
+					previous.Register = f.findFreeRegister(f.Steps[previous.Index:stepIndex])
 				} else {
-					live.Register = f.findFreeRegister(f.Steps[live.Index : stepIndex+1])
+					live.Register = f.findFreeRegister(f.Steps[live.Index:stepIndex])
 					break
 				}
 			}
