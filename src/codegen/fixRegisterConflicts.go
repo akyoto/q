@@ -19,6 +19,12 @@ func (f *Function) fixRegisterConflicts() {
 			if instr.Op == token.Div {
 				clobbered = f.CPU.Division
 			}
+
+			right := f.ValueToStep[instr.Right]
+
+			if step.Register == right.Register {
+				right.Register = f.findFreeRegister(f.Steps[right.Index:stepIndex])
+			}
 		case *ssa.Call:
 			clobbered = f.CPU.Call.Clobbered
 		case *ssa.CallExtern:

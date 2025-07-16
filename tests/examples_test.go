@@ -11,6 +11,7 @@ import (
 
 var examples = []testRun{
 	{"hello", "", "Hello\n", 0},
+	{"factorial", "", "", 120},
 	{"fibonacci", "", "", 55},
 }
 
