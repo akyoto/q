@@ -3,6 +3,7 @@ package compiler
 import (
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/scanner"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -56,11 +57,22 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		}
 	}
 
+	// Start parallel compilation
 	compileFunctions(all.Functions())
 
+	// Report errors if any occurred
 	for f := range all.Functions() {
 		if f.Err != nil {
 			return nil, f.Err
+		}
+	}
+
+	// Check for unused imports in all files
+	for _, file := range all.Files {
+		for _, imp := range file.Imports {
+			if !imp.Used {
+				return nil, errors.New(&UnusedImport{Package: imp.Package}, file, imp.Position)
+			}
 		}
 	}
 

@@ -158,11 +158,13 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			pkg := f.All.Packages[leftText]
 
 			if !pkg.IsExtern && f != f.All.Init {
-				_, exists := f.File.Imports[leftText]
+				imp, exists := f.File.Imports[leftText]
 
 				if !exists {
 					return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
 				}
+
+				imp.Used = true
 			}
 
 			function, exists := pkg.Functions[rightText]

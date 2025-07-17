@@ -6,7 +6,7 @@ import "git.urbach.dev/cli/q/src/token"
 type File struct {
 	Path    string
 	Package string
-	Imports map[string]struct{}
+	Imports map[string]*Import
 	Bytes   []byte
 	Tokens  token.List
 }
