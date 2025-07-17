@@ -26,7 +26,7 @@ func (f *Function) registerInputs() {
 					Index:  uint8(offset + i),
 					Name:   fmt.Sprintf("%s.%s", input.Name, field.Name),
 					Typ:    field.Type,
-					Source: input.Source,
+					Tokens: input.Tokens,
 				}
 
 				f.Append(param)

@@ -8,17 +8,14 @@ import (
 
 // compileInstruction compiles a single instruction.
 func (f *Function) compileInstruction(instr token.List) error {
-	if instr[0].Kind.IsKeyword() {
-		switch instr[0].Kind {
-		case token.Assert:
-			return f.Assert(instr)
-		case token.If:
-			return f.If(instr)
-		case token.Return:
-			return f.Return(instr)
-		default:
-			panic("keyword not implemented")
-		}
+	switch instr[0].Kind {
+	case token.Assert:
+		return f.Assert(instr)
+	case token.Comment:
+	case token.If:
+		return f.If(instr)
+	case token.Return:
+		return f.Return(instr)
 	}
 
 	expr := expression.Parse(instr)

@@ -1,0 +1,3 @@
+main() {
+	x := "not used"
+}

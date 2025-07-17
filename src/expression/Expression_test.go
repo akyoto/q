@@ -1,7 +1,6 @@
 package expression_test
 
 import (
-	"errors"
 	"testing"
 
 	"git.urbach.dev/cli/q/src/expression"
@@ -15,20 +14,11 @@ func TestEachLeaf(t *testing.T) {
 	expr := expression.Parse(tokens)
 	leaves := []string{}
 
-	err := expr.EachLeaf(func(leaf *expression.Expression) error {
+	expr.EachLeaf(func(leaf *expression.Expression) {
 		leaves = append(leaves, leaf.Token.String(src))
-		return nil
 	})
 
-	assert.Nil(t, err)
 	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
-
-	err = expr.EachLeaf(func(leaf *expression.Expression) error {
-		return errors.New("error")
-	})
-
-	assert.NotNil(t, err)
-	assert.Equal(t, err.Error(), "error")
 }
 
 func TestInvalidExpression(t *testing.T) {
@@ -72,38 +62,48 @@ func TestSource(t *testing.T) {
 	expr := expression.Parse(tokens)
 
 	assert.Equal(t, expr.String(src), "(+ (- (+ 1 2) (* 3 4)) (+ (- (* 5 6) 7) 8))")
-	assert.DeepEqual(t, expr.Source, tokens)
+	// assert.Equal(t, expr.SourceString(src), string(src))
 
 	assert.Equal(t, expr.Children[0].String(src), "(- (+ 1 2) (* 3 4))")
-	assert.DeepEqual(t, expr.Children[0].Source, tokens[1:8])
+	assert.Equal(t, expr.Children[0].SourceString(src), "1+2-3*4")
 
 	assert.Equal(t, expr.Children[1].String(src), "(+ (- (* 5 6) 7) 8)")
-	assert.DeepEqual(t, expr.Children[1].Source, tokens[11:18])
+	assert.Equal(t, expr.Children[1].SourceString(src), "5*6-7+8")
 
 	assert.Equal(t, expr.Children[0].Children[0].String(src), "(+ 1 2)")
-	assert.DeepEqual(t, expr.Children[0].Children[0].Source, tokens[1:4])
+	assert.Equal(t, expr.Children[0].Children[0].SourceString(src), "1+2")
 
 	assert.Equal(t, expr.Children[0].Children[1].String(src), "(* 3 4)")
-	assert.DeepEqual(t, expr.Children[0].Children[1].Source, tokens[5:8])
+	assert.Equal(t, expr.Children[0].Children[1].SourceString(src), "3*4")
 
 	assert.Equal(t, expr.Children[1].Children[0].String(src), "(- (* 5 6) 7)")
-	assert.DeepEqual(t, expr.Children[1].Children[0].Source, tokens[11:16])
+	assert.Equal(t, expr.Children[1].Children[0].SourceString(src), "5*6-7")
 
 	assert.Equal(t, expr.Children[1].Children[0].Children[0].String(src), "(* 5 6)")
-	assert.DeepEqual(t, expr.Children[1].Children[0].Children[0].Source, tokens[11:14])
+	assert.Equal(t, expr.Children[1].Children[0].Children[0].SourceString(src), "5*6")
 
 	assert.Equal(t, expr.Children[1].Children[0].Children[1].String(src), "7")
-	assert.DeepEqual(t, expr.Children[1].Children[0].Children[1].Source, tokens[15:16])
+	assert.Equal(t, expr.Children[1].Children[0].Children[1].SourceString(src), "7")
 
 	assert.Equal(t, expr.Children[1].Children[1].String(src), "8")
-	assert.DeepEqual(t, expr.Children[1].Children[1].Source, tokens[17:18])
+	assert.Equal(t, expr.Children[1].Children[1].SourceString(src), "8")
 
 	leaves := []string{}
-
-	expr.EachLeaf(func(leaf *expression.Expression) error {
-		leaves = append(leaves, leaf.Source.String(src))
-		return nil
-	})
-
+	expr.EachLeaf(func(leaf *expression.Expression) { leaves = append(leaves, leaf.SourceString(src)) })
 	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
+}
+
+func TestSource2(t *testing.T) {
+	src := []byte("x:=2+3")
+	tokens := token.Tokenize(src)
+	expr := expression.Parse(tokens)
+
+	assert.Equal(t, expr.String(src), "(:= x (+ 2 3))")
+	assert.Equal(t, expr.SourceString(src), string(src))
+
+	assert.Equal(t, expr.Children[0].String(src), "x")
+	assert.Equal(t, expr.Children[0].SourceString(src), "x")
+
+	assert.Equal(t, expr.Children[1].String(src), "(+ 2 3)")
+	assert.Equal(t, expr.Children[1].SourceString(src), "2+3")
 }

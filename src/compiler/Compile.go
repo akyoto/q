@@ -42,15 +42,15 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		}
 
 		for i, input := range f.Input {
-			input.Typ = types.Parse(input.Source[1:], f.File.Bytes)
+			input.Typ = types.Parse(input.Tokens[1:], f.File.Bytes)
 			f.Type.Input[i] = input.Typ
 		}
 
 		for i, output := range f.Output {
-			if len(output.Source) > 1 {
-				output.Typ = types.Parse(output.Source[1:], f.File.Bytes)
+			if len(output.Tokens) > 1 {
+				output.Typ = types.Parse(output.Tokens[1:], f.File.Bytes)
 			} else {
-				output.Typ = types.Parse(output.Source, f.File.Bytes)
+				output.Typ = types.Parse(output.Tokens, f.File.Bytes)
 			}
 
 			f.Type.Output[i] = output.Typ

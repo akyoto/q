@@ -17,7 +17,7 @@ func (f *Function) Return(tokens token.List) error {
 
 	f.Append(&ssa.Return{
 		Arguments: []ssa.Value{value},
-		Source:    ssa.Source(tokens),
+		Source:    ssa.Source(expr.Source()),
 	})
 
 	return nil

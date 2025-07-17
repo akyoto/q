@@ -11,7 +11,6 @@ type Expression struct {
 	Parent     *Expression
 	Children   []*Expression
 	Token      token.Token
-	Source     token.List
 	precedence int8
 }
 
@@ -26,20 +25,15 @@ func (expr *Expression) AddChild(child *Expression) {
 }
 
 // EachLeaf iterates through all leaves in the tree.
-func (expr *Expression) EachLeaf(call func(*Expression) error) error {
+func (expr *Expression) EachLeaf(call func(*Expression)) {
 	if expr.IsLeaf() {
-		return call(expr)
+		call(expr)
+		return
 	}
 
 	for _, child := range expr.Children {
-		err := child.EachLeaf(call)
-
-		if err != nil {
-			return err
-		}
+		child.EachLeaf(call)
 	}
-
-	return nil
 }
 
 // Index returns the position of the child or `-1` if it's not a child of this expression.
@@ -95,8 +89,29 @@ func (expr *Expression) Reset() {
 	}
 
 	expr.Token.Reset()
-	expr.Source = nil
 	expr.precedence = 0
+}
+
+// Source returns the start and end positions in the source file.
+func (expr *Expression) Source() token.Source {
+	start := expr.Token.Position
+	end := expr.Token.End()
+
+	expr.EachLeaf(func(leaf *Expression) {
+		if leaf.Token.Position < start {
+			start = leaf.Token.Position
+		} else if leaf.Token.End() > end {
+			end = leaf.Token.End()
+		}
+	})
+
+	return token.Source{StartPos: start, EndPos: end}
+}
+
+// SourceString returns the string that was parsed in this expression.
+func (expr *Expression) SourceString(source []byte) string {
+	region := expr.Source()
+	return string(source[region.StartPos:region.EndPos])
 }
 
 // String generates a textual representation of the expression.

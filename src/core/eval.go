@@ -38,7 +38,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 					Name:     function.Name,
 					Typ:      function.Type,
 					IsExtern: function.IsExtern(),
-					Source:   ssa.Source(expr.Source),
+					Source:   ssa.Source(expr.Source()),
 				}
 
 				return v, nil
@@ -55,7 +55,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 
 			v := f.Append(&ssa.Int{
 				Int:    number,
-				Source: ssa.Source(expr.Source),
+				Source: ssa.Source(expr.Source()),
 			})
 
 			return v, nil
@@ -64,26 +64,26 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			data := expr.Token.Bytes(f.File.Bytes)
 			data = unescape(data)
 
-			length := &ssa.Int{
+			length := f.Append(&ssa.Int{
 				Int:    len(data),
-				Source: ssa.Source(expr.Source),
-			}
+				Source: ssa.Source(expr.Source()),
+			})
 
-			pointer := &ssa.Bytes{
+			pointer := f.Append(&ssa.Bytes{
 				Bytes:  data,
-				Source: ssa.Source(expr.Source),
-			}
+				Source: ssa.Source(expr.Source()),
+			})
 
 			v := &ssa.Struct{
 				Arguments: []ssa.Value{pointer, length},
 				Typ:       types.String,
-				Source:    ssa.Source(expr.Source),
+				Source:    ssa.Source(expr.Source()),
 			}
 
 			return v, nil
 		}
 
-		return nil, errors.New(InvalidExpression, f.File, expr.Source[0].Position)
+		return nil, errors.New(InvalidExpression, f.File, expr.Token.Position)
 	}
 
 	switch expr.Token.Kind {
@@ -97,7 +97,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 
 			syscall := &ssa.Syscall{
 				Arguments: args,
-				Source:    ssa.Source(expr.Source),
+				Source:    ssa.Source(expr.Source()),
 			}
 
 			return f.Append(syscall), nil
@@ -115,7 +115,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 		inputExpressions := expr.Children[1:]
 
 		if len(inputExpressions) != len(fn.Input) {
-			return nil, errors.New(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, expr.Source[0].Position)
+			return nil, errors.New(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, expr.Source().StartPos)
 		}
 
 		args, err := f.decompose(inputExpressions, fn.Input)
@@ -128,7 +128,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			v := f.Append(&ssa.CallExtern{Call: ssa.Call{
 				Func:      ssaFunc,
 				Arguments: args,
-				Source:    ssa.Source(expr.Source),
+				Source:    ssa.Source(expr.Source()),
 			}})
 
 			return v, nil
@@ -137,7 +137,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 		v := f.Append(&ssa.Call{
 			Func:      ssaFunc,
 			Arguments: args,
-			Source:    ssa.Source(expr.Source),
+			Source:    ssa.Source(expr.Source()),
 		})
 
 		return v, nil
@@ -184,7 +184,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 				Name:     function.Name,
 				Typ:      function.Type,
 				IsExtern: function.IsExtern(),
-				Source:   ssa.Source(expr.Source),
+				Source:   ssa.Source(expr.Source()),
 			}
 
 			return v, nil
@@ -223,7 +223,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 				Left:   leftValue,
 				Right:  rightValue,
 				Op:     expr.Token.Kind,
-				Source: ssa.Source(expr.Source),
+				Source: ssa.Source(expr.Source()),
 			})
 
 			return v, nil

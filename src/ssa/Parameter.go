@@ -3,15 +3,16 @@ package ssa
 import (
 	"fmt"
 
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 type Parameter struct {
-	Index uint8
-	Name  string
-	Typ   types.Type
+	Index  uint8
+	Name   string
+	Typ    types.Type
+	Tokens token.List
 	Liveness
-	Source
 }
 
 func (v *Parameter) Inputs() []Value  { return nil }

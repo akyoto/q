@@ -97,7 +97,7 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 
 		function.Input = append(function.Input, &ssa.Parameter{
 			Name:   param[0].String(file.Bytes),
-			Source: ssa.Source(param),
+			Tokens: param,
 		})
 	}
 
@@ -130,12 +130,12 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 		if len(param) == 1 {
 			function.Output = append(function.Output, &ssa.Parameter{
 				Name:   "",
-				Source: ssa.Source(param),
+				Tokens: param,
 			})
 		} else {
 			function.Output = append(function.Output, &ssa.Parameter{
 				Name:   param[0].String(file.Bytes),
-				Source: ssa.Source(param),
+				Tokens: param,
 			})
 		}
 

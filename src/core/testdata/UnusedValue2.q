@@ -1,3 +1,3 @@
 main() {
-	"not used"
+	x := 42
 }

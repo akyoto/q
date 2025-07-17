@@ -30,8 +30,12 @@ var errs = []struct {
 	{"UnknownIdentifier5.q", &core.UnknownIdentifier{Name: "unknown"}},
 	{"UnknownIdentifier6.q", &core.UnknownIdentifier{Name: "os"}},
 	{"UnknownIdentifier7.q", &core.UnknownIdentifier{Name: "os.unknown"}},
-	{"UnusedValue.q", &core.UnusedValue{Value: "2 + 3"}},
-	{"UnusedValue2.q", &core.UnusedValue{Value: "\"not used\""}},
+	{"UnusedValue.q", &core.UnusedValue{Value: "42"}},
+	{"UnusedValue2.q", &core.UnusedValue{Value: "42"}},
+	{"UnusedValue3.q", &core.UnusedValue{Value: "2 + 3"}},
+	{"UnusedValue4.q", &core.UnusedValue{Value: "2 + 3"}},
+	{"UnusedValue5.q", &core.UnusedValue{Value: "\"not used\""}},
+	{"UnusedValue6.q", &core.UnusedValue{Value: "\"not used\""}},
 }
 
 func TestErrors(t *testing.T) {

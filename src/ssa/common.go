@@ -54,12 +54,14 @@ type HasLiveness interface {
 }
 
 // Source tracks the source tokens.
-type Source token.List
+type Source token.Source
 
-func (v Source) Start() token.Position { return v[0].Position }
-func (v Source) End() token.Position   { return v[len(v)-1].End() }
+func (v Source) Start() token.Position         { return v.StartPos }
+func (v Source) End() token.Position           { return v.EndPos }
+func (v Source) StringFrom(code []byte) string { return string(code[v.Start():v.End()]) }
 
 type HasSource interface {
 	Start() token.Position
 	End() token.Position
+	StringFrom([]byte) string
 }

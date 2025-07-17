@@ -30,7 +30,7 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 
 		if isStruct {
 			for _, field := range structure.Arguments {
-				args = append(args, f.Append(field))
+				args = append(args, field)
 			}
 
 			continue
