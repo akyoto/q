@@ -62,7 +62,7 @@ func TestSource(t *testing.T) {
 	expr := expression.Parse(tokens)
 
 	assert.Equal(t, expr.String(src), "(+ (- (+ 1 2) (* 3 4)) (+ (- (* 5 6) 7) 8))")
-	// assert.Equal(t, expr.SourceString(src), string(src))
+	assert.Equal(t, expr.SourceString(src), string(src))
 
 	assert.Equal(t, expr.Children[0].String(src), "(- (+ 1 2) (* 3 4))")
 	assert.Equal(t, expr.Children[0].SourceString(src), "1+2-3*4")
@@ -94,6 +94,15 @@ func TestSource(t *testing.T) {
 }
 
 func TestSource2(t *testing.T) {
+	src := []byte("( 1+2-(3*4) ) + ( 5*6-7+8 )")
+	tokens := token.Tokenize(src)
+	expr := expression.Parse(tokens)
+
+	assert.Equal(t, expr.String(src), "(+ (- (+ 1 2) (* 3 4)) (+ (- (* 5 6) 7) 8))")
+	assert.Equal(t, expr.SourceString(src), string(src))
+}
+
+func TestSource3(t *testing.T) {
 	src := []byte("x:=2+3")
 	tokens := token.Tokenize(src)
 	expr := expression.Parse(tokens)
