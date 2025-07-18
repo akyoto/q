@@ -11,12 +11,13 @@
 ## Features
 
 * High performance (`ssa` and `asm` optimizations)
-* Tiny executables ("Hello World" is ~600 bytes)
 * Fast compilation (<1 ms for simple programs)
-* Unix scripting (pseudo JIT)
-* No dependencies (no llvm, no libc)
+* Tiny executables ("Hello World" is ~600 bytes)
+* Zero dependencies (no llvm, no libc)
 
 ## Installation
+
+### Build from source
 
 ```shell
 git clone https://git.urbach.dev/cli/q
@@ -24,7 +25,7 @@ cd q
 go build
 ```
 
-Add a symlink in `~/.local/bin` or `/usr/local/bin`:
+### Install via symlink
 
 ```shell
 ln -s $PWD/q ~/.local/bin/q
@@ -32,19 +33,19 @@ ln -s $PWD/q ~/.local/bin/q
 
 ## Usage
 
-Quick test:
+### Quick test
 
 ```shell
 q examples/hello
 ```
 
-Build an executable:
+### Build an executable
 
 ```shell
 q build examples/hello
 ```
 
-Cross-compile for another OS:
+### Cross-compile for another OS
 
 ```shell
 q build examples/hello --os windows
@@ -52,11 +53,55 @@ q build examples/hello --os windows
 
 ## Tests
 
+### Run all tests
+
 ```shell
 go run gotest.tools/gotestsum@latest
 ```
 
-## Source
+### Generate coverage
+
+```shell
+go test -coverpkg=./... -coverprofile=cover.out ./...
+```
+
+### View coverage
+
+```shell
+go tool cover -func cover.out
+go tool cover -html cover.out
+```
+
+### Run compiler benchmarks
+
+```shell
+go test ./tests -run='^$' -bench=. -benchmem
+```
+
+### Generate profiling data
+
+```shell
+go test ./tests -run='^$' -bench="Examples/" -benchmem -cpuprofile cpu.out -memprofile mem.out
+```
+
+### View profiling data
+
+```shell
+go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
+go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
+```
+
+## Source overview
+
+> [!TIP]
+> The typical flow is this:
+>
+> 1. [main](../main.go)
+> 1. [cli.Exec](../src/cli/Exec.go)
+> 1. [compiler.Compile](../src/compiler/Compile.go)
+> 1. [scanner.Scan](../src/scanner/Scan.go)
+> 1. [core.Compile](../src/core/Compile.go)
+> 1. [linker.Write](../src/linker/Write.go)
 
 ### Packages
 
@@ -87,15 +132,6 @@ go run gotest.tools/gotestsum@latest
 - [token](../src/token) - Tokenizer
 - [types](../src/types) - Type system
 - [x86](../src/x86) - x86-64 architecture
-
-### Typical flow
-
-1. [main](../main.go)
-1. [cli.Exec](../src/cli/Exec.go)
-1. [compiler.Compile](../src/compiler/Compile.go)
-1. [scanner.Scan](../src/scanner/Scan.go)
-1. [core.Compile](../src/core/Compile.go)
-1. [linker.Write](../src/linker/Write.go)
 
 ## FAQ
 
@@ -138,7 +174,7 @@ All memory pages are loaded with either execute or write permissions but never w
 
 ### How do I use it for scripting?
 
-The compiler is actually so fast that it's possible to compile an entire script within microseconds. Create a new file...
+The compiler is actually so fast that it's possible to compile an entire script within microseconds.
 
 ```q
 #!/usr/bin/env q
@@ -150,7 +186,7 @@ main() {
 }
 ```
 
-...and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
+Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
 
 ## License
 
