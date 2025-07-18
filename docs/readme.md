@@ -11,8 +11,8 @@
 ## Features
 
 * High performance (`ssa` and `asm` optimizations)
-* Tiny executables ("Hello World" is ~500 bytes)
-* Fast compilation (much faster than other compilers)
+* Tiny executables ("Hello World" is ~600 bytes)
+* Fast compilation (<1 ms for simple programs)
 * Unix scripting (pseudo JIT)
 * No dependencies (no llvm, no libc)
 
@@ -50,29 +50,13 @@ Cross-compile for another OS:
 q build examples/hello --os windows
 ```
 
-### Unix scripts
-
-The compiler is actually so fast that it's possible to use `q` for scripting. Create a new file...
-
-```q
-#!/usr/bin/env q
-
-import io
-
-main() {
-	io.write("Hello\n")
-}
-```
-
-...and add exec permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code is run directly from RAM if the OS supports it.
-
 ## Tests
 
 ```shell
 go run gotest.tools/gotestsum@latest
 ```
 
-## Source overview
+## Source
 
 ### Packages
 
@@ -113,7 +97,21 @@ go run gotest.tools/gotestsum@latest
 1. [core.Compile](../src/core/Compile.go)
 1. [linker.Write](../src/linker/Write.go)
 
-## Platforms
+## FAQ
+
+### How tiny is a Hello World?
+
+|         | x86-64 |
+| ------- | ------ |
+| Linux   | 582 bytes  |
+| Mac     | 8 KiB     |
+| Windows | 1.7 KiB     |
+
+### How is the assembly code quality?
+
+The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is pretty high despite the young age of the project.
+
+### Which platforms are supported?
 
 |         | arm64  | x86-64 |
 | ------- | ------ | ------ |
@@ -121,22 +119,38 @@ go run gotest.tools/gotestsum@latest
 | Mac     | ✔️*    | ✔️     |
 | Windows | ✔️*    | ✔️     |
 
-Those marked with a star are supported in theory but there are no developer machines to test them.
+Those marked with a star need testing. Please get in touch if you have a machine with the marked architectures.
 
-## Security
+### Which security features are supported?
 
-### PIE
+#### PIE
 
-All executables are built as Position Independent Executables (PIE) supporting a dynamic base address.
+All executables are built as position independent executables supporting a dynamic base address.
 
-### Memory pages
+#### W^X
 
-Code and data are separated into different memory pages and loaded with different access permissions.
+All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
 
 |        | Read | Execute | Write |
 | ------ | ---- | ------- | ----- |
 | Code   | ✔️   | ✔️      | ❌    |
 | Data   | ✔️   | ❌      | ❌    |
+
+### How do I use it for scripting?
+
+The compiler is actually so fast that it's possible to compile an entire script within microseconds. Create a new file...
+
+```q
+#!/usr/bin/env q
+
+import io
+
+main() {
+	io.write("Hello\n")
+}
+```
+
+...and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
 
 ## License
 
