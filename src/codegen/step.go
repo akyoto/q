@@ -6,10 +6,10 @@ import (
 )
 
 type step struct {
-	Index    int
 	Value    ssa.Value
 	Live     []*step
 	Hints    []cpu.Register
+	Index    int
 	Register cpu.Register
 }
 

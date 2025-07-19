@@ -8,11 +8,11 @@ import (
 )
 
 type Parameter struct {
-	Index  uint8
-	Name   string
 	Typ    types.Type
+	Name   string
 	Tokens token.List
 	Liveness
+	Index uint8
 }
 
 func (v *Parameter) Inputs() []Value  { return nil }

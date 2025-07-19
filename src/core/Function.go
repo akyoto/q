@@ -14,19 +14,19 @@ import (
 
 // Function is the smallest unit of code.
 type Function struct {
-	ssa.IR
-	codegen.Function
 	Name         string
 	Package      string
 	File         *fs.File
+	Type         *types.Function
+	Err          error
+	All          *Environment
+	Identifiers  map[string]ssa.Value
 	Input        []*ssa.Parameter
 	Output       []*ssa.Parameter
 	Body         token.List
-	Identifiers  map[string]ssa.Value
-	All          *Environment
 	Dependencies set.Ordered[*Function]
-	Type         *types.Function
-	Err          error
+	ssa.IR
+	codegen.Function
 }
 
 // NewFunction creates a new function.

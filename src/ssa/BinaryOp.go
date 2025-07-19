@@ -11,9 +11,9 @@ import (
 type BinaryOp struct {
 	Left  Value
 	Right Value
-	Op    token.Kind
 	Liveness
 	Source
+	Op token.Kind
 }
 
 func (v *BinaryOp) Inputs() []Value { return []Value{v.Left, v.Right} }

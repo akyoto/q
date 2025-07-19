@@ -52,8 +52,8 @@ type Label struct {
 }
 
 type MoveRegisterLabel struct {
-	Destination cpu.Register
 	Label       string
+	Destination cpu.Register
 }
 
 type MoveRegisterNumber struct {

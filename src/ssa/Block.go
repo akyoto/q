@@ -2,8 +2,8 @@ package ssa
 
 // Block is a list of instructions that can be targeted in branches.
 type Block struct {
-	Instructions []Value
 	Label        string
+	Instructions []Value
 }
 
 // Append adds a new instruction to the block.

@@ -4,8 +4,8 @@ package types
 type Struct struct {
 	Package    string
 	UniqueName string
-	Fields     []*Field
 	name       string
+	Fields     []*Field
 }
 
 // NewStruct creates a new struct.

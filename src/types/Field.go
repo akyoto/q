@@ -4,8 +4,8 @@ import "git.urbach.dev/cli/q/src/token"
 
 // Field is a memory region in a data structure.
 type Field struct {
-	Name     string
 	Type     Type
+	Name     string
 	Position token.Position
 	Index    uint8
 	Offset   uint8

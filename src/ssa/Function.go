@@ -7,12 +7,12 @@ import (
 )
 
 type Function struct {
-	Package  string
-	Name     string
-	Typ      *types.Function
-	IsExtern bool
+	Typ     *types.Function
+	Package string
+	Name    string
 	Liveness
 	Source
+	IsExtern bool
 }
 
 func (v *Function) Inputs() []Value  { return nil }

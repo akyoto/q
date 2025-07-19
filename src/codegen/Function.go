@@ -13,8 +13,8 @@ type Function struct {
 	Steps             []*step
 	ValueToStep       map[ssa.Value]*step
 	CPU               *cpu.CPU
-	Count             count
 	Preserved         set.Ordered[cpu.Register]
+	Count             count
 	isInit            bool
 	isExit            bool
 	needsFramePointer bool

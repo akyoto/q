@@ -7,8 +7,8 @@ import (
 )
 
 type Int struct {
-	Int int
 	Liveness
+	Int int
 	Source
 }
 
