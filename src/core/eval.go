@@ -64,22 +64,24 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			data := expr.Token.Bytes(f.File.Bytes)
 			data = unescape(data)
 
-			length := f.Append(&ssa.Int{
-				Int:    len(data),
+			v := &ssa.Struct{
+				Typ:    types.String,
 				Source: ssa.Source(expr.Source()),
+			}
+
+			length := f.Append(&ssa.Int{
+				Int:       len(data),
+				Structure: v,
+				Source:    ssa.Source(expr.Source()),
 			})
 
 			pointer := f.Append(&ssa.Bytes{
-				Bytes:  data,
-				Source: ssa.Source(expr.Source()),
+				Bytes:     data,
+				Structure: v,
+				Source:    ssa.Source(expr.Source()),
 			})
 
-			v := &ssa.Struct{
-				Arguments: []ssa.Value{pointer, length},
-				Typ:       types.String,
-				Source:    ssa.Source(expr.Source()),
-			}
-
+			v.Arguments = []ssa.Value{pointer, length}
 			return v, nil
 		}
 

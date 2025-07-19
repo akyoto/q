@@ -65,3 +65,7 @@ type HasSource interface {
 	End() token.Position
 	StringFrom([]byte) string
 }
+
+type StructField interface {
+	Struct() *Struct
+}

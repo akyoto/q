@@ -7,6 +7,7 @@ import (
 )
 
 type Int struct {
+	Structure *Struct
 	Liveness
 	Int int
 	Source
@@ -15,6 +16,7 @@ type Int struct {
 func (v *Int) Inputs() []Value  { return nil }
 func (v *Int) IsConst() bool    { return true }
 func (v *Int) String() string   { return strconv.Itoa(v.Int) }
+func (v *Int) Struct() *Struct  { return v.Structure }
 func (v *Int) Type() types.Type { return types.AnyInt }
 
 func (a *Int) Equals(v Value) bool {

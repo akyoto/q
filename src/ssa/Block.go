@@ -1,5 +1,9 @@
 package ssa
 
+import (
+	"slices"
+)
+
 // Block is a list of instructions that can be targeted in branches.
 type Block struct {
 	Label        string
@@ -14,4 +18,11 @@ func (block *Block) Append(instr Value) Value {
 
 	block.Instructions = append(block.Instructions, instr)
 	return instr
+}
+
+// RemoveNilValues removes all nil values from the block.
+func (block *Block) RemoveNilValues() {
+	block.Instructions = slices.DeleteFunc(block.Instructions, func(value Value) bool {
+		return value == nil
+	})
 }
