@@ -46,7 +46,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 
 			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
 
-		case token.Number:
+		case token.Number, token.Rune:
 			number, err := f.toNumber(expr.Token)
 
 			if err != nil {

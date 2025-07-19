@@ -10,6 +10,7 @@ var tests = []testRun{
 	{"binary", "", "", 0},
 	{"octal", "", "", 0},
 	{"hexadecimal", "", "", 0},
+	{"rune", "", "", 0},
 	{"variables", "", "", 0},
 	{"reuse", "", "", 0},
 	{"return", "", "", 0},
