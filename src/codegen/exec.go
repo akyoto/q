@@ -58,14 +58,27 @@ func (f *Function) exec(step *step) {
 			panic(fmt.Sprintf("not implemented: %d", instr.Op))
 		}
 
+	case *ssa.Branch:
+		op := instr.Condition.(*ssa.BinaryOp).Op
+		following := f.Steps[step.Index+1].Value.(*Label)
+
+		switch following.Name {
+		case instr.Then.Label:
+			f.JumpIfFalse(op, instr.Else.Label)
+		case instr.Else.Label:
+			f.JumpIfTrue(op, instr.Then.Label)
+		default:
+			panic("branch instruction must be followed by the 'then' or 'else' block")
+		}
+
 	case *ssa.Bytes:
 		f.Count.Data++
-		label := f.createLabel("data", f.Count.Data)
-		f.Assembler.SetData(label.Name, instr.Bytes)
+		label := f.CreateLabel("data", f.Count.Data)
+		f.Assembler.SetData(label, instr.Bytes)
 
 		f.Assembler.Append(&asm.MoveRegisterLabel{
 			Destination: step.Register,
-			Label:       label.Name,
+			Label:       label,
 		})
 
 	case *ssa.Call:
@@ -131,9 +144,6 @@ func (f *Function) exec(step *step) {
 			Destination: step.Register,
 			Source:      f.CPU.ExternCall.Out[0],
 		})
-
-	case *ssa.If:
-		f.JumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, instr.Else.Label)
 
 	case *ssa.Int:
 		if step.Register == -1 {

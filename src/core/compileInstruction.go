@@ -12,6 +12,7 @@ func (f *Function) compileInstruction(instr token.List) error {
 	case token.Assert:
 		return f.Assert(instr)
 	case token.Comment:
+		return nil
 	case token.If:
 		return f.If(instr)
 	case token.Return:

@@ -3,12 +3,10 @@ package codegen
 import (
 	"strconv"
 	"strings"
-
-	"git.urbach.dev/cli/q/src/asm"
 )
 
-// createLabel creates a label that is tied to this function by using a suffix.
-func (f *Function) createLabel(prefix string, count counter) *asm.Label {
+// CreateLabel creates a label that is tied to this function by using a suffix.
+func (f *Function) CreateLabel(prefix string, count counter) string {
 	tmp := strings.Builder{}
 	tmp.WriteString(prefix)
 	tmp.WriteString(" ")
@@ -16,5 +14,5 @@ func (f *Function) createLabel(prefix string, count counter) *asm.Label {
 	tmp.WriteString(" [")
 	tmp.WriteString(f.FullName)
 	tmp.WriteString("]")
-	return &asm.Label{Name: tmp.String()}
+	return tmp.String()
 }

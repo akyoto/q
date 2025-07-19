@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	InvalidCondition  = errors.String("Invalid condition")
 	InvalidExpression = errors.String("Invalid expression")
 	InvalidNumber     = errors.String("Invalid number")
 	InvalidRune       = errors.String("Invalid rune")

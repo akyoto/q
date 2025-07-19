@@ -10,6 +10,14 @@ type Block struct {
 	Instructions []Value
 }
 
+// NewBlock creates a new basic block.
+func NewBlock(label string) *Block {
+	return &Block{
+		Instructions: make([]Value, 0, 8),
+		Label:        label,
+	}
+}
+
 // Append adds a new instruction to the block.
 func (block *Block) Append(instr Value) Value {
 	for _, dep := range instr.Inputs() {

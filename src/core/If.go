@@ -14,23 +14,26 @@ func (f *Function) If(tokens token.List) error {
 		return err
 	}
 
-	condExpr := expression.Parse(tokens[1:blockStart])
-	cond, err := f.eval(condExpr)
+	condition := expression.Parse(tokens[1:blockStart])
+
+	f.Count.Branch++
+	thenLabel := f.CreateLabel("if.then", f.Count.Branch)
+	elseLabel := f.CreateLabel("if.else", f.Count.Branch)
+	thenBlock := ssa.NewBlock(thenLabel)
+	elseBlock := ssa.NewBlock(elseLabel)
+	err = f.compileCondition(condition, thenBlock, elseBlock)
 
 	if err != nil {
 		return err
 	}
 
-	branch := &ssa.If{
-		Condition: cond,
+	f.AddBlock(thenBlock)
+	err = f.compileTokens(tokens[blockStart+1 : blockEnd])
+
+	if err != nil {
+		return err
 	}
 
-	f.Append(branch)
-	trueBlock := f.AddBlock("true")
-	branch.Then = trueBlock
-	f.compileTokens(tokens[blockStart+1 : blockEnd])
-
-	falseBlock := f.AddBlock("false")
-	branch.Else = falseBlock
+	f.AddBlock(elseBlock)
 	return nil
 }

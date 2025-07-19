@@ -6,14 +6,8 @@ type IR struct {
 }
 
 // AddBlock adds a new block to the function.
-func (f *IR) AddBlock(label string) *Block {
-	block := &Block{
-		Instructions: make([]Value, 0, 8),
-		Label:        label,
-	}
-
+func (f *IR) AddBlock(block *Block) {
 	f.Blocks = append(f.Blocks, block)
-	return block
 }
 
 // Append adds a new value to the last block.
