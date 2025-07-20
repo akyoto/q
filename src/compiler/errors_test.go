@@ -14,6 +14,7 @@ var errs = []struct {
 	File          string
 	ExpectedError error
 }{
+	{"MissingMainFunction.q", compiler.MissingMainFunction},
 	{"UnusedImport.q", &compiler.UnusedImport{Package: "os"}},
 }
 
