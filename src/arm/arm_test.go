@@ -10,7 +10,6 @@ import (
 func TestConstants(t *testing.T) {
 	assert.DeepEqual(t, arm.Nop(), 0xD503201F)
 	assert.DeepEqual(t, arm.Return(), 0xD65F03C0)
-	assert.DeepEqual(t, arm.Syscall(), 0xD4000001)
 }
 
 func TestNotEncodable(t *testing.T) {

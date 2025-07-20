@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"git.urbach.dev/cli/q/src/arm"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/token"
 )
 
@@ -149,7 +150,12 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *StackFrameEnd:
 		c.append(arm.LoadRegister(arm.LR, arm.SP, arm.PostIndex, 16, 8))
 	case *Syscall:
-		c.append(arm.Syscall())
+		switch c.build.OS {
+		case config.Mac:
+			c.append(arm.Syscall(0xFFFF))
+		default:
+			c.append(arm.Syscall(0))
+		}
 	default:
 		panic("unknown instruction")
 	}
