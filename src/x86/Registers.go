@@ -57,7 +57,7 @@ var (
 			In:        LinuxCPU.Syscall.In,
 			Out:       LinuxCPU.Syscall.Out,
 			Clobbered: []cpu.Register{R0, R1, R2, R11},
-			Preserved: LinuxCPU.Syscall.Preserved,
+			Preserved: []cpu.Register{R3, SP, R5, R6, R7, R8, R9, R10, R12, R13, R14, R15},
 		},
 	}
 

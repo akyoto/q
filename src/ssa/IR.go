@@ -38,7 +38,9 @@ func (f *IR) FindExisting(instr Value) Value {
 		return nil
 	}
 
-	for _, existing := range f.Values {
+	lastBlock := f.Blocks[len(f.Blocks)-1]
+
+	for _, existing := range lastBlock.Instructions {
 		if existing.IsConst() && instr.Equals(existing) {
 			return existing
 		}
