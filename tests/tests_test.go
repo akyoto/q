@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-var tests = []testRun{
+var tests = []run{
 	{"empty", "", "", 0},
 	{"assert", "", "", 1},
 	{"binary", "", "", 0},

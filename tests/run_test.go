@@ -13,7 +13,7 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-type testRun struct {
+type run struct {
 	Name     string
 	Input    string
 	Output   string
@@ -21,7 +21,7 @@ type testRun struct {
 }
 
 // Run builds and runs the file to check if the output matches the expected output.
-func (test *testRun) Run(t *testing.T, path string) {
+func (test *run) Run(t *testing.T, path string) {
 	t.Run(test.Name, func(t *testing.T) {
 		build := config.New(path)
 		env, err := compiler.Compile(build)

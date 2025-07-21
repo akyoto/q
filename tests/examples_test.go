@@ -9,7 +9,7 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-var examples = []testRun{
+var examples = []run{
 	{"hello", "", "Hello\n", 0},
 	{"factorial", "", "", 120},
 	{"fibonacci", "", "", 55},
