@@ -16,6 +16,17 @@ func (f *Function) exec(step *step) {
 	case *ssa.Assert:
 		f.JumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
 
+	case *ssa.UnaryOp:
+		left := f.ValueToStep[instr.Operand]
+
+		switch instr.Op {
+		case token.Negate:
+			f.Assembler.Append(&asm.NegateRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+			})
+		}
+
 	case *ssa.BinaryOp:
 		left := f.ValueToStep[instr.Left]
 		right := f.ValueToStep[instr.Right]

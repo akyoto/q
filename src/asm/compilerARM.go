@@ -128,6 +128,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
 	case *MulRegisterRegister:
 		c.append(arm.MulRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *NegateRegister:
+		c.append(arm.NegateRegister(instr.Destination, instr.Source))
 	case *OrRegisterRegister:
 		c.append(arm.OrRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *PopRegisters:

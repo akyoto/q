@@ -26,6 +26,7 @@ var tests = []testRun{
 	{"bitwise-xor", "", "", 0},
 	{"modulo", "", "", 0},
 	{"negative", "", "", 0},
+	{"negation", "", "", 0},
 	{"param", "", "", 0},
 	{"param-multi", "", "", 0},
 	{"param-order", "", "", 0},

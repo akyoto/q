@@ -84,6 +84,11 @@ type MulRegisterRegister struct {
 	Operand     cpu.Register
 }
 
+type NegateRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+}
+
 type OrRegisterRegister struct {
 	Destination cpu.Register
 	Source      cpu.Register

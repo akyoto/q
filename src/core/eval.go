@@ -206,6 +206,24 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 
 	default:
 		if expr.Token.Kind.IsOperator() {
+			if expr.Token.Kind.IsUnaryOperator() {
+				left := expr.Children[0]
+
+				leftValue, err := f.eval(left)
+
+				if err != nil {
+					return nil, err
+				}
+
+				v := f.Append(&ssa.UnaryOp{
+					Operand: leftValue,
+					Op:      expr.Token.Kind,
+					Source:  ssa.Source(expr.Source()),
+				})
+
+				return v, nil
+			}
+
 			left := expr.Children[0]
 			right := expr.Children[1]
 
