@@ -10,6 +10,7 @@ import (
 
 // scanner is used to scan files before the actual compilation step.
 type scanner struct {
+	constants chan *core.Constant
 	functions chan *core.Function
 	files     chan *fs.File
 	errors    chan error

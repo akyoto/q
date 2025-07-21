@@ -1,3 +1,3 @@
-write(buffer string) -> (written int) {
-	return syscall(0x4, 1, buffer.ptr, buffer.len)
+const {
+	_write 0x4
 }

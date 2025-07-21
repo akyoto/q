@@ -11,11 +11,6 @@ import (
 )
 
 // toNumber tries to convert the token into a numeric value.
-func (f *Function) toNumber(t token.Token) (int, error) {
-	return toNumber(t, f.File)
-}
-
-// toNumber tries to convert the token into a numeric value.
 func toNumber(t token.Token, file *fs.File) (int, error) {
 	switch t.Kind {
 	case token.Number:

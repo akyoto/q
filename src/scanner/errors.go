@@ -12,6 +12,7 @@ var (
 	InvalidFunctionDefinition  = errors.String("Invalid function definition")
 	MissingBlockStart          = errors.String("Missing '{'")
 	MissingBlockEnd            = errors.String("Missing '}'")
+	MissingExpression          = errors.String("Missing expression")
 	MissingGroupStart          = errors.String("Missing '('")
 	MissingGroupEnd            = errors.String("Missing ')'")
 	MissingParameter           = errors.String("Missing parameter")

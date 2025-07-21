@@ -22,6 +22,23 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 				return value, nil
 			}
 
+			constant, exists := f.All.Packages[f.Package].Constants[name]
+
+			if exists {
+				number, err := toNumber(constant.Value.Token, constant.File)
+
+				if err != nil {
+					return nil, err
+				}
+
+				v := f.Append(&ssa.Int{
+					Int:    number,
+					Source: ssa.Source(expr.Source()),
+				})
+
+				return v, nil
+			}
+
 			_, exists = f.All.Packages[name]
 
 			if exists {
@@ -47,7 +64,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
 
 		case token.Number, token.Rune:
-			number, err := f.toNumber(expr.Token)
+			number, err := toNumber(expr.Token, f.File)
 
 			if err != nil {
 				return nil, err

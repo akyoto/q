@@ -20,6 +20,24 @@ type Environment struct {
 	NumFunctions int
 }
 
+// AddPackage returns an existing package with the giving name or creates a new one.
+func (env *Environment) AddPackage(name string, isExtern bool) *Package {
+	pkg, exists := env.Packages[name]
+
+	if !exists {
+		pkg = &Package{
+			Name:      name,
+			Constants: make(map[string]*Constant),
+			Functions: make(map[string]*Function, 8),
+			IsExtern:  isExtern,
+		}
+
+		env.Packages[name] = pkg
+	}
+
+	return pkg
+}
+
 // Function looks up a function by the package name and raw function name.
 func (env *Environment) Function(pkgName string, name string) *Function {
 	pkg, exists := env.Packages[pkgName]

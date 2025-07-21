@@ -1,3 +1,3 @@
-exit(code int) {
-	syscall(60, code)
+const {
+	_exit 60
 }
