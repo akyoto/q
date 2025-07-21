@@ -28,6 +28,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.AndRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *AndRegisterRegister:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.AndRegisterRegister(c.code, instr.Destination, instr.Operand)
 	case *Call:
 		c.code = x86.Call(c.code, 0)
 		patch := c.PatchLast4Bytes()
@@ -175,6 +181,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.MulRegisterRegister(c.code, instr.Destination, instr.Operand)
+	case *OrRegisterRegister:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.OrRegisterRegister(c.code, instr.Destination, instr.Operand)
 	case *PopRegisters:
 		for _, register := range slices.Backward(instr.Registers) {
 			c.code = x86.PopRegister(c.code, register)
@@ -214,6 +226,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
+	case *XorRegisterRegister:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.XorRegisterRegister(c.code, instr.Destination, instr.Operand)
 	default:
 		panic("unknown instruction")
 	}

@@ -33,14 +33,14 @@ restart:
 			}
 		}
 
-		for _, following := range p.earlyPatches[i+1:] {
+		for _, following := range patches[i+1:] {
 			if following.start >= end {
 				following.start += shift
 				following.end += shift
 			}
 		}
 
-		for _, following := range p.latePatches[i+1:] {
+		for _, following := range p.latePatches {
 			if following.start >= end {
 				following.start += shift
 				following.end += shift

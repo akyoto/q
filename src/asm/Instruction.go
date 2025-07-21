@@ -19,6 +19,12 @@ type AndRegisterNumber struct {
 	Number      int
 }
 
+type AndRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type Call struct {
 	Label string
 }
@@ -72,6 +78,12 @@ type MulRegisterRegister struct {
 	Operand     cpu.Register
 }
 
+type OrRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type PopRegisters struct {
 	Registers []cpu.Register
 }
@@ -104,3 +116,9 @@ type StackFrameEnd struct {
 }
 
 type Syscall struct{}
+
+type XorRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}

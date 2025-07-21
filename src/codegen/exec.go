@@ -54,6 +54,27 @@ func (f *Function) exec(step *step) {
 				Operand:     right.Register,
 			})
 
+		case token.And:
+			f.Assembler.Append(&asm.AndRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
+		case token.Or:
+			f.Assembler.Append(&asm.OrRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
+		case token.Xor:
+			f.Assembler.Append(&asm.XorRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
 		default:
 			panic(fmt.Sprintf("not implemented: %d", instr.Op))
 		}

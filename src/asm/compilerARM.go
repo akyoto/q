@@ -21,6 +21,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 	switch instr := instr.(type) {
 	case *AddRegisterRegister:
 		c.append(arm.AddRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *AndRegisterRegister:
+		c.append(arm.AndRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Call:
 		c.append(arm.Call(0))
 		patch := c.PatchLast4Bytes()
@@ -119,6 +121,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
 	case *MulRegisterRegister:
 		c.append(arm.MulRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *OrRegisterRegister:
+		c.append(arm.OrRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *PopRegisters:
 		registers := instr.Registers
 		count := len(registers)
@@ -156,6 +160,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		default:
 			c.append(arm.Syscall(0))
 		}
+	case *XorRegisterRegister:
+		c.append(arm.XorRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	default:
 		panic("unknown instruction")
 	}
