@@ -214,6 +214,34 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Return:
 		c.code = x86.Return(c.code)
+	case *ShiftLeft:
+		if instr.Destination == x86.R1 {
+			panic("shift destination cannot be R1")
+		}
+
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		if instr.Operand != x86.R1 {
+			c.code = x86.MoveRegisterRegister(c.code, x86.R1, instr.Operand)
+		}
+
+		c.code = x86.ShiftLeft(c.code, instr.Destination)
+	case *ShiftRightSigned:
+		if instr.Destination == x86.R1 {
+			panic("shift destination cannot be R1")
+		}
+
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		if instr.Operand != x86.R1 {
+			c.code = x86.MoveRegisterRegister(c.code, x86.R1, instr.Operand)
+		}
+
+		c.code = x86.ShiftRightSigned(c.code, instr.Destination)
 	case *SubRegisterNumber:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)

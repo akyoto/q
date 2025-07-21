@@ -93,6 +93,20 @@ func (f *Function) exec(step *step) {
 				Operand:     right.Register,
 			})
 
+		case token.Shl:
+			f.Assembler.Append(&asm.ShiftLeft{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
+		case token.Shr:
+			f.Assembler.Append(&asm.ShiftRightSigned{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
 		default:
 			panic(fmt.Sprintf("not implemented: %d", instr.Op))
 		}

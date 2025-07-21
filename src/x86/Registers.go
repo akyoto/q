@@ -28,6 +28,7 @@ var (
 			R3, R12, R13, R14, R15, // Preserved
 		},
 		Division: []cpu.Register{R0, R2},
+		Shift:    []cpu.Register{R1},
 		Call: cpu.ABI{
 			In:        []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
 			Out:       []cpu.Register{R0, R2},
@@ -51,6 +52,7 @@ var (
 	MacCPU = cpu.CPU{
 		General:    LinuxCPU.General,
 		Division:   LinuxCPU.Division,
+		Shift:      LinuxCPU.Shift,
 		Call:       LinuxCPU.Call,
 		ExternCall: LinuxCPU.ExternCall,
 		Syscall: cpu.ABI{
@@ -67,6 +69,7 @@ var (
 			R3, R6, R7, R12, R13, R14, R15, // Preserved
 		},
 		Division: LinuxCPU.Division,
+		Shift:    LinuxCPU.Shift,
 		Call:     LinuxCPU.Call,
 		ExternCall: cpu.ABI{
 			In:        []cpu.Register{R1, R2, R8, R9},

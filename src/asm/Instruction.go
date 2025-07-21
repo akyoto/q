@@ -105,6 +105,18 @@ type PushRegisters struct {
 
 type Return struct{}
 
+type ShiftLeft struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
+type ShiftRightSigned struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type SubRegisterRegister struct {
 	Destination cpu.Register
 	Source      cpu.Register

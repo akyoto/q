@@ -8,6 +8,40 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
+func TestShiftLeft(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Source      cpu.Register
+		Operand     cpu.Register
+		Code        uint32
+	}{
+		{arm.X0, arm.X1, arm.X2, 0x9AC22020},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("lsl %s, %s, %s", pattern.Destination, pattern.Source, pattern.Operand)
+		code := arm.ShiftLeft(pattern.Destination, pattern.Source, pattern.Operand)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
+func TestShiftRightSigned(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Source      cpu.Register
+		Operand     cpu.Register
+		Code        uint32
+	}{
+		{arm.X0, arm.X1, arm.X2, 0x9AC22820},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("asr %s, %s, %s", pattern.Destination, pattern.Source, pattern.Operand)
+		code := arm.ShiftRightSigned(pattern.Destination, pattern.Source, pattern.Operand)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
 func TestShiftLeftNumber(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register

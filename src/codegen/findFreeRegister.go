@@ -27,8 +27,11 @@ func (f *Function) findFreeRegister(steps []*step) cpu.Register {
 
 		switch instr := step.Value.(type) {
 		case *ssa.BinaryOp:
-			if instr.Op == token.Div || instr.Op == token.Mod {
+			switch instr.Op {
+			case token.Div, token.Mod:
 				volatileRegisters = f.CPU.Division
+			case token.Shl, token.Shr:
+				volatileRegisters = f.CPU.Shift
 			}
 		case *ssa.Call:
 			volatileRegisters = f.CPU.Call.Clobbered

@@ -8,6 +8,66 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
+func TestShiftLeft(t *testing.T) {
+	usagePatterns := []struct {
+		Register cpu.Register
+		Code     []byte
+	}{
+		{x86.R0, []byte{0x48, 0xD3, 0xE0}},
+		{x86.R1, []byte{0x48, 0xD3, 0xE1}},
+		{x86.R2, []byte{0x48, 0xD3, 0xE2}},
+		{x86.R3, []byte{0x48, 0xD3, 0xE3}},
+		{x86.SP, []byte{0x48, 0xD3, 0xE4}},
+		{x86.R5, []byte{0x48, 0xD3, 0xE5}},
+		{x86.R6, []byte{0x48, 0xD3, 0xE6}},
+		{x86.R7, []byte{0x48, 0xD3, 0xE7}},
+		{x86.R8, []byte{0x49, 0xD3, 0xE0}},
+		{x86.R9, []byte{0x49, 0xD3, 0xE1}},
+		{x86.R10, []byte{0x49, 0xD3, 0xE2}},
+		{x86.R11, []byte{0x49, 0xD3, 0xE3}},
+		{x86.R12, []byte{0x49, 0xD3, 0xE4}},
+		{x86.R13, []byte{0x49, 0xD3, 0xE5}},
+		{x86.R14, []byte{0x49, 0xD3, 0xE6}},
+		{x86.R15, []byte{0x49, 0xD3, 0xE7}},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("shl %s, cl", pattern.Register)
+		code := x86.ShiftLeft(nil, pattern.Register)
+		assert.DeepEqual(t, code, pattern.Code)
+	}
+}
+
+func TestShiftRightSigned(t *testing.T) {
+	usagePatterns := []struct {
+		Register cpu.Register
+		Code     []byte
+	}{
+		{x86.R0, []byte{0x48, 0xD3, 0xF8}},
+		{x86.R1, []byte{0x48, 0xD3, 0xF9}},
+		{x86.R2, []byte{0x48, 0xD3, 0xFA}},
+		{x86.R3, []byte{0x48, 0xD3, 0xFB}},
+		{x86.SP, []byte{0x48, 0xD3, 0xFC}},
+		{x86.R5, []byte{0x48, 0xD3, 0xFD}},
+		{x86.R6, []byte{0x48, 0xD3, 0xFE}},
+		{x86.R7, []byte{0x48, 0xD3, 0xFF}},
+		{x86.R8, []byte{0x49, 0xD3, 0xF8}},
+		{x86.R9, []byte{0x49, 0xD3, 0xF9}},
+		{x86.R10, []byte{0x49, 0xD3, 0xFA}},
+		{x86.R11, []byte{0x49, 0xD3, 0xFB}},
+		{x86.R12, []byte{0x49, 0xD3, 0xFC}},
+		{x86.R13, []byte{0x49, 0xD3, 0xFD}},
+		{x86.R14, []byte{0x49, 0xD3, 0xFE}},
+		{x86.R15, []byte{0x49, 0xD3, 0xFF}},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("sar %s, cl", pattern.Register)
+		code := x86.ShiftRightSigned(nil, pattern.Register)
+		assert.DeepEqual(t, code, pattern.Code)
+	}
+}
+
 func TestShiftLeftNumber(t *testing.T) {
 	usagePatterns := []struct {
 		Register cpu.Register
