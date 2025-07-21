@@ -78,6 +78,17 @@ func (c *compilerX86) Compile(instr Instruction) {
 		if instr.Destination != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, x86.R0)
 		}
+	case *ModRegisterRegister:
+		if instr.Source != x86.R0 {
+			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
+		}
+
+		c.code = x86.ExtendR0ToR2(c.code)
+		c.code = x86.DivRegister(c.code, instr.Operand)
+
+		if instr.Destination != x86.R2 {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, x86.R2)
+		}
 	case *Jump:
 		switch instr.Condition {
 		case token.Equal:

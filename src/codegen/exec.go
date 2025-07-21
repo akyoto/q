@@ -54,6 +54,13 @@ func (f *Function) exec(step *step) {
 				Operand:     right.Register,
 			})
 
+		case token.Mod:
+			f.Assembler.Append(&asm.ModRegisterRegister{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+
 		case token.And:
 			f.Assembler.Append(&asm.AndRegisterRegister{
 				Destination: step.Register,

@@ -24,6 +24,7 @@ var tests = []testRun{
 	{"bitwise-and", "", "", 0},
 	{"bitwise-or", "", "", 0},
 	{"bitwise-xor", "", "", 0},
+	{"modulo", "", "", 0},
 	{"param", "", "", 0},
 	{"param-multi", "", "", 0},
 	{"param-order", "", "", 0},

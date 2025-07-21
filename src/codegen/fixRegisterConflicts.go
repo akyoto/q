@@ -16,7 +16,7 @@ func (f *Function) fixRegisterConflicts() {
 
 		switch instr := step.Value.(type) {
 		case *ssa.BinaryOp:
-			if instr.Op == token.Div {
+			if instr.Op == token.Div || instr.Op == token.Mod {
 				clobbered = f.CPU.Division
 			}
 
@@ -24,6 +24,12 @@ func (f *Function) fixRegisterConflicts() {
 
 			if step.Register == right.Register {
 				right.Register = f.findFreeRegister(f.Steps[right.Index:stepIndex])
+			}
+
+			left := f.ValueToStep[instr.Left]
+
+			if instr.Op == token.Mod && step.Register == left.Register {
+				left.Register = f.findFreeRegister(f.Steps[left.Index:stepIndex])
 			}
 		case *ssa.Call:
 			clobbered = f.CPU.Call.Clobbered

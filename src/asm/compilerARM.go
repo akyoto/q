@@ -100,6 +100,13 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
+	case *ModRegisterRegister:
+		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
+			panic("modulo operation needs a separate destination register")
+		}
+
+		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+		c.append(arm.MultiplySubtract(instr.Destination, instr.Destination, instr.Operand, instr.Source))
 	case *MoveRegisterLabel:
 		c.append(arm.LoadAddress(instr.Destination, 0))
 		patch := c.PatchLast4Bytes()

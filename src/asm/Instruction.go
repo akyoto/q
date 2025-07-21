@@ -57,6 +57,12 @@ type Label struct {
 	Name string
 }
 
+type ModRegisterRegister struct {
+	Destination cpu.Register
+	Source      cpu.Register
+	Operand     cpu.Register
+}
+
 type MoveRegisterLabel struct {
 	Label       string
 	Destination cpu.Register
