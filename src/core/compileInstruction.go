@@ -22,6 +22,8 @@ func (f *Function) compileInstruction(instr token.List) error {
 	expr := expression.Parse(instr)
 
 	switch expr.Token.Kind {
+	case token.Assign:
+		return f.Assignment(expr)
 	case token.Define:
 		return f.Definition(expr)
 	case token.String:

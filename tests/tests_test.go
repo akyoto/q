@@ -12,6 +12,7 @@ var tests = []run{
 	{"hexadecimal", "", "", 0},
 	{"rune", "", "", 0},
 	{"variables", "", "", 0},
+	{"reassign", "", "", 0},
 	{"reuse", "", "", 0},
 	{"return", "", "", 0},
 	{"add", "", "", 0},

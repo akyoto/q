@@ -36,6 +36,7 @@ var errs = []struct {
 	{"UnusedValue4.q", &core.UnusedValue{Value: "2 + 3"}},
 	{"UnusedValue5.q", &core.UnusedValue{Value: "\"not used\""}},
 	{"UnusedValue6.q", &core.UnusedValue{Value: "\"not used\""}},
+	{"UnusedValue7.q", &core.UnusedValue{Value: "1"}},
 }
 
 func TestErrors(t *testing.T) {
