@@ -1,23 +1,25 @@
 <div align="center">
 	<img src="logo.svg" width="128" alt="q logo">
 	<h1>The Q Programming Language</h1>
+	<p>Q is a minimal, dependency-free programming language and compiler targeting x86-64 and arm64 with ultra-fast builds and tiny binaries.</p>
 </div>
-
-> [!NOTE]
-> `q` is under heavy development and not ready for production yet.
->
-> Feel free to [get in touch](https://urbach.dev/contact) if you are interested in helping out.
 
 ## Features
 
 * High performance (`ssa` and `asm` optimizations)
 * Fast compilation (<1 ms for simple programs)
 * Tiny executables ("Hello World" is ~600 bytes)
+* Many platforms (Linux, Mac and Windows)
 * Zero dependencies (no llvm, no libc)
 
 ## Installation
 
-### Build from source
+> [!NOTE]
+> `q` is under heavy development and not ready for production yet.
+>
+> Feel free to [contact me](https://urbach.dev/contact) if you are interested in helping out.
+
+Build from source:
 
 ```shell
 git clone https://git.urbach.dev/cli/q
@@ -25,7 +27,7 @@ cd q
 go build
 ```
 
-### Install via symlink
+Install via symlink:
 
 ```shell
 ln -s $PWD/q ~/.local/bin/q
@@ -33,58 +35,66 @@ ln -s $PWD/q ~/.local/bin/q
 
 ## Usage
 
-### Quick test
+Run `hello` example:
 
 ```shell
 q examples/hello
 ```
 
-### Build an executable
+Build an executable:
 
 ```shell
 q build examples/hello
 ```
 
-### Cross-compile for another OS
+Show compiler output:
 
 ```shell
+q build examples/hello --verbose
+```
+
+Cross-compile for another OS:
+
+```shell
+q build examples/hello --os linux
+q build examples/hello --os mac
 q build examples/hello --os windows
 ```
 
 ## Tests
 
-### Run all tests
+Run all tests:
 
 ```shell
 go run gotest.tools/gotestsum@latest
 ```
 
-### Generate coverage
+Generate coverage:
 
 ```shell
 go test -coverpkg=./... -coverprofile=cover.out ./...
 ```
 
-### View coverage
+View coverage:
 
 ```shell
 go tool cover -func cover.out
 go tool cover -html cover.out
 ```
 
-### Run compiler benchmarks
+Run compiler benchmarks:
 
 ```shell
 go test ./tests -run='^$' -bench=. -benchmem
 ```
 
-### Generate profiling data
+Generate profiling data:
 
 ```shell
 go test ./tests -run='^$' -bench="Examples/" -benchmem -cpuprofile cpu.out -memprofile mem.out
 ```
 
-### View profiling data
+View profiling data:
 
 ```shell
 go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
@@ -93,15 +103,7 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 
 ## Source overview
 
-> [!TIP]
-> The typical flow is this:
->
-> 1. [main](../main.go)
-> 1. [cli.Exec](../src/cli/Exec.go)
-> 1. [compiler.Compile](../src/compiler/Compile.go)
-> 1. [scanner.Scan](../src/scanner/Scan.go)
-> 1. [core.Compile](../src/core/Compile.go)
-> 1. [linker.Write](../src/linker/Write.go)
+This section is for contributors who want a high-level overview of the source code structure.
 
 ### Packages
 
@@ -133,6 +135,15 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 - [types](../src/types) - Type system
 - [x86](../src/x86) - x86-64 architecture
 
+### Typical flow
+
+1. [main](../main.go)
+1. [cli.Exec](../src/cli/Exec.go)
+1. [compiler.Compile](../src/compiler/Compile.go)
+1. [scanner.Scan](../src/scanner/Scan.go)
+1. [core.Compile](../src/core/Compile.go)
+1. [linker.Write](../src/linker/Write.go)
+
 ## FAQ
 
 ### How tiny is a Hello World?
@@ -155,7 +166,7 @@ The backend uses an SSA based IR which is also used by well established compiler
 | Mac     | ✔️*    | ✔️     |
 | Windows | ✔️*    | ✔️     |
 
-Those marked with a star need testing. Please get in touch if you have a machine with the marked architectures.
+Those marked with a star need testing. Please contact me if you have a machine with the marked architectures.
 
 ### Which security features are supported?
 
@@ -187,6 +198,10 @@ main() {
 ```
 
 Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
+
+### How do I pronounce the name?
+
+/ˈkjuː/ just like `Q` in the English alphabet.
 
 ## License
 
