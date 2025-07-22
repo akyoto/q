@@ -75,7 +75,20 @@ func (c *compilerARM) Compile(instr Instruction) {
 
 			offset := (address - patch.start) / 4
 
-			if offset != (offset & 0b11_11111111_11111111_11111111) {
+			var (
+				minOffset int
+				maxOffset int
+			)
+
+			if instr.Condition == token.Invalid {
+				minOffset = -(1 << 25)
+				maxOffset = (1 << 25) - 1
+			} else {
+				minOffset = -(1 << 18)
+				maxOffset = (1 << 18) - 1
+			}
+
+			if offset < minOffset || offset > maxOffset {
 				panic("not implemented: long jumps")
 			}
 

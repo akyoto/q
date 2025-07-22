@@ -8,6 +8,9 @@ import (
 )
 
 func TestRegisterString(t *testing.T) {
-	register := cpu.Register(1)
-	assert.Equal(t, "r1", register.String())
+	r1 := cpu.Register(1)
+	assert.Equal(t, r1.String(), "r1")
+
+	undefined := cpu.Register(-1)
+	assert.Equal(t, undefined.String(), "r?")
 }

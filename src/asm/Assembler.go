@@ -78,7 +78,12 @@ func (a *Assembler) Merge(b *Assembler) {
 	}
 
 	a.Instructions = append(a.Instructions, b.Instructions[skip:]...)
-	maps.Copy(a.Data, b.Data)
+
+	if a.Data == nil {
+		a.Data = b.Data
+	} else {
+		maps.Copy(a.Data, b.Data)
+	}
 
 	for library := range b.Libraries.All() {
 		for _, fn := range library.Functions {

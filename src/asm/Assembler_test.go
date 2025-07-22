@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/go/assert"
 )
 
@@ -18,11 +19,13 @@ func TestAssembler(t *testing.T) {
 	a.Append(&asm.Jump{Label: "d"})
 	a.Append(&asm.Jump{Label: "e"})
 	a.Append(&asm.Jump{Label: "f"})
+	a.Append(&asm.Jump{Label: "g"})
 	a.Append(&asm.Call{Label: "b"})
 	a.Append(&asm.Call{Label: "c"})
 	a.Append(&asm.Call{Label: "d"})
 	a.Append(&asm.Call{Label: "e"})
 	a.Append(&asm.Call{Label: "f"})
+	a.Append(&asm.Call{Label: "g"})
 	a.Append(&asm.StackFrameEnd{})
 	a.Append(&asm.Return{})
 
@@ -54,11 +57,13 @@ func TestAssembler(t *testing.T) {
 
 	d := &asm.Assembler{}
 	d.Append(&asm.Label{Name: "d"})
+	d.SetData("message", []byte("Hello"))
 	d.Append(&asm.MoveRegisterLabel{Destination: 0, Label: "a"})
 	d.Append(&asm.MoveRegisterLabel{Destination: 0, Label: "b"})
 	d.Append(&asm.MoveRegisterLabel{Destination: 0, Label: "c"})
 	d.Append(&asm.MoveRegisterLabel{Destination: 0, Label: "d"})
 	d.Append(&asm.MoveRegisterLabel{Destination: 0, Label: "e"})
+	d.Append(&asm.MoveRegisterLabel{Destination: 0, Label: "message"})
 	d.Append(&asm.MoveRegisterNumber{Destination: 0, Number: 123})
 	d.Append(&asm.MoveRegisterRegister{Destination: 0, Source: 1})
 	d.Append(&asm.Return{})
@@ -81,6 +86,18 @@ func TestAssembler(t *testing.T) {
 	f.Append(&asm.StackFrameEnd{FramePointer: true})
 	f.Append(&asm.Return{})
 
+	g := &asm.Assembler{}
+	g.Append(&asm.Label{Name: "g"})
+	g.Append(&asm.Call{Label: "a"})
+	g.Append(&asm.CompareRegisterRegister{SourceA: 0, SourceB: 1})
+	g.Append(&asm.Jump{Label: "a", Condition: token.Equal})
+	g.Append(&asm.Jump{Label: "a", Condition: token.NotEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: token.Greater})
+	g.Append(&asm.Jump{Label: "a", Condition: token.GreaterEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: token.Less})
+	g.Append(&asm.Jump{Label: "a", Condition: token.LessEqual})
+	g.Append(&asm.Return{})
+
 	final := asm.Assembler{}
 	final.Merge(a)
 	final.Merge(b)
@@ -88,6 +105,7 @@ func TestAssembler(t *testing.T) {
 	final.Merge(d)
 	final.Merge(e)
 	final.Merge(f)
+	final.Merge(g)
 
 	code, _, _ := final.Compile(&config.Build{Arch: config.ARM})
 	assert.NotNil(t, code)
