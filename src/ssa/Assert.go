@@ -6,9 +6,9 @@ import (
 
 // Assert makes sure that a condition is true at the time of execution.
 type Assert struct {
+	Void
 	Condition Value
 	Source
-	Void
 }
 
 func (a *Assert) Equals(v Value) bool {

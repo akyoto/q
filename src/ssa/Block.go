@@ -6,11 +6,11 @@ import (
 
 // Block is a list of instructions that can be targeted in branches.
 type Block struct {
+	Identifiers  map[string]Value
 	Label        string
 	Instructions []Value
 	Predecessors []*Block
 	Successors   []*Block
-	Identifiers  map[string]Value
 }
 
 // NewBlock creates a new basic block.

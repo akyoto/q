@@ -5,11 +5,11 @@ import (
 )
 
 type Branch struct {
+	Void
 	Condition Value
 	Then      *Block
 	Else      *Block
 	Source
-	Void
 }
 
 func (a *Branch) Equals(v Value) bool {

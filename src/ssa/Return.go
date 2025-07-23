@@ -6,9 +6,9 @@ import (
 
 // Return transfers program flow back to the caller.
 type Return struct {
+	Void
 	Arguments
 	Source
-	Void
 }
 
 func (a *Return) Equals(v Value) bool {

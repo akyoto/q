@@ -6,9 +6,9 @@ import (
 
 // Jump will transfer program flow to the block it's pointing at.
 type Jump struct {
+	Void
 	To *Block
 	Source
-	Void
 }
 
 func (a *Jump) Equals(v Value) bool {

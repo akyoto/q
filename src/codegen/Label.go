@@ -6,8 +6,8 @@ import (
 )
 
 type Label struct {
-	Name string
 	ssa.Void
+	Name string
 }
 
 func (v *Label) Inputs() []ssa.Value          { return nil }

@@ -8,6 +8,6 @@ import (
 // Constant registers a single value to be accessible under a descriptive name.
 type Constant struct {
 	File  *fs.File
-	Name  string
 	Value *expression.Expression
+	Name  string
 }
