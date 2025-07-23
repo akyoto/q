@@ -8,6 +8,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// UnaryOp is an operation with a single operand.
 type UnaryOp struct {
 	Operand Value
 	Liveness

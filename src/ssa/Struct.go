@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Struct is a list of values that can be addressed by name.
 type Struct struct {
 	Typ *types.Struct
 	Arguments

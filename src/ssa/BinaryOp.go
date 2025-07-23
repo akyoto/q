@@ -8,6 +8,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// BinaryOp is an operation with two operands.
 type BinaryOp struct {
 	Left  Value
 	Right Value

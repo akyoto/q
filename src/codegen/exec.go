@@ -225,20 +225,6 @@ func (f *Function) exec(step *step) {
 			Source:      source,
 		})
 
-	case *ssa.Field:
-		structure := instr.Object.(*ssa.Struct)
-		field := structure.Arguments[instr.Field.Index]
-		source := f.ValueToStep[field].Register
-
-		if step.Register == -1 || step.Register == source {
-			return
-		}
-
-		f.Assembler.Append(&asm.MoveRegisterRegister{
-			Destination: step.Register,
-			Source:      source,
-		})
-
 	case *ssa.Jump:
 		f.Assembler.Append(&asm.Jump{Label: instr.To.Label})
 

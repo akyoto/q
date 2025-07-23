@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Parameter is an input parameter for a function call.
 type Parameter struct {
 	Typ    types.Type
 	Name   string

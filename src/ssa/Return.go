@@ -2,19 +2,14 @@ package ssa
 
 import (
 	"fmt"
-
-	"git.urbach.dev/cli/q/src/types"
 )
 
+// Return transfers program flow back to the caller.
 type Return struct {
 	Arguments
 	Source
+	Void
 }
-
-func (v *Return) AddUser(Value)    { panic("return can not be used as a dependency") }
-func (v *Return) IsConst() bool    { return false }
-func (v *Return) Type() types.Type { return types.Void }
-func (v *Return) Users() []Value   { return nil }
 
 func (a *Return) Equals(v Value) bool {
 	b, sameType := v.(*Return)

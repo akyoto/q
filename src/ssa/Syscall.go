@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Syscall temporarily transfers program flow to the OS kernel.
 type Syscall struct {
 	Arguments
 	Liveness

@@ -7,7 +7,7 @@ import (
 
 type Label struct {
 	Name string
-	ssa.Liveness
+	ssa.Void
 }
 
 func (v *Label) Inputs() []ssa.Value          { return nil }

@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Int is an integer value.
 type Int struct {
 	Structure *Struct
 	Liveness

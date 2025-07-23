@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Call is an internal function call.
 type Call struct {
 	Func *Function
 	Arguments

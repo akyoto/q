@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Bytes is a raw slice of bytes.
 type Bytes struct {
 	Bytes     []byte
 	Structure *Struct

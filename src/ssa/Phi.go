@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Phi is the merging point of multiple values for the same name.
 type Phi struct {
 	Arguments
 	Liveness

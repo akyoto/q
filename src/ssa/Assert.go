@@ -2,20 +2,14 @@ package ssa
 
 import (
 	"fmt"
-
-	"git.urbach.dev/cli/q/src/types"
 )
 
+// Assert makes sure that a condition is true at the time of execution.
 type Assert struct {
 	Condition Value
 	Source
+	Void
 }
-
-func (v *Assert) AddUser(Value)    { panic("assert can not be used as a dependency") }
-func (v *Assert) Inputs() []Value  { return []Value{v.Condition} }
-func (v *Assert) IsConst() bool    { return false }
-func (v *Assert) Type() types.Type { return types.Void }
-func (v *Assert) Users() []Value   { return nil }
 
 func (a *Assert) Equals(v Value) bool {
 	b, sameType := v.(*Assert)
@@ -25,6 +19,10 @@ func (a *Assert) Equals(v Value) bool {
 	}
 
 	return a.Condition.Equals(b.Condition)
+}
+
+func (v *Assert) Inputs() []Value {
+	return []Value{v.Condition}
 }
 
 func (v *Assert) Replace(old Value, new Value) {

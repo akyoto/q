@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
+// Function is a reference to a function.
 type Function struct {
 	Typ     *types.Function
 	Package string
