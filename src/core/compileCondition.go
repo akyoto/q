@@ -14,6 +14,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		f.Count.SubBranch++
 		leftFailLabel := f.CreateLabel("or", f.Count.SubBranch)
 		leftFail := ssa.NewBlock(leftFailLabel)
+		f.Block().AddSuccessor(leftFail)
 
 		// Left
 		left := condition.Children[0]
@@ -34,6 +35,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		f.Count.SubBranch++
 		leftSuccessLabel := f.CreateLabel("and", f.Count.SubBranch)
 		leftSuccess := ssa.NewBlock(leftSuccessLabel)
+		f.Block().AddSuccessor(leftSuccess)
 
 		// Left
 		left := condition.Children[0]

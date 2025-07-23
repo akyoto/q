@@ -21,6 +21,8 @@ func (f *Function) If(tokens token.List) error {
 	elseLabel := f.CreateLabel("if.else", f.Count.Branch)
 	thenBlock := ssa.NewBlock(thenLabel)
 	elseBlock := ssa.NewBlock(elseLabel)
+	f.Block().AddSuccessor(thenBlock)
+	f.Block().AddSuccessor(elseBlock)
 	err = f.compileCondition(condition, thenBlock, elseBlock)
 
 	if err != nil {

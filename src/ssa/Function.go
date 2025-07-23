@@ -15,9 +15,10 @@ type Function struct {
 	IsExtern bool
 }
 
-func (v *Function) Inputs() []Value  { return nil }
-func (v *Function) IsConst() bool    { return true }
-func (v *Function) Type() types.Type { return v.Typ }
+func (v *Function) Inputs() []Value      { return nil }
+func (v *Function) IsConst() bool        { return true }
+func (v *Function) Replace(Value, Value) {}
+func (v *Function) Type() types.Type     { return v.Typ }
 
 func (a *Function) Equals(v Value) bool {
 	b, sameType := v.(*Function)

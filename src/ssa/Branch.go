@@ -29,6 +29,12 @@ func (a *Branch) Equals(v Value) bool {
 	return a.Condition.Equals(b.Condition) && a.Then == b.Then && a.Else == b.Else
 }
 
+func (v *Branch) Replace(old Value, new Value) {
+	if v.Condition == old {
+		v.Condition = new
+	}
+}
+
 func (v *Branch) String() string {
 	return fmt.Sprintf("branch(%s, %s, %s)", v.Condition.String(), v.Then.Label, v.Else.Label)
 }

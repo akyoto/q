@@ -242,6 +242,9 @@ func (f *Function) exec(step *step) {
 	case *ssa.Jump:
 		f.Assembler.Append(&asm.Jump{Label: instr.To.Label})
 
+	case *ssa.Phi:
+		// Phi does not generate any machine instructions.
+
 	case *ssa.Return:
 		defer f.Leave()
 

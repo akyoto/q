@@ -1,8 +1,14 @@
 import os
 
 main() {
+	n := 10
+
 	loop {
-		os.exit(0)
+		if n == 0 {
+			os.exit(0)
+		}
+
+		n = n - 1
 	}
 
 	os.exit(1)

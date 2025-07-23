@@ -35,6 +35,18 @@ func (f *Function) createHints(step *step) {
 			step.Register = f.CPU.Call.In[instr.Index]
 		}
 
+	case *ssa.Phi:
+		if step.Register == -1 {
+			for _, variant := range instr.Arguments {
+				variantStep := f.ValueToStep[variant]
+
+				if variantStep.Register != -1 {
+					step.Register = variantStep.Register
+					break
+				}
+			}
+		}
+
 	case *ssa.Return:
 		for r, param := range instr.Arguments {
 			f.ValueToStep[param].Hint(f.CPU.Call.Out[r])
@@ -50,8 +62,21 @@ func (f *Function) createHints(step *step) {
 		users := step.Value.Users()
 
 		if len(users) > 0 {
-			alive := f.ValueToStep[users[len(users)-1]].Index
-			step.Register = f.findFreeRegister(f.Steps[step.Index:alive])
+			from := step.Index
+			to := f.ValueToStep[users[len(users)-1]].Index
+
+			if from > to {
+				from, to = to, from
+			}
+
+			step.Register = f.findFreeRegister(f.Steps[from:to])
+		}
+	}
+
+	switch instr := step.Value.(type) {
+	case *ssa.Phi:
+		for _, variant := range instr.Arguments {
+			f.ValueToStep[variant].Hint(step.Register)
 		}
 	}
 }

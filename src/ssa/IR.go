@@ -18,7 +18,12 @@ func (f *IR) Append(instr Value) Value {
 		return existing
 	}
 
-	return f.Blocks[len(f.Blocks)-1].Append(instr)
+	return f.Block().Append(instr)
+}
+
+// Block returns the last block.
+func (f *IR) Block() *Block {
+	return f.Blocks[len(f.Blocks)-1]
 }
 
 // CountValues returns the total number of values.

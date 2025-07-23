@@ -33,6 +33,16 @@ func (a *BinaryOp) Equals(v Value) bool {
 	return a.Left.Equals(b.Left) && a.Right.Equals(b.Right)
 }
 
+func (v *BinaryOp) Replace(old Value, new Value) {
+	if v.Left == old {
+		v.Left = new
+	}
+
+	if v.Right == old {
+		v.Right = new
+	}
+}
+
 func (v *BinaryOp) String() string {
 	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
 }

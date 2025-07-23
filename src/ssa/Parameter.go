@@ -15,10 +15,11 @@ type Parameter struct {
 	Index uint8
 }
 
-func (v *Parameter) Inputs() []Value  { return nil }
-func (v *Parameter) IsConst() bool    { return true }
-func (v *Parameter) String() string   { return fmt.Sprintf("args[%d]", v.Index) }
-func (v *Parameter) Type() types.Type { return v.Typ }
+func (v *Parameter) Inputs() []Value      { return nil }
+func (v *Parameter) IsConst() bool        { return true }
+func (v *Parameter) Replace(Value, Value) {}
+func (v *Parameter) String() string       { return fmt.Sprintf("args[%d]", v.Index) }
+func (v *Parameter) Type() types.Type     { return v.Typ }
 
 func (a *Parameter) Equals(v Value) bool {
 	b, sameType := v.(*Parameter)

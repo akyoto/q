@@ -14,11 +14,12 @@ type Bytes struct {
 	Source
 }
 
-func (v *Bytes) Inputs() []Value  { return nil }
-func (v *Bytes) IsConst() bool    { return true }
-func (v *Bytes) String() string   { return strconv.Quote(string(v.Bytes)) }
-func (v *Bytes) Struct() *Struct  { return v.Structure }
-func (v *Bytes) Type() types.Type { return types.CString }
+func (v *Bytes) Inputs() []Value      { return nil }
+func (v *Bytes) IsConst() bool        { return true }
+func (v *Bytes) Replace(Value, Value) {}
+func (v *Bytes) String() string       { return strconv.Quote(string(v.Bytes)) }
+func (v *Bytes) Struct() *Struct      { return v.Structure }
+func (v *Bytes) Type() types.Type     { return types.CString }
 
 func (a *Bytes) Equals(v Value) bool {
 	b, sameType := v.(*Bytes)

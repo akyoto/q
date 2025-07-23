@@ -32,6 +32,12 @@ func (a *UnaryOp) Equals(v Value) bool {
 	return a.Operand.Equals(b.Operand)
 }
 
+func (v *UnaryOp) Replace(old Value, new Value) {
+	if v.Operand == old {
+		v.Operand = new
+	}
+}
+
 func (v *UnaryOp) String() string {
 	return fmt.Sprintf("%s(%s)", expression.Operators[v.Op].Symbol, v.Operand)
 }

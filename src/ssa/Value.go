@@ -18,6 +18,9 @@ type Value interface {
 	// IsConst returns true if the calculation of the value has no side effects.
 	IsConst() bool
 
+	// Replace replaces the uses of a value with another value.
+	Replace(Value, Value)
+
 	// Strings returns a human-readable form of the value.
 	String() string
 }
