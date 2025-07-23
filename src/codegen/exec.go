@@ -21,7 +21,7 @@ func (f *Function) exec(step *step) {
 
 		switch instr.Op {
 		case token.Negate:
-			f.Assembler.Append(&asm.NegateRegister{
+			f.Assembler.Append(&asm.Negate{
 				Destination: step.Register,
 				Source:      left.Register,
 			})
@@ -32,62 +32,62 @@ func (f *Function) exec(step *step) {
 		right := f.ValueToStep[instr.Right]
 
 		if instr.Op.IsComparison() {
-			f.Assembler.Append(&asm.CompareRegisterRegister{SourceA: left.Register, SourceB: right.Register})
+			f.Assembler.Append(&asm.Compare{Destination: left.Register, Source: right.Register})
 			return
 		}
 
 		switch instr.Op {
 		case token.Add:
-			f.Assembler.Append(&asm.AddRegisterRegister{
+			f.Assembler.Append(&asm.Add{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.Div:
-			f.Assembler.Append(&asm.DivRegisterRegister{
+			f.Assembler.Append(&asm.Divide{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.Mul:
-			f.Assembler.Append(&asm.MulRegisterRegister{
+			f.Assembler.Append(&asm.Multiply{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.Sub:
-			f.Assembler.Append(&asm.SubRegisterRegister{
+			f.Assembler.Append(&asm.Subtract{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.Mod:
-			f.Assembler.Append(&asm.ModRegisterRegister{
+			f.Assembler.Append(&asm.Modulo{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.And:
-			f.Assembler.Append(&asm.AndRegisterRegister{
+			f.Assembler.Append(&asm.And{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.Or:
-			f.Assembler.Append(&asm.OrRegisterRegister{
+			f.Assembler.Append(&asm.Or{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
 			})
 
 		case token.Xor:
-			f.Assembler.Append(&asm.XorRegisterRegister{
+			f.Assembler.Append(&asm.Xor{
 				Destination: step.Register,
 				Source:      left.Register,
 				Operand:     right.Register,
@@ -129,7 +129,7 @@ func (f *Function) exec(step *step) {
 		label := f.CreateLabel("data", f.Count.Data)
 		f.Assembler.SetData(label, instr.Bytes)
 
-		f.Assembler.Append(&asm.MoveRegisterLabel{
+		f.Assembler.Append(&asm.MoveLabel{
 			Destination: step.Register,
 			Label:       label,
 		})
@@ -142,7 +142,7 @@ func (f *Function) exec(step *step) {
 				continue
 			}
 
-			f.Assembler.Append(&asm.MoveRegisterRegister{
+			f.Assembler.Append(&asm.Move{
 				Destination: f.CPU.Call.In[i],
 				Source:      f.ValueToStep[arg].Register,
 			})
@@ -154,7 +154,7 @@ func (f *Function) exec(step *step) {
 			return
 		}
 
-		f.Assembler.Append(&asm.MoveRegisterRegister{
+		f.Assembler.Append(&asm.Move{
 			Destination: step.Register,
 			Source:      f.CPU.Call.Out[0],
 		})
@@ -173,27 +173,27 @@ func (f *Function) exec(step *step) {
 				continue
 			}
 
-			f.Assembler.Append(&asm.MoveRegisterRegister{
+			f.Assembler.Append(&asm.Move{
 				Destination: f.CPU.ExternCall.In[i],
 				Source:      f.ValueToStep[arg].Register,
 			})
 		}
 
 		if len(pushed) > 0 {
-			f.Assembler.Append(&asm.PushRegisters{Registers: pushed})
+			f.Assembler.Append(&asm.Push{Registers: pushed})
 		}
 
 		f.Assembler.Append(&asm.CallExtern{Library: instr.Func.Package, Function: instr.Func.Name})
 
 		if len(pushed) > 0 {
-			f.Assembler.Append(&asm.PopRegisters{Registers: pushed})
+			f.Assembler.Append(&asm.Pop{Registers: pushed})
 		}
 
 		if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {
 			return
 		}
 
-		f.Assembler.Append(&asm.MoveRegisterRegister{
+		f.Assembler.Append(&asm.Move{
 			Destination: step.Register,
 			Source:      f.CPU.ExternCall.Out[0],
 		})
@@ -203,7 +203,7 @@ func (f *Function) exec(step *step) {
 			return
 		}
 
-		f.Assembler.Append(&asm.MoveRegisterNumber{
+		f.Assembler.Append(&asm.MoveNumber{
 			Destination: step.Register,
 			Number:      instr.Int,
 		})
@@ -220,7 +220,7 @@ func (f *Function) exec(step *step) {
 			return
 		}
 
-		f.Assembler.Append(&asm.MoveRegisterRegister{
+		f.Assembler.Append(&asm.Move{
 			Destination: step.Register,
 			Source:      source,
 		})
@@ -244,7 +244,7 @@ func (f *Function) exec(step *step) {
 			return
 		}
 
-		f.Assembler.Append(&asm.MoveRegisterRegister{
+		f.Assembler.Append(&asm.Move{
 			Destination: f.CPU.Call.Out[0],
 			Source:      retVal.Register,
 		})
@@ -252,7 +252,7 @@ func (f *Function) exec(step *step) {
 	case *ssa.Syscall:
 		for i, arg := range instr.Arguments {
 			if f.ValueToStep[arg].Register != f.CPU.Syscall.In[i] {
-				f.Assembler.Append(&asm.MoveRegisterRegister{
+				f.Assembler.Append(&asm.Move{
 					Destination: f.CPU.Syscall.In[i],
 					Source:      f.ValueToStep[arg].Register,
 				})
@@ -265,7 +265,7 @@ func (f *Function) exec(step *step) {
 			return
 		}
 
-		f.Assembler.Append(&asm.MoveRegisterRegister{
+		f.Assembler.Append(&asm.Move{
 			Destination: step.Register,
 			Source:      f.CPU.Syscall.Out[0],
 		})

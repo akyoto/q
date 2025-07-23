@@ -16,24 +16,24 @@ type compilerX86 struct {
 
 func (c *compilerX86) Compile(instr Instruction) {
 	switch instr := instr.(type) {
-	case *AddRegisterRegister:
+	case *Add:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.AddRegisterRegister(c.code, instr.Destination, instr.Operand)
-	case *AndRegisterNumber:
-		if instr.Destination != instr.Source {
-			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-		}
-
-		c.code = x86.AndRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *AndRegisterRegister:
+	case *And:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.AndRegisterRegister(c.code, instr.Destination, instr.Operand)
+	case *AndNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.AndRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Call:
 		c.code = x86.Call(c.code, 0)
 		patch := c.PatchLast4Bytes()
@@ -65,9 +65,9 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, uint32(offset))
 			return code
 		}
-	case *CompareRegisterRegister:
-		c.code = x86.CompareRegisterRegister(c.code, instr.SourceA, instr.SourceB)
-	case *DivRegisterRegister:
+	case *Compare:
+		c.code = x86.CompareRegisterRegister(c.code, instr.Destination, instr.Source)
+	case *Divide:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
@@ -156,7 +156,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.earlyPatches = append(c.earlyPatches, patch)
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
-	case *ModRegisterRegister:
+	case *Modulo:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
@@ -167,7 +167,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		if instr.Destination != x86.R2 {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, x86.R2)
 		}
-	case *MoveRegisterLabel:
+	case *MoveLabel:
 		c.code = x86.LoadAddress(c.code, instr.Destination, 0)
 		patch := c.PatchLast4Bytes()
 
@@ -182,33 +182,33 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, uint32(offset))
 			return code
 		}
-	case *MoveRegisterNumber:
-		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *MoveRegisterRegister:
+	case *Move:
 		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-	case *MulRegisterRegister:
+	case *MoveNumber:
+		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *Multiply:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.MulRegisterRegister(c.code, instr.Destination, instr.Operand)
-	case *NegateRegister:
+	case *Negate:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.NegateRegister(c.code, instr.Destination)
-	case *OrRegisterRegister:
+	case *Or:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.OrRegisterRegister(c.code, instr.Destination, instr.Operand)
-	case *PopRegisters:
+	case *Pop:
 		for _, register := range slices.Backward(instr.Registers) {
 			c.code = x86.PopRegister(c.code, register)
 		}
-	case *PushRegisters:
+	case *Push:
 		for _, register := range instr.Registers {
 			c.code = x86.PushRegister(c.code, register)
 		}
@@ -242,18 +242,18 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.ShiftRightSigned(c.code, instr.Destination)
-	case *SubRegisterNumber:
-		if instr.Destination != instr.Source {
-			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-		}
-
-		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *SubRegisterRegister:
+	case *Subtract:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
 
 		c.code = x86.SubRegisterRegister(c.code, instr.Destination, instr.Operand)
+	case *SubtractNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *StackFrameStart:
 		if instr.FramePointer {
 			c.code = x86.PushRegister(c.code, x86.R5)
@@ -271,7 +271,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
-	case *XorRegisterRegister:
+	case *Xor:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}

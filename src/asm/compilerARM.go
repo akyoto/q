@@ -19,9 +19,9 @@ func (c *compiler) append(code uint32) {
 
 func (c *compilerARM) Compile(instr Instruction) {
 	switch instr := instr.(type) {
-	case *AddRegisterRegister:
+	case *Add:
 		c.append(arm.AddRegisterRegister(instr.Destination, instr.Source, instr.Operand))
-	case *AndRegisterRegister:
+	case *And:
 		c.append(arm.AndRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Call:
 		c.append(arm.Call(0))
@@ -58,9 +58,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *CallExternStart:
 	case *CallExternEnd:
-	case *CompareRegisterRegister:
-		c.append(arm.CompareRegisterRegister(instr.SourceA, instr.SourceB))
-	case *DivRegisterRegister:
+	case *Compare:
+		c.append(arm.CompareRegisterRegister(instr.Destination, instr.Source))
+	case *Divide:
 		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Jump:
 		c.append(arm.Jump(0))
@@ -113,14 +113,14 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
-	case *ModRegisterRegister:
+	case *Modulo:
 		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
 			panic("modulo operation needs a separate destination register")
 		}
 
 		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 		c.append(arm.MultiplySubtract(instr.Destination, instr.Destination, instr.Operand, instr.Source))
-	case *MoveRegisterLabel:
+	case *MoveLabel:
 		c.append(arm.LoadAddress(instr.Destination, 0))
 		patch := c.PatchLast4Bytes()
 
@@ -135,17 +135,17 @@ func (c *compilerARM) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, arm.LoadAddress(instr.Destination, offset))
 			return code
 		}
-	case *MoveRegisterNumber:
-		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *MoveRegisterRegister:
+	case *Move:
 		c.append(arm.MoveRegisterRegister(instr.Destination, instr.Source))
-	case *MulRegisterRegister:
+	case *MoveNumber:
+		c.code = arm.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *Multiply:
 		c.append(arm.MulRegisterRegister(instr.Destination, instr.Source, instr.Operand))
-	case *NegateRegister:
+	case *Negate:
 		c.append(arm.NegateRegister(instr.Destination, instr.Source))
-	case *OrRegisterRegister:
+	case *Or:
 		c.append(arm.OrRegisterRegister(instr.Destination, instr.Source, instr.Operand))
-	case *PopRegisters:
+	case *Pop:
 		registers := instr.Registers
 		count := len(registers)
 
@@ -157,7 +157,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		for i := count - 2; i >= 0; i -= 2 {
 			c.append(arm.LoadPair(registers[i], registers[i+1], arm.SP, 16))
 		}
-	case *PushRegisters:
+	case *Push:
 		registers := instr.Registers
 
 		for i := 0; i < len(registers); i += 2 {
@@ -173,7 +173,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.ShiftLeft(instr.Destination, instr.Source, instr.Operand))
 	case *ShiftRightSigned:
 		c.append(arm.ShiftRightSigned(instr.Destination, instr.Source, instr.Operand))
-	case *SubRegisterRegister:
+	case *Subtract:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *StackFrameStart:
 		c.append(arm.StoreRegister(arm.LR, arm.SP, arm.PreIndex, -16, 8))
@@ -186,7 +186,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		default:
 			c.append(arm.Syscall(0))
 		}
-	case *XorRegisterRegister:
+	case *Xor:
 		c.append(arm.XorRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	default:
 		panic("unknown instruction")

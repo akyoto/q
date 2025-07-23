@@ -19,7 +19,7 @@ func (f *Function) Leave() {
 	}
 
 	if f.Preserved.Count() > 0 {
-		f.Assembler.Append(&asm.PopRegisters{Registers: f.Preserved.Slice()})
+		f.Assembler.Append(&asm.Pop{Registers: f.Preserved.Slice()})
 	}
 
 	f.Assembler.Append(&asm.Return{})

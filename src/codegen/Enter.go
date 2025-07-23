@@ -7,7 +7,7 @@ func (f *Function) Enter() {
 	f.Assembler.Append(&asm.Label{Name: f.FullName})
 
 	if f.Preserved.Count() > 0 && !f.isInit {
-		f.Assembler.Append(&asm.PushRegisters{Registers: f.Preserved.Slice()})
+		f.Assembler.Append(&asm.Push{Registers: f.Preserved.Slice()})
 	}
 
 	if f.hasStackFrame || f.hasExternCalls {
