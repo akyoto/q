@@ -15,6 +15,8 @@ func (f *Function) compileInstruction(instr token.List) error {
 		return nil
 	case token.If:
 		return f.If(instr)
+	case token.Loop:
+		return f.Loop(instr)
 	case token.Return:
 		return f.Return(instr)
 	}

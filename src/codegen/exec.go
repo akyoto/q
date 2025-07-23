@@ -239,6 +239,9 @@ func (f *Function) exec(step *step) {
 			Source:      source,
 		})
 
+	case *ssa.Jump:
+		f.Assembler.Append(&asm.Jump{Label: instr.To.Label})
+
 	case *ssa.Return:
 		defer f.Leave()
 

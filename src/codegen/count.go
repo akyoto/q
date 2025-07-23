@@ -7,5 +7,6 @@ type counter uint16
 type count struct {
 	Data      counter
 	Branch    counter
+	Loop      counter
 	SubBranch counter
 }
