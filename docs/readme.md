@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="logo.svg" width="128" alt="q logo">
+	<img src="logo.svg" width="90" alt="q logo">
 	<h1>The Q Programming Language</h1>
 	<p>Q is a minimal, dependency-free programming language and compiler targeting x86-64 and arm64 with ultra-fast builds and tiny binaries.</p>
 </div>
