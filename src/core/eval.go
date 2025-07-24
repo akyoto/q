@@ -183,7 +183,7 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 					return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
 				}
 
-				imp.Used = true
+				imp.Used.Add(1)
 			}
 
 			function, exists := pkg.Functions[rightText]
