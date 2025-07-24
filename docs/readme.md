@@ -9,7 +9,7 @@
 * High performance (`ssa` and `asm` optimizations)
 * Fast compilation (<1 ms for simple programs)
 * Tiny executables ("Hello World" is ~600 bytes)
-* Many platforms (Linux, Mac and Windows)
+* Multiple platforms (Linux, Mac and Windows)
 * Zero dependencies (no llvm, no libc)
 
 ## Installation
@@ -47,13 +47,14 @@ Build an executable:
 q build examples/hello
 ```
 
-Show compiler output:
+Build for another architecture:
 
 ```shell
-q build examples/hello --verbose
+q build examples/hello --arch arm
+q build examples/hello --arch x86
 ```
 
-Cross-compile for another OS:
+Build for another operating system:
 
 ```shell
 q build examples/hello --os linux
@@ -61,44 +62,10 @@ q build examples/hello --os mac
 q build examples/hello --os windows
 ```
 
-## Tests
-
-Run all tests:
+Build with verbose output:
 
 ```shell
-go run gotest.tools/gotestsum@latest
-```
-
-Generate coverage:
-
-```shell
-go test -coverpkg=./... -coverprofile=cover.out ./...
-```
-
-View coverage:
-
-```shell
-go tool cover -func cover.out
-go tool cover -html cover.out
-```
-
-Run compiler benchmarks:
-
-```shell
-go test ./tests -run='^$' -bench=. -benchmem
-```
-
-Generate profiling data:
-
-```shell
-go test ./tests -run='^$' -bench="Examples/" -benchmem -cpuprofile cpu.out -memprofile mem.out
-```
-
-View profiling data:
-
-```shell
-go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
-go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
+q build examples/hello --verbose
 ```
 
 ## Source overview
@@ -156,7 +123,7 @@ This section is for contributors who want a high-level overview of the source co
 
 ### How is the assembly code quality?
 
-The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is pretty high despite the young age of the project.
+The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is fairly high despite the young age of the project.
 
 ### Which platforms are supported?
 
@@ -198,6 +165,48 @@ main() {
 ```
 
 Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
+
+### How do I run the test suite?
+
+Run all tests:
+
+```shell
+go run gotest.tools/gotestsum@latest
+```
+
+Generate coverage:
+
+```shell
+go test -coverpkg=./... -coverprofile=cover.out ./...
+```
+
+View coverage:
+
+```shell
+go tool cover -func cover.out
+go tool cover -html cover.out
+```
+
+### How do I run the benchmarks?
+
+Run compiler benchmarks:
+
+```shell
+go test ./tests -run='^$' -bench=. -benchmem
+```
+
+Generate profiling data:
+
+```shell
+go test ./tests -run='^$' -bench="Examples/" -benchmem -cpuprofile cpu.out -memprofile mem.out
+```
+
+View profiling data:
+
+```shell
+go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
+go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
+```
 
 ### How do I pronounce the name?
 
