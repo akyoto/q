@@ -1,12 +1,14 @@
 package cli
 
 import (
-	"fmt"
 	"os"
+
+	"git.urbach.dev/go/color"
 )
 
-// invalid shows the help and returns exit code 2 (invalid parameters).
+// invalid shows the help on stderr and returns exit code 2 (invalid parameters).
 func invalid() int {
-	fmt.Fprintln(os.Stderr, helpText)
+	color.Redirect(os.Stderr)
+	help()
 	return 2
 }
