@@ -8,17 +8,16 @@ Compiler for the q programming language.
 
         q build [file]
 
-    Compile for another architecture:
+    Build for another architecture:
 
         q build [file] --arch [x86|arm]
 
-    Compile for another operating system:
+    Build for another operating system:
 
         q build [file] --os [linux|mac|windows]
 
-    Show verbose output:
+    Build with verbose output:
 
-        q build [file] -v
         q build [file] --verbose
 
     Show this help:
