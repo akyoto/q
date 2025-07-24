@@ -8,6 +8,11 @@ import (
 
 // Return compiles a return instruction.
 func (f *Function) Return(tokens token.List) error {
+	if len(tokens) == 1 {
+		f.Append(&ssa.Return{Source: ssa.Source{StartPos: tokens[0].Position, EndPos: tokens[0].End()}})
+		return nil
+	}
+
 	expr := expression.Parse(tokens[1:])
 	value, err := f.eval(expr)
 
