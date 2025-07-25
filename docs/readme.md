@@ -117,9 +117,9 @@ This section is for contributors who want a high-level overview of the source co
 
 |         | x86-64 |
 | ------- | ------ |
-| Linux   | 582 bytes  |
-| Mac     | 8 KiB     |
-| Windows | 1.7 KiB     |
+| 🐧 Linux   | 582 bytes  |
+| 🍏 Mac     | 8 KiB     |
+| 🪟 Windows | 1.7 KiB     |
 
 ### How is the assembly code quality?
 
@@ -129,9 +129,9 @@ The backend uses an SSA based IR which is also used by well established compiler
 
 |         | arm64  | x86-64 |
 | ------- | ------ | ------ |
-| Linux   | ✔️     | ✔️     |
-| Mac     | ✔️*    | ✔️     |
-| Windows | ✔️*    | ✔️     |
+| 🐧 Linux   | ✔️     | ✔️     |
+| 🍏 Mac     | ✔️*    | ✔️     |
+| 🪟 Windows | ✔️*    | ✔️     |
 
 Those marked with a star need testing. Please contact me if you have a machine with the marked architectures.
 
