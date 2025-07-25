@@ -23,6 +23,7 @@ func (f *Function) If(tokens token.List) error {
 	elseBlock := ssa.NewBlock(elseLabel)
 	f.Block().AddSuccessor(thenBlock)
 	f.Block().AddSuccessor(elseBlock)
+	thenBlock.AddSuccessor(elseBlock)
 	err = f.compileCondition(condition, thenBlock, elseBlock)
 
 	if err != nil {

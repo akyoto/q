@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -20,7 +21,7 @@ func (f *Function) Loop(tokens token.List) error {
 	loopBody := ssa.NewBlock(bodyLabel)
 	loopExit := ssa.NewBlock(exitLabel)
 	beforeLoop.AddSuccessor(loopBody)
-	beforeLoop.AddSuccessor(loopExit)
+	loopBody.AddSuccessor(loopExit)
 	loopBlockIndex := len(f.Blocks)
 	f.AddBlock(loopBody)
 
@@ -31,34 +32,48 @@ func (f *Function) Loop(tokens token.List) error {
 		return err
 	}
 
-	// Insert phi functions
 	loopBlocks := f.Blocks[loopBlockIndex:len(f.Blocks)]
 
+	// Find identifiers defined outside the loop that are modified within the loop
+	modified := set.Ordered[string]{}
+
 	for _, block := range loopBlocks {
-		for name, newValue := range block.Identifiers {
-			oldValue := beforeLoop.Identifiers[name]
+		for name := range block.Identifiers {
+			_, existedBeforeLoop := beforeLoop.Identifiers[name]
 
-			if oldValue != newValue {
-				phi := &ssa.Phi{Arguments: []ssa.Value{oldValue, newValue}}
-
-				for _, user := range oldValue.Users() {
-					phi.AddUser(user)
-				}
-
-				for _, block := range loopBlocks {
-					for _, instr := range block.Instructions {
-						instr.Replace(oldValue, phi)
-						liveness, hasLiveness := instr.(ssa.HasLiveness)
-
-						if hasLiveness {
-							liveness.ReplaceUser(oldValue, phi)
-						}
-					}
-				}
-
-				loopBody.InsertAt(phi, 0)
+			if existedBeforeLoop {
+				modified.Add(name)
 			}
 		}
+	}
+
+	// Insert phi functions
+	for identifier := range modified.All() {
+		traversed := make(map[*ssa.Block]bool)
+		oldValue, appended := beforeLoop.LookupIdentifier(identifier, traversed)
+
+		if !appended {
+			beforeLoop.Identify(identifier, oldValue)
+			beforeLoop.Append(oldValue)
+		}
+
+		clear(traversed)
+		newValue, appended := f.Block().LookupIdentifier(identifier, traversed)
+
+		if !appended {
+			f.Block().Identify(identifier, newValue)
+			f.Block().Append(newValue)
+		}
+
+		phi := &ssa.Phi{Arguments: []ssa.Value{newValue, oldValue}}
+
+		for _, block := range loopBlocks {
+			for _, instr := range block.Instructions {
+				instr.Replace(oldValue, phi)
+			}
+		}
+
+		loopBody.InsertAt(phi, 0)
 	}
 
 	f.Append(&ssa.Jump{To: loopBody})

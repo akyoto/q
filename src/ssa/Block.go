@@ -28,21 +28,12 @@ func (block *Block) AddSuccessor(successor *Block) {
 }
 
 // Append adds a new value to the block.
-func (block *Block) Append(value Value) Value {
-	for _, dep := range value.Inputs() {
-		dep.(HasLiveness).AddUser(value)
-	}
-
+func (block *Block) Append(value Value) {
 	block.Instructions = append(block.Instructions, value)
-	return value
 }
 
 // InsertAt inserts the `value` at the given `index`.
 func (block *Block) InsertAt(value Value, index int) {
-	for _, dep := range value.Inputs() {
-		dep.(HasLiveness).AddUser(value)
-	}
-
 	block.Instructions = slices.Insert(block.Instructions, index, value)
 }
 
@@ -53,6 +44,47 @@ func (block *Block) Identify(name string, value Value) {
 	}
 
 	block.Identifiers[name] = value
+}
+
+// LookupIdentifier searches for the possible definitions the identifier can have.
+func (block *Block) LookupIdentifier(name string, traversed map[*Block]bool) (value Value, appended bool) {
+	if traversed[block] {
+		return nil, false
+	}
+
+	traversed[block] = true
+	value, exists := block.Identifiers[name]
+
+	if exists {
+		return value, true
+	}
+
+	switch len(block.Predecessors) {
+	case 0:
+		return nil, false
+	case 1:
+		return block.Predecessors[0].LookupIdentifier(name, traversed)
+	default:
+		var values []Value
+
+		for _, pre := range block.Predecessors {
+			value, exists := pre.LookupIdentifier(name, traversed)
+
+			if exists {
+				values = append(values, value)
+			}
+		}
+
+		if len(values) == 0 {
+			return nil, false
+		}
+
+		if len(values) == 1 {
+			return values[0], true
+		}
+
+		return &Phi{Arguments: values}, false
+	}
 }
 
 // RemoveNilValues removes all nil values from the block.

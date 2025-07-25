@@ -10,6 +10,7 @@ func (f *Function) Compile() {
 		return
 	}
 
+	f.Finalize()
 	err = f.checkDeadCode()
 
 	if err != nil {

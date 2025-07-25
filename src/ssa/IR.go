@@ -18,7 +18,8 @@ func (f *IR) Append(instr Value) Value {
 		return existing
 	}
 
-	return f.Block().Append(instr)
+	f.Block().Append(instr)
+	return instr
 }
 
 // Block returns the last block.
@@ -35,6 +36,15 @@ func (f *IR) CountValues() int {
 	}
 
 	return count
+}
+
+// Finalize creates the list of users for each value.
+func (f *IR) Finalize() {
+	for _, value := range f.Values {
+		for _, input := range value.Inputs() {
+			input.AddUser(value)
+		}
+	}
 }
 
 // FindExisting returns an equal instruction that's already appended or `nil` if none could be found.

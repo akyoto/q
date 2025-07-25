@@ -20,11 +20,7 @@ func TestReturn(t *testing.T) {
 	ret5 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{one, two}})
 
 	assert.True(t, ret.Type() == types.Void)
-	assert.Equal(t, ret.String(), "return")
-	assert.Equal(t, ret2.String(), "return 1")
-	assert.Equal(t, ret3.String(), "return 1, 2")
-	assert.Equal(t, ret4.String(), "return 2, 1")
-	assert.Equal(t, ret5.String(), "return 1, 2")
+	assert.False(t, ret2.Equals(ret))
 	assert.False(t, ret5.Equals(one))
 	assert.False(t, ret5.Equals(ret))
 	assert.False(t, ret5.Equals(ret4))

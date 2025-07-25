@@ -21,7 +21,7 @@ func showSSA(root *core.Function) {
 				continue
 			}
 
-			ansi.Dim.Printf("%%%d = ", step.Index)
+			ansi.Dim.Printf("%p = ", step.Value)
 			fmt.Print(step.Value.String())
 			ansi.Dim.Printf(" %s %s %s\n", step.Value.Type().Name(), step.Register, step.Live)
 		}

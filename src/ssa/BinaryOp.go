@@ -45,7 +45,7 @@ func (v *BinaryOp) Replace(old Value, new Value) {
 }
 
 func (v *BinaryOp) String() string {
-	return fmt.Sprintf("%s %s %s", v.Left, expression.Operators[v.Op].Symbol, v.Right)
+	return fmt.Sprintf("%p %s %p", v.Left, expression.Operators[v.Op].Symbol, v.Right)
 }
 
 func (v *BinaryOp) Type() types.Type {

@@ -19,9 +19,7 @@ func TestSyscall(t *testing.T) {
 	syscall4 := fn.Append(&ssa.Syscall{Arguments: ssa.Arguments{one, two}})
 
 	assert.True(t, syscall.Type() == types.Any)
-	assert.Equal(t, syscall.String(), "syscall()")
-	assert.Equal(t, syscall2.String(), "syscall(1)")
-	assert.Equal(t, syscall3.String(), "syscall(1, 2)")
+	assert.False(t, syscall2.Equals(syscall))
 	assert.False(t, syscall4.Equals(one))
 	assert.False(t, syscall4.Equals(syscall))
 	assert.True(t, syscall4.Equals(syscall3))

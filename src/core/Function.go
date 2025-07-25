@@ -20,7 +20,6 @@ type Function struct {
 	Type         *types.Function
 	Err          error
 	All          *Environment
-	Identifiers  map[string]ssa.Value
 	Input        []*ssa.Parameter
 	Output       []*ssa.Parameter
 	Body         token.List
@@ -34,10 +33,9 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 	fullName := fmt.Sprintf("%s.%s", pkg, name)
 
 	return &Function{
-		Name:        name,
-		Package:     pkg,
-		File:        file,
-		Identifiers: make(map[string]ssa.Value, 8),
+		Name:    name,
+		Package: pkg,
+		File:    file,
 		IR: ssa.IR{
 			Blocks: []*ssa.Block{
 				{

@@ -35,12 +35,12 @@ func (f *Function) registerInputs() {
 			}
 
 			offset--
-			f.Identifiers[input.Name] = structure
+			f.Block().Identify(input.Name, structure)
 			continue
 		}
 
 		input.Index = uint8(offset + i)
-		f.Identifiers[input.Name] = input
+		f.Block().Identify(input.Name, input)
 		f.Append(input)
 	}
 }

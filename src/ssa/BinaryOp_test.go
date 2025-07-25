@@ -20,9 +20,8 @@ func TestBinaryOp(t *testing.T) {
 	e := fn.Append(&ssa.Int{Int: 4})
 	f := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: d, Right: e})
 
-	assert.Equal(t, c.String(), "1 + 2")
-	assert.Equal(t, f.String(), "3 + 4")
 	assert.True(t, c.Type() == types.AnyInt)
+	assert.True(t, f.Type() == types.AnyInt)
 }
 
 func TestBinaryOpEquals(t *testing.T) {

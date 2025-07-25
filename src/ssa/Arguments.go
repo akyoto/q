@@ -1,6 +1,7 @@
 package ssa
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -41,7 +42,7 @@ func (v Arguments) String() string {
 	tmp := strings.Builder{}
 
 	for i, arg := range v {
-		tmp.WriteString(arg.String())
+		tmp.WriteString(fmt.Sprintf("%p", arg))
 
 		if i != len(v)-1 {
 			tmp.WriteString(", ")

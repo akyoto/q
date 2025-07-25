@@ -16,9 +16,14 @@ func (f *Function) eval(expr *expression.Expression) (ssa.Value, error) {
 		switch expr.Token.Kind {
 		case token.Identifier:
 			name := expr.Token.String(f.File.Bytes)
-			value, exists := f.Identifiers[name]
+			value, appended := f.Block().LookupIdentifier(name, make(map[*ssa.Block]bool))
 
-			if exists {
+			if value != nil {
+				if !appended {
+					f.Block().Identify(name, value)
+					f.Block().Append(value)
+				}
+
 				return value, nil
 			}
 
