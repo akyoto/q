@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 
@@ -19,9 +20,40 @@ type FileError struct {
 
 // Error implements the error interface.
 func (e *FileError) Error() string {
-	path := e.Path()
-	line, column := e.LineColumn()
-	return fmt.Sprintf("%s:%d:%d: %s\n\n%s", path, line, column, e.err, e.stack)
+	return e.err.Error()
+}
+
+// File returns the file the error came from.
+func (e *FileError) File() *fs.File {
+	return e.file
+}
+
+// Line returns the line contents and the offset from the position.
+func (e *FileError) Line() (string, int) {
+	contents := e.file.Bytes
+	start := bytes.LastIndexByte(contents[:e.position], '\n')
+
+	if start == -1 {
+		start = 0
+	} else {
+		start++
+	}
+
+	end := bytes.IndexByte(contents[e.position:], '\n')
+
+	if end == -1 {
+		end = len(contents)
+	} else {
+		end += int(e.position)
+	}
+
+	asciiSpace := [256]uint8{'\t': 1, '\n': 1, '\v': 1, '\f': 1, '\r': 1, ' ': 1}
+
+	for asciiSpace[contents[start]] == 1 {
+		start++
+	}
+
+	return string(contents[start:end]), int(e.position) - start
 }
 
 // LineColumn returns the line and column of the error.
@@ -45,6 +77,13 @@ func (e *FileError) LineColumn() (int, int) {
 	return line, column
 }
 
+// Location returns the path, line and column separated by colons.
+func (e *FileError) Location() string {
+	path := e.Path()
+	line, column := e.LineColumn()
+	return fmt.Sprintf("%s:%d:%d", path, line, column)
+}
+
 // Path returns the relative path of the file to shorten the error message.
 func (e *FileError) Path() string {
 	relative, err := filepath.Rel(global.WorkingDirectory, e.file.Path)
@@ -54,6 +93,11 @@ func (e *FileError) Path() string {
 	}
 
 	return filepath.ToSlash(relative)
+}
+
+// Stack returns the call stack at the time the error was created.
+func (e *FileError) Stack() string {
+	return e.stack
 }
 
 // Unwrap returns the wrapped error.
