@@ -115,11 +115,11 @@ This section is for contributors who want a high-level overview of the source co
 
 ### How tiny is a Hello World?
 
-|         | x86-64 |
-| ------- | ------ |
-| 🐧 Linux   | 582 bytes  |
-| 🍏 Mac     | 8 KiB     |
-| 🪟 Windows | 1.7 KiB     |
+|            | arm64      | x86-64    |
+| ---------- | ---------- | --------- |
+| 🐧 Linux   | 646 bytes  | 582 bytes |
+| 🍏 Mac     | 12 KiB     | 8.2 KiB   |
+| 🪟 Windows | 1.7 KiB    | 1.7 KiB   |
 
 ### How is the assembly code quality?
 
@@ -127,11 +127,11 @@ The backend uses an SSA based IR which is also used by well established compiler
 
 ### Which platforms are supported?
 
-|         | arm64  | x86-64 |
-| ------- | ------ | ------ |
-| 🐧 Linux   | ✔️     | ✔️     |
-| 🍏 Mac     | ✔️*    | ✔️     |
-| 🪟 Windows | ✔️*    | ✔️     |
+|            | arm64 | x86-64 |
+| ---------- | ----- | ------ |
+| 🐧 Linux   | ✔️    | ✔️     |
+| 🍏 Mac     | ✔️*   | ✔️     |
+| 🪟 Windows | ✔️*   | ✔️     |
 
 Those marked with a star need testing. Please contact me if you have a machine with the marked architectures.
 
