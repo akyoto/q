@@ -3,16 +3,15 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
-	"git.urbach.dev/cli/q/src/ssa"
 )
 
 // Assignment compiles an assignment.
 func (f *Function) Assignment(expr *expression.Expression) error {
 	left := expr.Children[0]
 	name := left.String(f.File.Bytes)
-	value, _ := f.Block().LookupIdentifier(name, make(map[*ssa.Block]bool))
+	_, exists := f.Block().FindIdentifier(name)
 
-	if value == nil {
+	if !exists {
 		return errors.New(&UnknownIdentifier{Name: name}, f.File, left.Token.Position)
 	}
 

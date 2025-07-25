@@ -17,7 +17,7 @@ func showSSA(root *core.Function) {
 			_, isLabel := step.Value.(*codegen.Label)
 
 			if isLabel {
-				ansi.Yellow.Println(step.Value.String() + ":")
+				fmt.Println(step.Value.String() + ":")
 				continue
 			}
 

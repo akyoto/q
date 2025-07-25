@@ -15,8 +15,8 @@ func (f *Function) Loop(tokens token.List) error {
 	}
 
 	f.Count.Loop++
-	bodyLabel := f.CreateLabel("loop body", f.Count.Loop)
-	exitLabel := f.CreateLabel("loop exit", f.Count.Loop)
+	bodyLabel := f.CreateLabel("loop.body", f.Count.Loop)
+	exitLabel := f.CreateLabel("loop.exit", f.Count.Loop)
 	beforeLoop := f.Block()
 	loopBody := ssa.NewBlock(bodyLabel)
 	loopExit := ssa.NewBlock(exitLabel)
@@ -49,23 +49,9 @@ func (f *Function) Loop(tokens token.List) error {
 
 	// Insert phi functions
 	for identifier := range modified.All() {
-		traversed := make(map[*ssa.Block]bool)
-		oldValue, appended := beforeLoop.LookupIdentifier(identifier, traversed)
-
-		if !appended {
-			beforeLoop.Identify(identifier, oldValue)
-			beforeLoop.Append(oldValue)
-		}
-
-		clear(traversed)
-		newValue, appended := f.Block().LookupIdentifier(identifier, traversed)
-
-		if !appended {
-			f.Block().Identify(identifier, newValue)
-			f.Block().Append(newValue)
-		}
-
-		phi := &ssa.Phi{Arguments: []ssa.Value{newValue, oldValue}}
+		oldValue, _ := beforeLoop.FindIdentifier(identifier)
+		newValue, _ := f.Block().FindIdentifier(identifier)
+		phi := &ssa.Phi{Arguments: []ssa.Value{oldValue, newValue}, Typ: oldValue.Type()}
 
 		for _, block := range loopBlocks {
 			for _, instr := range block.Instructions {

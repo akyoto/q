@@ -8,6 +8,7 @@ import (
 
 // Phi is the merging point of multiple values for the same name.
 type Phi struct {
+	Typ types.Type
 	Arguments
 	Liveness
 }
@@ -31,5 +32,5 @@ func (v *Phi) String() string {
 }
 
 func (v *Phi) Type() types.Type {
-	return v.Arguments[0].Type()
+	return v.Typ
 }

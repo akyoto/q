@@ -32,9 +32,9 @@ func (block *Block) Append(value Value) {
 	block.Instructions = append(block.Instructions, value)
 }
 
-// InsertAt inserts the `value` at the given `index`.
-func (block *Block) InsertAt(value Value, index int) {
-	block.Instructions = slices.Insert(block.Instructions, index, value)
+// Contains checks if the value exists within the block.
+func (block *Block) Contains(value Value) bool {
+	return block.Index(value) != -1
 }
 
 // Identify adds a new identifier or changes an existing one.
@@ -46,8 +46,31 @@ func (block *Block) Identify(name string, value Value) {
 	block.Identifiers[name] = value
 }
 
-// LookupIdentifier searches for the possible definitions the identifier can have.
-func (block *Block) LookupIdentifier(name string, traversed map[*Block]bool) (value Value, appended bool) {
+// Index returns the position of the value or -1 if it doesn't exist within the block.
+func (block *Block) Index(search Value) int {
+	for i, value := range block.Instructions {
+		if value == search {
+			return i
+		}
+	}
+
+	return -1
+}
+
+// InsertAt inserts the `value` at the given `index`.
+func (block *Block) InsertAt(value Value, index int) {
+	block.Instructions = slices.Insert(block.Instructions, index, value)
+}
+
+// FindIdentifier searches for all the possible values the identifier
+// can have and combines them to a phi instruction if necessary.
+func (block *Block) FindIdentifier(name string) (value Value, exists bool) {
+	return block.findIdentifier(name, make(map[*Block]bool))
+}
+
+// findIdentifier searches for all the possible values the identifier
+// can have and combines them to a phi instruction if necessary.
+func (block *Block) findIdentifier(name string, traversed map[*Block]bool) (Value, bool) {
 	if traversed[block] {
 		return nil, false
 	}
@@ -63,12 +86,12 @@ func (block *Block) LookupIdentifier(name string, traversed map[*Block]bool) (va
 	case 0:
 		return nil, false
 	case 1:
-		return block.Predecessors[0].LookupIdentifier(name, traversed)
+		return block.Predecessors[0].findIdentifier(name, traversed)
 	default:
 		var values []Value
 
 		for _, pre := range block.Predecessors {
-			value, exists := pre.LookupIdentifier(name, traversed)
+			value, exists := pre.findIdentifier(name, traversed)
 
 			if exists {
 				values = append(values, value)
@@ -83,7 +106,10 @@ func (block *Block) LookupIdentifier(name string, traversed map[*Block]bool) (va
 			return values[0], true
 		}
 
-		return &Phi{Arguments: values}, false
+		phi := &Phi{Arguments: values, Typ: values[0].Type()}
+		block.Append(phi)
+		block.Identify(name, phi)
+		return phi, true
 	}
 }
 
