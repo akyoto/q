@@ -2,6 +2,8 @@ package ssa
 
 import (
 	"slices"
+
+	"git.urbach.dev/cli/q/src/set"
 )
 
 // Block is a list of instructions that can be targeted in branches.
@@ -65,50 +67,64 @@ func (block *Block) InsertAt(value Value, index int) {
 // FindIdentifier searches for all the possible values the identifier
 // can have and combines them to a phi instruction if necessary.
 func (block *Block) FindIdentifier(name string) (value Value, exists bool) {
-	return block.findIdentifier(name, make(map[*Block]bool))
+	return block.findIdentifier(name, make(map[*Block]Value))
 }
 
 // findIdentifier searches for all the possible values the identifier
 // can have and combines them to a phi instruction if necessary.
-func (block *Block) findIdentifier(name string, traversed map[*Block]bool) (Value, bool) {
-	if traversed[block] {
-		return nil, false
+func (block *Block) findIdentifier(name string, traversed map[*Block]Value) (Value, bool) {
+	cached, isTraversed := traversed[block]
+
+	if isTraversed {
+		return cached, cached != nil
 	}
 
-	traversed[block] = true
 	value, exists := block.Identifiers[name]
 
 	if exists {
+		traversed[block] = value
 		return value, true
 	}
+
+	traversed[block] = nil
 
 	switch len(block.Predecessors) {
 	case 0:
 		return nil, false
 	case 1:
-		return block.Predecessors[0].findIdentifier(name, traversed)
+		value, exists := block.Predecessors[0].findIdentifier(name, traversed)
+
+		if exists {
+			traversed[block] = value
+		}
+
+		return value, exists
 	default:
-		var values []Value
+		values := set.Ordered[Value]{}
 
 		for _, pre := range block.Predecessors {
 			value, exists := pre.findIdentifier(name, traversed)
 
-			if exists {
-				values = append(values, value)
+			if !exists {
+				return nil, false
 			}
+
+			values.Add(value)
 		}
 
-		if len(values) == 0 {
+		if values.Count() == 0 {
 			return nil, false
 		}
 
-		if len(values) == 1 {
-			return values[0], true
+		if values.Count() == 1 {
+			traversed[block] = values.Slice()[0]
+			return values.Slice()[0], true
 		}
 
-		phi := &Phi{Arguments: values, Typ: values[0].Type()}
+		phi := &Phi{Arguments: values.Slice(), Typ: values.Slice()[0].Type()}
 		block.Append(phi)
 		block.Identify(name, phi)
+		traversed[block] = phi
 		return phi, true
 	}
 }
