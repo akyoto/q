@@ -7,8 +7,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// registerInputs registers every input as an identifier.
-func (f *Function) registerInputs() {
+// compileInputs registers every input as an identifier.
+func (f *Function) compileInputs() {
 	offset := 0
 
 	for i, input := range f.Input {

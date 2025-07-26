@@ -1,19 +1,13 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 )
 
-// Loop compiles an endless loop.
-func (f *Function) Loop(tokens token.List) error {
-	blockStart, blockEnd, err := f.block(tokens)
-
-	if err != nil {
-		return err
-	}
-
+// compileLoop compiles an endless loop.
+func (f *Function) compileLoop(loop *ast.Loop) error {
 	f.Count.Loop++
 	bodyLabel := f.CreateLabel("loop.body", f.Count.Loop)
 	exitLabel := f.CreateLabel("loop.exit", f.Count.Loop)
@@ -25,7 +19,7 @@ func (f *Function) Loop(tokens token.List) error {
 	f.AddBlock(loopBody)
 
 	// Compile loop body
-	err = f.compileTokens(tokens[blockStart+1 : blockEnd])
+	err := f.compileAST(loop.Body)
 
 	if err != nil {
 		return err

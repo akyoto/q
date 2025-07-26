@@ -1,7 +1,7 @@
 package token
 
 import (
-	"strings"
+	"unsafe"
 )
 
 // List is a slice of tokens.
@@ -66,11 +66,7 @@ func (list List) Split(yield func(List) bool) {
 
 // String returns the concatenated token strings.
 func (list List) String(source []byte) string {
-	tmp := strings.Builder{}
-
-	for _, t := range list {
-		tmp.WriteString(t.String(source))
-	}
-
-	return tmp.String()
+	start := list[0].Position
+	end := list[len(list)-1].End()
+	return unsafe.String(unsafe.SliceData(source[start:end]), end-start)
 }

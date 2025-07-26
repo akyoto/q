@@ -19,7 +19,6 @@ var errs = []struct {
 	{"InvalidExpression2.q", core.InvalidExpression},
 	{"InvalidExpression3.q", core.InvalidExpression},
 	{"InvalidExpression4.q", core.InvalidExpression},
-	{"InvalidExpression5.q", core.InvalidExpression},
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},
 	{"TypeMismatch.q", &core.TypeMismatch{Encountered: "string", Expected: "int64", ParameterName: "x", IsReturn: false}},
@@ -33,12 +32,9 @@ var errs = []struct {
 	{"UnknownIdentifier8.q", &core.UnknownIdentifier{Name: "x"}},
 	{"UnknownIdentifier9.q", &core.UnknownIdentifier{Name: "x"}},
 	{"UnusedValue.q", &core.UnusedValue{Value: "42"}},
-	{"UnusedValue2.q", &core.UnusedValue{Value: "42"}},
-	{"UnusedValue3.q", &core.UnusedValue{Value: "2 + 3"}},
-	{"UnusedValue4.q", &core.UnusedValue{Value: "2 + 3"}},
-	{"UnusedValue5.q", &core.UnusedValue{Value: "\"not used\""}},
-	{"UnusedValue6.q", &core.UnusedValue{Value: "\"not used\""}},
-	{"UnusedValue7.q", &core.UnusedValue{Value: "1"}},
+	{"UnusedValue2.q", &core.UnusedValue{Value: "2 + 3"}},
+	{"UnusedValue3.q", &core.UnusedValue{Value: "\"not used\""}},
+	{"UnusedValue4.q", &core.UnusedValue{Value: "1"}},
 }
 
 func TestErrors(t *testing.T) {

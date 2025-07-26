@@ -76,6 +76,7 @@ This section is for contributors who want a high-level overview of the source co
 
 - [arm](../src/arm) - arm64 architecture
 - [asm](../src/asm) - Generic assembler
+- [ast](../src/ast) - Abstract syntax tree
 - [cli](../src/cli) - Command line interface
 - [codegen](../src/codegen) - SSA to assembly code generation
 - [compiler](../src/compiler) - Compiler frontend

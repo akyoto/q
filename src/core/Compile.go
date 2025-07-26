@@ -1,9 +1,18 @@
 package core
 
+import "git.urbach.dev/cli/q/src/ast"
+
 // Compile turns a function into machine code.
 func (f *Function) Compile() {
-	f.registerInputs()
-	err := f.compileTokens(f.Body)
+	f.compileInputs()
+	tree, err := ast.Parse(f.Body, f.File)
+
+	if err != nil {
+		f.Err = err
+		return
+	}
+
+	err = f.compileAST(tree)
 
 	if err != nil {
 		f.Err = err
@@ -11,7 +20,7 @@ func (f *Function) Compile() {
 	}
 
 	f.Finalize()
-	err = f.checkDeadCode()
+	err = f.removeDeadCode()
 
 	if err != nil {
 		f.Err = err

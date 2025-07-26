@@ -1,3 +1,3 @@
 main() {
-	2 + 3
+	x := "not used"
 }

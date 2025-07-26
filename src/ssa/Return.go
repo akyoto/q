@@ -8,7 +8,6 @@ import (
 type Return struct {
 	Void
 	Arguments
-	Source
 }
 
 func (a *Return) Equals(v Value) bool {
