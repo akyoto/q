@@ -19,9 +19,8 @@ func (f *Function) Loop(tokens token.List) error {
 	exitLabel := f.CreateLabel("loop.exit", f.Count.Loop)
 	beforeLoop := f.Block()
 	loopBody := ssa.NewBlock(bodyLabel)
-	loopExit := ssa.NewBlock(exitLabel)
+
 	beforeLoop.AddSuccessor(loopBody)
-	loopBody.AddSuccessor(loopExit)
 	loopBlockIndex := len(f.Blocks)
 	f.AddBlock(loopBody)
 
@@ -39,7 +38,7 @@ func (f *Function) Loop(tokens token.List) error {
 
 	for _, block := range loopBlocks {
 		for name := range block.Identifiers {
-			_, existedBeforeLoop := beforeLoop.Identifiers[name]
+			_, existedBeforeLoop := beforeLoop.FindIdentifier(name)
 
 			if existedBeforeLoop {
 				modified.Add(name)
@@ -63,6 +62,8 @@ func (f *Function) Loop(tokens token.List) error {
 	}
 
 	f.Append(&ssa.Jump{To: loopBody})
+	f.Block().AddSuccessor(loopBody)
+	loopExit := ssa.NewBlock(exitLabel)
 	f.AddBlock(loopExit)
 	return nil
 }
