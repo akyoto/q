@@ -69,6 +69,10 @@ func Parse(tokens token.List) *Expression {
 			group := Parse(tokens[groupPosition:i])
 			group.precedence = math.MaxInt8
 
+			if group.Token.Kind == token.Invalid {
+				group.Token.Position = tokens[groupPosition].Position
+			}
+
 			if cursor == nil {
 				if t.Kind == token.ArrayEnd {
 					cursor = New()
