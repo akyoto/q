@@ -9,7 +9,7 @@ import (
 // Assert compiles an assertion.
 func (f *Function) Assert(tokens token.List) error {
 	condExpr := expression.Parse(tokens[1:])
-	cond, err := f.eval(condExpr)
+	cond, err := f.evaluate(condExpr)
 
 	if err != nil {
 		return err

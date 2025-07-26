@@ -16,7 +16,7 @@ func (f *Function) Assignment(expr *expression.Expression) error {
 	}
 
 	right := expr.Children[1]
-	value, err := f.eval(right)
+	value, err := f.evaluate(right)
 	f.Block().Identify(name, value)
 	return err
 }

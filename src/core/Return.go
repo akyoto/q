@@ -14,7 +14,7 @@ func (f *Function) Return(tokens token.List) error {
 	}
 
 	expr := expression.Parse(tokens[1:])
-	value, err := f.eval(expr)
+	value, err := f.evaluate(expr)
 
 	if err != nil {
 		return err

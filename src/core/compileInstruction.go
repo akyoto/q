@@ -32,6 +32,6 @@ func (f *Function) compileInstruction(instr token.List) error {
 		return errors.New(&UnusedValue{Value: expr.String(f.File.Bytes)}, f.File, expr.Token.Position)
 	}
 
-	_, err := f.eval(expr)
+	_, err := f.evaluate(expr)
 	return err
 }

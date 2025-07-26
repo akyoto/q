@@ -9,7 +9,7 @@ func (f *Function) Definition(expr *expression.Expression) error {
 	left := expr.Children[0]
 	right := expr.Children[1]
 	name := left.String(f.File.Bytes)
-	value, err := f.eval(right)
+	value, err := f.evaluate(right)
 	f.Block().Identify(name, value)
 	return err
 }
