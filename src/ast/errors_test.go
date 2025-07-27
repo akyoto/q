@@ -19,6 +19,8 @@ var errs = []struct {
 	{"InvalidInstruction2.q", &ast.InvalidInstruction{Instruction: "42"}},
 	{"InvalidInstruction3.q", &ast.InvalidInstruction{Instruction: "2 + 3"}},
 	{"InvalidInstruction4.q", &ast.InvalidInstruction{Instruction: "\"not used\""}},
+	{"MissingOperand.q", ast.MissingOperand},
+	{"MissingOperand2.q", ast.MissingOperand},
 }
 
 func TestErrors(t *testing.T) {

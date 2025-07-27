@@ -11,6 +11,7 @@ var (
 	InvalidExpression = errors.String("Invalid expression")
 	InvalidNumber     = errors.String("Invalid number")
 	InvalidRune       = errors.String("Invalid rune")
+	MissingOperand    = errors.String("Missing operand")
 )
 
 // ParameterCountMismatch error is created when the number of provided parameters doesn't match the function signature.
