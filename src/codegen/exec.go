@@ -12,6 +12,15 @@ import (
 
 // exec executes an instruction.
 func (f *Function) exec(step *step) {
+	if step.Phi != nil && step.Register != step.Phi.Register {
+		defer func() {
+			f.Assembler.Append(&asm.Move{
+				Destination: step.Phi.Register,
+				Source:      step.Register,
+			})
+		}()
+	}
+
 	switch instr := step.Value.(type) {
 	case *ssa.Assert:
 		f.JumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")

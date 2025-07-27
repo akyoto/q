@@ -12,22 +12,22 @@ func (f *Function) createHints(step *step) {
 			return
 		}
 
-		f.ValueToStep[instr.Left].Hint(step.Register)
+		f.ValueToStep[instr.Left].hint(step.Register)
 
 	case *ssa.Call:
 		for paramIndex, param := range instr.Arguments {
-			f.ValueToStep[param].Hint(f.CPU.Call.In[paramIndex])
+			f.ValueToStep[param].hint(f.CPU.Call.In[paramIndex])
 		}
 
 	case *ssa.CallExtern:
 		for r, param := range instr.Arguments {
 			if r >= len(f.CPU.ExternCall.In) {
 				// Temporary hack to allow arguments 5 and 6 to be hinted as r10 and r11, then pushed later.
-				f.ValueToStep[param].Hint(f.CPU.ExternCall.Clobbered[1+r])
+				f.ValueToStep[param].hint(f.CPU.ExternCall.Clobbered[1+r])
 				continue
 			}
 
-			f.ValueToStep[param].Hint(f.CPU.ExternCall.In[r])
+			f.ValueToStep[param].hint(f.CPU.ExternCall.In[r])
 		}
 
 	case *ssa.Parameter:
@@ -36,47 +36,18 @@ func (f *Function) createHints(step *step) {
 		}
 
 	case *ssa.Phi:
-		if step.Register == -1 {
-			for _, variant := range instr.Arguments {
-				variantStep := f.ValueToStep[variant]
-
-				if variantStep.Register != -1 {
-					step.Register = variantStep.Register
-					break
-				}
-			}
+		for _, variant := range instr.Arguments {
+			f.ValueToStep[variant].Phi = step
 		}
 
 	case *ssa.Return:
 		for r, param := range instr.Arguments {
-			f.ValueToStep[param].Hint(f.CPU.Call.Out[r])
+			f.ValueToStep[param].hint(f.CPU.Call.Out[r])
 		}
 
 	case *ssa.Syscall:
 		for r, param := range instr.Arguments {
-			f.ValueToStep[param].Hint(f.CPU.Syscall.In[r])
-		}
-	}
-
-	if step.Register == -1 {
-		users := step.Value.Users()
-
-		if len(users) > 0 {
-			from := step.Index
-			to := f.ValueToStep[users[len(users)-1]].Index
-
-			if from > to {
-				from, to = to, from
-			}
-
-			step.Register = f.findFreeRegister(f.Steps[from:to])
-		}
-	}
-
-	switch instr := step.Value.(type) {
-	case *ssa.Phi:
-		for _, variant := range instr.Arguments {
-			f.ValueToStep[variant].Hint(step.Register)
+			f.ValueToStep[param].hint(f.CPU.Syscall.In[r])
 		}
 	}
 }

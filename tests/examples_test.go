@@ -13,6 +13,7 @@ var examples = []run{
 	{"hello", "", "Hello\n", 0},
 	{"factorial", "", "", 120},
 	{"fibonacci", "", "", 55},
+	{"collatz", "", "", 0},
 }
 
 func TestExamples(t *testing.T) {

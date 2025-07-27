@@ -71,9 +71,9 @@ func (f *Function) fixRegisterConflicts() {
 				}
 
 				if previous.Index < live.Index {
-					previous.Register = f.findFreeRegister(f.Steps[previous.Index : stepIndex+1])
+					f.assignFreeRegister(previous)
 				} else {
-					live.Register = f.findFreeRegister(f.Steps[live.Index : stepIndex+1])
+					f.assignFreeRegister(live)
 					break
 				}
 			}
