@@ -38,6 +38,7 @@ var tests = []run{
 	{"branch-both", "", "", 0},
 	{"jump-near", "", "", 0},
 	{"phi", "", "", 0},
+	{"else", "", "", 0},
 	{"loop", "", ".....", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
