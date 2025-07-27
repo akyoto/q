@@ -9,8 +9,12 @@ import (
 
 // parseInstruction generates an AST node from an instruction.
 func parseInstruction(tokens token.List, file *fs.File, nodes AST) (Node, error) {
-	if tokens[0].Kind.IsKeyword() {
+	switch {
+	case tokens[0].Kind.IsKeyword():
 		return parseKeyword(tokens, file, nodes)
+
+	case tokens[0].Kind == token.Comment:
+		return nil, nil
 	}
 
 	expr := expression.Parse(tokens)
