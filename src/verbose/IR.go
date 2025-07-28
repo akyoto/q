@@ -1,6 +1,7 @@
-package compiler
+package verbose
 
 import (
+	_ "embed"
 	"fmt"
 
 	"git.urbach.dev/cli/q/src/codegen"
@@ -8,8 +9,13 @@ import (
 	"git.urbach.dev/go/color/ansi"
 )
 
-// showSSA shows the SSA IR.
-func showSSA(root *core.Function) {
+//go:embed IR.txt
+var bannerIR string
+
+// IR shows the SSA IR.
+func IR(root *core.Function) {
+	Title(bannerIR)
+
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
 		ansi.Yellow.Println(f.FullName + ":")
 
@@ -21,9 +27,15 @@ func showSSA(root *core.Function) {
 				continue
 			}
 
-			ansi.Dim.Printf("%p = ", step.Value)
+			ansi.Dim.Printf("  %p = ", step.Value)
 			fmt.Print(step.Value.String())
-			ansi.Dim.Printf(" %s %s %s\n", step.Value.Type().Name(), step.Register, step.Live)
+			ansi.Dim.Printf(" %s [%s] ", step.Value.Type().Name(), step.Register)
+
+			for _, live := range step.Live {
+				ansi.Dim.Printf("%p ", live.Value)
+			}
+
+			fmt.Println()
 		}
 
 		fmt.Println()

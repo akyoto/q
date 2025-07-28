@@ -6,5 +6,6 @@ type Build struct {
 	Arch    Arch
 	OS      OS
 	Dry     bool
-	ShowSSA bool
+	ShowASM bool
+	ShowIR  bool
 }

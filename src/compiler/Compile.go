@@ -76,9 +76,5 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		}
 	}
 
-	if build.ShowSSA {
-		showSSA(init)
-	}
-
 	return all, nil
 }

@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/linker"
+	"git.urbach.dev/cli/q/src/verbose"
 )
 
 // build parses the arguments and creates a build.
@@ -21,6 +22,14 @@ func build(args []string) int {
 
 	if err != nil {
 		return exit(err)
+	}
+
+	if b.ShowIR {
+		verbose.IR(env.Init)
+	}
+
+	if b.ShowASM {
+		verbose.ASM(env.Init)
 	}
 
 	if b.Dry {
@@ -75,7 +84,8 @@ func newBuild(args []string) (*config.Build, error) {
 			}
 
 		case "-v", "--verbose":
-			build.ShowSSA = true
+			build.ShowASM = true
+			build.ShowIR = true
 
 		default:
 			if strings.HasPrefix(args[i], "-") {
