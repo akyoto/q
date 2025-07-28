@@ -11,7 +11,7 @@ import (
 // fixRegisterConflicts checks for conflicts where 2 values that are live at the same time use the same register.
 // It then assigns a new register to the value that was defined earlier.
 func (f *Function) fixRegisterConflicts() {
-	for stepIndex, step := range f.Steps {
+	for _, step := range f.Steps {
 		var clobbered []cpu.Register
 
 		switch instr := step.Value.(type) {
@@ -35,13 +35,13 @@ func (f *Function) fixRegisterConflicts() {
 			right := f.ValueToStep[instr.Right]
 
 			if step.Register == right.Register {
-				right.Register = f.findFreeRegister(f.Steps[right.Index:stepIndex])
+				f.assignFreeRegister(right)
 			}
 
 			left := f.ValueToStep[instr.Left]
 
 			if instr.Op == token.Mod && step.Register == left.Register {
-				left.Register = f.findFreeRegister(f.Steps[left.Index:stepIndex])
+				f.assignFreeRegister(left)
 			}
 		case *ssa.Call:
 			clobbered = f.CPU.Call.Clobbered
@@ -57,7 +57,7 @@ func (f *Function) fixRegisterConflicts() {
 			}
 
 			if live.Value != step.Value && slices.Contains(clobbered, live.Register) {
-				live.Register = f.findFreeRegister(f.Steps[live.Index : stepIndex+1])
+				f.assignFreeRegister(live)
 				continue
 			}
 
