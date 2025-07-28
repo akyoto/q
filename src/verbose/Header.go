@@ -7,8 +7,8 @@ import (
 	"git.urbach.dev/go/color"
 )
 
-// Title shows an ASCII art banner with a little too many colors.
-func Title(banner string) {
+// Header shows an ASCII art banner with a little too many colors.
+func Header(banner string) {
 	totalLineCount := color.Value(strings.Count(banner, "\n"))
 	lineCount := 0
 

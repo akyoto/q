@@ -53,8 +53,14 @@ func newBuild(args []string) (*config.Build, error) {
 				return nil, &InvalidValue{Value: args[i], Parameter: "arch"}
 			}
 
+		case "--assembly", "-asm":
+			build.ShowASM = true
+
 		case "--dry":
 			build.Dry = true
+
+		case "--intermediate", "-ir":
+			build.ShowIR = true
 
 		case "--os":
 			i++
@@ -76,6 +82,7 @@ func newBuild(args []string) (*config.Build, error) {
 
 		case "-v", "--verbose":
 			build.ShowASM = true
+			build.ShowHeaders = true
 			build.ShowIR = true
 
 		default:

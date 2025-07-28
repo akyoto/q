@@ -12,12 +12,10 @@ import (
 )
 
 //go:embed ASM.txt
-var bannerASM string
+var HeaderASM string
 
 // ASM shows the assembly code.
 func ASM(root *core.Function) {
-	Title(bannerASM)
-
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
 		printAssembly(f)
 	})

@@ -79,10 +79,18 @@ func Compile(build *config.Build) (*core.Environment, error) {
 
 	// Verbose output
 	if build.ShowIR {
+		if build.ShowHeaders {
+			verbose.Header(verbose.HeaderIR)
+		}
+
 		verbose.IR(env.Init)
 	}
 
 	if build.ShowASM {
+		if build.ShowHeaders {
+			verbose.Header(verbose.HeaderASM)
+		}
+
 		verbose.ASM(env.Init)
 	}
 

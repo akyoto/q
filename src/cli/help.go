@@ -16,6 +16,14 @@ func help() int {
 	for line := range strings.Lines(helpText) {
 		switch {
 		case strings.HasPrefix(line, "        "):
+			startDimmed := strings.IndexByte(line, '(')
+			dimmed := ""
+
+			if startDimmed != -1 {
+				dimmed = line[startDimmed:]
+				line = line[:startDimmed]
+			}
+
 			for {
 				start := strings.IndexByte(line, '[')
 
@@ -28,6 +36,10 @@ func help() int {
 				ansi.Cyan.Print(line[:start])
 				ansi.Yellow.Print(line[start : end+1])
 				line = line[end+1:]
+			}
+
+			if len(dimmed) > 0 {
+				ansi.Dim.Print(dimmed)
 			}
 		case strings.HasPrefix(line, "    "):
 			ansi.Green.Print(line)

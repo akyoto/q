@@ -16,9 +16,17 @@ Compiler for the q programming language.
 
         q build [file] --os [linux|mac|windows]
 
-    Build with verbose output:
+    Show assembly code:
 
-        q build [file] --verbose
+        q build [file] -asm (--assembly)
+
+    Show intermediate representation:
+
+        q build [file] -ir (--intermediate)
+
+    Show output from all stages:
+
+        q build [file] -v (--verbose)
 
     Show this help:
 

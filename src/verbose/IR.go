@@ -10,12 +10,10 @@ import (
 )
 
 //go:embed IR.txt
-var bannerIR string
+var HeaderIR string
 
 // IR shows the SSA IR.
 func IR(root *core.Function) {
-	Title(bannerIR)
-
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
 		ansi.Yellow.Println(f.FullName + ":")
 
