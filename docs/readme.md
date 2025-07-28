@@ -101,6 +101,7 @@ This section is for contributors who want a high-level overview of the source co
 - [ssa](../src/ssa) - Static single assignment types
 - [token](../src/token) - Tokenizer
 - [types](../src/types) - Type system
+- [verbose](../src/verbose) - Verbose output
 - [x86](../src/x86) - x86-64 architecture
 
 ### Typical flow
