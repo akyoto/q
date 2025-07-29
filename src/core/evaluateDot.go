@@ -22,9 +22,9 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 
 	switch leftValue := leftValue.(type) {
 	case *ssa.Package:
-		pkg := f.All.Packages[leftText]
+		pkg := f.Env.Packages[leftText]
 
-		if !pkg.IsExtern && f != f.All.Init {
+		if !pkg.IsExtern && f != f.Env.Init {
 			imp, exists := f.File.Imports[leftText]
 
 			if !exists {

@@ -16,7 +16,7 @@ type Function struct {
 	File         *fs.File
 	Type         *types.Function
 	Err          error
-	All          *Environment
+	Env          *Environment
 	Input        []*ssa.Parameter
 	Output       []*ssa.Parameter
 	Body         token.List

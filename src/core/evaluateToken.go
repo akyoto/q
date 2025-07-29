@@ -19,7 +19,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 			return value, nil
 		}
 
-		constant, exists := f.All.Packages[f.Package].Constants[name]
+		constant, exists := f.Env.Packages[f.Package].Constants[name]
 
 		if exists {
 			number, err := toNumber(constant.Value.Token, constant.File)
@@ -36,13 +36,13 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 			return v, nil
 		}
 
-		_, exists = f.All.Packages[name]
+		_, exists = f.Env.Packages[name]
 
 		if exists {
 			return &ssa.Package{Name: name}, nil
 		}
 
-		function := f.All.Function(f.File.Package, name)
+		function := f.Env.Function(f.File.Package, name)
 
 		if function != nil {
 			f.Dependencies.Add(function)

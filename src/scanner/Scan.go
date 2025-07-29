@@ -29,7 +29,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		close(s.errors)
 	}()
 
-	all := &core.Environment{
+	env := &core.Environment{
 		Build:    build,
 		Files:    make([]*fs.File, 0, 8),
 		Packages: make(map[string]*core.Package, 8),
@@ -43,10 +43,10 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			f.All = all
-			pkg := all.AddPackage(f.Package, f.IsExtern())
+			f.Env = env
+			pkg := env.AddPackage(f.Package, f.IsExtern())
 			pkg.Functions[f.Name] = f
-			all.NumFunctions++
+			env.NumFunctions++
 
 		case file, ok := <-s.files:
 			if !ok {
@@ -54,7 +54,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			all.Files = append(all.Files, file)
+			env.Files = append(env.Files, file)
 
 		case constant, ok := <-s.constants:
 			if !ok {
@@ -62,7 +62,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			pkg := all.AddPackage(constant.File.Package, false)
+			pkg := env.AddPackage(constant.File.Package, false)
 			pkg.Constants[constant.Name] = constant
 
 		case err, ok := <-s.errors:
@@ -71,9 +71,9 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			return all, err
+			return env, err
 		}
 	}
 
-	return all, nil
+	return env, nil
 }

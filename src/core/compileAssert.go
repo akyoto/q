@@ -14,6 +14,6 @@ func (f *Function) compileAssert(assert *ast.Assert) error {
 	}
 
 	f.Append(&ssa.Assert{Condition: cond})
-	f.Dependencies.Add(f.All.Function("run", "crash"))
+	f.Dependencies.Add(f.Env.Function("run", "crash"))
 	return nil
 }

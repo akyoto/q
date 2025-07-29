@@ -33,7 +33,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	}
 
 	ssaFunc := funcValue.(*ssa.Function)
-	pkg := f.All.Packages[ssaFunc.Package]
+	pkg := f.Env.Packages[ssaFunc.Package]
 	fn := pkg.Functions[ssaFunc.Name]
 	inputExpressions := expr.Children[1:]
 
