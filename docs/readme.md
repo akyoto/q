@@ -120,12 +120,10 @@ This section is for contributors who want a high-level overview of the source co
 |            | arm64      | x86-64    |
 | ---------- | ---------- | --------- |
 | 🐧 Linux   | 646 bytes  | 582 bytes |
-| 🍏 Mac     | 12 KiB     | 8.2 KiB   |
+| 🍏 Mac     | 33 KiB     | 8.2 KiB   |
 | 🪟 Windows | 1.7 KiB    | 1.7 KiB   |
 
-### How is the assembly code quality?
-
-The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is fairly high despite the young age of the project.
+This table often raises the question why Mac builds are so huge compared to the rest. The answer is in [these few lines](https://github.com/apple-oss-distributions/xnu/blob/e3723e1f17661b24996789d8afc084c0c3303b26/bsd/kern/mach_loader.c#L2021-L2027) of their kernel code. None of the other operating systems force you to page-align sections on disk. In practice, however, it's not as bad as it sounds because the padding is a zero-filled area that barely consumes any disk space in [sparse files](https://en.wikipedia.org/wiki/Sparse_file).
 
 ### Which platforms are supported?
 
@@ -136,6 +134,10 @@ The backend uses an SSA based IR which is also used by well established compiler
 | 🪟 Windows | ✔️*   | ✔️     |
 
 Those marked with a star need testing. Please contact me if you have a machine with the marked architectures.
+
+### How is the assembly code quality?
+
+The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is fairly high despite the young age of the project.
 
 ### Which security features are supported?
 
@@ -197,10 +199,16 @@ Run compiler benchmarks:
 go test ./tests -run='^$' -bench=. -benchmem
 ```
 
+Run compiler benchmarks in single-threaded mode:
+
+```shell
+GOMAXPROCS=1 go test ./tests -run '^$' -bench . -benchmem
+```
+
 Generate profiling data:
 
 ```shell
-go test ./tests -run='^$' -bench="Examples/" -benchmem -cpuprofile cpu.out -memprofile mem.out
+go test ./tests -run='^$' -bench=. -benchmem -cpuprofile cpu.out -memprofile mem.out
 ```
 
 View profiling data:
@@ -210,9 +218,13 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
 go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 ```
 
+### Is there an IRC channel?
+
+[#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev).
+
 ### How do I pronounce the name?
 
-/ˈkjuː/ just like `Q` in the English alphabet.
+/ˈkjuː/ just like `q` in the English alphabet.
 
 ## License
 
