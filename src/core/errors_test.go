@@ -32,6 +32,7 @@ var errs = []struct {
 	{"UnknownIdentifier7.q", &core.UnknownIdentifier{Name: "os.unknown"}},
 	{"UnknownIdentifier8.q", &core.UnknownIdentifier{Name: "x"}},
 	{"UnknownIdentifier9.q", &core.UnknownIdentifier{Name: "x"}},
+	{"UnknownStructField.q", &core.UnknownStructField{StructName: "string", FieldName: "unknown"}},
 	{"UnusedValue.q", &core.UnusedValue{Value: "42"}},
 	{"UnusedValue2.q", &core.UnusedValue{Value: "2 + 3"}},
 	{"UnusedValue3.q", &core.UnusedValue{Value: "\"not used\""}},
