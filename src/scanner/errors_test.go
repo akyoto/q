@@ -51,7 +51,7 @@ func TestErrors(t *testing.T) {
 			b := config.New(filepath.Join("testdata", "errors", test.File))
 			_, err := scanner.Scan(b)
 			assert.NotNil(t, err)
-			assert.Contains(t, err.Error(), test.ExpectedError.Error())
+			assert.Equal(t, err.Error(), test.ExpectedError.Error())
 		})
 	}
 }
