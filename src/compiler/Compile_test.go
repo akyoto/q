@@ -19,10 +19,3 @@ func TestHelloExample(t *testing.T) {
 	_, err := compiler.Compile(b)
 	assert.Nil(t, err)
 }
-
-func TestHelloExampleVerbose(t *testing.T) {
-	b := config.New("../../examples/hello")
-	b.SetVerbose(true)
-	_, err := compiler.Compile(b)
-	assert.Nil(t, err)
-}

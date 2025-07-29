@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/linker"
+	"git.urbach.dev/cli/q/src/verbose"
 )
 
 // build parses the arguments and creates a build.
@@ -22,6 +23,8 @@ func build(args []string) int {
 	if err != nil {
 		return exit(err)
 	}
+
+	verbose.Show(env)
 
 	if b.Dry {
 		return 0
