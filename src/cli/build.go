@@ -81,9 +81,7 @@ func newBuild(args []string) (*config.Build, error) {
 			}
 
 		case "-v", "--verbose":
-			build.ShowASM = true
-			build.ShowHeaders = true
-			build.ShowIR = true
+			build.SetVerbose(true)
 
 		default:
 			if strings.HasPrefix(args[i], "-") {
