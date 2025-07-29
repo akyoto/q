@@ -21,6 +21,7 @@ var errs = []struct {
 	{"InvalidCharacter2.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter3.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter4.q", &scanner.InvalidCharacter{Character: "+++"}},
+	{"InvalidExpression.q", scanner.InvalidExpression},
 	{"InvalidFunctionDefinition.q", scanner.InvalidFunctionDefinition},
 	{"InvalidFunctionDefinition2.q", scanner.InvalidFunctionDefinition},
 	{"InvalidTopLevel.q", &scanner.InvalidTopLevel{Instruction: "123"}},
@@ -29,6 +30,7 @@ var errs = []struct {
 	{"MissingBlockEnd.q", scanner.MissingBlockEnd},
 	{"MissingBlockEnd2.q", scanner.MissingBlockEnd},
 	{"MissingBlockStart.q", scanner.MissingBlockStart},
+	{"MissingExpression.q", scanner.MissingExpression},
 	{"MissingGroupEnd.q", scanner.MissingGroupEnd},
 	{"MissingGroupEnd2.q", scanner.MissingGroupEnd},
 	{"MissingGroupStart.q", scanner.MissingGroupStart},
@@ -38,6 +40,7 @@ var errs = []struct {
 	{"MissingParameter4.q", scanner.MissingParameter},
 	{"MissingParameter5.q", scanner.MissingParameter},
 	{"MissingType.q", scanner.MissingType},
+	{"UnknownImport.q", &scanner.UnknownImport{Package: "unknown"}},
 }
 
 func TestErrors(t *testing.T) {

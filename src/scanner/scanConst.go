@@ -37,8 +37,8 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 
 				value := expression.Parse(valueTokens)
 
-				if value == nil {
-					return i, errors.New(core.InvalidExpression, file, valueTokens[0].Position)
+				if value.Token.Kind == token.Invalid {
+					return i, errors.New(InvalidExpression, file, valueTokens[0].Position)
 				}
 
 				s.constants <- &core.Constant{

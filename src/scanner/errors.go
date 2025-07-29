@@ -9,6 +9,7 @@ import (
 var (
 	ExpectedFunctionDefinition = errors.String("Expected function definition")
 	ExpectedPackageName        = errors.String("Expected package name")
+	InvalidExpression          = errors.String("Invalid expression")
 	InvalidFunctionDefinition  = errors.String("Invalid function definition")
 	MissingBlockStart          = errors.String("Missing '{'")
 	MissingBlockEnd            = errors.String("Missing '}'")
@@ -20,13 +21,13 @@ var (
 	NoInputFiles               = errors.String("No input files")
 )
 
-// CouldNotImport error is created when a package import failed.
-type CouldNotImport struct {
+// UnknownImport error is created when a package import failed.
+type UnknownImport struct {
 	Package string
 }
 
-func (err *CouldNotImport) Error() string {
-	return fmt.Sprintf("Could not import '%s'", err.Package)
+func (err *UnknownImport) Error() string {
+	return fmt.Sprintf("Unknown import '%s'", err.Package)
 }
 
 // InvalidCharacter is created when an invalid character appears.

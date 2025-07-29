@@ -23,7 +23,7 @@ func (s *scanner) scanImport(file *fs.File, tokens token.List, i int) (int, erro
 	stat, err := os.Stat(fullPath)
 
 	if err != nil {
-		return i, errors.New(&CouldNotImport{Package: packageName}, file, tokens[i].Position)
+		return i, errors.New(&UnknownImport{Package: packageName}, file, tokens[i].Position)
 	}
 
 	if !stat.IsDir() {
