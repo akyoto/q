@@ -23,13 +23,3 @@ type InvalidInstruction struct {
 func (err *InvalidInstruction) Error() string {
 	return fmt.Sprintf("Invalid instruction '%s'", err.Instruction)
 }
-
-// KeywordNotImplemented error is created when we find a keyword without an implementation.
-type KeywordNotImplemented struct {
-	Keyword string
-}
-
-// Error generates the string representation.
-func (err *KeywordNotImplemented) Error() string {
-	return fmt.Sprintf("Keyword not implemented: '%s'", err.Keyword)
-}
