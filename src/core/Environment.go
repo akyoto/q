@@ -67,3 +67,19 @@ func (env *Environment) Functions() iter.Seq[*Function] {
 		}
 	}
 }
+
+// LiveFunctions returns an iterator over functions that are alive.
+func (env *Environment) LiveFunctions() iter.Seq[*Function] {
+	return func(yield func(*Function) bool) {
+		running := true
+		traversed := make(map[*Function]bool, env.NumFunctions)
+
+		env.Init.EachDependency(traversed, func(f *Function) {
+			if !running {
+				return
+			}
+
+			running = yield(f)
+		})
+	}
+}

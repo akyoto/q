@@ -42,7 +42,7 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// Start parallel compilation of all functions.
 	// We compile every function for syntax checks even if
 	// they are thrown away later during dead code elimination.
-	compileFunctions(env.Functions())
+	parallel(env.Functions(), func(f *core.Function) { f.Compile() })
 
 	// Report errors if any occurred
 	for f := range env.Functions() {
@@ -59,6 +59,10 @@ func Compile(build *config.Build) (*core.Environment, error) {
 			}
 		}
 	}
+
+	// Now that we know which functions are alive, start parallel
+	// assembly code generation only for the live functions.
+	parallel(env.LiveFunctions(), func(f *core.Function) { f.Assemble() })
 
 	return env, nil
 }

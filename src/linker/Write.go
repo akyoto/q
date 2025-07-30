@@ -19,14 +19,11 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 		Data:         make(data.Data, 32),
 	}
 
-	init := env.Init
-	traversed := make(map[*core.Function]bool, env.NumFunctions)
-
 	// This will place the init function immediately after the entry point
 	// and also add everything the init function calls recursively.
-	init.EachDependency(traversed, func(f *core.Function) {
+	for f := range env.LiveFunctions() {
 		program.Merge(&f.Assembler)
-	})
+	}
 
 	build := env.Build
 	code, data, libs := program.Compile(build)
