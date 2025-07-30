@@ -12,7 +12,6 @@ type Block struct {
 	Label        string
 	Instructions []Value
 	Predecessors []*Block
-	Successors   []*Block
 }
 
 // NewBlock creates a new basic block.
@@ -25,7 +24,6 @@ func NewBlock(label string) *Block {
 
 // AddSuccessor adds the given block as a successor.
 func (block *Block) AddSuccessor(successor *Block) {
-	block.Successors = append(block.Successors, successor)
 	successor.Predecessors = append(successor.Predecessors, block)
 }
 
