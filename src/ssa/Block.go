@@ -32,34 +32,35 @@ func (block *Block) Append(value Value) {
 	block.Instructions = append(block.Instructions, value)
 }
 
-// Contains checks if the value exists within the block.
-func (block *Block) Contains(value Value) bool {
-	return block.Index(value) != -1
+// CanReachPredecessor checks if the `other` block appears as a predecessor or is the block itself.
+func (block *Block) CanReachPredecessor(other *Block) bool {
+	return block.canReachPredecessor(other, make(map[*Block]bool))
 }
 
-// Identify adds a new identifier or changes an existing one.
-func (block *Block) Identify(name string, value Value) {
-	if block.Identifiers == nil {
-		block.Identifiers = make(map[string]Value, 8)
+// canReachPredecessor checks if the `other` block appears as a predecessor or is the block itself.
+func (block *Block) canReachPredecessor(other *Block, traversed map[*Block]bool) bool {
+	if other == block {
+		return true
 	}
 
-	block.Identifiers[name] = value
-}
+	if traversed[block] {
+		return false
+	}
 
-// Index returns the position of the value or -1 if it doesn't exist within the block.
-func (block *Block) Index(search Value) int {
-	for i, value := range block.Instructions {
-		if value == search {
-			return i
+	traversed[block] = true
+
+	for _, pre := range block.Predecessors {
+		if pre.canReachPredecessor(other, traversed) {
+			return true
 		}
 	}
 
-	return -1
+	return false
 }
 
-// InsertAt inserts the `value` at the given `index`.
-func (block *Block) InsertAt(value Value, index int) {
-	block.Instructions = slices.Insert(block.Instructions, index, value)
+// Contains checks if the value exists within the block.
+func (block *Block) Contains(value Value) bool {
+	return block.Index(value) != -1
 }
 
 // FindIdentifier searches for all the possible values the identifier
@@ -125,6 +126,31 @@ func (block *Block) findIdentifier(name string, traversed map[*Block]Value) (Val
 		traversed[block] = phi
 		return phi, true
 	}
+}
+
+// Identify adds a new identifier or changes an existing one.
+func (block *Block) Identify(name string, value Value) {
+	if block.Identifiers == nil {
+		block.Identifiers = make(map[string]Value, 8)
+	}
+
+	block.Identifiers[name] = value
+}
+
+// Index returns the position of the value or -1 if it doesn't exist within the block.
+func (block *Block) Index(search Value) int {
+	for i, value := range block.Instructions {
+		if value == search {
+			return i
+		}
+	}
+
+	return -1
+}
+
+// InsertAt inserts the `value` at the given `index`.
+func (block *Block) InsertAt(value Value, index int) {
+	block.Instructions = slices.Insert(block.Instructions, index, value)
 }
 
 // RemoveNilValues removes all nil values from the block.
