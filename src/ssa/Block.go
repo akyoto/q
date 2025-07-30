@@ -34,11 +34,11 @@ func (block *Block) Append(value Value) {
 
 // CanReachPredecessor checks if the `other` block appears as a predecessor or is the block itself.
 func (block *Block) CanReachPredecessor(other *Block) bool {
-	return block.canReachPredecessor(other, make(map[*Block]bool))
+	return block.CanReachPredecessor2(other, make(map[*Block]bool))
 }
 
-// canReachPredecessor checks if the `other` block appears as a predecessor or is the block itself.
-func (block *Block) canReachPredecessor(other *Block, traversed map[*Block]bool) bool {
+// CanReachPredecessor2 checks if the `other` block appears as a predecessor or is the block itself.
+func (block *Block) CanReachPredecessor2(other *Block, traversed map[*Block]bool) bool {
 	if other == block {
 		return true
 	}
@@ -50,7 +50,7 @@ func (block *Block) canReachPredecessor(other *Block, traversed map[*Block]bool)
 	traversed[block] = true
 
 	for _, pre := range block.Predecessors {
-		if pre.canReachPredecessor(other, traversed) {
+		if pre.CanReachPredecessor2(other, traversed) {
 			return true
 		}
 	}

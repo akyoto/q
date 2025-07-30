@@ -19,6 +19,7 @@ func (f *Function) createSteps(ir ssa.IR) {
 			step := &storage[i]
 			step.Index = i
 			step.Value = &Label{Name: block.Label}
+			step.Block = block
 			step.Register = -1
 			f.Steps[i] = step
 			i++
@@ -28,6 +29,7 @@ func (f *Function) createSteps(ir ssa.IR) {
 			step := &storage[i]
 			step.Index = i
 			step.Value = instr
+			step.Block = block
 			step.Register = -1
 			f.Steps[i] = step
 			f.ValueToStep[instr] = step

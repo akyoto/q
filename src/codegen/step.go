@@ -7,6 +7,7 @@ import (
 
 type step struct {
 	Value    ssa.Value
+	Block    *ssa.Block
 	Phi      *step
 	Live     []*step
 	Hints    []cpu.Register
