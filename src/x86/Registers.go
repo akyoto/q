@@ -27,8 +27,6 @@ var (
 			R1, R2, R6, R7, R8, R9, R10, R11, // Clobbered
 			R3, R12, R13, R14, R15, // Preserved
 		},
-		Division: []cpu.Register{R0, R2},
-		Shift:    []cpu.Register{R1},
 		Call: cpu.ABI{
 			In:        []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
 			Out:       []cpu.Register{R0, R2},
@@ -47,12 +45,14 @@ var (
 			Clobbered: []cpu.Register{R0, R1, R11},
 			Preserved: []cpu.Register{R2, R3, SP, R5, R6, R7, R8, R9, R10, R12, R13, R14, R15},
 		},
+		DivisionClobbered: []cpu.Register{R0, R2},
+		DivisorRestricted: []cpu.Register{R2},
+		ShiftClobbered:    []cpu.Register{R1},
+		ShiftRestricted:   []cpu.Register{R1},
 	}
 
 	MacCPU = cpu.CPU{
 		General:    LinuxCPU.General,
-		Division:   LinuxCPU.Division,
-		Shift:      LinuxCPU.Shift,
 		Call:       LinuxCPU.Call,
 		ExternCall: LinuxCPU.ExternCall,
 		Syscall: cpu.ABI{
@@ -61,6 +61,10 @@ var (
 			Clobbered: []cpu.Register{R0, R1, R2, R11},
 			Preserved: []cpu.Register{R3, SP, R5, R6, R7, R8, R9, R10, R12, R13, R14, R15},
 		},
+		DivisionClobbered: LinuxCPU.DivisionClobbered,
+		DivisorRestricted: LinuxCPU.DivisorRestricted,
+		ShiftClobbered:    LinuxCPU.ShiftClobbered,
+		ShiftRestricted:   LinuxCPU.ShiftRestricted,
 	}
 
 	WindowsCPU = cpu.CPU{
@@ -68,14 +72,16 @@ var (
 			R1, R2, R8, R9, R10, R11, // Clobbered
 			R3, R6, R7, R12, R13, R14, R15, // Preserved
 		},
-		Division: LinuxCPU.Division,
-		Shift:    LinuxCPU.Shift,
-		Call:     LinuxCPU.Call,
+		Call: LinuxCPU.Call,
 		ExternCall: cpu.ABI{
 			In:        []cpu.Register{R1, R2, R8, R9},
 			Out:       []cpu.Register{R0},
 			Clobbered: []cpu.Register{R0, R1, R2, R8, R9, R10, R11},
 			Preserved: []cpu.Register{R3, SP, R5, R6, R7, R12, R13, R14, R15},
 		},
+		DivisionClobbered: LinuxCPU.DivisionClobbered,
+		DivisorRestricted: LinuxCPU.DivisorRestricted,
+		ShiftClobbered:    LinuxCPU.ShiftClobbered,
+		ShiftRestricted:   LinuxCPU.ShiftRestricted,
 	}
 )

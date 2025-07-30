@@ -18,17 +18,12 @@ func (f *Function) fixRegisterConflicts() {
 		case *ssa.BinaryOp:
 			switch instr.Op {
 			case token.Div, token.Mod:
-				clobbered = f.CPU.Division
+				clobbered = f.CPU.DivisionClobbered
 			case token.Shl, token.Shr:
-				clobbered = f.CPU.Shift
+				clobbered = f.CPU.ShiftRestricted
 
-				if slices.Contains(f.CPU.Shift, step.Register) {
-					users := step.Value.Users()
-
-					if len(users) > 0 {
-						alive := f.ValueToStep[users[len(users)-1]].Index
-						step.Register = f.findFreeRegister(f.Steps[step.Index:alive])
-					}
+				if slices.Contains(f.CPU.ShiftRestricted, step.Register) {
+					f.assignFreeRegister(step)
 				}
 			}
 

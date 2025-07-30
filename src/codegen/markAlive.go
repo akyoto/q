@@ -19,7 +19,11 @@ func (f *Function) markAlive(live *step, instructions []ssa.Value, block *ssa.Bl
 		currentStep.Live = append(currentStep.Live, live)
 
 		if live.Value == current {
-			return
+			_, isParam := current.(*ssa.Parameter)
+
+			if !isParam {
+				return
+			}
 		}
 	}
 

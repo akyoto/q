@@ -3,6 +3,7 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 type step struct {
@@ -24,6 +25,10 @@ func (s *step) hint(reg cpu.Register) {
 }
 
 func (s *step) needsRegister() bool {
+	if s.Value.Type() == types.Void {
+		return false
+	}
+
 	switch instr := s.Value.(type) {
 	case *ssa.BinaryOp:
 		return !instr.Op.IsComparison()

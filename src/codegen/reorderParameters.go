@@ -26,9 +26,7 @@ func (f *Function) reorderParameters() {
 			}
 
 			if usedRegisters&(1<<step.Register) != 0 {
-				users := step.Value.Users()
-				alive := f.ValueToStep[users[len(users)-1]].Index
-				step.Register = f.findFreeRegister(f.Steps[:alive])
+				f.assignFreeRegister(step)
 			}
 		}
 
