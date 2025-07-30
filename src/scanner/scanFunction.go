@@ -1,12 +1,9 @@
 package scanner
 
 import (
-	"git.urbach.dev/cli/q/src/arm"
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
-	"git.urbach.dev/cli/q/src/x86"
 )
 
 // scanFunction scans a function.
@@ -68,27 +65,6 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 		}
 
 		return i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
-	}
-
-	switch s.build.Arch {
-	case config.ARM:
-		switch s.build.OS {
-		case config.Linux:
-			function.CPU = &arm.LinuxCPU
-		case config.Mac:
-			function.CPU = &arm.MacCPU
-		case config.Windows:
-			function.CPU = &arm.WindowsCPU
-		}
-	case config.X86:
-		switch s.build.OS {
-		case config.Linux:
-			function.CPU = &x86.LinuxCPU
-		case config.Mac:
-			function.CPU = &x86.MacCPU
-		case config.Windows:
-			function.CPU = &x86.WindowsCPU
-		}
 	}
 
 	function.Body = tokens[bodyStart:i]
