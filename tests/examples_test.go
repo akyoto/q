@@ -13,6 +13,8 @@ var examples = []run{
 	{"hello", "", "Hello\n", 0},
 	{"factorial", "", "", 120},
 	{"fibonacci", "", "", 55},
+	{"fizzbuzz", "", ". . Fizz . Buzz Fizz . . Fizz Buzz . Fizz . . FizzBuzz", 0},
+	{"gcd", "", "", 21},
 	{"collatz", "", ".........", 0},
 }
 

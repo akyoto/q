@@ -8,5 +8,6 @@ type count struct {
 	Data      counter
 	Branch    counter
 	Loop      counter
+	Switch    counter
 	SubBranch counter
 }

@@ -31,8 +31,8 @@ func (f *Function) compileASTNode(node ast.Node) error {
 	case *ast.Return:
 		return f.compileReturn(node)
 
-	// case *ast.Switch:
-	// 	return f.compileSwitch(node)
+	case *ast.Switch:
+		return f.compileSwitch(node)
 
 	default:
 		panic("unknown AST type")
