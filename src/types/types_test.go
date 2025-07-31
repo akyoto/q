@@ -37,19 +37,19 @@ func TestBasics(t *testing.T) {
 	assert.True(t, types.Is(types.AnyPointer, types.AnyPointer))
 	assert.True(t, types.Is(&types.Array{Of: types.Int}, types.AnyArray))
 	assert.False(t, types.Is(types.Int, types.Float))
-	assert.False(t, types.Is(types.Any, types.Int))
 	assert.False(t, types.Is(types.AnyPointer, types.AnyInt))
 	assert.False(t, types.Is(&types.Pointer{To: types.Int}, &types.Pointer{To: types.Float}))
 
 	// TODO: This check is currently disabled due to some temporary hacks, add it back later.
 	// assert.False(t, types.Is(types.AnyInt, types.AnyPointer))
+	// assert.False(t, types.Is(types.Any, types.Int))
 }
 
 func TestSpecialCases(t *testing.T) {
 	// Case #1:
-	// For syscalls whose return type is `nil` we currently allow casting them to anything.
-	assert.True(t, types.Is(nil, types.Int))
-	assert.True(t, types.Is(nil, types.Float))
+	// For syscalls whose return type is `any` we currently allow casting them to anything.
+	assert.True(t, types.Is(types.Any, types.Int))
+	assert.True(t, types.Is(types.Any, types.Float))
 
 	// Case #2:
 	// A pointer pointing to a known type fulfills the requirement of a pointer to anything.

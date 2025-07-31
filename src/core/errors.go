@@ -29,6 +29,20 @@ func (err *ParameterCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough parameters in '%s' function call", err.Function)
 }
 
+// ReturnCountMismatch error is created when the number of returned values doesn't match the return type.
+type ReturnCountMismatch struct {
+	Count         int
+	ExpectedCount int
+}
+
+func (err *ReturnCountMismatch) Error() string {
+	if err.Count > err.ExpectedCount {
+		return fmt.Sprintf("Too many return values (expected %d)", err.ExpectedCount)
+	}
+
+	return fmt.Sprintf("Not enough return values (expected %d)", err.ExpectedCount)
+}
+
 // TypeMismatch represents an error where a type requirement was not met.
 type TypeMismatch struct {
 	Encountered   string
