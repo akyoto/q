@@ -31,6 +31,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
+		f.Append(&ssa.Jump{To: endBlock})
 		beforeIf.AddSuccessor(endBlock)
 	} else {
 		elseLabel := f.CreateLabel("if.else", f.Count.Branch)
@@ -61,6 +62,8 @@ func (f *Function) compileIf(branch *ast.If) error {
 		if err != nil {
 			return err
 		}
+
+		f.Append(&ssa.Jump{To: endBlock})
 	}
 
 	f.AddBlock(endBlock)

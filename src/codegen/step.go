@@ -29,6 +29,10 @@ func (s *step) needsRegister() bool {
 		return false
 	}
 
+	if len(s.Value.Users()) == 0 {
+		return false
+	}
+
 	switch instr := s.Value.(type) {
 	case *ssa.BinaryOp:
 		return !instr.Op.IsComparison()

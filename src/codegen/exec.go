@@ -12,13 +12,15 @@ import (
 
 // exec executes an instruction.
 func (f *Function) exec(step *step) {
-	if step.Phi != nil && step.Register != step.Phi.Register {
-		defer func() {
-			f.Assembler.Append(&asm.Move{
-				Destination: step.Phi.Register,
-				Source:      step.Register,
-			})
-		}()
+	if step.Index+1 == len(f.Steps) || step.Block != f.Steps[step.Index+1].Block {
+		for _, live := range step.Live {
+			if live.Phi != nil && live.Register != live.Phi.Register {
+				f.Assembler.Append(&asm.Move{
+					Destination: live.Phi.Register,
+					Source:      live.Register,
+				})
+			}
+		}
 	}
 
 	switch instr := step.Value.(type) {

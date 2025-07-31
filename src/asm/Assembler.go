@@ -112,6 +112,17 @@ func (a *Assembler) Skip(instr Instruction) bool {
 		return false
 	}
 
+	// Call to os.exit + anything is skipped if it's not a label
+	call, isCall := a.Last().(*Call)
+
+	if isCall && call.Label == "os.exit" {
+		switch instr.(type) {
+		case *Label:
+		default:
+			return true
+		}
+	}
+
 	switch instr := instr.(type) {
 	case *Label:
 		// Jump + Label can be replaced by just the Label if both addresses are equal

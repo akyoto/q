@@ -14,6 +14,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 	beforeLoop := f.Block()
 	loopBody := ssa.NewBlock(bodyLabel)
 
+	beforeLoop.Append(&ssa.Jump{To: loopBody})
 	beforeLoop.AddSuccessor(loopBody)
 	loopBlockIndex := len(f.Blocks)
 	f.AddBlock(loopBody)

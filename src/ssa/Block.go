@@ -121,7 +121,7 @@ func (block *Block) findIdentifier(name string, traversed map[*Block]Value) (Val
 		}
 
 		phi := &Phi{Arguments: values.Slice(), Typ: values.Slice()[0].Type()}
-		block.Append(phi)
+		block.InsertAt(phi, 0)
 		block.Identify(name, phi)
 		traversed[block] = phi
 		return phi, true
