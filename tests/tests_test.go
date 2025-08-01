@@ -41,6 +41,7 @@ var tests = []run{
 	{"else", "", "", 0},
 	{"switch", "", "", 0},
 	{"loop", "", ".....", 0},
+	{"for", "", "", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
 }
