@@ -12,7 +12,7 @@ func (f *IR) AddBlock(block *Block) {
 
 // Append adds a new value to the last block.
 func (f *IR) Append(instr Value) Value {
-	existing := f.FindExisting(instr)
+	existing := f.Block().FindExisting(instr)
 
 	if existing != nil {
 		return existing
@@ -45,23 +45,6 @@ func (f *IR) Finalize() {
 			input.AddUser(value)
 		}
 	}
-}
-
-// FindExisting returns an equal instruction that's already appended or `nil` if none could be found.
-func (f *IR) FindExisting(instr Value) Value {
-	if !instr.IsConst() {
-		return nil
-	}
-
-	lastBlock := f.Blocks[len(f.Blocks)-1]
-
-	for _, existing := range lastBlock.Instructions {
-		if existing.IsConst() && instr.Equals(existing) {
-			return existing
-		}
-	}
-
-	return nil
 }
 
 // Values yields on each value.

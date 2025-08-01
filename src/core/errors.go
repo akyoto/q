@@ -9,6 +9,7 @@ import (
 var (
 	InvalidCondition  = errors.String("Invalid condition")
 	InvalidExpression = errors.String("Invalid expression")
+	InvalidLoopHeader = errors.String("Invalid loop header")
 	InvalidNumber     = errors.String("Invalid number")
 	InvalidRune       = errors.String("Invalid rune")
 	MissingOperand    = errors.String("Missing operand")

@@ -63,6 +63,21 @@ func (block *Block) Contains(value Value) bool {
 	return block.Index(value) != -1
 }
 
+// FindExisting returns an equal instruction that's already appended or `nil` if none could be found.
+func (block *Block) FindExisting(instr Value) Value {
+	if !instr.IsConst() {
+		return nil
+	}
+
+	for _, existing := range block.Instructions {
+		if existing.IsConst() && instr.Equals(existing) {
+			return existing
+		}
+	}
+
+	return nil
+}
+
 // FindIdentifier searches for all the possible values the identifier
 // can have and combines them to a phi instruction if necessary.
 func (block *Block) FindIdentifier(name string) (value Value, exists bool) {
