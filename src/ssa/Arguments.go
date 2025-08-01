@@ -15,7 +15,7 @@ func (a Arguments) Equals(b Arguments) bool {
 	}
 
 	for i := range a {
-		if !a[i].Equals(b[i]) {
+		if a[i] != b[i] {
 			return false
 		}
 	}

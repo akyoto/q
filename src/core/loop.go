@@ -100,19 +100,21 @@ func (f *Function) loop(head *expression.Expression, body ast.AST) error {
 		}
 	}
 
-	replacements := make(map[ssa.Value]ssa.Value, modified.Count())
+	replacements := make(map[ssa.Value]*ssa.Phi, modified.Count())
 
 	// Insert phi functions
 	for identifier := range modified.All() {
 		oldValue, _ := beforeLoop.FindIdentifier(identifier)
 		newValue, _ := f.Block().FindIdentifier(identifier)
 		phi := &ssa.Phi{Arguments: []ssa.Value{oldValue, newValue}, Typ: oldValue.Type()}
+		replacement, exists := replacements[oldValue]
 
-		if replacements[oldValue] == newValue {
+		if exists && replacement.Equals(phi) {
+			loopBody.Identify(identifier, replacement)
 			continue
 		}
 
-		replacements[oldValue] = newValue
+		replacements[oldValue] = phi
 
 		for _, block := range loopBlocks {
 			for _, instr := range block.Instructions {
