@@ -182,7 +182,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *Syscall:
 		switch c.build.OS {
 		case config.Mac:
-			c.append(arm.Syscall(0xFFFF))
+			c.append(arm.Syscall(0x80))
 		default:
 			c.append(arm.Syscall(0))
 		}
