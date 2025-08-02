@@ -1,17 +1,14 @@
 main() {
 	n := 10
-	x := 1
+	x := 0
 
 	loop {
 		if n == 0 {
+			assert x == 10
 			return
 		}
 
-		f(x)
+		x = x + 1
 		n = n - 1
 	}
-}
-
-f(x int) -> int {
-	return x
 }

@@ -91,6 +91,12 @@ func (f *Function) loop(head *expression.Expression, body ast.AST) error {
 	modified := set.Ordered[string]{}
 
 	for _, block := range loopBlocks {
+		if block.Loop != nil {
+			continue
+		}
+
+		block.Loop = loopBody
+
 		for name := range block.Identifiers {
 			_, existedBeforeLoop := beforeLoop.FindIdentifier(name)
 

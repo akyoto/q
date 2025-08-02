@@ -6,7 +6,7 @@ main() {
 
 	loop {
 		if n == 0 {
-			os.exit(0)
+			return
 		}
 
 		io.write(".")
