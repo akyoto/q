@@ -20,6 +20,7 @@ func (f *Function) loop(head *expression.Expression, body ast.AST) error {
 	loopBlockIndex := len(f.Blocks)
 
 	if head != nil {
+		// Before the loop starts.
 		name, from, to := f.parseLoopHeader(head)
 
 		if from == nil {
@@ -35,9 +36,10 @@ func (f *Function) loop(head *expression.Expression, body ast.AST) error {
 		beforeLoop.Identify(name, fromValue)
 		beforeLoop.Append(&ssa.Jump{To: loopBody})
 		beforeLoop.AddSuccessor(loopBody)
-		f.AddBlock(loopBody)
 
-		thenBlock := ssa.NewBlock(f.CreateLabel("loop.then", f.Count.Loop))
+		// Loop starts, this is the jump target.
+		// We check if the condition for the loop is true.
+		f.AddBlock(loopBody)
 		toValue, err := f.evaluate(to)
 
 		if err != nil {
@@ -50,6 +52,9 @@ func (f *Function) loop(head *expression.Expression, body ast.AST) error {
 			Op:    token.Less,
 		})
 
+		thenLabel := f.CreateLabel("loop.then", f.Count.Loop)
+		thenBlock := ssa.NewBlock(thenLabel)
+
 		f.Append(&ssa.Branch{
 			Condition: condition,
 			Then:      thenBlock,
@@ -58,6 +63,9 @@ func (f *Function) loop(head *expression.Expression, body ast.AST) error {
 
 		loopBody.AddSuccessor(thenBlock)
 		loopBody.AddSuccessor(loopExit)
+
+		// Loop condition is true from now on so we'll
+		// execute the code inside the loop.
 		f.AddBlock(thenBlock)
 		err = f.compileAST(body)
 

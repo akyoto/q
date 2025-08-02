@@ -125,6 +125,7 @@ func (block *Block) findIdentifier(name string, traversed map[*Block]Value) (Val
 			}
 
 			values.Add(value)
+			traversed[block] = value
 		}
 
 		if values.Count() == 0 {
@@ -132,7 +133,6 @@ func (block *Block) findIdentifier(name string, traversed map[*Block]Value) (Val
 		}
 
 		if values.Count() == 1 {
-			traversed[block] = values.Slice()[0]
 			return values.Slice()[0], true
 		}
 
