@@ -181,3 +181,8 @@ func (block *Block) ReplaceAll(old Value, new Value) {
 		instr.Replace(old, new)
 	}
 }
+
+// String returns the block label.
+func (block *Block) String() string {
+	return block.Label
+}

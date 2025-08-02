@@ -32,5 +32,5 @@ func (v *Branch) Replace(old Value, new Value) {
 }
 
 func (v *Branch) String() string {
-	return fmt.Sprintf("branch(%s, %s, %s)", v.Condition.String(), v.Then.Label, v.Else.Label)
+	return fmt.Sprintf("branch(%p, %s, %s)", v.Condition, v.Then.Label, v.Else.Label)
 }

@@ -19,8 +19,7 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 				return err
 			}
 
-			defaultBlock := f.Block()
-			defaultBlock.AddSuccessor(exitBlock)
+			f.Block().AddSuccessor(exitBlock)
 			f.Append(&ssa.Jump{To: exitBlock})
 			f.AddBlock(exitBlock)
 			break
@@ -41,7 +40,6 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 		caseBlock := f.Block()
 		caseBlock.AddSuccessor(thenBlock)
 		caseBlock.AddSuccessor(elseBlock)
-
 		err := f.compileCondition(branch.Condition, thenBlock, elseBlock)
 
 		if err != nil {
@@ -55,9 +53,8 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 			return err
 		}
 
-		thenBlock.Append(&ssa.Jump{To: exitBlock})
-		thenBlock.AddSuccessor(exitBlock)
-
+		f.Block().Append(&ssa.Jump{To: exitBlock})
+		f.Block().AddSuccessor(exitBlock)
 		f.AddBlock(elseBlock)
 	}
 
