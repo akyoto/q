@@ -81,10 +81,17 @@ func (f *Function) findFreeRegister(value *step) cpu.Register {
 		}
 	}
 
+	// Pick one of the register hints if possible.
+	for _, reg := range value.Hints {
+		if usedRegisters&(1<<reg) == 0 {
+			return reg
+		}
+	}
+
 	// Pick a general purpose register that's not used yet.
-	for _, candidate := range f.CPU.General {
-		if usedRegisters&(1<<candidate) == 0 {
-			return candidate
+	for _, reg := range f.CPU.General {
+		if usedRegisters&(1<<reg) == 0 {
+			return reg
 		}
 	}
 

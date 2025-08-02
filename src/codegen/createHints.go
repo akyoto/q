@@ -12,6 +12,10 @@ func (f *Function) createHints(step *step) {
 			return
 		}
 
+		if step.Register == -1 {
+			return
+		}
+
 		f.ValueToStep[instr.Left].hint(step.Register)
 
 	case *ssa.Call:
@@ -37,7 +41,12 @@ func (f *Function) createHints(step *step) {
 
 	case *ssa.Phi:
 		for _, variant := range instr.Arguments {
-			f.ValueToStep[variant].Phi = step
+			variant := f.ValueToStep[variant]
+			variant.Phi = step
+
+			if step.Register != -1 {
+				variant.hint(step.Register)
+			}
 		}
 
 	case *ssa.Return:
