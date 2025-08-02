@@ -1,17 +1,17 @@
-import io
-import os
-
 main() {
 	n := 10
+	x := 1
 
 	loop {
 		if n == 0 {
-			os.exit(0)
+			return
 		}
 
-		io.write(".")
+		f(x)
 		n = n - 1
 	}
+}
 
-	os.exit(1)
+f(x int) -> int {
+	return x
 }

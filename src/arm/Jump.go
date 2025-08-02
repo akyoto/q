@@ -27,7 +27,7 @@ func JumpIfGreaterOrEqual(offset int) uint32 {
 
 // JumpIfLess jumps if the result was less.
 func JumpIfLess(offset int) uint32 {
-	return branchCond(LS, offset)
+	return branchCond(LT, offset)
 }
 
 // JumpIfLessOrEqual jumps if the result was less or equal.

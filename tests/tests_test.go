@@ -40,8 +40,11 @@ var tests = []run{
 	{"phi", "", "", 0},
 	{"else", "", "", 0},
 	{"switch", "", "", 0},
-	{"loop", "", ".....", 0},
+	{"loop", "", "..........", 0},
+	{"loop-lifetime", "", "", 0},
 	{"for", "", "", 0},
+	{"for-count", "", "", 0},
+	{"for-write", "", "..........", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
 }
