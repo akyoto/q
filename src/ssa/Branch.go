@@ -9,7 +9,6 @@ type Branch struct {
 	Condition Value
 	Then      *Block
 	Else      *Block
-	Source
 }
 
 func (a *Branch) Equals(v Value) bool {

@@ -42,7 +42,7 @@ func (f *IR) CountValues() int {
 func (f *IR) Finalize() {
 	for _, value := range f.Values {
 		for _, input := range value.Inputs() {
-			input.AddUser(value)
+			input.addUser(value)
 		}
 	}
 }

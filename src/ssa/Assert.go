@@ -8,7 +8,6 @@ import (
 type Assert struct {
 	Void
 	Condition Value
-	Source
 }
 
 func (a *Assert) Equals(v Value) bool {

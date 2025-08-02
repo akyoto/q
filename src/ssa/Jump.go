@@ -8,7 +8,6 @@ import (
 type Jump struct {
 	Void
 	To *Block
-	Source
 }
 
 func (a *Jump) Equals(v Value) bool {

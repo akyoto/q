@@ -3,8 +3,6 @@ package ssa
 import "git.urbach.dev/cli/q/src/types"
 
 type Value interface {
-	AddUser(Value)
-
 	// Equals returns true if it's equal to the given value.
 	Equals(Value) bool
 
@@ -25,4 +23,7 @@ type Value interface {
 
 	// Users returns all values that reference this value as an input.
 	Users() []Value
+
+	// addUser adds a new user.
+	addUser(Value)
 }
