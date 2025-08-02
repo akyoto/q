@@ -1,9 +1,9 @@
 main() {
-	total := 0
+	i := 0
 
 	for 0..10 {
-		total = total + 1
+		i = i + 1
 	}
 
-	assert total == 10
+	assert i == 10
 }

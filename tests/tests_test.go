@@ -46,6 +46,7 @@ var tests = []run{
 	{"loop-count", "", "", 0},
 	{"for", "", "", 0},
 	{"for-count", "", "", 0},
+	{"for-dynamic", "", "", 0},
 	{"for-write", "", "..........", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
