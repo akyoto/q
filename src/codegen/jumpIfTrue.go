@@ -5,8 +5,8 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// JumpIfTrue jumps to the label if the previous comparison was true.
-func (f *Function) JumpIfTrue(operator token.Kind, label string) {
+// jumpIfTrue jumps to the label if the previous comparison was true.
+func (f *Function) jumpIfTrue(operator token.Kind, label string) {
 	switch operator {
 	case token.Equal:
 		f.Assembler.Append(&asm.Jump{Label: label, Condition: token.Equal})

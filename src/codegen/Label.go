@@ -10,12 +10,6 @@ type Label struct {
 	Name string
 }
 
-func (v *Label) Inputs() []ssa.Value          { return nil }
-func (v *Label) IsConst() bool                { return false }
-func (v *Label) String() string               { return v.Name }
-func (v *Label) Replace(ssa.Value, ssa.Value) {}
-func (v *Label) Type() types.Type             { return types.Void }
-
 func (a *Label) Equals(v ssa.Value) bool {
 	b, sameType := v.(*Label)
 
@@ -25,3 +19,9 @@ func (a *Label) Equals(v ssa.Value) bool {
 
 	return a.Name == b.Name
 }
+
+func (v *Label) Inputs() []ssa.Value          { return nil }
+func (v *Label) IsConst() bool                { return false }
+func (v *Label) String() string               { return v.Name }
+func (v *Label) Replace(ssa.Value, ssa.Value) {}
+func (v *Label) Type() types.Type             { return types.Void }

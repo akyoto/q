@@ -9,9 +9,9 @@ import (
 // createSteps builds a series of instructions from the SSA values in the IR.
 func (f *Function) createSteps(ir ssa.IR) {
 	count := ir.CountValues() + len(ir.Blocks) - 1
-	storage := make([]step, count)
-	f.Steps = make([]*step, count)
-	f.ValueToStep = make(map[ssa.Value]*step, count)
+	storage := make([]Step, count)
+	f.Steps = make([]*Step, count)
+	f.ValueToStep = make(map[ssa.Value]*Step, count)
 	i := 0
 
 	for _, block := range ir.Blocks {

@@ -18,20 +18,20 @@ func (f *Function) GenerateAssembly(ir ssa.IR, build *config.Build, hasStackFram
 	f.createSteps(ir)
 
 	// Execute all steps.
-	f.Enter()
+	f.enter()
 
 	for _, step := range f.Steps {
 		f.exec(step)
 	}
 
 	if len(f.Steps) == 0 {
-		f.Leave()
+		f.leave()
 		return
 	}
 
 	_, lastIsReturn := f.Steps[len(f.Steps)-1].Value.(*ssa.Return)
 
 	if !lastIsReturn {
-		f.Leave()
+		f.leave()
 	}
 }

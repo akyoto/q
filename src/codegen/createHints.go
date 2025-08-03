@@ -5,7 +5,7 @@ import (
 )
 
 // createHints recommends registers that a value must reside in later on.
-func (f *Function) createHints(step *step) {
+func (f *Function) createHints(step *Step) {
 	switch instr := step.Value.(type) {
 	case *ssa.BinaryOp:
 		if instr.Op.IsComparison() {

@@ -4,8 +4,8 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 )
 
-// Leave cleans up the stack and returns to the caller.
-func (f *Function) Leave() {
+// leave cleans up the stack and returns to the caller.
+func (f *Function) leave() {
 	if f.isExit {
 		return
 	}

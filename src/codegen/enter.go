@@ -2,8 +2,8 @@ package codegen
 
 import "git.urbach.dev/cli/q/src/asm"
 
-// Enter sets up the stack frame.
-func (f *Function) Enter() {
+// enter sets up the stack frame.
+func (f *Function) enter() {
 	f.Assembler.Append(&asm.Label{Name: f.FullName})
 
 	if f.Preserved.Count() > 0 && !f.isInit {

@@ -6,17 +6,19 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-type step struct {
+// Step is created for every single SSA value and holds additional metadata.
+type Step struct {
 	Value    ssa.Value
 	Block    *ssa.Block
-	Phi      *step
-	Live     []*step
+	Phi      *Step
+	Live     []*Step
 	Hints    []cpu.Register
 	Index    int
 	Register cpu.Register
 }
 
-func (s *step) hint(reg cpu.Register) {
+// hint adds a register hint to the step.
+func (s *Step) hint(reg cpu.Register) {
 	if len(s.Hints) == 0 {
 		s.Register = reg
 	}
@@ -24,7 +26,8 @@ func (s *step) hint(reg cpu.Register) {
 	s.Hints = append(s.Hints, reg)
 }
 
-func (s *step) needsRegister() bool {
+// needsRegister returns true if the value requires a register.
+func (s *Step) needsRegister() bool {
 	if s.Value.Type() == types.Void {
 		return false
 	}
@@ -41,6 +44,7 @@ func (s *step) needsRegister() bool {
 	return true
 }
 
-func (s *step) String() string {
+// String returns the underlying SSA value in human-readable form.
+func (s *Step) String() string {
 	return s.Value.String()
 }

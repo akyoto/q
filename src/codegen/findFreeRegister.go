@@ -8,8 +8,8 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// findFreeRegister finds a free register within the given slice of steps.
-func (f *Function) findFreeRegister(value *step) cpu.Register {
+// findFreeRegister finds a free register for the given value.
+func (f *Function) findFreeRegister(value *Step) cpu.Register {
 	usedRegisters := 0
 
 	for _, step := range f.Steps {

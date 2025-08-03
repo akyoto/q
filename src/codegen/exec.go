@@ -10,8 +10,8 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// exec executes an instruction.
-func (f *Function) exec(step *step) {
+// exec executes a step which appends it to the assembler's instruction list.
+func (f *Function) exec(step *Step) {
 	if step.Index+1 == len(f.Steps) || step.Block != f.Steps[step.Index+1].Block {
 		for _, live := range step.Live {
 			if live.Phi != nil && live.Register != live.Phi.Register {
@@ -25,18 +25,7 @@ func (f *Function) exec(step *step) {
 
 	switch instr := step.Value.(type) {
 	case *ssa.Assert:
-		f.JumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
-
-	case *ssa.UnaryOp:
-		left := f.ValueToStep[instr.Operand]
-
-		switch instr.Op {
-		case token.Negate:
-			f.Assembler.Append(&asm.Negate{
-				Destination: step.Register,
-				Source:      left.Register,
-			})
-		}
+		f.jumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
 
 	case *ssa.BinaryOp:
 		left := f.ValueToStep[instr.Left]
@@ -128,9 +117,9 @@ func (f *Function) exec(step *step) {
 
 		switch following.Name {
 		case instr.Then.Label:
-			f.JumpIfFalse(op, instr.Else.Label)
+			f.jumpIfFalse(op, instr.Else.Label)
 		case instr.Else.Label:
-			f.JumpIfTrue(op, instr.Then.Label)
+			f.jumpIfTrue(op, instr.Then.Label)
 		default:
 			panic("branch instruction must be followed by the 'then' or 'else' block")
 		}
@@ -243,7 +232,7 @@ func (f *Function) exec(step *step) {
 		// Phi does not generate any machine instructions.
 
 	case *ssa.Return:
-		defer f.Leave()
+		defer f.leave()
 
 		if len(instr.Arguments) == 0 {
 			return
@@ -280,6 +269,17 @@ func (f *Function) exec(step *step) {
 			Destination: step.Register,
 			Source:      f.CPU.Syscall.Out[0],
 		})
+
+	case *ssa.UnaryOp:
+		left := f.ValueToStep[instr.Operand]
+
+		switch instr.Op {
+		case token.Negate:
+			f.Assembler.Append(&asm.Negate{
+				Destination: step.Register,
+				Source:      left.Register,
+			})
+		}
 
 	default:
 		panic("not implemented: " + instr.String())

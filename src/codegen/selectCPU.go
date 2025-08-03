@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/x86"
 )
 
+// selectCPU returns the correct CPU for the build.
 func selectCPU(build *config.Build) *cpu.CPU {
 	switch build.Arch {
 	case config.ARM:

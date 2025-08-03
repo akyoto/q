@@ -7,11 +7,12 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
+// Function contains the state that is required to produce assembly code.
 type Function struct {
 	FullName          string
 	Assembler         asm.Assembler
-	Steps             []*step
-	ValueToStep       map[ssa.Value]*step
+	Steps             []*Step
+	ValueToStep       map[ssa.Value]*Step
 	CPU               *cpu.CPU
 	Preserved         set.Ordered[cpu.Register]
 	Count             count

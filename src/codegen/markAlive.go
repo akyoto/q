@@ -8,7 +8,7 @@ import (
 
 // markAlive marks the `live` value in the `instructions` as alive and recursively
 // proceeds in the predecessors of `block` if they can reach the definition.
-func (f *Function) markAlive(live *step, instructions []ssa.Value, block *ssa.Block) {
+func (f *Function) markAlive(live *Step, instructions []ssa.Value, block *ssa.Block) {
 	for _, current := range slices.Backward(instructions) {
 		currentStep := f.ValueToStep[current]
 
