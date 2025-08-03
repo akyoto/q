@@ -8,7 +8,7 @@ main() {
 			return
 		}
 
-		x = x + 1
-		n = n - 1
+		x += 1
+		n -= 1
 	}
 }

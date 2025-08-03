@@ -15,7 +15,7 @@ fizzbuzz(n int) {
 			_           { io.write(".") }
 		}
 
-		x = x + 1
+		x += 1
 
 		if x > n {
 			return
