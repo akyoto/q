@@ -91,12 +91,12 @@ func printAssembly(f *core.Function) {
 				mnemonic.Print("  jump ")
 			}
 
-			label.Print(strings.TrimPrefix(instr.Label, f.FullName+" "))
+			label.Print(strings.TrimPrefix(instr.Label, f.FullName))
 		case *asm.Label:
 			if instr.Name == f.FullName {
 				function.Printf("%s:", instr.Name)
 			} else {
-				label.Printf("\n%s:", strings.TrimPrefix(instr.Name, f.FullName+" "))
+				label.Printf("\n%s:", strings.TrimPrefix(instr.Name, f.FullName))
 			}
 		case *asm.Modulo:
 		case *asm.MoveLabel:

@@ -9,9 +9,9 @@ import (
 func (f *Function) CreateLabel(prefix string, count counter) string {
 	tmp := strings.Builder{}
 	tmp.WriteString(f.FullName)
-	tmp.WriteString(" ")
+	tmp.WriteString(":")
 	tmp.WriteString(prefix)
-	tmp.WriteString(" ")
+	tmp.WriteString(".")
 	tmp.WriteString(strconv.FormatUint(uint64(count), 10))
 	return tmp.String()
 }

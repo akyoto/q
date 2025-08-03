@@ -21,7 +21,14 @@ func IR(root *core.Function) {
 			_, isLabel := step.Value.(*codegen.Label)
 
 			if isLabel {
-				fmt.Println(step.Value.String() + ":")
+				fmt.Print(step.Value.String() + ":")
+
+				for _, pre := range step.Block.Predecessors {
+					ansi.Dim.Print(" ⇠ ")
+					ansi.Dim.Print(pre)
+				}
+
+				fmt.Println()
 				continue
 			}
 
