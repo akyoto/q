@@ -50,6 +50,7 @@ var tests = []run{
 	{"for-dynamic", "", "", 0},
 	{"for-write", "", "..........", 0},
 	{"for-keepalive", "", "", 0},
+	{"prime", "", ".. ... ..... ....... ........... .............", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
 }
