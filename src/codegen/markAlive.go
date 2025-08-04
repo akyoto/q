@@ -8,7 +8,7 @@ import (
 
 // markAlive marks the `live` value in the `instructions` as alive and recursively
 // proceeds in the predecessors of `block` if they can reach the definition.
-func (f *Function) markAlive(live *Step, instructions []ssa.Value, block *ssa.Block) {
+func (f *Function) markAlive(live *Step, instructions []ssa.Value, block *ssa.Block, use *Step) {
 	for _, current := range slices.Backward(instructions) {
 		currentStep := f.ValueToStep[current]
 
@@ -27,12 +27,19 @@ func (f *Function) markAlive(live *Step, instructions []ssa.Value, block *ssa.Bl
 		}
 	}
 
-	traversed := make(map[*ssa.Block]bool)
-	traversed[block] = true
+	if use.Block == block {
+		switch instr := use.Value.(type) {
+		case *ssa.Phi:
+			index := instr.Arguments.Index(live.Value)
+			pre := block.Predecessors[index]
+			f.markAlive(live, pre.Instructions, pre, use)
+			return
+		}
+	}
 
 	for _, pre := range block.Predecessors {
-		if pre.CanReachPredecessor2(live.Block, traversed) {
-			f.markAlive(live, pre.Instructions, pre)
+		if pre.CanReachPredecessor(live.Block) {
+			f.markAlive(live, pre.Instructions, pre, use)
 		}
 	}
 }

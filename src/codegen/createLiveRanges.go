@@ -5,6 +5,6 @@ func (f *Function) createLiveRanges(step *Step) {
 	for _, user := range step.Value.Users() {
 		userStep := f.ValueToStep[user]
 		index := userStep.Block.Index(user)
-		f.markAlive(step, userStep.Block.Instructions[:index], userStep.Block)
+		f.markAlive(step, userStep.Block.Instructions[:index], userStep.Block, userStep)
 	}
 }
