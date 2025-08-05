@@ -66,6 +66,11 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
+		case *asm.CompareNumber:
+			mnemonic.Print("  compare ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			imm.Print(instr.Number)
 		case *asm.Divide:
 			mnemonic.Print("  div ")
 			register.Print(instr.Destination)
@@ -99,6 +104,12 @@ func printAssembly(f *core.Function) {
 				label.Printf("\n%s:", strings.TrimPrefix(instr.Name, f.FullName))
 			}
 		case *asm.Modulo:
+			mnemonic.Print("  mod ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			register.Print(instr.Operand)
 		case *asm.MoveLabel:
 			mnemonic.Print("  address ")
 			register.Print(instr.Destination)
