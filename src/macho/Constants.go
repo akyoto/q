@@ -2,7 +2,13 @@ package macho
 
 const (
 	BaseAddress  = 0x1000000
-	NumCommands  = 8
-	SizeCommands = Segment64Size*3 + Section64Size + DyldInfoCommandSize + MainSize + BuildVersionSize + DylinkerCommandSize + len(LinkerString) + DylibCommandSize + len(LibSystemString)
-	HeaderEnd    = HeaderSize + SizeCommands
+	NumCommands  = 9
+	SizeCommands = Segment64Size*4 +
+		Section64Size +
+		MainSize +
+		BuildVersionSize +
+		ChainedFixupsCommandSize +
+		DylinkerCommandSize + len(LinkerString) +
+		DylibCommandSize + len(LibSystemString)
+	HeaderEnd = HeaderSize + SizeCommands
 )

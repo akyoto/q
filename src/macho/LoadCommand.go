@@ -14,9 +14,9 @@ const (
 	LcIdDylinker         LoadCommand = 0xF
 	LcSegment64          LoadCommand = 0x19
 	LcUuid               LoadCommand = 0x1B
+	LcRpath              LoadCommand = 0x8000001C
 	LcCodeSignature      LoadCommand = 0x1D
 	LcSegmentSplitInfo   LoadCommand = 0x1E
-	LcRpath              LoadCommand = 0x8000001C
 	LcEncryptionInfo     LoadCommand = 0x21
 	LcDyldInfo           LoadCommand = 0x22
 	LcDyldInfoOnly       LoadCommand = 0x80000022
@@ -32,4 +32,5 @@ const (
 	LcVersionMinTvos     LoadCommand = 0x2F
 	LcVersionMinWatchos  LoadCommand = 0x30
 	LcBuildVersion       LoadCommand = 0x32
+	LcDyldChainedFixups  LoadCommand = 0x80000034
 )

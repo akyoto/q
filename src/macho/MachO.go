@@ -1,6 +1,7 @@
 package macho
 
 import (
+	"bytes"
 	"encoding/binary"
 	"io"
 
@@ -11,23 +12,29 @@ import (
 // MachO is the executable format used on MacOS.
 type MachO struct {
 	Header
-	PageZero           Segment64
-	CodeSegment        Segment64
-	CodeSection        Section64
-	DataSegment        Segment64
-	MainHeader         Main
-	BuildVersionHeader BuildVersion
-	InfoHeader         DyldInfoCommand
-	LinkerHeader       DylinkerCommand
-	LibSystemHeader    DylibCommand
+	PageZero       Segment64
+	CodeSegment    Segment64
+	CodeSection    Section64
+	DataSegment    Segment64
+	ImportsSegment Segment64
+	Main           Main
+	BuildVersion   BuildVersion
+	ChainedFixups  ChainedFixupsCommand
+	Linker         DylinkerCommand
+	LibSystem      DylibCommand
 }
 
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes)
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes, nil)
 	code := x.Sections[0]
 	data := x.Sections[1]
+	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
+	buffer := bytes.Buffer{}
+	binary.Write(&buffer, binary.LittleEndian, &ChainedFixupsHeader{StartsOffset: ChainedFixupsHeaderSize, ImportsFormat: 1})
+	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{})
+	imports.Bytes = buffer.Bytes()
 
 	m := &MachO{
 		Header: Header{
@@ -87,30 +94,45 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			MaxProt:      ProtReadable,
 			InitProt:     ProtReadable,
 		},
-		MainHeader: Main{
+		ImportsSegment: Segment64{
+			LoadCommand:  LcSegment64,
+			Length:       Segment64Size,
+			Name:         [16]byte{'_', '_', 'L', 'I', 'N', 'K', 'E', 'D', 'I', 'T'},
+			Address:      uint64(BaseAddress + imports.MemoryOffset),
+			SizeInMemory: uint64(len(imports.Bytes)),
+			Offset:       uint64(imports.FileOffset),
+			SizeInFile:   uint64(len(imports.Bytes)),
+			NumSections:  0,
+			Flag:         0,
+			MaxProt:      ProtReadable,
+			InitProt:     ProtReadable,
+		},
+		Main: Main{
 			LoadCommand:     LcMain,
 			Length:          MainSize,
 			EntryFileOffset: uint64(code.MemoryOffset),
 			StackSize:       0,
 		},
-		BuildVersionHeader: BuildVersion{
+		BuildVersion: BuildVersion{
 			LoadCommand: LcBuildVersion,
 			Length:      BuildVersionSize,
 			Platform:    PlatformMacOS,
-			MinOS:       Version(10, 7, 5),
+			MinOS:       Version(12, 0, 0),
 			Sdk:         0,
 			NumTools:    0,
 		},
-		InfoHeader: DyldInfoCommand{
-			LoadCommand: LcDyldInfoOnly,
-			Length:      DyldInfoCommandSize,
+		ChainedFixups: ChainedFixupsCommand{
+			LoadCommand: LcDyldChainedFixups,
+			Length:      ChainedFixupsCommandSize,
+			DataOffset:  uint32(imports.FileOffset),
+			DataSize:    ChainedFixupsHeaderSize + ChainedStartsInSegmentSize,
 		},
-		LinkerHeader: DylinkerCommand{
+		Linker: DylinkerCommand{
 			LoadCommand: LcLoadDylinker,
 			Length:      uint32(DylinkerCommandSize + len(LinkerString)),
 			Name:        DylinkerCommandSize,
 		},
-		LibSystemHeader: DylibCommand{
+		LibSystem: DylibCommand{
 			LoadCommand: LcLoadDylib,
 			Length:      uint32(DylibCommandSize + len(LibSystemString)),
 			Name:        DylibCommandSize,
@@ -122,15 +144,18 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	binary.Write(writer, binary.LittleEndian, &m.CodeSegment)
 	binary.Write(writer, binary.LittleEndian, &m.CodeSection)
 	binary.Write(writer, binary.LittleEndian, &m.DataSegment)
-	binary.Write(writer, binary.LittleEndian, &m.MainHeader)
-	binary.Write(writer, binary.LittleEndian, &m.BuildVersionHeader)
-	binary.Write(writer, binary.LittleEndian, &m.InfoHeader)
-	binary.Write(writer, binary.LittleEndian, &m.LinkerHeader)
+	binary.Write(writer, binary.LittleEndian, &m.ImportsSegment)
+	binary.Write(writer, binary.LittleEndian, &m.Main)
+	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
+	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
+	binary.Write(writer, binary.LittleEndian, &m.Linker)
 	writer.Write([]byte(LinkerString))
-	binary.Write(writer, binary.LittleEndian, &m.LibSystemHeader)
+	binary.Write(writer, binary.LittleEndian, &m.LibSystem)
 	writer.Write([]byte(LibSystemString))
 	writer.Seek(int64(code.Padding), io.SeekCurrent)
 	writer.Write(code.Bytes)
 	writer.Seek(int64(data.Padding), io.SeekCurrent)
 	writer.Write(data.Bytes)
+	writer.Seek(int64(imports.Padding), io.SeekCurrent)
+	writer.Write(imports.Bytes)
 }
