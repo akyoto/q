@@ -11,14 +11,15 @@ import (
 // MachO is the executable format used on MacOS.
 type MachO struct {
 	Header
-	PageZero        Segment64
-	CodeSegment     Segment64
-	CodeSection     Section64
-	DataSegment     Segment64
-	MainHeader      Main
-	InfoHeader      DyldInfoCommand
-	LinkerHeader    DylinkerCommand
-	LibSystemHeader DylibCommand
+	PageZero           Segment64
+	CodeSegment        Segment64
+	CodeSection        Section64
+	DataSegment        Segment64
+	MainHeader         Main
+	BuildVersionHeader BuildVersion
+	InfoHeader         DyldInfoCommand
+	LinkerHeader       DylinkerCommand
+	LibSystemHeader    DylibCommand
 }
 
 // Write writes the Mach-O format to the given writer.
@@ -92,6 +93,14 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			EntryFileOffset: uint64(code.MemoryOffset),
 			StackSize:       0,
 		},
+		BuildVersionHeader: BuildVersion{
+			LoadCommand: LcBuildVersion,
+			Length:      BuildVersionSize,
+			Platform:    PlatformMacOS,
+			MinOS:       Version(10, 7, 5),
+			Sdk:         0,
+			NumTools:    0,
+		},
 		InfoHeader: DyldInfoCommand{
 			LoadCommand: LcDyldInfoOnly,
 			Length:      DyldInfoCommandSize,
@@ -114,6 +123,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	binary.Write(writer, binary.LittleEndian, &m.CodeSection)
 	binary.Write(writer, binary.LittleEndian, &m.DataSegment)
 	binary.Write(writer, binary.LittleEndian, &m.MainHeader)
+	binary.Write(writer, binary.LittleEndian, &m.BuildVersionHeader)
 	binary.Write(writer, binary.LittleEndian, &m.InfoHeader)
 	binary.Write(writer, binary.LittleEndian, &m.LinkerHeader)
 	writer.Write([]byte(LinkerString))

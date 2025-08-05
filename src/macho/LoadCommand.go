@@ -31,4 +31,5 @@ const (
 	LcEncryptionInfo64   LoadCommand = 0x2C
 	LcVersionMinTvos     LoadCommand = 0x2F
 	LcVersionMinWatchos  LoadCommand = 0x30
+	LcBuildVersion       LoadCommand = 0x32
 )
