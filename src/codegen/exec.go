@@ -129,21 +129,17 @@ func (f *Function) exec(step *Step) {
 
 	case *ssa.Branch:
 		var op token.Kind
+		binaryOp, isBinaryOp := instr.Condition.(*ssa.BinaryOp)
 
-		switch condition := instr.Condition.(type) {
-		case *ssa.BinaryOp:
-			if condition.Op.IsComparison() {
-				op = condition.Op
-			}
-		}
+		if isBinaryOp && binaryOp.Op.IsComparison() {
+			op = binaryOp.Op
+		} else {
+			op = token.NotEqual
 
-		if op == token.Invalid {
 			f.Assembler.Append(&asm.CompareNumber{
 				Destination: f.ValueToStep[instr.Condition].Register,
 				Number:      0,
 			})
-
-			op = token.NotEqual
 		}
 
 		following := f.Steps[step.Index+1].Value.(*Label)
@@ -151,10 +147,8 @@ func (f *Function) exec(step *Step) {
 		switch following.Name {
 		case instr.Then.Label:
 			f.jumpIfFalse(op, instr.Else.Label)
-			return
 		case instr.Else.Label:
 			f.jumpIfTrue(op, instr.Then.Label)
-			return
 		default:
 			panic("branch instruction must be followed by the 'then' or 'else' block")
 		}
