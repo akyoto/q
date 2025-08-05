@@ -67,6 +67,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Compare:
 		c.code = x86.CompareRegisterRegister(c.code, instr.Destination, instr.Source)
+	case *CompareNumber:
+		if instr.Number == 0 {
+			c.code = x86.TestRegisterRegister(c.code, instr.Destination, instr.Destination)
+		} else {
+			c.code = x86.CompareRegisterNumber(c.code, instr.Destination, instr.Number)
+		}
 	case *Divide:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)

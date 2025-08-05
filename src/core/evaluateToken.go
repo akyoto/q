@@ -13,6 +13,25 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 	switch expr.Token.Kind {
 	case token.Identifier:
 		name := expr.Token.String(f.File.Bytes)
+
+		switch name {
+		case "false":
+			v := f.Append(&ssa.Bool{
+				Bool:   false,
+				Source: ssa.Source(expr.Source()),
+			})
+
+			return v, nil
+
+		case "true":
+			v := f.Append(&ssa.Bool{
+				Bool:   true,
+				Source: ssa.Source(expr.Source()),
+			})
+
+			return v, nil
+		}
+
 		value, exists := f.Block().FindIdentifier(name)
 
 		if exists {

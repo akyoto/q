@@ -27,6 +27,22 @@ func (f *Function) exec(step *Step) {
 	case *ssa.Assert:
 		f.jumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
 
+	case *ssa.Bool:
+		if step.Register == -1 {
+			return
+		}
+
+		number := 0
+
+		if instr.Bool {
+			number = 1
+		}
+
+		f.Assembler.Append(&asm.MoveNumber{
+			Destination: step.Register,
+			Number:      number,
+		})
+
 	case *ssa.BinaryOp:
 		left := f.ValueToStep[instr.Left]
 		right := f.ValueToStep[instr.Right]
@@ -112,14 +128,33 @@ func (f *Function) exec(step *Step) {
 		}
 
 	case *ssa.Branch:
-		op := instr.Condition.(*ssa.BinaryOp).Op
+		var op token.Kind
+
+		switch condition := instr.Condition.(type) {
+		case *ssa.BinaryOp:
+			if condition.Op.IsComparison() {
+				op = condition.Op
+			}
+		}
+
+		if op == token.Invalid {
+			f.Assembler.Append(&asm.CompareNumber{
+				Destination: f.ValueToStep[instr.Condition].Register,
+				Number:      0,
+			})
+
+			op = token.NotEqual
+		}
+
 		following := f.Steps[step.Index+1].Value.(*Label)
 
 		switch following.Name {
 		case instr.Then.Label:
 			f.jumpIfFalse(op, instr.Else.Label)
+			return
 		case instr.Else.Label:
 			f.jumpIfTrue(op, instr.Then.Label)
+			return
 		default:
 			panic("branch instruction must be followed by the 'then' or 'else' block")
 		}

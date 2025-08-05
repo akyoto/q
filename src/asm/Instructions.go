@@ -17,6 +17,7 @@ type (
 	CallExternStart struct{}
 	CallExternEnd   struct{}
 	Compare         rr
+	CompareNumber   rn
 	Divide          rrr
 	Jump            struct {
 		Label     string
@@ -29,10 +30,7 @@ type (
 		Label       string
 		Destination cpu.Register
 	}
-	MoveNumber struct {
-		Destination cpu.Register
-		Number      int
-	}
+	MoveNumber       rn
 	Multiply         rrr
 	Negate           rr
 	Or               rrr

@@ -60,6 +60,14 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *CallExternEnd:
 	case *Compare:
 		c.append(arm.CompareRegisterRegister(instr.Destination, instr.Source))
+	case *CompareNumber:
+		code, encodable := arm.CompareRegisterNumber(instr.Destination, instr.Number)
+
+		if !encodable {
+			panic("not implemented")
+		}
+
+		c.append(code)
 	case *Divide:
 		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Jump:

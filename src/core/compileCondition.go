@@ -5,6 +5,7 @@ import (
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // compileCondition inserts code to jump to the start label or end label depending on the truth of the condition.
@@ -70,6 +71,23 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		return nil
 
 	default:
-		return errors.New(InvalidCondition, f.File, condition.Token.Position)
+		value, err := f.evaluate(condition)
+
+		if err != nil {
+			return err
+		}
+
+		if !types.Is(value.Type(), types.Bool) {
+			return errors.New(InvalidCondition, f.File, condition.Source().StartPos)
+		}
+
+		branch := &ssa.Branch{
+			Condition: value,
+			Then:      thenBlock,
+			Else:      elseBlock,
+		}
+
+		f.Append(branch)
+		return nil
 	}
 }

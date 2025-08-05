@@ -8,7 +8,7 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestTestRegister(t *testing.T) {
+func TestTestRegisterRegister(t *testing.T) {
 	usagePatterns := []struct {
 		Left  cpu.Register
 		Right cpu.Register
