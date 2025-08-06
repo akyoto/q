@@ -11,22 +11,24 @@ import (
 
 func TestBinaryOp(t *testing.T) {
 	fn := ssa.IR{}
-	fn.AddBlock(ssa.NewBlock(""))
+	fn.AddBlock(ssa.NewBlock("a"))
 	a := fn.Append(&ssa.Int{Int: 1})
 	b := fn.Append(&ssa.Int{Int: 2})
 	c := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: a, Right: b})
-	fn.AddBlock(ssa.NewBlock(""))
+	fn.AddBlock(ssa.NewBlock("b"))
 	d := fn.Append(&ssa.Int{Int: 3})
 	e := fn.Append(&ssa.Int{Int: 4})
 	f := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: d, Right: e})
 
 	assert.True(t, c.Type() == types.AnyInt)
 	assert.True(t, f.Type() == types.AnyInt)
+	assert.DeepEqual(t, c.Inputs(), []ssa.Value{a, b})
+	assert.DeepEqual(t, f.Inputs(), []ssa.Value{d, e})
 }
 
 func TestBinaryOpEquals(t *testing.T) {
 	fn := ssa.IR{}
-	fn.AddBlock(ssa.NewBlock(""))
+	fn.AddBlock(ssa.NewBlock("a"))
 	one := fn.Append(&ssa.Int{Int: 1})
 	two := fn.Append(&ssa.Int{Int: 2})
 	binOp := fn.Append(&ssa.BinaryOp{Op: token.Add, Left: one, Right: two})

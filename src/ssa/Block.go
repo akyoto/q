@@ -174,8 +174,8 @@ func (block *Block) RemoveNilValues() {
 	})
 }
 
-// ReplaceAll replaces all uses of `old` with `new`.
-func (block *Block) ReplaceAll(old Value, new Value) {
+// ReplaceAllUses replaces all uses of `old` with `new`.
+func (block *Block) ReplaceAllUses(old Value, new Value) {
 	for _, instr := range block.Instructions {
 		instr.Replace(old, new)
 	}

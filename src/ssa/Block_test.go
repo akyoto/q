@@ -92,3 +92,118 @@ func TestBlockCanReachPredecessorLoopExtended(t *testing.T) {
 	assert.True(t, d.CanReachPredecessor(b))
 	assert.True(t, d.CanReachPredecessor(c))
 }
+
+func TestBlockFindIdentifier(t *testing.T) {
+	branch := ssa.NewBlock("branch")
+	thenBlock := ssa.NewBlock("if.then")
+	elseBlock := ssa.NewBlock("if.else")
+	mergeBlock := ssa.NewBlock("merge")
+
+	branch.AddSuccessor(thenBlock)
+	branch.AddSuccessor(elseBlock)
+	thenBlock.AddSuccessor(mergeBlock)
+	elseBlock.AddSuccessor(mergeBlock)
+
+	branchValue := ssa.Value(&ssa.Int{Int: 1})
+	branch.Append(branchValue)
+	branch.Identify("branch", branchValue)
+	branch.Identify("x", branchValue)
+
+	thenValue := ssa.Value(&ssa.Int{Int: 2})
+	thenBlock.Append(thenValue)
+	thenBlock.Identify("then", thenValue)
+	thenBlock.Identify("x", thenValue)
+
+	elseValue := ssa.Value(&ssa.Int{Int: 3})
+	elseBlock.Append(elseValue)
+	elseBlock.Identify("else", elseValue)
+	elseBlock.Identify("x", elseValue)
+
+	mergeValue := ssa.Value(&ssa.Int{Int: 4})
+	mergeBlock.Append(mergeValue)
+	mergeBlock.Identify("merge", mergeValue)
+
+	// Branch
+	value, exists := branch.FindIdentifier("branch")
+	assert.True(t, exists)
+	assert.Equal(t, value, branchValue)
+
+	value, exists = thenBlock.FindIdentifier("branch")
+	assert.True(t, exists)
+	assert.Equal(t, value, branchValue)
+
+	value, exists = elseBlock.FindIdentifier("branch")
+	assert.True(t, exists)
+	assert.Equal(t, value, branchValue)
+
+	value, exists = mergeBlock.FindIdentifier("branch")
+	assert.True(t, exists)
+	assert.Equal(t, value, branchValue)
+
+	// Then
+	_, exists = branch.FindIdentifier("then")
+	assert.False(t, exists)
+
+	value, exists = thenBlock.FindIdentifier("then")
+	assert.True(t, exists)
+	assert.Equal(t, value, thenValue)
+
+	_, exists = elseBlock.FindIdentifier("then")
+	assert.False(t, exists)
+
+	_, exists = mergeBlock.FindIdentifier("then")
+	assert.False(t, exists)
+
+	// Else
+	_, exists = branch.FindIdentifier("else")
+	assert.False(t, exists)
+
+	_, exists = thenBlock.FindIdentifier("else")
+	assert.False(t, exists)
+
+	value, exists = elseBlock.FindIdentifier("else")
+	assert.True(t, exists)
+	assert.Equal(t, value, elseValue)
+
+	_, exists = mergeBlock.FindIdentifier("else")
+	assert.False(t, exists)
+
+	// Merge
+	_, exists = branch.FindIdentifier("merge")
+	assert.False(t, exists)
+
+	_, exists = thenBlock.FindIdentifier("merge")
+	assert.False(t, exists)
+
+	_, exists = elseBlock.FindIdentifier("merge")
+	assert.False(t, exists)
+
+	value, exists = mergeBlock.FindIdentifier("merge")
+	assert.True(t, exists)
+	assert.Equal(t, value, mergeValue)
+
+	// Phi
+	value, exists = mergeBlock.FindIdentifier("x")
+	assert.True(t, exists)
+	phi, isPhi := value.(*ssa.Phi)
+	assert.True(t, isPhi)
+	assert.Equal(t, phi.Arguments[0], thenValue)
+	assert.Equal(t, phi.Arguments[1], elseValue)
+}
+
+func TestBlockIndex(t *testing.T) {
+	a := ssa.NewBlock("a")
+	one := ssa.Value(&ssa.Int{Int: 1})
+	two := ssa.Value(&ssa.Int{Int: 2})
+	three := ssa.Value(&ssa.Int{Int: 3})
+	other := ssa.Value(&ssa.Int{Int: 42})
+
+	a.Append(one)
+	a.Append(two)
+	a.Append(three)
+
+	assert.Equal(t, a.Index(one), 0)
+	assert.Equal(t, a.Index(two), 1)
+	assert.Equal(t, a.Index(three), 2)
+	assert.Equal(t, a.Index(other), -1)
+}

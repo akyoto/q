@@ -10,7 +10,7 @@ import (
 
 func TestReturn(t *testing.T) {
 	fn := ssa.IR{}
-	fn.AddBlock(ssa.NewBlock(""))
+	fn.AddBlock(ssa.NewBlock("fn"))
 	ret := fn.Append(&ssa.Return{})
 	one := fn.Append(&ssa.Int{Int: 1})
 	ret2 := fn.Append(&ssa.Return{Arguments: ssa.Arguments{one}})
