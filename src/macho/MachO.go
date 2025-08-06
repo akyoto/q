@@ -1,7 +1,6 @@
 package macho
 
 import (
-	"bytes"
 	"encoding/binary"
 	"io"
 
@@ -19,7 +18,8 @@ type MachO struct {
 	ImportsSegment Segment64
 	Main           Main
 	BuildVersion   BuildVersion
-	ChainedFixups  ChainedFixupsCommand
+	ChainedFixups  LinkeditDataCommand
+	CodeSignature  LinkeditDataCommand
 	Linker         DylinkerCommand
 	LibSystem      DylibCommand
 }
@@ -31,10 +31,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	data := x.Sections[1]
 	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
-	buffer := bytes.Buffer{}
-	binary.Write(&buffer, binary.LittleEndian, &ChainedFixupsHeader{StartsOffset: ChainedFixupsHeaderSize, ImportsFormat: 1})
-	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{})
-	imports.Bytes = buffer.Bytes()
+	imports.Bytes = createLinkeditSegment(build, code)
 
 	m := &MachO{
 		Header: Header{
@@ -121,11 +118,17 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Sdk:         0,
 			NumTools:    0,
 		},
-		ChainedFixups: ChainedFixupsCommand{
+		ChainedFixups: LinkeditDataCommand{
 			LoadCommand: LcDyldChainedFixups,
-			Length:      ChainedFixupsCommandSize,
+			Length:      LinkeditDataCommandSize,
 			DataOffset:  uint32(imports.FileOffset),
 			DataSize:    ChainedFixupsHeaderSize + ChainedStartsInSegmentSize,
+		},
+		CodeSignature: LinkeditDataCommand{
+			LoadCommand: LcCodeSignature,
+			Length:      LinkeditDataCommandSize,
+			DataOffset:  uint32(imports.FileOffset) + 64,
+			DataSize:    uint32(len(imports.Bytes) - 64),
 		},
 		Linker: DylinkerCommand{
 			LoadCommand: LcLoadDylinker,
@@ -148,6 +151,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	binary.Write(writer, binary.LittleEndian, &m.Main)
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
 	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
+	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 	binary.Write(writer, binary.LittleEndian, &m.Linker)
 	writer.Write([]byte(LinkerString))
 	binary.Write(writer, binary.LittleEndian, &m.LibSystem)
