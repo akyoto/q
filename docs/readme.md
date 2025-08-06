@@ -180,6 +180,12 @@ main() {
 
 Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
 
+### How do I pronounce the name?
+
+/ˈkjuː/ just like `q` in the English alphabet.
+
+## FAQ: Contributors
+
 ### How do I run the test suite?
 
 Run all tests:
@@ -231,10 +237,6 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 ### Is there an IRC channel?
 
 [#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev).
-
-### How do I pronounce the name?
-
-/ˈkjuː/ just like `q` in the English alphabet.
 
 ## License
 
