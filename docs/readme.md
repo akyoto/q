@@ -14,7 +14,7 @@
 
 ## Installation
 
-> [!NOTE]
+> [!WARNING]
 > `q` is under heavy development and not ready for production yet.
 >
 > Please read [this](https://lobste.rs/s/t7osqo/q_programming_language).
