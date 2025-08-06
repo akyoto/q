@@ -70,6 +70,14 @@ Build with verbose output:
 q build examples/hello --verbose
 ```
 
+## Language specification
+
+The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems.
+
+The language syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status.
+
+Documentation for all language features will follow once the core systems are stable.
+
 ## Source overview
 
 This section is for contributors who want a high-level overview of the source code structure.
