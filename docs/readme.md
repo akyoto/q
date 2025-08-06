@@ -180,6 +180,12 @@ main() {
 
 Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
 
+### Any editor extensions?
+
+There is one for VS Code but is only has syntax highlighting so far. You can clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder.
+
+Neovim support is planned.
+
 ### How do I pronounce the name?
 
 /ˈkjuː/ just like `q` in the English alphabet.
