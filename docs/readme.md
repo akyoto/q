@@ -7,7 +7,7 @@
 ## Features
 
 * High performance (`ssa` and `asm` optimizations)
-* Fast compilation (<1 ms for simple programs)
+* Fast compilation (<100 μs for simple programs)
 * Tiny executables ("Hello World" is ~600 bytes)
 * Multiple platforms (Linux, Mac and Windows)
 * Zero dependencies (no llvm, no libc)
@@ -130,7 +130,7 @@ This section is for contributors who want a high-level overview of the source co
 |            | arm64      | x86-64    |
 | ---------- | ---------- | --------- |
 | 🐧 Linux   | 646 bytes  | 582 bytes |
-| 🍏 Mac     | 33 KiB     | 8.2 KiB   |
+| 🍏 Mac     | 49.3 KiB   | 12.5 KiB  |
 | 🪟 Windows | 1.7 KiB    | 1.7 KiB   |
 
 This table often raises the question why Mac builds are so huge compared to the rest. The answer is in [these few lines](https://github.com/apple-oss-distributions/xnu/blob/e3723e1f17661b24996789d8afc084c0c3303b26/bsd/kern/mach_loader.c#L2021-L2027) of their kernel code. None of the other operating systems force you to page-align sections on disk. In practice, however, it's not as bad as it sounds because the padding is a zero-filled area that barely consumes any disk space in [sparse files](https://en.wikipedia.org/wiki/Sparse_file).
