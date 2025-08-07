@@ -50,8 +50,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 			return code
 		}
 	case *CallExtern:
+		c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
 		c.code = x86.CallAt(c.code, 0)
 		patch := c.PatchLast4Bytes()
+		c.code = x86.AddRegisterNumber(c.code, x86.SP, 32)
 
 		patch.apply = func(code []byte) []byte {
 			index := c.libraries.Index(instr.Library, instr.Function)
@@ -268,7 +270,6 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		if instr.ExternCalls {
 			c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
-			c.code = x86.SubRegisterNumber(c.code, x86.SP, 32)
 		}
 	case *StackFrameEnd:
 		if instr.FramePointer {
