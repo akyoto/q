@@ -1,7 +1,7 @@
-import os
+import io
 
 main() {
-	os.exit(gcd(1071, 462))
+	io.writeInt(gcd(1071, 462))
 }
 
 gcd(a int, b int) -> int {

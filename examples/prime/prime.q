@@ -1,15 +1,13 @@
 import io
 
 main() {
-	for i := 2..15 {
+	for i := 2..100 {
 		if isPrime(i) {
 			if i != 2 {
 				io.write(" ")
 			}
 
-			for 0..i {
-				io.write(".")
-			}
+			io.writeInt(i)
 		}
 	}
 }

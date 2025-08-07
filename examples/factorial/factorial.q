@@ -1,7 +1,7 @@
-import os
+import io
 
 main() {
-	os.exit(factorial(5))
+	io.writeInt(factorial(5))
 }
 
 factorial(n int) -> int {

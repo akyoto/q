@@ -1,7 +1,7 @@
-import os
+import io
 
 main() {
-	os.exit(fibonacci(10))
+	io.writeInt(fibonacci(10))
 }
 
 fibonacci(n int) -> int {
