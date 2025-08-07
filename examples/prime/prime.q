@@ -1,7 +1,7 @@
 import io
 
 main() {
-	for i := 2..100 {
+	loop i := 2..100 {
 		if isPrime(i) {
 			if i != 2 {
 				io.write(" ")

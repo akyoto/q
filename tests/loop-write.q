@@ -1,7 +1,7 @@
 import io
 
 main() {
-	for 0..10 {
+	loop 0..10 {
 		io.write(".")
 	}
 }

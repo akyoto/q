@@ -70,7 +70,6 @@ const (
 	Const                             // const
 	Else                              // else
 	Extern                            // extern
-	For                               // for
 	If                                // if
 	Import                            // import
 	Loop                              // loop

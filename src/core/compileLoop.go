@@ -6,5 +6,5 @@ import (
 
 // compileLoop compiles an endless loop.
 func (f *Function) compileLoop(loop *ast.Loop) error {
-	return f.loop(nil, loop.Body)
+	return f.loop(loop.Head, loop.Body)
 }

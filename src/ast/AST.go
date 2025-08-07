@@ -24,16 +24,13 @@ type (
 	Define struct {
 		Expression *expression.Expression
 	}
-	For struct {
-		Head *expression.Expression
-		Body AST
-	}
 	If struct {
 		Condition *expression.Expression
 		Body      AST
 		Else      AST
 	}
 	Loop struct {
+		Head *expression.Expression
 		Body AST
 	}
 	Return struct {

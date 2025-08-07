@@ -23,8 +23,6 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 		kind = Else
 	case "extern":
 		kind = Extern
-	case "for":
-		kind = For
 	case "import":
 		kind = Import
 	case "loop":

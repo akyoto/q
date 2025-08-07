@@ -42,20 +42,20 @@ func parseKeyword(tokens token.List, file *fs.File, nodes AST) (Node, error) {
 		ifNode.Else = body
 		return nil, err
 
-	case token.For:
+	case token.Loop:
 		blockStart, _, body, err := block(tokens, file)
-		head := tokens[1:blockStart]
+		headTokens := tokens[1:blockStart]
 
-		loop := &For{
-			Head: expression.Parse(head),
+		loop := &Loop{
+			Head: nil,
 			Body: body,
 		}
 
-		return loop, err
+		if len(headTokens) > 0 {
+			loop.Head = expression.Parse(headTokens)
+		}
 
-	case token.Loop:
-		_, _, body, err := block(tokens, file)
-		return &Loop{Body: body}, err
+		return loop, err
 
 	case token.Return:
 		if len(tokens) == 1 {

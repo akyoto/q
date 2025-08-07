@@ -22,9 +22,6 @@ func (f *Function) compileASTNode(node ast.Node) error {
 	case *ast.If:
 		return f.compileIf(node)
 
-	case *ast.For:
-		return f.compileFor(node)
-
 	case *ast.Loop:
 		return f.compileLoop(node)
 
