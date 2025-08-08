@@ -128,7 +128,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			LoadCommand: LcDyldChainedFixups,
 			Length:      LinkeditDataCommandSize,
 			DataOffset:  uint32(imports.FileOffset),
-			DataSize:    ChainedFixupsHeaderSize + ChainedStartsInSegmentSize,
+			DataSize:    ChainedFixupsHeaderSize + ChainedStartsInImageSize + ChainedStartsInSegmentSize,
 		},
 		CodeSignature: LinkeditDataCommand{
 			LoadCommand: LcCodeSignature,
