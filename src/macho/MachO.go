@@ -33,7 +33,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
 	imports.Bytes = createLinkeditSegment(build, code)
-	chainedFixupsSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + NumSegments*ChainedStartsInSegmentSize
+	chainedFixupsSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + CodeSignaturePadding
 
 	m := &MachO{
 		Header: Header{

@@ -34,6 +34,9 @@ const (
 	DYLD_CHAINED_IMPORT         = 1
 	DYLD_CHAINED_PTR_64         = 2
 	DYLD_CHAINED_PTR_START_NONE = 0xFFFF
+
+	// Custom
+	CodeSignaturePadding = 4
 )
 
 // createLinkeditSegment creates the contents of the __LINKEDIT segment.
@@ -47,25 +50,35 @@ func createLinkeditSegment(build *config.Build, code *exe.Section) []byte {
 	})
 
 	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInImage{
-		SegCount: NumSegments,
-
-		// TODO: This is very prone to breaking, make this more robust
-		SegInfoOffset: [NumSegments]uint32{
-			ChainedStartsInImageSize,
-			ChainedStartsInImageSize + ChainedStartsInSegmentSize,
-			ChainedStartsInImageSize + ChainedStartsInSegmentSize*2,
-			ChainedStartsInImageSize + ChainedStartsInSegmentSize*3,
-		},
+		SegCount:      NumSegments,
+		SegInfoOffset: [NumSegments]uint32{},
 	})
 
-	for range NumSegments {
-		binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{
-			Size:          ChainedStartsInSegmentSize,
-			PageSize:      uint16(build.MemoryAlign()),
-			PageCount:     1,
-			PageStarts:    [1]uint16{DYLD_CHAINED_PTR_START_NONE},
-			PointerFormat: DYLD_CHAINED_PTR_64,
-		})
+	// binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInImage{
+	// 	SegCount: NumSegments,
+
+	// 	// TODO: This is very prone to breaking, make this more robust
+	// 	SegInfoOffset: [NumSegments]uint32{
+	// 		ChainedStartsInImageSize,
+	// 		ChainedStartsInImageSize + ChainedStartsInSegmentSize,
+	// 		ChainedStartsInImageSize + ChainedStartsInSegmentSize*2,
+	// 		ChainedStartsInImageSize + ChainedStartsInSegmentSize*3,
+	// 	},
+	// })
+
+	// for range NumSegments {
+	// 	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{
+	// 		Size:          ChainedStartsInSegmentSize,
+	// 		PageSize:      uint16(build.MemoryAlign()),
+	// 		PageCount:     1,
+	// 		PageStarts:    [1]uint16{DYLD_CHAINED_PTR_START_NONE},
+	// 		PointerFormat: DYLD_CHAINED_PTR_64,
+	// 	})
+	// }
+
+	// // Make sure the code signature that follows is 16-byte aligned
+	for range CodeSignaturePadding {
+		buffer.WriteByte(0)
 	}
 
 	// Superblob
