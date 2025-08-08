@@ -16,6 +16,7 @@ type MachO struct {
 	CodeSection    Section64
 	DataSegment    Segment64
 	ImportsSegment Segment64
+	Uuid           Uuid
 	Main           Main
 	BuildVersion   BuildVersion
 	ChainedFixups  LinkeditDataCommand
@@ -88,8 +89,8 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			SizeInFile:   uint64(len(data.Bytes)),
 			NumSections:  0,
 			Flag:         SegmentReadOnly,
-			MaxProt:      ProtReadable,
-			InitProt:     ProtReadable,
+			MaxProt:      ProtReadable | ProtWritable, // dyld complains if it's not writable
+			InitProt:     ProtReadable | ProtWritable,
 		},
 		ImportsSegment: Segment64{
 			LoadCommand:  LcSegment64,
@@ -103,6 +104,11 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Flag:         0,
 			MaxProt:      ProtReadable,
 			InitProt:     ProtReadable,
+		},
+		Uuid: Uuid{
+			LoadCommand: LcUuid,
+			Length:      UuidSize,
+			Bytes:       [16]byte{},
 		},
 		Main: Main{
 			LoadCommand:     LcMain,
@@ -148,6 +154,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	binary.Write(writer, binary.LittleEndian, &m.CodeSection)
 	binary.Write(writer, binary.LittleEndian, &m.DataSegment)
 	binary.Write(writer, binary.LittleEndian, &m.ImportsSegment)
+	binary.Write(writer, binary.LittleEndian, &m.Uuid)
 	binary.Write(writer, binary.LittleEndian, &m.Main)
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
 	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
