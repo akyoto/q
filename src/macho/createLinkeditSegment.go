@@ -47,17 +47,26 @@ func createLinkeditSegment(build *config.Build, code *exe.Section) []byte {
 	})
 
 	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInImage{
-		SegCount:      1,
-		SegInfoOffset: [1]uint32{ChainedStartsInImageSize},
+		SegCount: NumSegments,
+
+		// TODO: This is very prone to breaking, make this more robust
+		SegInfoOffset: [NumSegments]uint32{
+			ChainedStartsInImageSize,
+			ChainedStartsInImageSize + ChainedStartsInSegmentSize,
+			ChainedStartsInImageSize + ChainedStartsInSegmentSize*2,
+			ChainedStartsInImageSize + ChainedStartsInSegmentSize*3,
+		},
 	})
 
-	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{
-		Size:          ChainedStartsInSegmentSize,
-		PageSize:      uint16(build.MemoryAlign()),
-		PageCount:     1,
-		PageStarts:    [1]uint16{DYLD_CHAINED_PTR_START_NONE},
-		PointerFormat: DYLD_CHAINED_PTR_64,
-	})
+	for range NumSegments {
+		binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{
+			Size:          ChainedStartsInSegmentSize,
+			PageSize:      uint16(build.MemoryAlign()),
+			PageCount:     1,
+			PageStarts:    [1]uint16{DYLD_CHAINED_PTR_START_NONE},
+			PointerFormat: DYLD_CHAINED_PTR_64,
+		})
+	}
 
 	// Superblob
 	superBlob := bytes.Buffer{}

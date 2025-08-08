@@ -33,6 +33,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
 	imports.Bytes = createLinkeditSegment(build, code)
+	chainedFixupsSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + NumSegments*ChainedStartsInSegmentSize
 
 	m := &MachO{
 		Header: Header{
@@ -128,13 +129,13 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			LoadCommand: LcDyldChainedFixups,
 			Length:      LinkeditDataCommandSize,
 			DataOffset:  uint32(imports.FileOffset),
-			DataSize:    ChainedFixupsHeaderSize + ChainedStartsInImageSize + ChainedStartsInSegmentSize,
+			DataSize:    uint32(chainedFixupsSize),
 		},
 		CodeSignature: LinkeditDataCommand{
 			LoadCommand: LcCodeSignature,
 			Length:      LinkeditDataCommandSize,
-			DataOffset:  uint32(imports.FileOffset) + 64,
-			DataSize:    uint32(len(imports.Bytes) - 64),
+			DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
+			DataSize:    uint32(len(imports.Bytes) - chainedFixupsSize),
 		},
 		Linker: DylinkerCommand{
 			LoadCommand: LcLoadDylinker,
