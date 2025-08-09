@@ -2,9 +2,7 @@ package macho
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/binary"
-	"math/bits"
 
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/exe"
@@ -54,70 +52,18 @@ func createLinkeditSegment(build *config.Build, code *exe.Section) []byte {
 		SegInfoOffset: [NumSegments]uint32{},
 	})
 
-	// binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInImage{
-	// 	SegCount: NumSegments,
-
-	// 	// TODO: This is very prone to breaking, make this more robust
-	// 	SegInfoOffset: [NumSegments]uint32{
-	// 		ChainedStartsInImageSize,
-	// 		ChainedStartsInImageSize + ChainedStartsInSegmentSize,
-	// 		ChainedStartsInImageSize + ChainedStartsInSegmentSize*2,
-	// 		ChainedStartsInImageSize + ChainedStartsInSegmentSize*3,
-	// 	},
-	// })
-
-	// for range NumSegments {
-	// 	binary.Write(&buffer, binary.LittleEndian, &ChainedStartsInSegment{
-	// 		Size:          ChainedStartsInSegmentSize,
-	// 		PageSize:      uint16(build.MemoryAlign()),
-	// 		PageCount:     1,
-	// 		PageStarts:    [1]uint16{DYLD_CHAINED_PTR_START_NONE},
-	// 		PointerFormat: DYLD_CHAINED_PTR_64,
-	// 	})
-	// }
-
-	// // Make sure the code signature that follows is 16-byte aligned
+	// Make sure the code signature that follows is 16-byte aligned
 	for range CodeSignaturePadding {
 		buffer.WriteByte(0)
 	}
 
-	// Superblob
-	superBlob := bytes.Buffer{}
-	identifier := []byte("exe\000")
-	pageSizeExponent := bits.Len(uint(build.MemoryAlign())) - 1
-
-	binary.Write(&superBlob, binary.BigEndian, &CodeDirectory{
-		Magic:        CS_MAGIC_CODEDIRECTORY,
-		Length:       uint32(CodeDirectorySize + len(identifier) + CS_SHA256_LEN),
-		Version:      CS_SUPPORTSEXECSEG,
-		HashOffset:   uint32(CodeDirectorySize + len(identifier)),
-		HashSize:     CS_SHA256_LEN,
-		HashType:     CS_HASHTYPE_SHA256,
-		PageSize:     uint8(pageSizeExponent),
-		Flags:        CS_ADHOC | CS_LINKER_SIGNED,
-		NCodeSlots:   1,
-		CodeLimit:    uint32(len(code.Bytes)),
-		IdentOffset:  CodeDirectorySize,
-		ExecSegBase:  uint64(code.FileOffset),
-		ExecSegLimit: uint64(len(code.Bytes)),
-		ExecSegFlags: CS_EXECSEG_MAIN_BINARY,
-	})
-
-	paddedCode := append(code.Bytes, bytes.Repeat([]byte{0}, code.Padding)...)
-	hasher := sha256.New()
-	hasher.Write(paddedCode)
-	codeHash := hasher.Sum(nil)
-
-	superBlob.Write(identifier)
-	superBlob.Write(codeHash)
-	superBlobBytes := superBlob.Bytes()
-
 	// Code signature
+	signature := createCodeSignature(build, code)
 	offset, padding := exe.AlignPad(SuperBlobSize+BlobIndexSize, 8)
 
 	binary.Write(&buffer, binary.BigEndian, &SuperBlob{
 		Magic:  CS_MAGIC_EMBEDDED_SIGNATURE,
-		Length: uint32(offset + len(superBlobBytes)),
+		Length: uint32(offset + len(signature)),
 		Count:  1,
 	})
 
@@ -130,6 +76,6 @@ func createLinkeditSegment(build *config.Build, code *exe.Section) []byte {
 		buffer.WriteByte(0)
 	}
 
-	buffer.Write(superBlobBytes)
+	buffer.Write(signature)
 	return buffer.Bytes()
 }
