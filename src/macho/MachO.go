@@ -130,7 +130,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Length:      BuildVersionSize,
 			Platform:    PlatformMacOS,
 			MinOS:       Version(12, 0, 0),
-			Sdk:         0,
+			Sdk:         Version(12, 0, 0),
 			NumTools:    0,
 		},
 		ChainedFixups: LinkeditDataCommand{
