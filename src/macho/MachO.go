@@ -1,6 +1,7 @@
 package macho
 
 import (
+	"bytes"
 	"encoding/binary"
 	"io"
 
@@ -10,6 +11,7 @@ import (
 
 // MachO is the executable format used on MacOS.
 type MachO struct {
+	*exe.Executable
 	Header
 	PageZero       Segment64
 	CodeSegment    Segment64
@@ -27,15 +29,22 @@ type MachO struct {
 
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes, nil)
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes, createLinkeditSegment())
 	code := x.Sections[0]
 	data := x.Sections[1]
 	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
-	imports.Bytes = createLinkeditSegment(build, code)
 	chainedFixupsSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + CodeSignaturePadding
 
+	identifier := []byte("_______\000")
+	pageSize := build.MemoryAlign()
+	rawFileSize := imports.FileOffset + len(imports.Bytes)
+	numHashes := (rawFileSize + pageSize - 1) / pageSize
+	superBlobSize, superBlobPadding := exe.AlignPad(SuperBlobSize+BlobIndexSize, 8)
+	signatureSize := superBlobSize + CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN
+
 	m := &MachO{
+		Executable: x,
 		Header: Header{
 			Magic:             0xFEEDFACF,
 			Architecture:      arch,
@@ -98,9 +107,9 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Length:       Segment64Size,
 			Name:         [16]byte{'_', '_', 'L', 'I', 'N', 'K', 'E', 'D', 'I', 'T'},
 			Address:      uint64(BaseAddress + imports.MemoryOffset),
-			SizeInMemory: uint64(len(imports.Bytes)),
+			SizeInMemory: uint64(len(imports.Bytes) + signatureSize),
 			Offset:       uint64(imports.FileOffset),
-			SizeInFile:   uint64(len(imports.Bytes)),
+			SizeInFile:   uint64(len(imports.Bytes) + signatureSize),
 			NumSections:  0,
 			Flag:         0,
 			MaxProt:      ProtReadable,
@@ -131,12 +140,12 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			DataOffset:  uint32(imports.FileOffset),
 			DataSize:    uint32(chainedFixupsSize),
 		},
-		// CodeSignature: LinkeditDataCommand{
-		// 	LoadCommand: LcCodeSignature,
-		// 	Length:      LinkeditDataCommandSize,
-		// 	DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
-		// 	DataSize:    uint32(len(imports.Bytes) - chainedFixupsSize),
-		// },
+		CodeSignature: LinkeditDataCommand{
+			LoadCommand: LcCodeSignature,
+			Length:      LinkeditDataCommandSize,
+			DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
+			DataSize:    uint32(signatureSize),
+		},
 		Linker: DylinkerCommand{
 			LoadCommand: LcLoadDylinker,
 			Length:      uint32(DylinkerCommandSize + len(LinkerString)),
@@ -149,6 +158,27 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 		},
 	}
 
+	buffer := bytes.Buffer{}
+	m.WriteRaw(&buffer)
+	contents := buffer.Bytes()
+	writer.Write(contents)
+
+	binary.Write(writer, binary.BigEndian, &SuperBlob{
+		Magic:  CS_MAGIC_EMBEDDED_SIGNATURE,
+		Length: uint32(signatureSize),
+		Count:  1,
+	})
+
+	binary.Write(writer, binary.BigEndian, &BlobIndex{
+		Type:   CS_SLOT_CODEDIRECTORY,
+		Offset: uint32(superBlobSize),
+	})
+
+	writer.Seek(int64(superBlobPadding), io.SeekCurrent)
+	writeCodeSignature(writer, contents, code, identifier, pageSize, numHashes)
+}
+
+func (m *MachO) WriteRaw(writer io.Writer) {
 	binary.Write(writer, binary.LittleEndian, &m.Header)
 	binary.Write(writer, binary.LittleEndian, &m.PageZero)
 	binary.Write(writer, binary.LittleEndian, &m.CodeSegment)
@@ -159,15 +189,14 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	binary.Write(writer, binary.LittleEndian, &m.Main)
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
 	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
-	// binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
+	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 	binary.Write(writer, binary.LittleEndian, &m.Linker)
 	writer.Write([]byte(LinkerString))
 	binary.Write(writer, binary.LittleEndian, &m.LibSystem)
 	writer.Write([]byte(LibSystemString))
-	writer.Seek(int64(code.Padding), io.SeekCurrent)
-	writer.Write(code.Bytes)
-	writer.Seek(int64(data.Padding), io.SeekCurrent)
-	writer.Write(data.Bytes)
-	writer.Seek(int64(imports.Padding), io.SeekCurrent)
-	writer.Write(imports.Bytes)
+
+	for _, section := range m.Executable.Sections {
+		writer.Write(bytes.Repeat([]byte{0}, section.Padding))
+		writer.Write(section.Bytes)
+	}
 }

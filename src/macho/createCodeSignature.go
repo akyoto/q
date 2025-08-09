@@ -1,12 +1,11 @@
 package macho
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"io"
 	"math/bits"
 
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/exe"
 )
 
@@ -34,30 +33,23 @@ const (
 	DYLD_CHAINED_IMPORT         = 1
 	DYLD_CHAINED_PTR_64         = 2
 	DYLD_CHAINED_PTR_START_NONE = 0xFFFF
-
-	// Custom
-	CodeSignaturePadding = 4
 )
 
-// createCodeSignature creates a signature for the binary.
-func createCodeSignature(build *config.Build, code *exe.Section) []byte {
-	superBlob := bytes.Buffer{}
-	identifier := []byte("\000")
-	pageSize := build.MemoryAlign()
+// writeCodeSignature write a signature for the file contents.
+func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, identifier []byte, pageSize int, numHashes int) {
 	pageSizeExponent := bits.Len(uint(pageSize)) - 1
-	numHashes := (len(code.Bytes) + pageSize - 1) / pageSize
 
-	binary.Write(&superBlob, binary.BigEndian, &CodeDirectory{
+	binary.Write(writer, binary.BigEndian, &CodeDirectory{
 		Magic:        CS_MAGIC_CODEDIRECTORY,
-		Length:       uint32(CodeDirectorySize + len(identifier) + CS_SHA256_LEN),
+		Length:       uint32(CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN),
 		Version:      CS_SUPPORTSEXECSEG,
 		HashOffset:   uint32(CodeDirectorySize + len(identifier)),
 		HashSize:     CS_SHA256_LEN,
 		HashType:     CS_HASHTYPE_SHA256,
 		PageSize:     uint8(pageSizeExponent),
-		Flags:        CS_ADHOC | CS_LINKER_SIGNED,
+		Flags:        CS_ALLOWED_MACHO,
 		NCodeSlots:   uint32(numHashes),
-		CodeLimit:    uint32(len(code.Bytes)),
+		CodeLimit:    uint32(len(contents)),
 		IdentOffset:  CodeDirectorySize,
 		ExecSegBase:  uint64(code.FileOffset),
 		ExecSegLimit: uint64(len(code.Bytes)),
@@ -65,15 +57,13 @@ func createCodeSignature(build *config.Build, code *exe.Section) []byte {
 	})
 
 	// Identifier
-	superBlob.Write(identifier)
+	writer.Write(identifier)
 
 	// Hashes
 	for i := range numHashes {
 		start := i * pageSize
-		end := min(start+pageSize, len(code.Bytes))
-		codeHash := sha256.Sum256(code.Bytes[start:end])
-		superBlob.Write(codeHash[:])
+		end := min(start+pageSize, len(contents))
+		codeHash := sha256.Sum256(contents[start:end])
+		writer.Write(codeHash[:])
 	}
-
-	return superBlob.Bytes()
 }
