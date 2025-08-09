@@ -131,12 +131,12 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			DataOffset:  uint32(imports.FileOffset),
 			DataSize:    uint32(chainedFixupsSize),
 		},
-		CodeSignature: LinkeditDataCommand{
-			LoadCommand: LcCodeSignature,
-			Length:      LinkeditDataCommandSize,
-			DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
-			DataSize:    uint32(len(imports.Bytes) - chainedFixupsSize),
-		},
+		// CodeSignature: LinkeditDataCommand{
+		// 	LoadCommand: LcCodeSignature,
+		// 	Length:      LinkeditDataCommandSize,
+		// 	DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
+		// 	DataSize:    uint32(len(imports.Bytes) - chainedFixupsSize),
+		// },
 		Linker: DylinkerCommand{
 			LoadCommand: LcLoadDylinker,
 			Length:      uint32(DylinkerCommandSize + len(LinkerString)),
@@ -159,7 +159,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	binary.Write(writer, binary.LittleEndian, &m.Main)
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
 	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
-	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
+	// binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 	binary.Write(writer, binary.LittleEndian, &m.Linker)
 	writer.Write([]byte(LinkerString))
 	binary.Write(writer, binary.LittleEndian, &m.LibSystem)
