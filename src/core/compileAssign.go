@@ -30,7 +30,14 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 	}
 
 	operator := removeAssign(node.Expression.Token.Kind)
-	operation := f.Append(&ssa.BinaryOp{Op: operator, Left: leftValue, Right: rightValue})
+
+	operation := f.Append(&ssa.BinaryOp{
+		Op:     operator,
+		Left:   leftValue,
+		Right:  rightValue,
+		Source: ssa.Source(node.Expression.Source()),
+	})
+
 	f.Block().Identify(name, operation)
 	return nil
 }
