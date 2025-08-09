@@ -35,11 +35,10 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
 	chainedFixupsSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + CodeSignaturePadding
-
 	identifier := []byte("_______\000")
-	pageSize := build.MemoryAlign()
+
 	rawFileSize := imports.FileOffset + len(imports.Bytes)
-	numHashes := (rawFileSize + pageSize - 1) / pageSize
+	numHashes := (rawFileSize + HashPageSize - 1) / HashPageSize
 	superBlobSize, superBlobPadding := exe.AlignPad(SuperBlobSize+BlobIndexSize, 8)
 	signatureSize := superBlobSize + CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN
 
@@ -175,7 +174,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	})
 
 	writer.Seek(int64(superBlobPadding), io.SeekCurrent)
-	writeCodeSignature(writer, contents, code, identifier, pageSize, numHashes)
+	writeCodeSignature(writer, contents, code, identifier, numHashes)
 }
 
 func (m *MachO) WriteRaw(writer io.Writer) {

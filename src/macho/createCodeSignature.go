@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"io"
-	"math/bits"
 
 	"git.urbach.dev/cli/q/src/exe"
 )
@@ -36,9 +35,7 @@ const (
 )
 
 // writeCodeSignature write a signature for the file contents.
-func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, identifier []byte, pageSize int, numHashes int) {
-	pageSizeExponent := bits.Len(uint(pageSize)) - 1
-
+func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, identifier []byte, numHashes int) {
 	binary.Write(writer, binary.BigEndian, &CodeDirectory{
 		Magic:        CS_MAGIC_CODEDIRECTORY,
 		Length:       uint32(CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN),
@@ -46,7 +43,7 @@ func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, id
 		HashOffset:   uint32(CodeDirectorySize + len(identifier)),
 		HashSize:     CS_SHA256_LEN,
 		HashType:     CS_HASHTYPE_SHA256,
-		PageSize:     uint8(pageSizeExponent),
+		PageSize:     12,
 		Flags:        CS_ALLOWED_MACHO,
 		NCodeSlots:   uint32(numHashes),
 		CodeLimit:    uint32(len(contents)),
@@ -61,8 +58,8 @@ func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, id
 
 	// Hashes
 	for i := range numHashes {
-		start := i * pageSize
-		end := min(start+pageSize, len(contents))
+		start := i * HashPageSize
+		end := min(start+HashPageSize, len(contents))
 		codeHash := sha256.Sum256(contents[start:end])
 		writer.Write(codeHash[:])
 	}

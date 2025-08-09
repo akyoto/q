@@ -12,5 +12,6 @@ const (
 		LinkeditDataCommandSize*2 +
 		DylinkerCommandSize + len(LinkerString) +
 		DylibCommandSize + len(LibSystemString)
-	HeaderEnd = HeaderSize + SizeCommands
+	HashPageSize = 4096
+	HeaderEnd    = HeaderSize + SizeCommands
 )
