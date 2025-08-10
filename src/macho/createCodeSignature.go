@@ -43,13 +43,14 @@ func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, id
 		HashOffset:   uint32(CodeDirectorySize + len(identifier)),
 		HashSize:     CS_SHA256_LEN,
 		HashType:     CS_HASHTYPE_SHA256,
+		Platform:     uint8(PlatformMacOS),
 		PageSize:     12,
 		Flags:        CS_ADHOC | CS_HARD | CS_KILL | CS_RESTRICT | CS_ENFORCEMENT | CS_RUNTIME | CS_LINKER_SIGNED,
 		NCodeSlots:   uint32(numHashes),
 		CodeLimit:    uint32(len(contents)),
 		IdentOffset:  CodeDirectorySize,
-		ExecSegBase:  uint64(code.FileOffset),
-		ExecSegLimit: uint64(len(code.Bytes)),
+		ExecSegBase:  0,
+		ExecSegLimit: uint64(code.FileOffset + len(code.Bytes)),
 		ExecSegFlags: CS_EXECSEG_MAIN_BINARY,
 	})
 
