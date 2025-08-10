@@ -21,10 +21,10 @@ type MachO struct {
 	Uuid           Uuid
 	Main           Main
 	BuildVersion   BuildVersion
-	ChainedFixups  LinkeditDataCommand
-	CodeSignature  LinkeditDataCommand
 	Linker         DylinkerCommand
 	LibSystem      DylibCommand
+	ChainedFixups  LinkeditDataCommand
+	CodeSignature  LinkeditDataCommand
 }
 
 // Write writes the Mach-O format to the given writer.
@@ -133,6 +133,16 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Sdk:         Version(12, 0, 0),
 			NumTools:    0,
 		},
+		Linker: DylinkerCommand{
+			LoadCommand: LcLoadDylinker,
+			Length:      uint32(DylinkerCommandSize + len(LinkerString)),
+			Name:        DylinkerCommandSize,
+		},
+		LibSystem: DylibCommand{
+			LoadCommand: LcLoadDylib,
+			Length:      uint32(DylibCommandSize + len(LibSystemString)),
+			Name:        DylibCommandSize,
+		},
 		ChainedFixups: LinkeditDataCommand{
 			LoadCommand: LcDyldChainedFixups,
 			Length:      LinkeditDataCommandSize,
@@ -144,16 +154,6 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Length:      LinkeditDataCommandSize,
 			DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
 			DataSize:    uint32(signatureSize),
-		},
-		Linker: DylinkerCommand{
-			LoadCommand: LcLoadDylinker,
-			Length:      uint32(DylinkerCommandSize + len(LinkerString)),
-			Name:        DylinkerCommandSize,
-		},
-		LibSystem: DylibCommand{
-			LoadCommand: LcLoadDylib,
-			Length:      uint32(DylibCommandSize + len(LibSystemString)),
-			Name:        DylibCommandSize,
 		},
 	}
 
@@ -187,12 +187,12 @@ func (m *MachO) WriteRaw(writer io.Writer) {
 	binary.Write(writer, binary.LittleEndian, &m.Uuid)
 	binary.Write(writer, binary.LittleEndian, &m.Main)
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
-	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
-	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 	binary.Write(writer, binary.LittleEndian, &m.Linker)
 	writer.Write([]byte(LinkerString))
 	binary.Write(writer, binary.LittleEndian, &m.LibSystem)
 	writer.Write([]byte(LibSystemString))
+	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
+	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 
 	for _, section := range m.Executable.Sections {
 		writer.Write(bytes.Repeat([]byte{0}, section.Padding))
