@@ -44,7 +44,7 @@ func writeCodeSignature(writer io.Writer, contents []byte, code *exe.Section, id
 		HashSize:     CS_SHA256_LEN,
 		HashType:     CS_HASHTYPE_SHA256,
 		PageSize:     12,
-		Flags:        CS_ALLOWED_MACHO,
+		Flags:        CS_ADHOC | CS_HARD | CS_KILL | CS_RESTRICT | CS_ENFORCEMENT | CS_RUNTIME | CS_LINKER_SIGNED,
 		NCodeSlots:   uint32(numHashes),
 		CodeLimit:    uint32(len(contents)),
 		IdentOffset:  CodeDirectorySize,
