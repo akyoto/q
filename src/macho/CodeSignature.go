@@ -1,0 +1,99 @@
+package macho
+
+import (
+	"crypto/sha256"
+	"encoding/binary"
+	"io"
+
+	"git.urbach.dev/cli/q/src/exe"
+)
+
+const (
+	// Code signing flags
+	CS_ADHOC                    = 0x00000002
+	CS_HARD                     = 0x00000100
+	CS_KILL                     = 0x00000200
+	CS_CHECK_EXPIRATION         = 0x00000400
+	CS_RESTRICT                 = 0x00000800
+	CS_ENFORCEMENT              = 0x00001000
+	CS_REQUIRE_LV               = 0x00002000
+	CS_RUNTIME                  = 0x00010000
+	CS_LINKER_SIGNED            = 0x00020000
+	CS_ALLOWED_MACHO            = CS_ADHOC | CS_HARD | CS_KILL | CS_CHECK_EXPIRATION | CS_RESTRICT | CS_ENFORCEMENT | CS_REQUIRE_LV | CS_RUNTIME | CS_LINKER_SIGNED
+	CS_HASHTYPE_SHA256          = 2
+	CS_SHA256_LEN               = 32
+	CS_SLOT_CODEDIRECTORY       = 0
+	CS_MAGIC_CODEDIRECTORY      = 0xFADE0C02
+	CS_MAGIC_EMBEDDED_SIGNATURE = 0xFADE0CC0
+	CS_SUPPORTSEXECSEG          = 0x20400
+	CS_EXECSEG_MAIN_BINARY      = 0x1
+
+	// Dyld
+	DYLD_CHAINED_IMPORT         = 1
+	DYLD_CHAINED_PTR_64         = 2
+	DYLD_CHAINED_PTR_START_NONE = 0xFFFF
+)
+
+// CodeSignature is the last section in the MachO binary and hashes all contents written before it.
+type CodeSignature struct {
+	SuperBlob
+	BlobIndex
+	CodeDirectory
+}
+
+// NewCodeSignature creates a new code signature.
+func NewCodeSignature(rawFileSize int, identifier []byte, code *exe.Section) *CodeSignature {
+	numHashes := (rawFileSize + HashPageSize - 1) / HashPageSize
+
+	return &CodeSignature{
+		SuperBlob: SuperBlob{
+			Magic:  CS_MAGIC_EMBEDDED_SIGNATURE,
+			Length: uint32(SuperBlobSize + BlobIndexSize + CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN),
+			Count:  1,
+		},
+		BlobIndex: BlobIndex{
+			Type:   CS_SLOT_CODEDIRECTORY,
+			Offset: uint32(SuperBlobSize + BlobIndexSize),
+		},
+		CodeDirectory: CodeDirectory{
+			Magic:        CS_MAGIC_CODEDIRECTORY,
+			Length:       uint32(CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN),
+			Version:      CS_SUPPORTSEXECSEG,
+			HashOffset:   uint32(CodeDirectorySize + len(identifier)),
+			HashSize:     CS_SHA256_LEN,
+			HashType:     CS_HASHTYPE_SHA256,
+			Platform:     uint8(PlatformMacOS),
+			PageSize:     12,
+			Flags:        CS_ADHOC | CS_HARD | CS_KILL | CS_RESTRICT | CS_ENFORCEMENT | CS_RUNTIME | CS_LINKER_SIGNED,
+			NCodeSlots:   uint32(numHashes),
+			CodeLimit:    uint32(rawFileSize),
+			IdentOffset:  CodeDirectorySize,
+			ExecSegBase:  0,
+			ExecSegLimit: uint64(code.FileOffset + len(code.Bytes)),
+			ExecSegFlags: CS_EXECSEG_MAIN_BINARY,
+		},
+	}
+}
+
+// size returns the size of the entire code signature section.
+func (s *CodeSignature) size() uint32 {
+	return s.SuperBlob.Length
+}
+
+// write writes a code signature hashing the given file contents.
+func (s *CodeSignature) write(writer io.WriteSeeker, contents []byte, identifier []byte) {
+	binary.Write(writer, binary.BigEndian, &s.SuperBlob)
+	binary.Write(writer, binary.BigEndian, &s.BlobIndex)
+	binary.Write(writer, binary.BigEndian, &s.CodeDirectory)
+
+	// Identifier
+	writer.Write(identifier)
+
+	// Hashes
+	for i := range s.CodeDirectory.NCodeSlots {
+		start := i * HashPageSize
+		end := min(start+HashPageSize, uint32(len(contents)))
+		codeHash := sha256.Sum256(contents[start:end])
+		writer.Write(codeHash[:])
+	}
+}

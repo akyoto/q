@@ -35,12 +35,9 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	imports := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
 	chainedFixupsSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + CodeSignaturePadding
-	identifier := []byte("_______\000")
-
 	rawFileSize := imports.FileOffset + len(imports.Bytes)
-	numHashes := (rawFileSize + HashPageSize - 1) / HashPageSize
-	superBlobSize, superBlobPadding := exe.AlignPad(SuperBlobSize+BlobIndexSize, 8)
-	signatureSize := superBlobSize + CodeDirectorySize + len(identifier) + numHashes*CS_SHA256_LEN
+	identifier := []byte("\000")
+	codeSignature := NewCodeSignature(rawFileSize, identifier, code)
 
 	m := &MachO{
 		Executable: x,
@@ -106,9 +103,9 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Length:       Segment64Size,
 			Name:         [16]byte{'_', '_', 'L', 'I', 'N', 'K', 'E', 'D', 'I', 'T'},
 			Address:      uint64(BaseAddress + imports.MemoryOffset),
-			SizeInMemory: uint64(len(imports.Bytes) + signatureSize),
+			SizeInMemory: uint64(len(imports.Bytes) + int(codeSignature.size())),
 			Offset:       uint64(imports.FileOffset),
-			SizeInFile:   uint64(len(imports.Bytes) + signatureSize),
+			SizeInFile:   uint64(len(imports.Bytes) + int(codeSignature.size())),
 			NumSections:  0,
 			Flag:         0,
 			MaxProt:      ProtReadable,
@@ -153,31 +150,19 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			LoadCommand: LcCodeSignature,
 			Length:      LinkeditDataCommandSize,
 			DataOffset:  uint32(imports.FileOffset + chainedFixupsSize),
-			DataSize:    uint32(signatureSize),
+			DataSize:    codeSignature.size(),
 		},
 	}
 
 	buffer := bytes.Buffer{}
-	m.WriteRaw(&buffer)
+	m.WriteRaw(&buffer, false)
 	contents := buffer.Bytes()
-	writer.Write(contents)
-
-	binary.Write(writer, binary.BigEndian, &SuperBlob{
-		Magic:  CS_MAGIC_EMBEDDED_SIGNATURE,
-		Length: uint32(signatureSize),
-		Count:  1,
-	})
-
-	binary.Write(writer, binary.BigEndian, &BlobIndex{
-		Type:   CS_SLOT_CODEDIRECTORY,
-		Offset: uint32(superBlobSize),
-	})
-
-	writer.Seek(int64(superBlobPadding), io.SeekCurrent)
-	writeCodeSignature(writer, contents, code, identifier, numHashes)
+	m.WriteRaw(writer, true)
+	codeSignature.write(writer, contents, identifier)
 }
 
-func (m *MachO) WriteRaw(writer io.Writer) {
+// WriteRaw writes the raw file contents without the code signature.
+func (m *MachO) WriteRaw(writer io.Writer, seek bool) {
 	binary.Write(writer, binary.LittleEndian, &m.Header)
 	binary.Write(writer, binary.LittleEndian, &m.PageZero)
 	binary.Write(writer, binary.LittleEndian, &m.CodeSegment)
@@ -195,7 +180,12 @@ func (m *MachO) WriteRaw(writer io.Writer) {
 	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 
 	for _, section := range m.Executable.Sections {
-		writer.Write(bytes.Repeat([]byte{0}, section.Padding))
+		if seek {
+			writer.(io.WriteSeeker).Seek(int64(section.Padding), io.SeekCurrent)
+		} else {
+			writer.Write(bytes.Repeat([]byte{0}, section.Padding))
+		}
+
 		writer.Write(section.Bytes)
 	}
 }
