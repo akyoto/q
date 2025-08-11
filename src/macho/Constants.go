@@ -1,7 +1,7 @@
 package macho
 
 const (
-	BaseAddress  = 0x1000000
+	BaseAddress  = 0x100000000
 	NumCommands  = 11
 	NumSegments  = 4
 	SizeCommands = NumSegments*Segment64Size +
