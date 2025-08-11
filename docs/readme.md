@@ -140,10 +140,10 @@ This table often raises the question why Mac builds are so huge compared to the 
 |            | arm64 | x86-64 |
 | ---------- | ----- | ------ |
 | 🐧 Linux   | ✔️    | ✔️     |
-| 🍏 Mac     | ✔️*   | ✔️     |
-| 🪟 Windows | ✔️*   | ✔️     |
+| 🍏 Mac     | ✔️    | ✔️     |
+| 🪟 Windows | ❌    | ✔️     |
 
-Those marked with a star need testing. Please contact me if you have a machine with the marked architectures.
+Windows on ARM support is work in progress. Please contact me if you have a machine with the failing architectures.
 
 ### How is the assembly code quality?
 
