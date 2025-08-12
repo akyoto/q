@@ -114,9 +114,7 @@ gcd(a int, b int) -> int {
 
 ```
 fizzbuzz(n int) {
-	x := 1
-
-	loop {
+	loop x := 1..n+1 {
 		switch {
 			x % 15 == 0 { io.write("FizzBuzz") }
 			x % 5 == 0  { io.write("Buzz") }
@@ -124,13 +122,9 @@ fizzbuzz(n int) {
 			_           { io.writeInt(x) }
 		}
 
-		x += 1
-
-		if x > n {
-			return
+		if x != n {
+			io.write(" ")
 		}
-
-		io.write(" ")
 	}
 }
 ```
