@@ -16,6 +16,7 @@ func TestLoadAddress(t *testing.T) {
 	}{
 		{arm.X0, 56, 0x100001C0},
 		{arm.X1, 80, 0x10000281},
+		{arm.X16, 0x3000, 0x10018010},
 	}
 
 	for _, pattern := range usagePatterns {

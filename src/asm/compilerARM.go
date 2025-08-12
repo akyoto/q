@@ -39,10 +39,10 @@ func (c *compilerARM) Compile(instr Instruction) {
 			return code
 		}
 	case *CallExtern:
-		c.append(arm.LoadAddress(arm.X0, 0))
+		c.append(arm.LoadAddress(arm.X16, 0))
 		patch := c.PatchLast4Bytes()
-		c.append(arm.LoadRegister(arm.X0, arm.X0, arm.UnscaledImmediate, 0, 8))
-		c.append(arm.CallRegister(arm.X0))
+		c.append(arm.LoadRegister(arm.X16, arm.X16, arm.UnscaledImmediate, 0, 8))
+		c.append(arm.CallRegister(arm.X16))
 
 		patch.apply = func(code []byte) []byte {
 			index := c.libraries.Index(instr.Library, instr.Function)
@@ -53,7 +53,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 
 			address := c.importsStart + index*8
 			offset := address - patch.start
-			binary.LittleEndian.PutUint32(code, arm.LoadAddress(arm.X0, offset))
+			binary.LittleEndian.PutUint32(code, arm.LoadAddress(arm.X16, offset))
 			return code
 		}
 	case *CallExternStart:
