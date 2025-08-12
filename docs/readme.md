@@ -64,13 +64,12 @@ q build examples/hello --os mac
 q build examples/hello --os windows
 ```
 
-Build with verbose output:
+## News
 
-```shell
-q build examples/hello --verbose
-```
+- 2025-08-12: Added support for Windows on arm64.
+- 2025-08-11: Added support for Mac on arm64.
 
-## Language specification
+## Syntax
 
 The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems.
 
@@ -78,14 +77,9 @@ The language syntax is highly volatile at this point but you can take a look at 
 
 Documentation for all language features will follow once the core systems are stable.
 
-## News
+## Source
 
-- 2025-08-12: Added support for Windows on arm64.
-- 2025-08-11: Added support for Mac on arm64.
-
-## Source overview
-
-This section is for contributors who want a high-level overview of the source code structure.
+This section is for contributors who want a high-level overview of the source code structure which uses a flat layout without nesting:
 
 ### Packages
 
@@ -130,6 +124,14 @@ This section is for contributors who want a high-level overview of the source co
 
 ## FAQ
 
+### Which platforms are supported?
+
+|            | arm64 | x86-64 |
+| ---------- | ----- | ------ |
+| 🐧 Linux   | ✔️    | ✔️     |
+| 🍏 Mac     | ✔️    | ✔️     |
+| 🪟 Windows | ✔️    | ✔️     |
+
 ### How tiny is a Hello World?
 
 |            | arm64      | x86-64    |
@@ -140,32 +142,9 @@ This section is for contributors who want a high-level overview of the source co
 
 This table often raises the question why Mac builds are so huge compared to the rest. The answer is in [these few lines](https://github.com/apple-oss-distributions/xnu/blob/e3723e1f17661b24996789d8afc084c0c3303b26/bsd/kern/mach_loader.c#L2021-L2027) of their kernel code. None of the other operating systems force you to page-align sections on disk. In practice, however, it's not as bad as it sounds because the padding is a zero-filled area that barely consumes any disk space in [sparse files](https://en.wikipedia.org/wiki/Sparse_file).
 
-### Which platforms are supported?
-
-|            | arm64 | x86-64 |
-| ---------- | ----- | ------ |
-| 🐧 Linux   | ✔️    | ✔️     |
-| 🍏 Mac     | ✔️    | ✔️     |
-| 🪟 Windows | ✔️    | ✔️     |
-
 ### How is the assembly code quality?
 
 The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is fairly high despite the young age of the project.
-
-### Which security features are supported?
-
-#### PIE
-
-All executables are built as position independent executables supporting a dynamic base address.
-
-#### W^X
-
-All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
-
-|        | Read | Execute | Write |
-| ------ | ---- | ------- | ----- |
-| Code   | ✔️   | ✔️      | ❌    |
-| Data   | ✔️   | ❌      | ❌    |
 
 ### How do I use it for scripting?
 
@@ -183,11 +162,25 @@ main() {
 
 Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
 
+### Which security features are supported?
+
+#### PIE
+
+All executables are built as position independent executables supporting a dynamic base address.
+
+#### W^X
+
+All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
+
+|        | Read | Execute | Write |
+| ------ | ---- | ------- | ----- |
+| Code   | ✔️   | ✔️      | ❌    |
+| Data   | ✔️   | ❌      | ❌    |
+
 ### Any editor extensions?
 
-There is one for VS Code but is only has syntax highlighting so far. You can clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder.
-
-Neovim support is planned.
+- VS Code (basic highlighting): Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder
+- Neovim support is planned.
 
 ### How do I pronounce the name?
 
@@ -197,48 +190,31 @@ Neovim support is planned.
 
 ### How do I run the test suite?
 
-Run all tests:
-
 ```shell
+# Run all tests:
 go run gotest.tools/gotestsum@latest
-```
 
-Generate coverage:
-
-```shell
+# Generate coverage:
 go test -coverpkg=./... -coverprofile=cover.out ./...
-```
 
-View coverage:
-
-```shell
+# View coverage:
 go tool cover -func cover.out
 go tool cover -html cover.out
 ```
 
 ### How do I run the benchmarks?
 
-Run compiler benchmarks:
-
 ```shell
-go test ./tests -run='^$' -bench=. -benchmem
-```
+# Run compiler benchmarks:
+go test ./tests -run '^$' -bench . -benchmem
 
-Run compiler benchmarks in single-threaded mode:
-
-```shell
+# Run compiler benchmarks in single-threaded mode:
 GOMAXPROCS=1 go test ./tests -run '^$' -bench . -benchmem
-```
 
-Generate profiling data:
+# Generate profiling data:
+go test ./tests -run '^$' -bench . -benchmem -cpuprofile cpu.out -memprofile mem.out
 
-```shell
-go test ./tests -run='^$' -bench=. -benchmem -cpuprofile cpu.out -memprofile mem.out
-```
-
-View profiling data:
-
-```shell
+# View profiling data:
 go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
 go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 ```
