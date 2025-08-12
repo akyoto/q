@@ -2,8 +2,8 @@ package macho
 
 const (
 	BaseAddress  = 0x100000000
-	NumCommands  = 11
-	NumSegments  = 4
+	NumCommands  = 10
+	NumSegments  = 3
 	SizeCommands = NumSegments*Segment64Size +
 		Section64Size +
 		UuidSize +

@@ -5,7 +5,10 @@ import (
 	"encoding/binary"
 )
 
-const CodeSignaturePadding = 12
+const (
+	codeSignaturePadding = 0
+	chainedFixupsSize    = ChainedFixupsHeaderSize + ChainedStartsInImageSize + codeSignaturePadding
+)
 
 // createLinkeditSegment creates the contents of the __LINKEDIT segment.
 func createLinkeditSegment() []byte {
@@ -23,7 +26,7 @@ func createLinkeditSegment() []byte {
 	})
 
 	// Make sure the code signature that follows is 16-byte aligned
-	for range CodeSignaturePadding {
+	for range codeSignaturePadding {
 		buffer.WriteByte(0)
 	}
 
