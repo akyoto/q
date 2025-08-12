@@ -78,6 +78,11 @@ The language syntax is highly volatile at this point but you can take a look at 
 
 Documentation for all language features will follow once the core systems are stable.
 
+## News
+
+- 2025-08-12: Added support for Windows on arm64.
+- 2025-08-11: Added support for Mac on arm64.
+
 ## Source overview
 
 This section is for contributors who want a high-level overview of the source code structure.
@@ -141,9 +146,7 @@ This table often raises the question why Mac builds are so huge compared to the 
 | ---------- | ----- | ------ |
 | 🐧 Linux   | ✔️    | ✔️     |
 | 🍏 Mac     | ✔️    | ✔️     |
-| 🪟 Windows | ❌    | ✔️     |
-
-Windows on ARM support is work in progress. Please contact me if you have a machine with the failing architectures.
+| 🪟 Windows | ✔️    | ✔️     |
 
 ### How is the assembly code quality?
 
