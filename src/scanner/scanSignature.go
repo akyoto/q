@@ -98,6 +98,10 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 		function.Input = append(function.Input, &ssa.Parameter{
 			Name:   param[0].String(file.Bytes),
 			Tokens: param,
+			Source: ssa.Source{
+				StartPos: param[0].Position,
+				EndPos:   param[0].End(),
+			},
 		})
 	}
 

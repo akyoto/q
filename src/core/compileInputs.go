@@ -27,6 +27,7 @@ func (f *Function) compileInputs() {
 					Name:   fmt.Sprintf("%s.%s", input.Name, field.Name),
 					Typ:    field.Type,
 					Tokens: input.Tokens,
+					Source: input.Source,
 				}
 
 				f.Append(param)

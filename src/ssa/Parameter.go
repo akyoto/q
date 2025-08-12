@@ -13,6 +13,7 @@ type Parameter struct {
 	Name   string
 	Tokens token.List
 	Liveness
+	Source
 	Index uint8
 }
 
