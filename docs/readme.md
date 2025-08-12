@@ -71,11 +71,71 @@ q build examples/hello --os windows
 
 ## Syntax
 
-The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems.
+> [!NOTE]
+> This is a draft.
 
-The language syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status.
+[hello.q](../examples/hello/hello.q):
 
-Documentation for all language features will follow once the core systems are stable.
+```
+import io
+
+main() {
+	io.write("Hello\n")
+}
+```
+
+[fibonacci.q](../examples/fibonacci/fibonacci.q)
+
+```
+fibonacci(n int) -> int {
+	if n <= 1 {
+		return n
+	}
+
+	return fibonacci(n - 1) + fibonacci(n - 2)
+}
+```
+
+[gcd.q](../examples/gcd/gcd.q)
+
+```
+gcd(a int, b int) -> int {
+	loop {
+		switch {
+			a == b { return a }
+			a > b  { a -= b }
+			_      { b -= a }
+		}
+	}
+}
+```
+
+[fizzbuzz.q](../examples/fizzbuzz/fizzbuzz.q):
+
+```
+fizzbuzz(n int) {
+	x := 1
+
+	loop {
+		switch {
+			x % 15 == 0 { io.write("FizzBuzz") }
+			x % 5 == 0  { io.write("Buzz") }
+			x % 3 == 0  { io.write("Fizz") }
+			_           { io.writeInt(x) }
+		}
+
+		x += 1
+
+		if x > n {
+			return
+		}
+
+		io.write(" ")
+	}
+}
+```
+
+The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems. The language syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status. Documentation for all language features will follow once the core systems are stable.
 
 ## Source
 
