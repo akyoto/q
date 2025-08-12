@@ -5,6 +5,8 @@ import (
 	"git.urbach.dev/cli/q/src/dll"
 	"git.urbach.dev/cli/q/src/elf"
 	"git.urbach.dev/cli/q/src/exe"
+	"git.urbach.dev/cli/q/src/macho"
+	"git.urbach.dev/cli/q/src/pe"
 )
 
 type compiler struct {
@@ -19,7 +21,20 @@ type compiler struct {
 // AddDataLabels adds the data labels to the existing labels.
 // This can only run after the code size is known.
 func (c *compiler) AddDataLabels() {
-	x := exe.New(elf.HeaderEnd, c.build.FileAlign(), c.build.MemoryAlign(), c.build.Congruent(), c.code, c.data, nil)
+	headerEnd := 0
+	embedHeaders := false
+
+	switch c.build.OS {
+	case config.Linux:
+		headerEnd = elf.HeaderEnd
+	case config.Mac:
+		headerEnd = macho.HeaderEnd
+		embedHeaders = true
+	case config.Windows:
+		headerEnd = pe.HeaderEnd
+	}
+
+	x := exe.New(headerEnd, c.build.FileAlign(), c.build.MemoryAlign(), c.build.Congruent(), embedHeaders, c.code, c.data, nil)
 	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
 
 	for dataLabel, address := range c.dataLabels {

@@ -9,7 +9,7 @@ import (
 
 func TestSimple(t *testing.T) {
 	align := 32
-	x := exe.New(1, align, align, false, []byte{1}, []byte{1})
+	x := exe.New(1, align, align, false, false, []byte{1}, []byte{1})
 	assert.Equal(t, len(x.Sections), 2)
 	assert.Equal(t, x.Sections[0].Padding, align-1)
 	assert.Equal(t, x.Sections[0].FileOffset, align)
@@ -20,7 +20,7 @@ func TestSimple(t *testing.T) {
 func TestCongruent(t *testing.T) {
 	fileAlign := 16
 	memoryAlign := 32
-	x := exe.New(1, fileAlign, memoryAlign, true, []byte{1}, []byte{1}, []byte{1})
+	x := exe.New(1, fileAlign, memoryAlign, true, false, []byte{1}, []byte{1}, []byte{1})
 	assert.Equal(t, len(x.Sections), 3)
 	assert.Equal(t, x.Sections[0].FileOffset, fileAlign)
 	assert.Equal(t, x.Sections[1].FileOffset, fileAlign*2)

@@ -31,7 +31,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	linkeditOffset, padding := exe.AlignPad(len(dataBytes), 16)
 	dataBytes = append(dataBytes, bytes.Repeat([]byte{0}, padding)...)
 	dataBytes = append(dataBytes, createLinkeditSegment()...)
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), codeBytes, dataBytes)
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true, codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
 	arch, microArch := Arch(build.Arch)

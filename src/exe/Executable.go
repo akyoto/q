@@ -2,21 +2,23 @@ package exe
 
 // Executable is a generic definition of the binary that later gets translated to OS-specific formats.
 type Executable struct {
-	Sections    []*Section
-	headerEnd   int
-	fileAlign   int
-	memoryAlign int
-	congruent   bool
+	Sections     []*Section
+	headerEnd    int
+	fileAlign    int
+	memoryAlign  int
+	congruent    bool
+	embedHeaders bool
 }
 
 // New creates a new executable.
-func New(headerEnd int, fileAlign int, memoryAlign int, congruent bool, raw ...[]byte) *Executable {
+func New(headerEnd int, fileAlign int, memoryAlign int, congruent bool, embedHeaders bool, raw ...[]byte) *Executable {
 	exe := &Executable{
-		Sections:    make([]*Section, len(raw)),
-		headerEnd:   headerEnd,
-		fileAlign:   fileAlign,
-		memoryAlign: memoryAlign,
-		congruent:   congruent,
+		Sections:     make([]*Section, len(raw)),
+		headerEnd:    headerEnd,
+		fileAlign:    fileAlign,
+		memoryAlign:  memoryAlign,
+		congruent:    congruent,
+		embedHeaders: embedHeaders,
 	}
 
 	for i, section := range raw {
@@ -34,8 +36,14 @@ func New(headerEnd int, fileAlign int, memoryAlign int, congruent bool, raw ...[
 // Update recalculates all section offsets.
 func (exe *Executable) Update() {
 	first := exe.Sections[0]
-	first.FileOffset, first.Padding = AlignPad(exe.headerEnd, exe.fileAlign)
-	first.MemoryOffset = Align(exe.headerEnd, exe.memoryAlign)
+
+	if exe.embedHeaders {
+		first.FileOffset, first.Padding = AlignPad(exe.headerEnd, 0x40)
+		first.MemoryOffset = first.FileOffset
+	} else {
+		first.FileOffset, first.Padding = AlignPad(exe.headerEnd, exe.fileAlign)
+		first.MemoryOffset = Align(exe.headerEnd, exe.memoryAlign)
+	}
 
 	if exe.congruent && exe.fileAlign != exe.memoryAlign {
 		first.MemoryOffset += first.FileOffset % exe.memoryAlign
