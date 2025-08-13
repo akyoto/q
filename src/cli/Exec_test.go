@@ -26,6 +26,7 @@ func TestExec(t *testing.T) {
 
 func TestExecErrors(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build"}), 1)
+	assert.Equal(t, cli.Exec([]string{"build", "../../src/core/testdata/TypeMismatch.q", "--dry"}), 1)
 	assert.Equal(t, cli.Exec([]string{"run"}), 1)
 	assert.Equal(t, cli.Exec([]string{"_"}), 1)
 }
