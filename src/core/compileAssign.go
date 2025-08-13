@@ -14,7 +14,7 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 	leftValue, exists := f.Block().FindIdentifier(name)
 
 	if !exists {
-		return errors.New(&UnknownIdentifier{Name: name}, f.File, left.Token.Position)
+		return errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
 	}
 
 	right := node.Expression.Children[1]
