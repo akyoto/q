@@ -8,18 +8,12 @@ import (
 
 // WriteFile writes an executable file to disk.
 func WriteFile(executable string, env *core.Environment) error {
-	file, err := os.Create(executable)
+	file, err := os.OpenFile(executable, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o755)
 
 	if err != nil {
 		return err
 	}
 
 	Write(file, env)
-	err = file.Chmod(0o755)
-
-	if err != nil {
-		return err
-	}
-
 	return file.Close()
 }
