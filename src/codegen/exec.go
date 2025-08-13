@@ -12,7 +12,7 @@ import (
 
 // exec executes a step which appends it to the assembler's instruction list.
 func (f *Function) exec(step *Step) {
-	if step.Index+1 == len(f.Steps) || step.Block != f.Steps[step.Index+1].Block {
+	if f.isLastStepInBlock(step) {
 		for _, live := range step.Live {
 			if live.Phi != nil && live.Register != live.Phi.Register {
 				f.Assembler.Append(&asm.Move{
@@ -26,22 +26,6 @@ func (f *Function) exec(step *Step) {
 	switch instr := step.Value.(type) {
 	case *ssa.Assert:
 		f.jumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
-
-	case *ssa.Bool:
-		if step.Register == -1 {
-			return
-		}
-
-		number := 0
-
-		if instr.Bool {
-			number = 1
-		}
-
-		f.Assembler.Append(&asm.MoveNumber{
-			Destination: step.Register,
-			Number:      number,
-		})
 
 	case *ssa.BinaryOp:
 		left := f.ValueToStep[instr.Left]
@@ -126,6 +110,22 @@ func (f *Function) exec(step *Step) {
 		default:
 			panic(fmt.Sprintf("not implemented: %d", instr.Op))
 		}
+
+	case *ssa.Bool:
+		if step.Register == -1 {
+			return
+		}
+
+		number := 0
+
+		if instr.Bool {
+			number = 1
+		}
+
+		f.Assembler.Append(&asm.MoveNumber{
+			Destination: step.Register,
+			Number:      number,
+		})
 
 	case *ssa.Branch:
 		var op token.Kind
