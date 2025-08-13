@@ -236,6 +236,15 @@ All memory pages are loaded with either execute or write permissions but never w
 - VS Code (basic highlighting): Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder
 - Neovim support is planned.
 
+### Why Go and not language X?
+
+Because of readability, maintainability and great tools for concurrency.
+The implementation will be replaced by a self-hosted compiler in the future.
+
+### How do I pronounce the name?
+
+/ˈkjuː/ just like `q` in the English alphabet.
+
 ### I can't contribute but can I donate to the project?
 
 Yes, you can [donate](https://buy.stripe.com/4gw7vf5Jxflf83m7st) if you live in a country supported by Stripe.
@@ -244,10 +253,6 @@ The payment is classified as a "cash donation".
 ### If I donate, what will my money be used for?
 
 Server infrastructure and support for existing and new architectures.
-
-### How do I pronounce the name?
-
-/ˈkjuː/ just like `q` in the English alphabet.
 
 ## FAQ: Contributors
 
