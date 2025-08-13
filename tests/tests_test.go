@@ -50,6 +50,8 @@ var tests = []run{
 	{"loop-limit", "", "", 0},
 	{"loop-limit-dynamic", "", "", 0},
 	{"loop-keepalive", "", "", 0},
+	{"memory", "", "", 0},
+	{"out-of-memory", "", "", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
 }
