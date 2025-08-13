@@ -16,7 +16,7 @@ func help() int {
 	for line := range strings.Lines(helpText) {
 		switch {
 		case strings.HasPrefix(line, "        "):
-			startDimmed := strings.IndexByte(line, '(')
+			startDimmed := strings.IndexByte(line, '#')
 			dimmed := ""
 
 			if startDimmed != -1 {

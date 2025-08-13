@@ -4,5 +4,5 @@ package config
 func (build *Build) SetVerbose(verbose bool) {
 	build.ShowASM = verbose
 	build.ShowHeaders = verbose
-	build.ShowIR = verbose
+	build.ShowSSA = verbose
 }

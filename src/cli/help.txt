@@ -8,25 +8,15 @@ Compiler for the q programming language.
 
         q build [file]
 
-    Build for another architecture:
+    Build for another system:
 
-        q build [file] --arch [x86|arm]
+        q build [file] --os [linux|mac|windows] --arch [x86|arm]
 
-    Build for another operating system:
+    Show output from various stages:
 
-        q build [file] --os [linux|mac|windows]
-
-    Show assembly code:
-
-        q build [file] -asm (--assembly)
-
-    Show intermediate representation:
-
-        q build [file] -ir (--intermediate)
-
-    Show output from all stages:
-
-        q build [file] -v (--verbose)
+        q build [file] --asm      # assembly code
+        q build [file] --ssa      # static single assigment form
+        q build [file] --verbose  # all of the above
 
     Show this help:
 

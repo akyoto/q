@@ -4,12 +4,12 @@ import "git.urbach.dev/cli/q/src/core"
 
 // Show shows additional information about the build.
 func Show(env *core.Environment) {
-	if env.Build.ShowIR {
+	if env.Build.ShowSSA {
 		if env.Build.ShowHeaders {
-			Header(HeaderIR)
+			Header(HeaderSSA)
 		}
 
-		IR(env.Init)
+		SSA(env.Init)
 	}
 
 	if env.Build.ShowASM {

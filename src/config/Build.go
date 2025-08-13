@@ -8,5 +8,5 @@ type Build struct {
 	Dry         bool
 	ShowASM     bool
 	ShowHeaders bool
-	ShowIR      bool
+	ShowSSA     bool
 }

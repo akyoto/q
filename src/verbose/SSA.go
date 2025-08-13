@@ -9,11 +9,11 @@ import (
 	"git.urbach.dev/go/color/ansi"
 )
 
-//go:embed IR.txt
-var HeaderIR string
+//go:embed SSA.txt
+var HeaderSSA string
 
-// IR shows the SSA IR.
-func IR(root *core.Function) {
+// SSA shows the SSA IR.
+func SSA(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
 		ansi.Yellow.Println(f.FullName + ":")
 
