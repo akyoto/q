@@ -165,7 +165,11 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
 	case *Load:
-		c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
+		if instr.Length <= 2 {
+			c.code = x86.LoadDynamicRegisterZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
+		} else {
+			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
+		}
 	case *Modulo:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)

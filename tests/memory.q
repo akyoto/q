@@ -1,10 +1,17 @@
+import io
 import mem
+import os
 
 main() {
 	length := 6
 	address := mem.alloc(length)
 	fill(address)
 	check(address)
+
+	loop i := 0..length {
+		writeByte(address[i])
+	}
+
 	mem.free(address, length)
 }
 
@@ -24,4 +31,15 @@ check(address *byte) {
 	assert address[3] == 'l'
 	assert address[4] == 'o'
 	assert address[5] == '\n'
+}
+
+writeByte(n byte) {
+	switch {
+		n == 'H'  { io.write("H") }
+		n == 'e'  { io.write("e") }
+		n == 'l'  { io.write("l") }
+		n == 'o'  { io.write("o") }
+		n == '\n' { io.write("\n") }
+		_         { os.exit(1) }
+	}
 }
