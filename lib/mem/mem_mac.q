@@ -1,4 +1,4 @@
-mmap(address int, length uint, protection int, flags int) -> *any {
+mmap(address int, length uint, protection int, flags int) -> (address *byte) {
 	return syscall(_mmap, address, length, protection, flags, 0, 0)
 }
 

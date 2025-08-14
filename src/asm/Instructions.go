@@ -39,9 +39,15 @@ type (
 	Return           struct{}
 	ShiftLeft        rrr
 	ShiftRightSigned rrr
-	Subtract         rrr
-	SubtractNumber   rrn
-	StackFrameStart  struct {
+	Store            struct {
+		Base   cpu.Register
+		Index  cpu.Register
+		Value  cpu.Register
+		Length byte
+	}
+	Subtract        rrr
+	SubtractNumber  rrn
+	StackFrameStart struct {
 		FramePointer bool
 		ExternCalls  bool
 	}

@@ -10,6 +10,11 @@ import (
 // compileAssign compiles an assignment.
 func (f *Function) compileAssign(node *ast.Assign) error {
 	left := node.Expression.Children[0]
+
+	if left.Token.Kind == token.Array {
+		return f.compileStore(node)
+	}
+
 	name := left.String(f.File.Bytes)
 	leftValue, exists := f.Block().FindIdentifier(name)
 

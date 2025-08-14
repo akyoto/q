@@ -1,5 +1,13 @@
-alloc(length int) -> (address *any) {
-	return kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
+import run
+
+alloc(length int) -> (address *byte) {
+	x := kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
+
+	if x == 0 {
+		run.crash()
+	}
+
+	return x
 }
 
 free(address *any, length int) {
@@ -15,7 +23,7 @@ const {
 
 extern {
 	kernel32 {
-		VirtualAlloc(address int, size uint, flags uint32, protection uint32) -> (address *any)
+		VirtualAlloc(address int, size uint, flags uint32, protection uint32) -> (address *byte)
 		VirtualFree(address *any, size uint, type uint32) -> (success bool)
 	}
 }

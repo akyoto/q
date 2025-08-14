@@ -276,6 +276,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
 			c.code = x86.PopRegister(c.code, x86.R5)
 		}
+	case *Store:
+		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, instr.Length, instr.Value)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	case *Xor:

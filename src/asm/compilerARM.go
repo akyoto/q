@@ -181,6 +181,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.ShiftLeft(instr.Destination, instr.Source, instr.Operand))
 	case *ShiftRightSigned:
 		c.append(arm.ShiftRightSigned(instr.Destination, instr.Source, instr.Operand))
+	case *Store:
+		c.append(arm.StoreDynamicRegister(instr.Value, instr.Base, arm.Offset, instr.Index, instr.Length))
 	case *Subtract:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *StackFrameStart:

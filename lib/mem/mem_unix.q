@@ -1,8 +1,10 @@
-alloc(length int) -> (address *any) {
+import run
+
+alloc(length int) -> (address *byte) {
 	x := mmap(0, length, read|write, private|anonymous)
 
 	if x < 0x1000 {
-		return 0
+		run.crash()
 	}
 
 	return x
