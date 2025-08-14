@@ -154,6 +154,14 @@ func printAssembly(f *core.Function) {
 			mnemonic.Print("  return")
 		case *asm.ShiftLeft:
 		case *asm.ShiftRightSigned:
+		case *asm.Store:
+			mnemonic.Printf("  store %db ", instr.Length)
+			other.Print("[")
+			register.Print(instr.Base)
+			other.Print(" + ")
+			register.Print(instr.Index)
+			other.Print("], ")
+			register.Print(instr.Value)
 		case *asm.Subtract:
 			mnemonic.Print("  sub ")
 			register.Print(instr.Destination)
