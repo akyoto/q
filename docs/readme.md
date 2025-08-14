@@ -66,13 +66,17 @@ q build examples/hello --os windows
 
 ## News
 
-- 2025-08-12: Added support for Windows on arm64.
-- 2025-08-11: Added support for Mac on arm64.
+- **2025-08-14**: Memory store instructions.
+- **2025-08-13**: Naive memory allocations.
+- **2025-08-12**: Support for Windows on arm64.
+- **2025-08-11**: Support for Mac on arm64.
 
 ## Syntax
 
 > [!NOTE]
 > This is a draft.
+
+The language syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status. The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems. Documentation for all language features will follow once the core systems are stable.
 
 [hello.q](../examples/hello/hello.q):
 
@@ -110,32 +114,9 @@ gcd(a int, b int) -> int {
 }
 ```
 
-[fizzbuzz.q](../examples/fizzbuzz/fizzbuzz.q):
-
-```
-fizzbuzz(n int) {
-	loop x := 1..n+1 {
-		switch {
-			x % 15 == 0 { io.write("FizzBuzz") }
-			x % 5 == 0  { io.write("Buzz") }
-			x % 3 == 0  { io.write("Fizz") }
-			_           { io.writeInt(x) }
-		}
-
-		if x != n {
-			io.write(" ")
-		}
-	}
-}
-```
-
-The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems. The language syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status. Documentation for all language features will follow once the core systems are stable.
-
 ## Source
 
 This section is for contributors who want a high-level overview of the source code structure which uses a flat layout without nesting:
-
-### Packages
 
 - [arm](../src/arm) - arm64 architecture
 - [asm](../src/asm) - Generic assembler
@@ -167,7 +148,7 @@ This section is for contributors who want a high-level overview of the source co
 - [verbose](../src/verbose) - Verbose output
 - [x86](../src/x86) - x86-64 architecture
 
-### Typical flow
+The typical flow for a build command is the following:
 
 1. [main](../main.go)
 1. [cli.Exec](../src/cli/Exec.go)
@@ -194,7 +175,7 @@ This section is for contributors who want a high-level overview of the source co
 | 🍏 Mac     |   16.3 KiB |   4.2 KiB |
 | 🪟 Windows |    1.7 KiB |   1.7 KiB |
 
-This table often raises the question why Mac builds are so huge compared to the rest. The answer is in [these few lines](https://github.com/apple-oss-distributions/xnu/blob/e3723e1f17661b24996789d8afc084c0c3303b26/bsd/kern/mach_loader.c#L2021-L2027) of their kernel code. None of the other operating systems force you to page-align sections on disk. In practice, however, it's not as bad as it sounds because the padding is a zero-filled area that barely consumes any disk space in [sparse files](https://en.wikipedia.org/wiki/Sparse_file).
+This table often raises the question why Mac builds are so huge compared to the rest. The answer is in [these few lines](https://github.com/apple-oss-distributions/xnu/blob/e3723e1f17661b24996789d8afc084c0c3303b26/bsd/kern/mach_loader.c#L2021-L2027) of their kernel code. MacOS is the only operating system forcing compilers to page-align sections on disk instead of just memory. In practice, however, it's not as bad as it sounds because the padding is a zero-filled area that barely consumes any disk space in [sparse files](https://en.wikipedia.org/wiki/Sparse_file).
 
 ### How is the assembly code quality?
 
@@ -206,7 +187,6 @@ The compiler is actually so fast that it's possible to compile an entire script 
 
 ```q
 #!/usr/bin/env q
-
 import io
 
 main() {
@@ -218,13 +198,9 @@ Create a file with the contents above and add permissions via `chmod +x`. Now yo
 
 ### Which security features are supported?
 
-#### PIE
+**PIE**: All executables are built as position independent executables supporting a dynamic base address.
 
-All executables are built as position independent executables supporting a dynamic base address.
-
-#### W^X
-
-All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
+**W^X**: All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
 
 |        | Read | Execute | Write |
 | ------ | ---- | ------- | ----- |
@@ -233,8 +209,9 @@ All memory pages are loaded with either execute or write permissions but never w
 
 ### Any editor extensions?
 
-- VS Code (basic highlighting): Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder
-- Neovim support is planned.
+**VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
+
+**Neovim**: Planned.
 
 ### Why Go and not language X?
 
@@ -247,8 +224,9 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 ### I can't contribute but can I donate to the project?
 
-Yes, you can [donate](https://buy.stripe.com/4gw7vf5Jxflf83m7st) if you live in a country supported by Stripe.
-The payment is classified as a "cash donation".
+- [Kofi](https://ko-fi.com/akyoto)
+- [GitHub](https://github.com/sponsors/akyoto)
+- [Stripe](https://buy.stripe.com/4gw7vf5Jxflf83m7st)
 
 ### If I donate, what will my money be used for?
 
@@ -286,6 +264,10 @@ go test ./tests -run '^$' -bench . -benchmem -cpuprofile cpu.out -memprofile mem
 go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
 go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 ```
+
+### Any debugging tools?
+
+I recently added a preliminary `io.writeInt` to have some basic output for numeric values during compiler development. Other than that you can use [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables.
 
 ### Is there an IRC channel?
 
