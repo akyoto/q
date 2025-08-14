@@ -103,6 +103,14 @@ func printAssembly(f *core.Function) {
 			} else {
 				label.Printf("\n%s:", strings.TrimPrefix(instr.Name, f.FullName))
 			}
+		case *asm.Load:
+			mnemonic.Printf("  load %db ", instr.Length)
+			register.Print(instr.Destination)
+			other.Print(", [")
+			register.Print(instr.Base)
+			other.Print(" + ")
+			register.Print(instr.Index)
+			other.Print("]")
 		case *asm.Modulo:
 			mnemonic.Print("  mod ")
 			register.Print(instr.Destination)
@@ -161,7 +169,7 @@ func printAssembly(f *core.Function) {
 			other.Print(" + ")
 			register.Print(instr.Index)
 			other.Print("], ")
-			register.Print(instr.Value)
+			register.Print(instr.Source)
 		case *asm.Subtract:
 			mnemonic.Print("  sub ")
 			register.Print(instr.Destination)

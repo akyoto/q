@@ -20,7 +20,7 @@ func (f *Function) evaluate(expr *expression.Expression) (ssa.Value, error) {
 		return f.evaluateDot(expr)
 
 	case token.Array:
-		panic("not implemented")
+		return f.evaluateArray(expr)
 	}
 
 	if len(expr.Children) == 1 {

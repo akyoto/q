@@ -23,7 +23,13 @@ type (
 		Label     string
 		Condition token.Kind
 	}
-	Label     struct{ Name string }
+	Label struct{ Name string }
+	Load  struct {
+		Base        cpu.Register
+		Index       cpu.Register
+		Destination cpu.Register
+		Length      byte
+	}
 	Modulo    rrr
 	Move      rr
 	MoveLabel struct {
@@ -42,7 +48,7 @@ type (
 	Store            struct {
 		Base   cpu.Register
 		Index  cpu.Register
-		Value  cpu.Register
+		Source cpu.Register
 		Length byte
 	}
 	Subtract        rrr

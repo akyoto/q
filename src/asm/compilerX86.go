@@ -164,6 +164,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.earlyPatches = append(c.earlyPatches, patch)
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
+	case *Load:
+		c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
 	case *Modulo:
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
@@ -277,7 +279,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.PopRegister(c.code, x86.R5)
 		}
 	case *Store:
-		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, instr.Length, instr.Value)
+		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, instr.Length, instr.Source)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	case *Xor:

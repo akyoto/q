@@ -49,3 +49,17 @@ func reg3Imm(d cpu.Register, n cpu.Register, m cpu.Register, imm6 int) uint32 {
 func reg4(d cpu.Register, n cpu.Register, m cpu.Register, a cpu.Register) uint32 {
 	return uint32(m)<<16 | uint32(a)<<10 | uint32(n)<<5 | uint32(d)
 }
+
+// size encodes the size of the operation.
+func size(length byte) uint32 {
+	switch length {
+	case 1:
+		return 0b00
+	case 2:
+		return 0b01
+	case 4:
+		return 0b10
+	default:
+		return 0b11
+	}
+}

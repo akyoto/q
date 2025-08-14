@@ -243,6 +243,22 @@ func (f *Function) exec(step *Step) {
 			Name: instr.Name,
 		})
 
+	case *ssa.Load:
+		if step.Register == -1 {
+			return
+		}
+
+		address := f.ValueToStep[instr.Address]
+		index := f.ValueToStep[instr.Index]
+		elementSize := step.Value.Type().Size()
+
+		f.Assembler.Append(&asm.Load{
+			Base:        address.Register,
+			Index:       index.Register,
+			Destination: step.Register,
+			Length:      byte(elementSize),
+		})
+
 	case *ssa.Parameter:
 		source := f.CPU.Call.In[instr.Index]
 
@@ -281,13 +297,15 @@ func (f *Function) exec(step *Step) {
 
 	case *ssa.Store:
 		address := f.ValueToStep[instr.Address]
+		index := f.ValueToStep[instr.Index]
+		source := f.ValueToStep[instr.Value]
 		pointer := address.Value.Type().(*types.Pointer)
 		elementSize := pointer.To.Size()
 
 		f.Assembler.Append(&asm.Store{
 			Base:   address.Register,
-			Index:  f.ValueToStep[instr.Index].Register,
-			Value:  f.ValueToStep[instr.Value].Register,
+			Index:  index.Register,
+			Source: source.Register,
 			Length: byte(elementSize),
 		})
 

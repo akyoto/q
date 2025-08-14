@@ -121,6 +121,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
+	case *Load:
+		c.append(arm.LoadDynamicRegister(instr.Destination, instr.Base, arm.Offset, instr.Index, instr.Length))
 	case *Modulo:
 		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
 			panic("modulo operation needs a separate destination register")
@@ -182,7 +184,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *ShiftRightSigned:
 		c.append(arm.ShiftRightSigned(instr.Destination, instr.Source, instr.Operand))
 	case *Store:
-		c.append(arm.StoreDynamicRegister(instr.Value, instr.Base, arm.Offset, instr.Index, instr.Length))
+		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, arm.Offset, instr.Index, instr.Length))
 	case *Subtract:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *StackFrameStart:

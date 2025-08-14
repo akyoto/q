@@ -66,7 +66,7 @@ q build examples/hello --os windows
 
 ## News
 
-- **2025-08-14**: Memory store instructions.
+- **2025-08-14**: Memory load and store instructions.
 - **2025-08-13**: Naive memory allocations.
 - **2025-08-12**: Support for Windows on arm64.
 - **2025-08-11**: Support for Mac on arm64.
