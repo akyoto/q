@@ -1,14 +1,15 @@
-package types_test
+package core_test
 
 import (
 	"testing"
 
+	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 	"git.urbach.dev/go/assert"
 )
 
-func TestParse(t *testing.T) {
+func TestParseType(t *testing.T) {
 	tests := []struct {
 		Source       string
 		ExpectedType types.Type
@@ -45,7 +46,7 @@ func TestParse(t *testing.T) {
 		t.Run(test.Source, func(t *testing.T) {
 			src := []byte(test.Source)
 			tokens := token.Tokenize(src)
-			typ := types.Parse(tokens, src)
+			typ := core.ParseType(tokens, src, nil)
 			assert.True(t, types.Is(typ, test.ExpectedType))
 		})
 	}
@@ -53,5 +54,5 @@ func TestParse(t *testing.T) {
 
 func TestParseNil(t *testing.T) {
 	tokens := []token.Token(nil)
-	assert.Nil(t, types.Parse(tokens, nil))
+	assert.Nil(t, core.ParseType(tokens, nil, nil))
 }
