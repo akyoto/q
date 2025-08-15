@@ -5,25 +5,55 @@ import (
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // evaluateCall converts a call expression to an SSA value.
 func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) {
 	identifier := expr.Children[0]
 
-	if identifier.Token.Kind == token.Identifier && identifier.String(f.File.Bytes) == "syscall" {
-		args, err := f.decompose(expr.Children[1:], nil)
+	if identifier.Token.Kind == token.Identifier {
+		switch identifier.String(f.File.Bytes) {
+		case "new":
+			structName := expr.Children[1].String(f.File.Bytes)
+			pkg := f.Env.Packages[f.Package]
+			structure := pkg.Structs[structName]
+			malloc := f.Env.Function("mem", "alloc")
+			returnType := &types.Pointer{To: structure}
 
-		if err != nil {
-			return nil, err
+			size := f.Append(&ssa.Int{
+				Int: structure.Size(),
+			})
+
+			call := f.Append(&ssa.Call{
+				Func: &ssa.Function{
+					Package: "mem",
+					Name:    "alloc",
+					Typ: &types.Function{
+						Output: []types.Type{returnType},
+					},
+				},
+				Arguments: []ssa.Value{size},
+				Source:    ssa.Source(expr.Source()),
+			})
+
+			f.Dependencies.Add(malloc)
+			return call, nil
+
+		case "syscall":
+			args, err := f.decompose(expr.Children[1:], nil)
+
+			if err != nil {
+				return nil, err
+			}
+
+			syscall := &ssa.Syscall{
+				Arguments: args,
+				Source:    ssa.Source(expr.Source()),
+			}
+
+			return f.Append(syscall), nil
 		}
-
-		syscall := &ssa.Syscall{
-			Arguments: args,
-			Source:    ssa.Source(expr.Source()),
-		}
-
-		return f.Append(syscall), nil
 	}
 
 	funcValue, err := f.evaluate(identifier)

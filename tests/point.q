@@ -3,4 +3,6 @@ Point {
 	y int
 }
 
-main() {}
+main() {
+	new(Point)
+}

@@ -23,6 +23,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 
 	go func() {
 		s.queueDirectory(filepath.Join(global.Library, "run"), "run")
+		s.queueDirectory(filepath.Join(global.Library, "mem"), "mem")
 		s.queue(build.Files...)
 		s.group.Wait()
 		close(s.constants)
@@ -66,7 +67,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 			}
 
 			pkg := env.AddPackage(structure.Package, false)
-			pkg.Structs[structure.Package] = structure
+			pkg.Structs[structure.Name()] = structure
 
 		case constant, ok := <-s.constants:
 			if !ok {
