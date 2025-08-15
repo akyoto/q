@@ -33,7 +33,26 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		case token.NewLine:
 		case token.Comment:
 		case token.Identifier:
-			i, err = s.scanFunction(file, tokens, i)
+			if i+1 >= len(tokens) {
+				return errors.New(InvalidFunctionDefinition, file, tokens[i].End())
+			}
+
+			next := tokens[i+1]
+
+			switch next.Kind {
+			case token.GroupStart:
+				i, err = s.scanFunction(file, tokens, i)
+			case token.BlockStart:
+				i, err = s.scanStruct(file, tokens, i)
+			case token.GroupEnd:
+				return errors.New(MissingGroupStart, file, next.Position)
+			case token.BlockEnd:
+				return errors.New(MissingBlockStart, file, next.Position)
+			case token.Invalid:
+				return errors.New(&InvalidCharacter{Character: next.String(file.Bytes)}, file, next.Position)
+			default:
+				return errors.New(InvalidFunctionDefinition, file, next.Position)
+			}
 		case token.Const:
 			i, err = s.scanConst(file, tokens, i)
 		case token.Extern:

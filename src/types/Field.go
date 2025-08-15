@@ -6,6 +6,7 @@ import "git.urbach.dev/cli/q/src/token"
 type Field struct {
 	Type     Type
 	Name     string
+	Tokens   token.List
 	Position token.Position
 	Index    uint8
 	Offset   uint8

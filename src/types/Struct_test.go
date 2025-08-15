@@ -8,7 +8,7 @@ import (
 )
 
 func TestStruct(t *testing.T) {
-	point := types.NewStruct("math", "Point")
+	point := types.NewStruct(nil, "math", "Point")
 
 	x := &types.Field{
 		Name:   "x",

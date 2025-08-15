@@ -5,6 +5,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // Environment holds information about the entire build.
@@ -29,6 +30,7 @@ func (env *Environment) AddPackage(name string, isExtern bool) *Package {
 			Name:      name,
 			Constants: make(map[string]*Constant),
 			Functions: make(map[string]*Function, 8),
+			Structs:   make(map[string]*types.Struct),
 			IsExtern:  isExtern,
 		}
 
@@ -81,5 +83,18 @@ func (env *Environment) LiveFunctions() iter.Seq[*Function] {
 
 			running = yield(f)
 		})
+	}
+}
+
+// Structs returns an iterator over all structs.
+func (env *Environment) Structs() iter.Seq[*types.Struct] {
+	return func(yield func(*types.Struct) bool) {
+		for _, pkg := range env.Packages {
+			for _, structure := range pkg.Structs {
+				if !yield(structure) {
+					return
+				}
+			}
+		}
 	}
 }

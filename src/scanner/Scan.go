@@ -7,6 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/global"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // Scan scans all the files included in the build.
@@ -15,6 +16,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		constants: make(chan *core.Constant),
 		functions: make(chan *core.Function),
 		files:     make(chan *fs.File),
+		structs:   make(chan *types.Struct),
 		errors:    make(chan error),
 		build:     build,
 	}
@@ -26,6 +28,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		close(s.constants)
 		close(s.functions)
 		close(s.files)
+		close(s.structs)
 		close(s.errors)
 	}()
 
@@ -35,7 +38,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		Packages: make(map[string]*core.Package, 8),
 	}
 
-	for s.functions != nil || s.files != nil || s.constants != nil || s.errors != nil {
+	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.errors != nil {
 		select {
 		case f, ok := <-s.functions:
 			if !ok {
@@ -55,6 +58,15 @@ func Scan(build *config.Build) (*core.Environment, error) {
 			}
 
 			env.Files = append(env.Files, file)
+
+		case structure, ok := <-s.structs:
+			if !ok {
+				s.structs = nil
+				continue
+			}
+
+			pkg := env.AddPackage(structure.Package, false)
+			pkg.Structs[structure.Package] = structure
 
 		case constant, ok := <-s.constants:
 			if !ok {

@@ -33,6 +33,12 @@ func Compile(build *config.Build) (*core.Environment, error) {
 
 	env.Main = main
 
+	// Parse struct field types and calculate the size of all structs.
+	// We couldn't do that during the scan phase because it's possible
+	// that a field references a type that will only be known after the
+	// full scan is finished.
+	parseFieldTypes(env.Structs())
+
 	// Parse input and output types so we have type information
 	// ready for all functions before parallel compilation starts.
 	// This ensures that the function compilers have access to
