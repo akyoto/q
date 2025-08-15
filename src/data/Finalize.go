@@ -2,6 +2,7 @@ package data
 
 import (
 	"bytes"
+	"slices"
 	"sort"
 )
 
@@ -20,7 +21,14 @@ func (data Data) Finalize() ([]byte, map[string]int) {
 	}
 
 	sort.SliceStable(keys, func(i, j int) bool {
-		return len(data[keys[i]]) > len(data[keys[j]])
+		a := data[keys[i]]
+		b := data[keys[j]]
+
+		if len(a) != len(b) {
+			return len(a) > len(b)
+		}
+
+		return slices.Compare(a, b) == -1
 	})
 
 	final := make([]byte, 0, capacity)
