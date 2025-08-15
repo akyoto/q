@@ -6,6 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // evaluateDot converts a dot expression to an SSA value.
@@ -66,6 +67,15 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return f.Append(leftValue.Arguments[field.Index]), nil
 
 	default:
-		panic("not implemented")
+		field := leftValue.Type().(*types.Pointer).To.(*types.Struct).FieldByName(rightText)
+		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
+
+		load := f.Append(&ssa.Load{
+			Typ:     field.Type,
+			Address: leftValue,
+			Index:   offset,
+		})
+
+		return load, nil
 	}
 }

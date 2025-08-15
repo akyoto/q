@@ -3,6 +3,7 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // evaluateArray converts a array indexing expression to an SSA value.
@@ -22,6 +23,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 	}
 
 	v := f.Append(&ssa.Load{
+		Typ:     addressValue.Type().(*types.Pointer).To,
 		Address: addressValue,
 		Index:   indexValue,
 		Source:  ssa.Source(expr.Source()),

@@ -10,6 +10,7 @@ type Store struct {
 	Address Value
 	Index   Value
 	Value   Value
+	Length  uint8
 	Source
 }
 

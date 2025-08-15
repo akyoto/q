@@ -52,7 +52,7 @@ var tests = []run{
 	{"loop-keepalive", "", "", 0},
 	{"memory", "", "Hello\n", 0},
 	{"out-of-memory", "", "", 1},
-	{"point", "", "", 0},
+	{"point", "", "x: 1\ny: 2\n", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
 }

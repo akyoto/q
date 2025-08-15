@@ -8,6 +8,7 @@ import (
 
 // Load stores a value at a given index relative to the address.
 type Load struct {
+	Typ     types.Type
 	Address Value
 	Index   Value
 	Liveness
@@ -47,5 +48,5 @@ func (v *Load) String() string {
 }
 
 func (v *Load) Type() types.Type {
-	return v.Address.Type().(*types.Pointer).To
+	return v.Typ
 }

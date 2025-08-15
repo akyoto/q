@@ -8,7 +8,6 @@ import (
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
-	"git.urbach.dev/cli/q/src/types"
 )
 
 // exec executes a step which appends it to the assembler's instruction list.
@@ -299,14 +298,12 @@ func (f *Function) exec(step *Step) {
 		address := f.ValueToStep[instr.Address]
 		index := f.ValueToStep[instr.Index]
 		source := f.ValueToStep[instr.Value]
-		pointer := address.Value.Type().(*types.Pointer)
-		elementSize := pointer.To.Size()
 
 		f.Assembler.Append(&asm.Store{
 			Base:   address.Register,
 			Index:  index.Register,
 			Source: source.Register,
-			Length: byte(elementSize),
+			Length: byte(instr.Length),
 		})
 
 	case *ssa.Syscall:
