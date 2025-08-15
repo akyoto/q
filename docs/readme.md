@@ -15,7 +15,7 @@
 ## Installation
 
 > [!WARNING]
-> `q` is under heavy development and not ready for production yet.
+> Q is under heavy development and not ready for production yet.
 >
 > Please read [this](https://lobste.rs/s/t7osqo/q_programming_language).
 >
@@ -37,86 +37,50 @@ ln -s $PWD/q ~/.local/bin/q
 
 ## Usage
 
-Run `hello` example:
+Run:
 
 ```shell
 q examples/hello
 ```
 
-Build an executable:
+Build:
 
 ```shell
 q build examples/hello
 ```
 
-Build for another architecture:
+Cross-compile:
 
 ```shell
-q build examples/hello --arch arm
-q build examples/hello --arch x86
-```
-
-Build for another operating system:
-
-```shell
-q build examples/hello --os linux
-q build examples/hello --os mac
-q build examples/hello --os windows
+q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 ```
 
 ## News
 
+- **2025-08-15**: Data structures.
 - **2025-08-14**: Memory load and store instructions.
 - **2025-08-13**: Naive memory allocations.
 - **2025-08-12**: Support for Windows on arm64.
 - **2025-08-11**: Support for Mac on arm64.
 
-## Syntax
+## Examples
 
 > [!NOTE]
-> This is a draft.
+> The syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status.
 
-The language syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status. The work is currently being focused on the correctness of the compiler and the proper code generation for all architectures and operating systems. Documentation for all language features will follow once the core systems are stable.
-
-[hello.q](../examples/hello/hello.q):
-
-```
-import io
-
-main() {
-	io.write("Hello\n")
-}
-```
-
-[fibonacci.q](../examples/fibonacci/fibonacci.q)
-
-```
-fibonacci(n int) -> int {
-	if n <= 1 {
-		return n
-	}
-
-	return fibonacci(n - 1) + fibonacci(n - 2)
-}
-```
-
-[gcd.q](../examples/gcd/gcd.q)
-
-```
-gcd(a int, b int) -> int {
-	loop {
-		switch {
-			a == b { return a }
-			a > b  { a -= b }
-			_      { b -= a }
-		}
-	}
-}
-```
+- [hello.q](../examples/hello/hello.q)
+- [collatz.q](../examples/collatz/collatz.q)
+- [factorial.q](../examples/factorial/factorial.q)
+- [fibonacci.q](../examples/fibonacci/fibonacci.q)
+- [fizzbuzz.q](../examples/fizzbuzz/fizzbuzz.q)
+- [gcd.q](../examples/gcd/gcd.q)
+- [point.q](../examples/point/point.q)
+- [prime.q](../examples/prime/prime.q)
+- [winapi.q](../examples/winapi/winapi.q)
 
 ## Source
 
-This section is for contributors who want a high-level overview of the source code structure which uses a flat layout without nesting:
+The source code structure uses a flat layout without nesting:
 
 - [arm](../src/arm) - arm64 architecture
 - [asm](../src/asm) - Generic assembler
@@ -175,15 +139,13 @@ The typical flow for a build command is the following:
 | 🍏 Mac     |   16.3 KiB |   4.2 KiB |
 | 🪟 Windows |    1.7 KiB |   1.7 KiB |
 
-This table often raises the question why Mac builds are so huge compared to the rest. The answer is in [these few lines](https://github.com/apple-oss-distributions/xnu/blob/e3723e1f17661b24996789d8afc084c0c3303b26/bsd/kern/mach_loader.c#L2021-L2027) of their kernel code. MacOS is the only operating system forcing compilers to page-align sections on disk instead of just memory. In practice, however, it's not as bad as it sounds because the padding is a zero-filled area that barely consumes any disk space in [sparse files](https://en.wikipedia.org/wiki/Sparse_file).
-
-### How is the assembly code quality?
+### How is the code quality of the assembler?
 
 The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is fairly high despite the young age of the project.
 
-### How do I use it for scripting?
+### Can I use it in scripts?
 
-The compiler is actually so fast that it's possible to compile an entire script within microseconds.
+Yes. The compiler can build an entire script within a few microseconds.
 
 ```q
 #!/usr/bin/env q
@@ -194,9 +156,9 @@ main() {
 }
 ```
 
-Create a file with the contents above and add permissions via `chmod +x`. Now you can execute it from anywhere. The generated machine code runs directly from RAM if the OS supports it.
+You need to create a file with the contents above and add execution permissions via `chmod +x`. Now you can run the script without an explicit compiler build. The generated machine code runs directly from RAM if the OS supports it.
 
-### Which security features are supported?
+### Any security features?
 
 **PIE**: All executables are built as position independent executables supporting a dynamic base address.
 
@@ -209,18 +171,18 @@ Create a file with the contents above and add permissions via `chmod +x`. Now yo
 
 ### Any editor extensions?
 
-**VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
-
 **Neovim**: Planned.
 
-### Why Go and not language X?
+**VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
 
-Because of readability, maintainability and great tools for concurrency.
+### Why is it written in Go and not language X?
+
+Because of readability and great tools for concurrency.
 The implementation will be replaced by a self-hosted compiler in the future.
 
 ### How do I pronounce the name?
 
-/ˈkjuː/ just like `q` in the English alphabet.
+/ˈkjuː/ just like `Q` in the English alphabet.
 
 ### I can't contribute but can I donate to the project?
 
@@ -230,11 +192,11 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 ### If I donate, what will my money be used for?
 
-Server infrastructure and support for existing and new architectures.
+Testing infrastructure and support for existing and new architectures.
 
 ## FAQ: Contributors
 
-### How do I run the test suite?
+### How do I run the tests?
 
 ```shell
 # Run all tests:
@@ -267,7 +229,9 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 
 ### Any debugging tools?
 
-I recently added a preliminary `io.writeInt` to have some basic output for numeric values during compiler development. Other than that you can use [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables.
+I recently added a preliminary `io.writeInt` to have some basic output for numeric values during compiler development.
+
+You can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables.
 
 ### Is there an IRC channel?
 
