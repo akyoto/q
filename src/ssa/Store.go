@@ -21,7 +21,7 @@ func (a *Store) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Address == b.Address && a.Index == b.Index && a.Value == b.Value
+	return a.Address == b.Address && a.Index == b.Index && a.Value == b.Value && a.Length == b.Length
 }
 
 func (v *Store) Inputs() []Value {
@@ -43,5 +43,5 @@ func (v *Store) Replace(old Value, new Value) {
 }
 
 func (v *Store) String() string {
-	return fmt.Sprintf("store(%p, %p, %p)", v.Address, v.Index, v.Value)
+	return fmt.Sprintf("store(%db, %p + %p, %p)", v.Length, v.Address, v.Index, v.Value)
 }

@@ -4,12 +4,29 @@ Point {
 }
 
 main() {
-	p := new(Point)
-	assert p.x == 0
-	assert p.y == 0
+	a := new(Point)
+	assert a.x == 0
+	assert a.y == 0
+	assert a.x == a.y
 
-	p.x = 1
-	p.y = 2
-	assert p.x == 1
-	assert p.y == 2
+	a.x = 1
+	a.y = 2
+	assert a.x == 1
+	assert a.y == 2
+	assert a.x != a.y
+
+	a.x = a.y
+	assert a.x == 2
+	assert a.y == 2
+	assert a.x == a.y
+
+	a.x = a.y + 1
+	assert a.x == 3
+	assert a.y == 2
+	assert a.x != a.y
+
+	a.y += 1
+	assert a.x == 3
+	assert a.y == 3
+	assert a.x == a.y
 }

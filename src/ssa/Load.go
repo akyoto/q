@@ -44,7 +44,7 @@ func (v *Load) Replace(old Value, new Value) {
 }
 
 func (v *Load) String() string {
-	return fmt.Sprintf("load(%p, %p)", v.Address, v.Index)
+	return fmt.Sprintf("load(%db, %p + %p)", v.Typ.Size(), v.Address, v.Index)
 }
 
 func (v *Load) Type() types.Type {
