@@ -17,7 +17,7 @@
 > [!WARNING]
 > Q is under heavy development and not ready for production yet.
 >
-> Please read [this](https://lobste.rs/s/t7osqo/q_programming_language).
+> Please read the [comment on the status](https://lobste.rs/s/t7osqo/q_programming_language) of the project.
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in helping out.
 
@@ -139,9 +139,9 @@ The typical flow for a build command is the following:
 | 🍏 Mac     |   16.3 KiB |   4.2 KiB |
 | 🪟 Windows |    1.7 KiB |   1.7 KiB |
 
-### How is the code quality of the assembler?
+### Does the compiler generate efficient machine code?
 
-The backend uses an SSA based IR which is also used by well established compilers like `gcc`, `go` and `llvm`. SSA makes it trivial to apply lots of common optimization passes to it. As such, the quality of the generated assembly is fairly high despite the young age of the project.
+The backend is built on a [Static Single Assignment (SSA)](https://en.wikipedia.org/wiki/Static_single-assignment_form) intermediate representation, the same approach used by mature compilers such as `gcc`, `go`, and `llvm`. SSA greatly simplifies the implementation of common optimization passes, allowing the compiler to produce relatively high-quality assembly code despite the project's early stage of development.
 
 ### Can I use it in scripts?
 
@@ -180,10 +180,6 @@ You need to create a file with the contents above and add execution permissions 
 Because of readability and great tools for concurrency.
 The implementation will be replaced by a self-hosted compiler in the future.
 
-### How do I pronounce the name?
-
-/ˈkjuː/ just like `Q` in the English alphabet.
-
 ### I can't contribute but can I donate to the project?
 
 - [Kofi](https://ko-fi.com/akyoto)
@@ -193,6 +189,10 @@ The implementation will be replaced by a self-hosted compiler in the future.
 ### If I donate, what will my money be used for?
 
 Testing infrastructure and support for existing and new architectures.
+
+### How do I pronounce the name?
+
+/ˈkjuː/ just like `Q` in the English alphabet.
 
 ## FAQ: Contributors
 
