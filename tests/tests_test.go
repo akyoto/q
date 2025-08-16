@@ -52,7 +52,10 @@ var tests = []run{
 	{"loop-keepalive", "", "", 0},
 	{"memory", "", "Hello\n", 0},
 	{"out-of-memory", "", "", 1},
+	{"index-static", "", "", 0},
+	{"index-dynamic", "", "", 0},
 	{"struct", "", "", 0},
+	{"struct-init", "", "", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"script", "", "Hello\n", 0},
 }
