@@ -227,6 +227,18 @@ func (f *Function) exec(step *Step) {
 			Source:      f.CPU.ExternCall.Out[0],
 		})
 
+	case *ssa.FromTuple:
+		source := f.CPU.Call.Out[instr.Index]
+
+		if step.Register == source {
+			return
+		}
+
+		f.Assembler.Append(&asm.Move{
+			Destination: step.Register,
+			Source:      source,
+		})
+
 	case *ssa.Int:
 		if step.Register == -1 {
 			return
@@ -236,6 +248,9 @@ func (f *Function) exec(step *Step) {
 			Destination: step.Register,
 			Number:      instr.Int,
 		})
+
+	case *ssa.Jump:
+		f.Assembler.Append(&asm.Jump{Label: instr.To.Label})
 
 	case *Label:
 		f.Assembler.Append(&asm.Label{
@@ -261,7 +276,7 @@ func (f *Function) exec(step *Step) {
 	case *ssa.Parameter:
 		source := f.CPU.Call.In[instr.Index]
 
-		if step.Register == -1 || step.Register == source {
+		if step.Register == source {
 			return
 		}
 
@@ -269,9 +284,6 @@ func (f *Function) exec(step *Step) {
 			Destination: step.Register,
 			Source:      source,
 		})
-
-	case *ssa.Jump:
-		f.Assembler.Append(&asm.Jump{Label: instr.To.Label})
 
 	case *ssa.Phi:
 		// Phi does not generate any machine instructions.
@@ -283,16 +295,18 @@ func (f *Function) exec(step *Step) {
 			return
 		}
 
-		retVal := f.ValueToStep[instr.Arguments[0]]
+		for i, arg := range instr.Arguments {
+			retVal := f.ValueToStep[arg]
 
-		if retVal.Register == -1 || retVal.Register == f.CPU.Call.Out[0] {
-			return
+			if retVal.Register == -1 || retVal.Register == f.CPU.Call.Out[i] {
+				return
+			}
+
+			f.Assembler.Append(&asm.Move{
+				Destination: f.CPU.Call.Out[i],
+				Source:      retVal.Register,
+			})
 		}
-
-		f.Assembler.Append(&asm.Move{
-			Destination: f.CPU.Call.Out[0],
-			Source:      retVal.Register,
-		})
 
 	case *ssa.Store:
 		address := f.ValueToStep[instr.Address]

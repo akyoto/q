@@ -70,6 +70,8 @@ func (f *Function) findFreeRegister(value *Step) cpu.Register {
 			clobbered = f.CPU.Call.Clobbered
 		case *ssa.CallExtern:
 			clobbered = f.CPU.ExternCall.Clobbered
+		case *ssa.FromTuple:
+			usedRegisters |= (1 << f.CPU.Call.Out[instr.Index])
 		case *ssa.Parameter:
 			usedRegisters |= (1 << f.CPU.Call.In[instr.Index])
 		case *ssa.Syscall:

@@ -15,6 +15,21 @@ var (
 	MissingOperand    = errors.String("Missing operand")
 )
 
+// DefinitionCountMismatch error is created when the number of provided definitions doesn't match the return type.
+type DefinitionCountMismatch struct {
+	Function      string
+	Count         int
+	ExpectedCount int
+}
+
+func (err *DefinitionCountMismatch) Error() string {
+	if err.Count > err.ExpectedCount {
+		return fmt.Sprintf("Too many variables for the return value of '%s'", err.Function)
+	}
+
+	return fmt.Sprintf("Not enough variables for the return value of '%s'", err.Function)
+}
+
 // ParameterCountMismatch error is created when the number of provided parameters doesn't match the function signature.
 type ParameterCountMismatch struct {
 	Function      string

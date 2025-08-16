@@ -35,5 +35,9 @@ func (v *Call) Type() types.Type {
 		return types.Void
 	}
 
-	return v.Func.Typ.Output[0]
+	if len(v.Func.Typ.Output) == 1 {
+		return v.Func.Typ.Output[0]
+	}
+
+	return &types.Tuple{Types: v.Func.Typ.Output}
 }

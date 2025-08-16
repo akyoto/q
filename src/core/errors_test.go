@@ -15,6 +15,7 @@ var errs = []struct {
 	File          string
 	ExpectedError error
 }{
+	{"DefinitionCountMismatch.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 3, ExpectedCount: 2}},
 	{"InvalidExpression.q", core.InvalidExpression},
 	{"InvalidExpression2.q", core.InvalidExpression},
 	{"InvalidExpression3.q", core.InvalidExpression},

@@ -18,16 +18,22 @@ func (f *Function) compileReturn(node *ast.Return) error {
 		return errors.New(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, node.Values[0].Token.Position)
 	}
 
-	value, err := f.evaluate(node.Values[0])
+	returnValues := make([]ssa.Value, 0, len(node.Values))
 
-	if err != nil {
-		return err
+	for i, expr := range node.Values {
+		value, err := f.evaluate(expr)
+
+		if err != nil {
+			return err
+		}
+
+		if !types.Is(value.Type(), f.Output[i].Type()) {
+			return errors.New(&TypeMismatch{Encountered: value.Type().Name(), Expected: f.Output[i].Type().Name(), ParameterName: f.Output[i].Name, IsReturn: true}, f.File, expr.Token.Position)
+		}
+
+		returnValues = append(returnValues, value)
 	}
 
-	if !types.Is(value.Type(), f.Output[0].Type()) {
-		return errors.New(&TypeMismatch{Encountered: value.Type().Name(), Expected: f.Output[0].Type().Name(), ParameterName: f.Output[0].Name, IsReturn: true}, f.File, node.Values[0].Token.Position)
-	}
-
-	f.Append(&ssa.Return{Arguments: []ssa.Value{value}})
+	f.Append(&ssa.Return{Arguments: returnValues})
 	return nil
 }

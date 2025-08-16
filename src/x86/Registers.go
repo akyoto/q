@@ -29,7 +29,7 @@ var (
 		},
 		Call: cpu.ABI{
 			In:        []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
-			Out:       []cpu.Register{R0, R2},
+			Out:       []cpu.Register{R0, R7, R6},
 			Clobbered: []cpu.Register{R0, R1, R2, R6, R7, R8, R9, R10, R11},
 			Preserved: []cpu.Register{R3, SP, R5, R12, R13, R14, R15},
 		},

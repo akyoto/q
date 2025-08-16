@@ -57,6 +57,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-08-16**: Multiple return values.
 - **2025-08-15**: Data structures.
 - **2025-08-14**: Memory load and store instructions.
 - **2025-08-13**: Naive memory allocations.

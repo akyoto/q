@@ -34,6 +34,11 @@ func (f *Function) createHints(step *Step) {
 			f.ValueToStep[param].hint(f.CPU.ExternCall.In[r])
 		}
 
+	case *ssa.FromTuple:
+		if step.Register == -1 {
+			step.Register = f.CPU.Call.Out[instr.Index]
+		}
+
 	case *ssa.Parameter:
 		if step.Register == -1 {
 			step.Register = f.CPU.Call.In[instr.Index]
