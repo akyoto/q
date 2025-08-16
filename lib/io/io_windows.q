@@ -1,7 +1,8 @@
 write(buffer string) -> (written int) {
 	stdout := kernel32.GetStdHandle(-11)
-	kernel32.WriteFile(stdout, buffer.ptr, buffer.len, 0, 0)
-	return buffer.len
+	count := new(uint32)
+	kernel32.WriteFile(stdout, buffer.ptr, buffer.len, count, 0)
+	return [count]
 }
 
 extern {

@@ -15,14 +15,12 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	if identifier.Token.Kind == token.Identifier {
 		switch identifier.String(f.File.Bytes) {
 		case "new":
-			structName := expr.Children[1].String(f.File.Bytes)
-			pkg := f.Env.Packages[f.Package]
-			structure := pkg.Structs[structName]
+			typ := ParseType([]token.Token{expr.Children[1].Token}, f.File.Bytes, f.Env)
 			malloc := f.Env.Function("mem", "alloc")
-			returnType := &types.Pointer{To: structure}
+			returnType := &types.Pointer{To: typ}
 
 			size := f.Append(&ssa.Int{
-				Int: structure.Size(),
+				Int: typ.Size(),
 			})
 
 			call := f.Append(&ssa.Call{

@@ -23,7 +23,7 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 				Encountered:   value.Type().Name(),
 				Expected:      typeCheck[i].Typ.Name(),
 				ParameterName: typeCheck[i].Name,
-			}, f.File, value.(ssa.HasSource).Start())
+			}, f.File, node.Source().StartPos)
 		}
 
 		structure, isStruct := value.(*ssa.Struct)

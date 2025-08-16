@@ -18,6 +18,7 @@ var examples = []run{
 	{"collatz", "", "12 6 3 10 5 16 8 4 2 1", 0},
 	{"prime", "", "2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97", 0},
 	{"point", "", "Point: 1, 2", 0},
+	{"echo", "Echo", "Echo", 0},
 }
 
 func TestExamples(t *testing.T) {
