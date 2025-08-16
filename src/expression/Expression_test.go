@@ -8,15 +8,15 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestEachLeaf(t *testing.T) {
+func TestLeaves(t *testing.T) {
 	src := []byte("(1+2-3*4)+(5*6-7+8)")
 	tokens := token.Tokenize(src)
 	expr := expression.Parse(tokens)
 	leaves := []string{}
 
-	expr.EachLeaf(func(leaf *expression.Expression) {
+	for leaf := range expr.Leaves() {
 		leaves = append(leaves, leaf.Token.String(src))
-	})
+	}
 
 	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
 }
@@ -89,7 +89,11 @@ func TestSource(t *testing.T) {
 	assert.Equal(t, expr.Children[1].Children[1].SourceString(src), "8")
 
 	leaves := []string{}
-	expr.EachLeaf(func(leaf *expression.Expression) { leaves = append(leaves, leaf.SourceString(src)) })
+
+	for leaf := range expr.Leaves() {
+		leaves = append(leaves, leaf.SourceString(src))
+	}
+
 	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
 }
 

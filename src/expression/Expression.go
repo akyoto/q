@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"iter"
 	"strings"
 
 	"git.urbach.dev/cli/q/src/token"
@@ -25,15 +26,18 @@ func (expr *Expression) AddChild(child *Expression) {
 }
 
 // EachLeaf iterates through all leaves in the tree.
-func (expr *Expression) EachLeaf(call func(*Expression)) {
+func (expr *Expression) EachLeaf(yield func(*Expression) bool) bool {
 	if expr.IsLeaf() {
-		call(expr)
-		return
+		return yield(expr)
 	}
 
 	for _, child := range expr.Children {
-		child.EachLeaf(call)
+		if !child.EachLeaf(yield) {
+			return false
+		}
 	}
+
+	return true
 }
 
 // Index returns the position of the child or `-1` if it's not a child of this expression.
@@ -69,6 +73,13 @@ func (expr *Expression) LastChild() *Expression {
 	return expr.Children[len(expr.Children)-1]
 }
 
+// Leaves iterates through all leaves in the tree.
+func (expr *Expression) Leaves() iter.Seq[*Expression] {
+	return func(yield func(*Expression) bool) {
+		expr.EachLeaf(yield)
+	}
+}
+
 // RemoveChild removes a child from the expression.
 func (expr *Expression) RemoveChild(child *Expression) {
 	for i, c := range expr.Children {
@@ -97,13 +108,13 @@ func (expr *Expression) Source() token.Source {
 	start := expr.Token.Position
 	end := expr.Token.End()
 
-	expr.EachLeaf(func(leaf *Expression) {
+	for leaf := range expr.Leaves() {
 		if leaf.Token.Position < start {
 			start = leaf.Token.Position
 		} else if leaf.Token.End() > end {
 			end = leaf.Token.End()
 		}
-	})
+	}
 
 	return token.Source{StartPos: start, EndPos: end}
 }
