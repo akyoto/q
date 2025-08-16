@@ -37,7 +37,7 @@ func unescape(data []byte) []byte {
 		escape = bytes.IndexByte(data, '\\')
 
 		if escape == -1 {
-			return tmp
+			return append(tmp, data...)
 		}
 	}
 }

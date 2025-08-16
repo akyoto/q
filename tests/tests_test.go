@@ -57,6 +57,7 @@ var tests = []run{
 	{"struct", "", "", 0},
 	{"struct-init", "", "", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
+	{"escape", "", "a\tb\nc\td\n", 0},
 	{"script", "", "Hello\n", 0},
 }
 
