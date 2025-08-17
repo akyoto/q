@@ -18,8 +18,6 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		return err
 	}
 
-	field := addressValue.Type().(*types.Pointer).To.(*types.Struct).FieldByName(fieldName)
-	offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 	right := node.Expression.Children[1]
 	rightValue, err := f.evaluate(right)
 
@@ -42,13 +40,23 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		})
 	}
 
-	f.Append(&ssa.Store{
-		Address: addressValue,
-		Index:   offset,
-		Value:   rightValue,
-		Length:  uint8(field.Type.Size()),
-		Source:  ssa.Source(node.Expression.Source()),
-	})
+	switch pointer := addressValue.Type().(type) {
+	case *types.Pointer:
+		field := pointer.To.(*types.Struct).FieldByName(fieldName)
+		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
+
+		f.Append(&ssa.Store{
+			Address: addressValue,
+			Index:   offset,
+			Value:   rightValue,
+			Length:  uint8(field.Type.Size()),
+			Source:  ssa.Source(node.Expression.Source()),
+		})
+
+	case *types.Struct:
+		field := pointer.FieldByName(fieldName)
+		addressValue.(*ssa.Struct).Arguments[field.Index] = rightValue
+	}
 
 	return nil
 }
