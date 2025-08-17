@@ -1,8 +1,10 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // evaluateBinary converts a binary expression to an SSA value.
@@ -20,6 +22,13 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 
 	if err != nil {
 		return nil, err
+	}
+
+	_, leftIsStruct := leftValue.Type().(*types.Struct)
+	_, rightIsStruct := rightValue.Type().(*types.Struct)
+
+	if leftIsStruct || rightIsStruct {
+		return nil, errors.New(InvalidStructOperation, f.File, expr.Token.Position)
 	}
 
 	v := f.Append(&ssa.BinaryOp{

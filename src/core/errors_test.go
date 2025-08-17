@@ -21,6 +21,8 @@ var errs = []struct {
 	{"InvalidExpression3.q", core.InvalidExpression},
 	{"InvalidExpression4.q", core.InvalidExpression},
 	{"InvalidLoopHeader.q", core.InvalidLoopHeader},
+	{"InvalidStructOperation.q", core.InvalidStructOperation},
+	{"InvalidStructOperation2.q", core.InvalidStructOperation},
 	{"MissingOperand.q", core.MissingOperand},
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},

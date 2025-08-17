@@ -7,12 +7,13 @@ import (
 )
 
 var (
-	InvalidCondition  = errors.String("Invalid condition")
-	InvalidExpression = errors.String("Invalid expression")
-	InvalidLoopHeader = errors.String("Invalid loop header")
-	InvalidNumber     = errors.String("Invalid number")
-	InvalidRune       = errors.String("Invalid rune")
-	MissingOperand    = errors.String("Missing operand")
+	InvalidCondition       = errors.String("Invalid condition")
+	InvalidExpression      = errors.String("Invalid expression")
+	InvalidLoopHeader      = errors.String("Invalid loop header")
+	InvalidNumber          = errors.String("Invalid number")
+	InvalidRune            = errors.String("Invalid rune")
+	InvalidStructOperation = errors.String("Invalid operation on structs")
+	MissingOperand         = errors.String("Missing operand")
 )
 
 // DefinitionCountMismatch error is created when the number of provided definitions doesn't match the return type.
