@@ -19,6 +19,20 @@ func TestLeaves(t *testing.T) {
 	}
 
 	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})
+
+	for range expr.Leaves() {
+		break
+	}
+}
+
+func TestLeavesBreak(t *testing.T) {
+	src := []byte("(1+2-3*4)+(5*6-7+8)")
+	tokens := token.Tokenize(src)
+	expr := expression.Parse(tokens)
+
+	for range expr.Leaves() {
+		break
+	}
 }
 
 func TestInvalidExpression(t *testing.T) {

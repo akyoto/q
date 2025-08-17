@@ -12,7 +12,7 @@ func isComplete(expr *Expression) bool {
 	case token.Identifier, token.Number, token.String:
 		// These aren't operators but they always count as complete expressions.
 		return true
-	case token.Call:
+	case token.Call, token.Struct:
 		// Even though token.Call is an operator and could be handled by the upcoming branch,
 		// the number of operands is variable.
 		// Therefore we consider every single call expression as complete.

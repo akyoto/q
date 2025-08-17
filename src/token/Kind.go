@@ -38,6 +38,7 @@ const (
 	Range                             // ..
 	Call                              // x()
 	Array                             // [x]
+	Struct                            // x{}
 	Separator                         // ,
 	___ASSIGNMENTS___                 // <assignments>
 	Assign                            // =

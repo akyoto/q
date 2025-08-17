@@ -16,7 +16,7 @@ func Parse(tokens token.List) *Expression {
 	)
 
 	for i, t := range tokens {
-		if t.Kind == token.GroupStart || t.Kind == token.ArrayStart {
+		if t.Kind == token.GroupStart || t.Kind == token.ArrayStart || t.Kind == token.BlockStart {
 			groupLevel++
 
 			if groupLevel == 1 {
@@ -26,7 +26,7 @@ func Parse(tokens token.List) *Expression {
 			continue
 		}
 
-		if t.Kind == token.GroupEnd || t.Kind == token.ArrayEnd {
+		if t.Kind == token.GroupEnd || t.Kind == token.ArrayEnd || t.Kind == token.BlockEnd {
 			groupLevel--
 
 			if groupLevel != 0 {
@@ -44,6 +44,8 @@ func Parse(tokens token.List) *Expression {
 					node.Token.Kind = token.Call
 				case token.ArrayEnd:
 					node.Token.Kind = token.Array
+				case token.BlockEnd:
+					node.Token.Kind = token.Struct
 				}
 
 				node.precedence = precedence(node.Token.Kind)

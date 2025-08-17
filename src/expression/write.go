@@ -20,6 +20,8 @@ func (expr *Expression) write(builder *strings.Builder, source []byte) {
 		builder.WriteString(Operators[token.Call].Symbol)
 	case token.Array:
 		builder.WriteString(Operators[token.Array].Symbol)
+	case token.Struct:
+		builder.WriteString(Operators[token.Struct].Symbol)
 	default:
 		builder.WriteString(expr.Token.String(source))
 	}

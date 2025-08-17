@@ -16,6 +16,7 @@ type operator struct {
 // Operators defines the Operators used in the language.
 // The number corresponds to the operator priority and can not be zero.
 var Operators = [64]operator{
+	token.Struct: {"$", 13, 1},
 	token.Dot:    {".", 13, 2},
 	token.Call:   {"λ", 12, 1},
 	token.Array:  {"@", 12, 2},
