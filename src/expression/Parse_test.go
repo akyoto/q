@@ -122,14 +122,14 @@ func TestParse(t *testing.T) {
 		{"Dereferencing 4", "[a+b]=c+d", "(= (@ (+ a b)) (+ c d))"},
 
 		{"Structs", "a{}", "($ a)"},
-		{"Structs 2", "a{b=c}", "($ a (= b c))"},
-		{"Structs 3", "a{b=c,d=e}", "($ a (= b c) (= d e))"},
+		{"Structs 2", "a{b:c}", "($ a (: b c))"},
+		{"Structs 3", "a{b:c,d:e}", "($ a (: b c) (: d e))"},
 		{"Structs 4", "a{}.f", "(. ($ a) f)"},
-		{"Structs 5", "a{b=c}.f", "(. ($ a (= b c)) f)"},
+		{"Structs 5", "a{b:c}.f", "(. ($ a (: b c)) f)"},
 		{"Structs 6", "a{}[0]", "(@ ($ a) 0)"},
-		{"Structs 7", "a{b=c}[0]", "(@ ($ a (= b c)) 0)"},
+		{"Structs 7", "a{b:c}[0]", "(@ ($ a (: b c)) 0)"},
 		{"Structs 8", "a{}(f)", "(λ ($ a) f)"},
-		{"Structs 9", "a{b=c}(f)", "(λ ($ a (= b c)) f)"},
+		{"Structs 9", "a{b:c}(f)", "(λ ($ a (: b c)) f)"},
 	}
 
 	for _, test := range tests {

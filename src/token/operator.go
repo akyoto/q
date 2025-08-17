@@ -70,6 +70,8 @@ func operator(tokens List, buffer []byte, i Position) (List, Position) {
 		kind = OrAssign
 	case "||":
 		kind = LogicalOr
+	case ":":
+		kind = FieldAssign
 	}
 
 	tokens = append(tokens, Token{Kind: kind, Position: position, Length: Length(i - position)})

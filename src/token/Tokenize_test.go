@@ -123,7 +123,7 @@ func TestOperator(t *testing.T) {
 }
 
 func TestOperatorAssign(t *testing.T) {
-	tokens := token.Tokenize([]byte(`a = b += c -= d *= e /= f %= g &= h |= i ^= j <<= k >>= l`))
+	tokens := token.Tokenize([]byte(`a = b += c -= d *= e /= f %= g &= h |= i ^= j <<= k >>= l : m`))
 
 	expected := []token.Kind{
 		token.Identifier,
@@ -148,6 +148,8 @@ func TestOperatorAssign(t *testing.T) {
 		token.ShlAssign,
 		token.Identifier,
 		token.ShrAssign,
+		token.Identifier,
+		token.FieldAssign,
 		token.Identifier,
 		token.EOF,
 	}

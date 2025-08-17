@@ -21,6 +21,9 @@ func (f *Function) evaluate(expr *expression.Expression) (ssa.Value, error) {
 
 	case token.Array:
 		return f.evaluateArray(expr)
+
+	case token.Struct:
+		return f.evaluateStruct(expr)
 	}
 
 	if len(expr.Children) == 1 {

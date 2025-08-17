@@ -52,6 +52,7 @@ const (
 	XorAssign                         // ^=
 	ShlAssign                         // <<=
 	ShrAssign                         // >>=
+	FieldAssign                       // :
 	___END_ASSIGNMENTS___             // </assignments>
 	___COMPARISONS___                 // <comparisons>
 	Equal                             // ==
