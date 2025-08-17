@@ -44,6 +44,8 @@ var errs = []struct {
 	{"UnusedValue2.q", &core.UnusedValue{Value: "2 + 3"}},
 	{"UnusedValue3.q", &core.UnusedValue{Value: "\"not used\""}},
 	{"UnusedValue4.q", &core.UnusedValue{Value: "1"}},
+	{"VariableAlreadyExists.q", &core.VariableAlreadyExists{Name: "x"}},
+	{"VariableAlreadyExists2.q", &core.VariableAlreadyExists{Name: "x"}},
 }
 
 func TestErrors(t *testing.T) {

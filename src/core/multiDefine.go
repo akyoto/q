@@ -20,6 +20,12 @@ func (f *Function) multiDefine(left *expression.Expression, right *expression.Ex
 
 	for leaf := range left.Leaves() {
 		name := leaf.String(f.File.Bytes)
+		_, exists := f.Block().FindIdentifier(name)
+
+		if exists {
+			return errors.New(&VariableAlreadyExists{Name: name}, f.File, leaf.Source().StartPos)
+		}
+
 		fromTuple := f.Append(&ssa.FromTuple{Tuple: value, Index: count})
 		f.Block().Identify(name, fromTuple)
 		count++

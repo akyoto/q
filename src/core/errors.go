@@ -119,3 +119,12 @@ type UnusedValue struct {
 func (err *UnusedValue) Error() string {
 	return fmt.Sprintf("Unused value '%s'", err.Value)
 }
+
+// VariableAlreadyExists is used when existing variables are used for new variable declarations.
+type VariableAlreadyExists struct {
+	Name string
+}
+
+func (err *VariableAlreadyExists) Error() string {
+	return fmt.Sprintf("Variable '%s' already exists", err.Name)
+}
