@@ -39,7 +39,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 			return call, nil
 
 		case "syscall":
-			args, err := f.decompose(expr.Children[1:], nil)
+			args, err := f.decompose(expr.Children[1:], nil, false)
 
 			if err != nil {
 				return nil, err
@@ -69,7 +69,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return nil, errors.New(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, identifier.Token.End())
 	}
 
-	args, err := f.decompose(inputExpressions, fn.Input)
+	args, err := f.decompose(inputExpressions, fn.Input, false)
 
 	if err != nil {
 		return nil, err

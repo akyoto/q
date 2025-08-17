@@ -8,7 +8,7 @@ import (
 )
 
 // decompose creates SSA values from expressions and decomposes structs into their individual fields.
-func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Parameter) ([]ssa.Value, error) {
+func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Parameter, isReturn bool) ([]ssa.Value, error) {
 	args := make([]ssa.Value, 0, len(nodes))
 
 	for i, node := range nodes {
@@ -23,6 +23,7 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 				Encountered:   value.Type().Name(),
 				Expected:      typeCheck[i].Typ.Name(),
 				ParameterName: typeCheck[i].Name,
+				IsReturn:      isReturn,
 			}, f.File, node.Source().StartPos)
 		}
 

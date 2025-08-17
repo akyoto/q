@@ -4,7 +4,6 @@ import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/types"
 )
 
 // compileReturn compiles a return instruction.
@@ -18,22 +17,12 @@ func (f *Function) compileReturn(node *ast.Return) error {
 		return errors.New(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, node.Values[0].Token.Position)
 	}
 
-	returnValues := make([]ssa.Value, 0, len(node.Values))
+	args, err := f.decompose(node.Values, f.Output, true)
 
-	for i, expr := range node.Values {
-		value, err := f.evaluate(expr)
-
-		if err != nil {
-			return err
-		}
-
-		if !types.Is(value.Type(), f.Output[i].Type()) {
-			return errors.New(&TypeMismatch{Encountered: value.Type().Name(), Expected: f.Output[i].Type().Name(), ParameterName: f.Output[i].Name, IsReturn: true}, f.File, expr.Token.Position)
-		}
-
-		returnValues = append(returnValues, value)
+	if err != nil {
+		return err
 	}
 
-	f.Append(&ssa.Return{Arguments: returnValues})
+	f.Append(&ssa.Return{Arguments: args})
 	return nil
 }
