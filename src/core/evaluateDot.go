@@ -64,7 +64,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			return nil, errors.New(&UnknownStructField{StructName: leftValue.Typ.Name(), FieldName: rightText}, f.File, right.Token.Position)
 		}
 
-		return f.Append(leftValue.Arguments[field.Index]), nil
+		return leftValue.Arguments[field.Index], nil
 
 	default:
 		field := leftValue.Type().(*types.Pointer).To.(*types.Struct).FieldByName(rightText)
