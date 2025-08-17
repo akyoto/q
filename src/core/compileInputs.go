@@ -23,11 +23,12 @@ func (f *Function) compileInputs() {
 
 			for _, field := range structType.Fields {
 				param := &ssa.Parameter{
-					Index:  uint8(offset + i),
-					Name:   fmt.Sprintf("%s.%s", input.Name, field.Name),
-					Typ:    field.Type,
-					Tokens: input.Tokens,
-					Source: input.Source,
+					Index:     uint8(offset + i),
+					Name:      fmt.Sprintf("%s.%s", input.Name, field.Name),
+					Typ:       field.Type,
+					Tokens:    input.Tokens,
+					Structure: structure,
+					Source:    input.Source,
 				}
 
 				f.Append(param)

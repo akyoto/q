@@ -60,6 +60,7 @@ var tests = []run{
 	{"return-3", "", "", 0},
 	{"return-4", "", "", 0},
 	{"return-string", "", "Hello\n", 0},
+	{"ignore-unused-field", "", "", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"escape", "", "a\tb\nc\td\n", 0},
 	{"script", "", "Hello\n", 0},
