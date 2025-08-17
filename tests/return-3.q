@@ -5,6 +5,6 @@ main() {
 	assert c == 1
 }
 
-reverse3(x int, y int, z int) -> (z int, y int, x int) {
+reverse3(x int, y int, z int) -> (int, int, int) {
 	return z, y, x
 }

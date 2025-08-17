@@ -4,6 +4,6 @@ main() {
 	assert b == 1
 }
 
-reverse2(x int, y int) -> (y int, x int) {
+reverse2(x int, y int) -> (int, int) {
 	return y, x
 }
