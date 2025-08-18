@@ -130,6 +130,11 @@ func TestParse(t *testing.T) {
 		{"Structs 7", "a{b:c}[0]", "(@ ($ a (: b c)) 0)"},
 		{"Structs 8", "a{}(f)", "(λ ($ a) f)"},
 		{"Structs 9", "a{b:c}(f)", "(λ ($ a (: b c)) f)"},
+
+		{"Slices", "a[..]", "(@ a ..)"},
+		{"Slices 2", "a[b..]", "(@ a (.. b))"},
+		{"Slices 3", "a[..c]", "(@ a (..  c))"},
+		{"Slices 4", "a[b..c]", "(@ a (.. b c))"},
 	}
 
 	for _, test := range tests {

@@ -12,6 +12,6 @@ main() {
 			return
 		}
 
-		io.write(string{ptr: buffer.ptr, len: n})
+		io.write(buffer[..n])
 	}
 }

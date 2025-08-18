@@ -101,6 +101,11 @@ func Parse(tokens token.List) *Expression {
 		if t.Kind == token.Identifier || t.Kind == token.Number || t.Kind == token.String || t.Kind == token.Rune {
 			if cursor != nil {
 				node := NewLeaf(t)
+
+				if cursor.Token.Kind == token.Range && len(cursor.Children) == 0 {
+					cursor.AddChild(New())
+				}
+
 				cursor.AddChild(node)
 			} else {
 				cursor = NewLeaf(t)
