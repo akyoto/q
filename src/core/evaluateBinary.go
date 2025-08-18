@@ -31,12 +31,17 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 		return nil, errors.New(InvalidStructOperation, f.File, expr.Token.Position)
 	}
 
-	v := f.Append(&ssa.BinaryOp{
+	v := &ssa.BinaryOp{
 		Left:   leftValue,
 		Right:  rightValue,
 		Op:     expr.Token.Kind,
 		Source: ssa.Source(expr.Source()),
-	})
+	}
 
-	return v, nil
+	if v.Op.IsComparison() {
+		f.Block().Append(v)
+		return v, nil
+	}
+
+	return f.Append(v), nil
 }
