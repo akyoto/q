@@ -68,18 +68,12 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## Examples
 
-> [!NOTE]
-> The syntax is highly volatile at this point but you can take a look at the [examples](../examples) or the [tests](../tests) to get a perspective on the current status.
+The syntax is still highly unstable because I'm focusing my work on the correct machine code generation for all platforms and architectures. However, you can take a look at the [examples](../examples) and the [tests](../tests) to get a perspective on the current status.
 
-- [hello.q](../examples/hello/hello.q)
-- [collatz.q](../examples/collatz/collatz.q)
-- [factorial.q](../examples/factorial/factorial.q)
-- [fibonacci.q](../examples/fibonacci/fibonacci.q)
-- [fizzbuzz.q](../examples/fizzbuzz/fizzbuzz.q)
-- [gcd.q](../examples/gcd/gcd.q)
-- [point.q](../examples/point/point.q)
-- [prime.q](../examples/prime/prime.q)
-- [winapi.q](../examples/winapi/winapi.q)
+- [hello](../examples/hello/hello.q)
+- [echo](../examples/echo/echo.q)
+- [fibonacci](../examples/fibonacci/fibonacci.q)
+- [fizzbuzz](../examples/fizzbuzz/fizzbuzz.q)
 
 ## Source
 
