@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"fmt"
 	"slices"
 
 	"git.urbach.dev/cli/q/src/asm"
@@ -108,7 +107,7 @@ func (f *Function) exec(step *Step) {
 			})
 
 		default:
-			panic(fmt.Sprintf("not implemented: %d", instr.Op))
+			panic("not implemented: " + instr.String())
 		}
 
 	case *ssa.Bool:
@@ -350,6 +349,12 @@ func (f *Function) exec(step *Step) {
 				Destination: step.Register,
 				Source:      left.Register,
 			})
+
+		case token.Not:
+			panic("not implemented: logical not")
+
+		default:
+			panic("not implemented: " + instr.String())
 		}
 
 	default:
