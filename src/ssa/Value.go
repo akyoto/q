@@ -3,6 +3,9 @@ package ssa
 import "git.urbach.dev/cli/q/src/types"
 
 type Value interface {
+	// AddUser adds a new user.
+	AddUser(Value)
+
 	// Equals returns true if it's equal to the given value.
 	Equals(Value) bool
 
@@ -11,6 +14,9 @@ type Value interface {
 
 	// IsConst returns true if the calculation of the value has no side effects.
 	IsConst() bool
+
+	// RemoveUser removes an existing user.
+	RemoveUser(Value)
 
 	// Replace replaces the uses of a value with another value.
 	Replace(Value, Value)
@@ -23,7 +29,4 @@ type Value interface {
 
 	// Users returns all values that reference this value as an input.
 	Users() []Value
-
-	// addUser adds a new user.
-	addUser(Value)
 }

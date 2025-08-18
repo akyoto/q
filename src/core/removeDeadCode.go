@@ -20,16 +20,20 @@ func (f *Function) removeDeadCode() error {
 			structField, isFieldOfStruct := value.(ssa.StructField)
 
 			if isFieldOfStruct && structField.Struct() != nil {
-				used := false
+				partiallyUnused := false
 
 				for _, field := range structField.Struct().Arguments {
 					if len(field.Users()) > 0 {
-						used = true
+						partiallyUnused = true
 						break
 					}
 				}
 
-				if used {
+				if partiallyUnused {
+					for _, input := range value.Inputs() {
+						input.RemoveUser(value)
+					}
+
 					block.Instructions[i] = nil
 					continue
 				}

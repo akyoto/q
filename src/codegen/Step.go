@@ -28,7 +28,15 @@ func (s *Step) hint(reg cpu.Register) {
 
 // needsRegister returns true if the value requires a register.
 func (s *Step) needsRegister() bool {
-	if s.Value.Type() == types.Void {
+	typ := s.Value.Type()
+
+	if typ == types.Void {
+		return false
+	}
+
+	_, isStruct := typ.(*types.Struct)
+
+	if isStruct {
 		return false
 	}
 
