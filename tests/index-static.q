@@ -1,8 +1,7 @@
 import mem
 
 main() {
-	buffer := mem.alloc(4)
-	a := buffer.ptr
+	a := mem.alloc(4)
 
 	assert a[0] == 0
 	assert a[1] == 0

@@ -1,8 +1,7 @@
 import mem
 
 main() {
-	buffer := mem.alloc(4)
-	a := buffer.ptr
+	a := mem.alloc(4)
 
 	loop i := 0..4 {
 		a[i] = i

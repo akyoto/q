@@ -17,6 +17,12 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 	}
 
 	addressType := addressValue.Type()
+
+	if addressType == types.String {
+		addressValue = addressValue.(*ssa.Struct).Arguments[0]
+		addressType = addressValue.Type()
+	}
+
 	pointer, isPointer := addressType.(*types.Pointer)
 
 	if !isPointer {
