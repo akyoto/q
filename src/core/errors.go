@@ -82,6 +82,15 @@ func (err *TypeMismatch) Error() string {
 	return fmt.Sprintf("Expected %s '%s' instead of '%s'", subject, err.Expected, err.Encountered)
 }
 
+// TypeNotIndexable represents an error where a type does not allow indexing.
+type TypeNotIndexable struct {
+	TypeName string
+}
+
+func (err *TypeNotIndexable) Error() string {
+	return fmt.Sprintf("Value of type '%s' does not support indexing", err.TypeName)
+}
+
 // UnknownIdentifier represents unknown identifiers.
 type UnknownIdentifier struct {
 	Name        string

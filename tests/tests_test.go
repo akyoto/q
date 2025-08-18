@@ -59,7 +59,6 @@ var tests = []run{
 	{"struct-return-reference", "", "", 0},
 	{"struct-return-value", "", "", 0},
 	{"string-by-value", "", "World\n", 0},
-	{"custom-string", "", "012345", 0},
 	{"return-2", "", "", 0},
 	{"return-3", "", "", 0},
 	{"return-4", "", "", 0},

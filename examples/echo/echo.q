@@ -2,17 +2,16 @@ import io
 import mem
 
 main() {
-	length := 4096
-	address := mem.alloc(length)
+	buffer := mem.alloc(4096)
 
 	loop {
-		n := io.read2(address, length)
+		n := io.read(buffer)
 
 		if n <= 0 {
-			mem.free(address, length)
+			mem.free(buffer)
 			return
 		}
 
-		io.write2(address, n)
+		io.write(string{ptr: buffer.ptr, len: n})
 	}
 }

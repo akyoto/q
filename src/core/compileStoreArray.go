@@ -2,6 +2,7 @@ package core
 
 import (
 	"git.urbach.dev/cli/q/src/ast"
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -15,6 +16,13 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 
 	if err != nil {
 		return err
+	}
+
+	addressType := addressValue.Type()
+	pointer, isPointer := addressType.(*types.Pointer)
+
+	if !isPointer {
+		return errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source().StartPos)
 	}
 
 	indexValue, err := f.evaluate(index)
@@ -34,7 +42,7 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		Address: addressValue,
 		Index:   indexValue,
 		Value:   rightValue,
-		Length:  uint8(addressValue.Type().(*types.Pointer).To.Size()),
+		Length:  uint8(pointer.To.Size()),
 		Source:  ssa.Source(node.Expression.Source()),
 	})
 

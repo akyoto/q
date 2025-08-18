@@ -2,16 +2,15 @@ import io
 import mem
 
 main() {
-	len := 6
-	ptr := mem.alloc(len)
-	ptr[0] = 'H'
-	ptr[1] = 'e'
-	ptr[2] = 'l'
-	ptr[3] = 'l'
-	ptr[4] = 'o'
-	ptr[5] = '\n'
+	buffer := mem.alloc(6)
+	buffer.ptr[0] = 'H'
+	buffer.ptr[1] = 'e'
+	buffer.ptr[2] = 'l'
+	buffer.ptr[3] = 'l'
+	buffer.ptr[4] = 'o'
+	buffer.ptr[5] = '\n'
 
-	s := string{ptr: ptr, len: len}
+	s := string{ptr: buffer.ptr, len: buffer.len}
 	s.ptr[0] = 'W'
 	s.ptr[1] = 'o'
 	s.ptr[2] = 'r'

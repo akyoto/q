@@ -5,6 +5,13 @@ write(buffer string) -> (written int) {
 	return [count]
 }
 
+read(buffer string) -> (read int) {
+	stdin := kernel32.GetStdHandle(-10)
+	count := new(uint32)
+	kernel32.ReadFile(stdin, buffer.ptr, buffer.len, count, 0)
+	return [count]
+}
+
 extern {
 	kernel32 {
 		GetStdHandle(device int64) -> (handle int64)

@@ -1,17 +1,17 @@
 import run
 
-alloc(length int) -> (address *byte) {
+alloc(length int) -> (buffer string) {
 	x := kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
 
 	if x == 0 {
 		run.crash()
 	}
 
-	return x
+	return string{ptr: x, len: length}
 }
 
-free(address *any, length int) {
-	kernel32.VirtualFree(address, length, decommit)
+free(buffer string) {
+	kernel32.VirtualFree(buffer.ptr, buffer.len, decommit)
 }
 
 extern {
