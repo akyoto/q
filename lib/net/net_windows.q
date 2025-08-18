@@ -3,8 +3,9 @@ accept(fd int, address *any, length int) -> int {
 }
 
 close(fd int) -> int {
-	return ws2_32.shutdown(fd, 1)
-	//return ws2_32.closesocket(fd)
+	ws2_32.shutdown(fd, 1)
+	ws2_32.recv(fd, 0, 0, 0)
+	return ws2_32.closesocket(fd)
 }
 
 listen(fd int, backlog int) -> int {
