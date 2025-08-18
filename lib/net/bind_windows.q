@@ -9,5 +9,5 @@ bind(socket int, port uint16) -> (error int) {
 	addr := new(sockaddr_in)
 	addr.sin_family = 2
 	addr.sin_port = htons(port)
-	return syscall(_bind, socket, addr, 16)
+	return ws2_32.bind(socket, addr, 16)
 }

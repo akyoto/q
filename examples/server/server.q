@@ -1,5 +1,3 @@
-// Single-threaded HTTP server for Linux / Mac.
-// This example does not work on Windows yet.
 import io
 import net
 import os
@@ -22,13 +20,14 @@ main() {
 		os.exit(1)
 	}
 
+	io.write("http://127.0.0.1:8080\n")
 	io.write("listening...\n")
 
 	loop {
 		conn := net.accept(socket, 0, 0)
 
 		if conn >= 0 {
-			io.writeTo(conn, "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\nHello\n")
+			net.send(conn, "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\nHello\n")
 			net.close(conn)
 		} else {
 			io.write("accept error\n")
