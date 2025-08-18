@@ -193,6 +193,10 @@ Testing infrastructure and support for existing and new architectures.
 
 ## FAQ: Contributors
 
+### Do you accept contributions?
+
+Not at the moment. This project is currently part of a solo evaluation. Contributions will be accepted starting 2025-12-01.
+
 ### How do I run the tests?
 
 ```shell
