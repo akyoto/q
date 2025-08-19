@@ -3,6 +3,7 @@ package verbose
 import (
 	_ "embed"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"git.urbach.dev/cli/q/src/asm"
@@ -41,6 +42,13 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
+		case *asm.AddNumber:
+			mnemonic.Print("  add ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			imm.Print(instr.Number)
 		case *asm.And:
 			mnemonic.Print("  and ")
 			register.Print(instr.Destination)
@@ -161,7 +169,19 @@ func printAssembly(f *core.Function) {
 		case *asm.Return:
 			mnemonic.Print("  return")
 		case *asm.ShiftLeft:
+			mnemonic.Print("  shift << ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			register.Print(instr.Operand)
 		case *asm.ShiftRightSigned:
+			mnemonic.Print("  shift >> ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			register.Print(instr.Operand)
 		case *asm.Store:
 			mnemonic.Printf("  store %db ", instr.Length)
 			other.Print("[")
@@ -210,7 +230,7 @@ func printAssembly(f *core.Function) {
 			other.Print(", ")
 			register.Print(instr.Operand)
 		default:
-			mnemonic.Print("  unknown")
+			ansi.Red.Print("  unknown: " + reflect.TypeOf(instr).String())
 		}
 
 		fmt.Println()
