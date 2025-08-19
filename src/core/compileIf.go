@@ -9,15 +9,15 @@ import (
 func (f *Function) compileIf(branch *ast.If) error {
 	f.Count.Branch++
 	thenLabel := f.CreateLabel("if.then", f.Count.Branch)
-	endLabel := f.CreateLabel("if.end", f.Count.Branch)
+	exitLabel := f.CreateLabel("if.exit", f.Count.Branch)
 	thenBlock := ssa.NewBlock(thenLabel)
-	endBlock := ssa.NewBlock(endLabel)
+	exitBlock := ssa.NewBlock(exitLabel)
 	beforeIf := f.Block()
 	beforeIf.AddSuccessor(thenBlock)
 
 	if branch.Else == nil {
-		beforeIf.AddSuccessor(endBlock)
-		err := f.compileCondition(branch.Condition, thenBlock, endBlock)
+		beforeIf.AddSuccessor(exitBlock)
+		err := f.compileCondition(branch.Condition, thenBlock, exitBlock)
 
 		if err != nil {
 			return err
@@ -31,8 +31,8 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		f.Block().AddSuccessor(endBlock)
-		f.Append(&ssa.Jump{To: endBlock})
+		f.Block().AddSuccessor(exitBlock)
+		f.Append(&ssa.Jump{To: exitBlock})
 	} else {
 		elseLabel := f.CreateLabel("if.else", f.Count.Branch)
 		elseBlock := ssa.NewBlock(elseLabel)
@@ -51,8 +51,8 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		f.Block().AddSuccessor(endBlock)
-		f.Append(&ssa.Jump{To: endBlock})
+		f.Block().AddSuccessor(exitBlock)
+		f.Append(&ssa.Jump{To: exitBlock})
 
 		// Append the if.else block
 		f.AddBlock(elseBlock)
@@ -62,10 +62,10 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		f.Block().AddSuccessor(endBlock)
-		f.Append(&ssa.Jump{To: endBlock})
+		f.Block().AddSuccessor(exitBlock)
+		f.Append(&ssa.Jump{To: exitBlock})
 	}
 
-	f.AddBlock(endBlock)
+	f.AddBlock(exitBlock)
 	return nil
 }

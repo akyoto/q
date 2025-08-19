@@ -133,7 +133,7 @@ The typical flow for a build command is the following:
 
 |            | arm64      | x86-64    |
 | ---------- | ---------- | --------- |
-| 🐧 Linux   |  646 bytes | 582 bytes |
+| 🐧 Linux   |  646 bytes | 646 bytes |
 | 🍏 Mac     |   16.3 KiB |   4.2 KiB |
 | 🪟 Windows |    1.7 KiB |   1.7 KiB |
 
@@ -143,10 +143,10 @@ Recursive Fibonacci benchmark (`n = 35`):
 
 |                  | arm64                  | x86-64                 |
 | ---------------- | ---------------------- | ---------------------- |
-| C  (-O3, gcc 15) | **36.9 ms** ±   1.7 ms | **45.8 ms** ±   7.5 ms |
-| Go (1.25)        | **49.1 ms** ±   1.5 ms | **50.7 ms** ±  12.8 ms |
-| Q  (2025-08-19)  | **54.2 ms** ±   1.6 ms | **55.2 ms** ±   8.1 ms |
-| C  (-O0, gcc 15) | **66.6 ms** ±   2.5 ms | **84.9** ms ±   7.7 ms |
+| C  (-O3, gcc 15) | **41.3 ms** ±   2.2 ms | **26.2 ms** ±   4.1 ms |
+| Go (1.25)        | **48.7 ms** ±   1.3 ms | **38.1 ms** ±   7.7 ms |
+| Q  (2025-08-19)  | **53.9 ms** ±   1.7 ms | **37.3 ms** ±   2.9 ms |
+| C  (-O0, gcc 15) | **66.6 ms** ±   2.5 ms | **52.3** ms ±   5.2 ms |
 
 While the current results lag behind both optimized C and Go, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance uplift as this work progresses.
 

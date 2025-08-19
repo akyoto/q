@@ -4,7 +4,7 @@ import "git.urbach.dev/cli/q/src/asm"
 
 // enter sets up the stack frame.
 func (f *Function) enter() {
-	f.Assembler.Append(&asm.Label{Name: f.FullName})
+	f.Assembler.Append(&asm.Label{Name: f.FullName, Align: alignFunction})
 
 	if f.Preserved.Count() > 0 && !f.isInit {
 		f.Assembler.Append(&asm.Push{Registers: f.Preserved.Slice()})

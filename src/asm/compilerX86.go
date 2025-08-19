@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 
+	"git.urbach.dev/cli/q/src/exe"
 	"git.urbach.dev/cli/q/src/sizeof"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/x86"
@@ -169,6 +170,11 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		c.earlyPatches = append(c.earlyPatches, patch)
 	case *Label:
+		if instr.Align > 0 {
+			_, pad := exe.AlignPad(len(c.code), int(instr.Align))
+			c.code = x86.Nop(c.code, pad)
+		}
+
 		c.labels[instr.Name] = len(c.code)
 	case *Load:
 		if instr.Length <= 2 {

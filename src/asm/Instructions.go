@@ -24,8 +24,11 @@ type (
 		Label     string
 		Condition token.Kind
 	}
-	Label struct{ Name string }
-	Load  struct {
+	Label struct {
+		Name  string
+		Align uint8
+	}
+	Load struct {
 		Base        cpu.Register
 		Index       cpu.Register
 		Destination cpu.Register
