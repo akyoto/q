@@ -43,7 +43,7 @@ func (f *Function) createSteps(ir ssa.IR) {
 	}
 
 	for _, step := range f.Steps {
-		if step.Register == -1 && step.needsRegister() {
+		if step.Register == -1 && f.needsRegister(step) {
 			f.assignFreeRegister(step)
 		}
 	}

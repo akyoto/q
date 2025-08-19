@@ -57,6 +57,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-08-19**: Performance improvements.
 - **2025-08-18**: Slices for strings.
 - **2025-08-17**: Struct allocation by value/reference.
 - **2025-08-16**: Multiple return values.

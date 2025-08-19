@@ -31,7 +31,14 @@ func (f *Function) exec(step *Step) {
 		right := f.ValueToStep[instr.Right]
 
 		if instr.Op.IsComparison() {
-			f.Assembler.Append(&asm.Compare{Destination: left.Register, Source: right.Register})
+			number, isInt := right.Value.(*ssa.Int)
+
+			if isInt && right.Register == -1 {
+				f.Assembler.Append(&asm.CompareNumber{Destination: left.Register, Number: number.Int})
+			} else {
+				f.Assembler.Append(&asm.Compare{Destination: left.Register, Source: right.Register})
+			}
+
 			return
 		}
 

@@ -12,6 +12,7 @@ func (f *Function) GenerateAssembly(ir ssa.IR, build *config.Build, hasStackFram
 	f.needsFramePointer = !f.isInit && !f.isExit
 	f.hasStackFrame = hasStackFrame
 	f.hasExternCalls = hasExternCalls
+	f.build = build
 	f.CPU = selectCPU(build)
 
 	// Transform SSA graph to a flat slice of steps we have to execute.

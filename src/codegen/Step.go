@@ -3,7 +3,6 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/types"
 )
 
 // Step is created for every single SSA value and holds additional metadata.
@@ -24,32 +23,6 @@ func (s *Step) hint(reg cpu.Register) {
 	}
 
 	s.Hints = append(s.Hints, reg)
-}
-
-// needsRegister returns true if the value requires a register.
-func (s *Step) needsRegister() bool {
-	typ := s.Value.Type()
-
-	if typ == types.Void {
-		return false
-	}
-
-	_, isStruct := typ.(*types.Struct)
-
-	if isStruct {
-		return false
-	}
-
-	if len(s.Value.Users()) == 0 {
-		return false
-	}
-
-	switch instr := s.Value.(type) {
-	case *ssa.BinaryOp:
-		return !instr.Op.IsComparison()
-	}
-
-	return true
 }
 
 // String returns the underlying SSA value in human-readable form.

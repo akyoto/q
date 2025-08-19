@@ -27,16 +27,18 @@ func (f *Function) fixRegisterConflicts() {
 				}
 			}
 
-			right := f.ValueToStep[instr.Right]
+			if step.Register != -1 {
+				right := f.ValueToStep[instr.Right]
 
-			if step.Register == right.Register {
-				f.assignFreeRegister(right)
-			}
+				if step.Register == right.Register {
+					f.assignFreeRegister(right)
+				}
 
-			left := f.ValueToStep[instr.Left]
+				left := f.ValueToStep[instr.Left]
 
-			if instr.Op == token.Mod && step.Register == left.Register {
-				f.assignFreeRegister(left)
+				if instr.Op == token.Mod && step.Register == left.Register {
+					f.assignFreeRegister(left)
+				}
 			}
 		case *ssa.Call:
 			clobbered = f.CPU.Call.Clobbered
