@@ -7,6 +7,7 @@ import (
 
 type (
 	Add        rrr
+	AddNumber  rrn
 	And        rrr
 	AndNumber  rrn
 	Call       struct{ Label string }

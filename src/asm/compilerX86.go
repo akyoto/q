@@ -22,6 +22,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.AddRegisterRegister(c.code, instr.Destination, instr.Operand)
+	case *AddNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.AddRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *And:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)

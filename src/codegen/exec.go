@@ -42,6 +42,31 @@ func (f *Function) exec(step *Step) {
 			return
 		}
 
+		number, isInt := right.Value.(*ssa.Int)
+
+		if isInt && right.Register == -1 {
+			switch instr.Op {
+			case token.Add:
+				f.Assembler.Append(&asm.AddNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+
+			case token.Sub:
+				f.Assembler.Append(&asm.SubtractNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+
+			default:
+				panic("not implemented: " + instr.String())
+			}
+
+			return
+		}
+
 		switch instr.Op {
 		case token.Add:
 			f.Assembler.Append(&asm.Add{

@@ -21,6 +21,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 	switch instr := instr.(type) {
 	case *Add:
 		c.append(arm.AddRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *AddNumber:
+		code, _ := arm.AddRegisterNumber(instr.Destination, instr.Source, instr.Number)
+		c.append(code)
 	case *And:
 		c.append(arm.AndRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Call:
@@ -61,12 +64,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *Compare:
 		c.append(arm.CompareRegisterRegister(instr.Destination, instr.Source))
 	case *CompareNumber:
-		code, encodable := arm.CompareRegisterNumber(instr.Destination, instr.Number)
-
-		if !encodable {
-			panic("not implemented")
-		}
-
+		code, _ := arm.CompareRegisterNumber(instr.Destination, instr.Number)
 		c.append(code)
 	case *Divide:
 		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
@@ -187,6 +185,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, arm.Offset, instr.Index, instr.Length))
 	case *Subtract:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *SubtractNumber:
+		code, _ := arm.SubRegisterNumber(instr.Destination, instr.Source, instr.Number)
+		c.append(code)
 	case *StackFrameStart:
 		c.append(arm.StoreRegister(arm.LR, arm.SP, arm.PreIndex, -16, 8))
 	case *StackFrameEnd:
