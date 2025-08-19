@@ -55,6 +55,12 @@ type (
 		Source cpu.Register
 		Length byte
 	}
+	StoreNumber struct {
+		Base   cpu.Register
+		Index  cpu.Register
+		Number int
+		Length byte
+	}
 	Subtract        rrr
 	SubtractNumber  rrn
 	StackFrameStart struct {

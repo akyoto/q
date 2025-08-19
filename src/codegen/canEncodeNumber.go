@@ -9,42 +9,47 @@ import (
 )
 
 // canEncodeNumber returns true if the architecture can encode an immediate for the given instruction.
-func (f *Function) canEncodeNumber(instr *Step, value *ssa.Int) bool {
-	binaryOp, isBinaryOp := instr.Value.(*ssa.BinaryOp)
-
-	if !isBinaryOp {
-		return false
-	}
-
-	if value != binaryOp.Right {
-		return false
-	}
-
-	switch f.build.Arch {
-	case config.ARM:
-		if binaryOp.Op.IsComparison() {
-			_, encodable := arm.CompareRegisterNumber(0, value.Int)
-			return encodable
+func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
+	switch instr := instr.(type) {
+	case *ssa.BinaryOp:
+		if number != instr.Right {
+			return false
 		}
 
-		switch binaryOp.Op {
-		case token.Add:
-			_, encodable := arm.AddRegisterNumber(0, 0, value.Int)
-			return encodable
+		switch f.build.Arch {
+		case config.ARM:
+			if instr.Op.IsComparison() {
+				_, encodable := arm.CompareRegisterNumber(0, number.Int)
+				return encodable
+			}
 
-		case token.Sub:
-			_, encodable := arm.SubRegisterNumber(0, 0, value.Int)
-			return encodable
+			switch instr.Op {
+			case token.Add:
+				_, encodable := arm.AddRegisterNumber(0, 0, number.Int)
+				return encodable
+
+			case token.Sub:
+				_, encodable := arm.SubRegisterNumber(0, 0, number.Int)
+				return encodable
+			}
+
+		case config.X86:
+			if instr.Op.IsComparison() {
+				return sizeof.Signed(number.Int) <= 4
+			}
+
+			switch instr.Op {
+			case token.Add, token.Sub:
+				return sizeof.Signed(number.Int) <= 4
+			}
 		}
 
-	case config.X86:
-		if binaryOp.Op.IsComparison() {
-			return sizeof.Signed(value.Int) <= 4
-		}
-
-		switch binaryOp.Op {
-		case token.Add, token.Sub:
-			return sizeof.Signed(value.Int) <= 4
+	case *ssa.Store:
+		switch f.build.Arch {
+		case config.ARM:
+			return false
+		case config.X86:
+			return instr.Value == number && sizeof.Signed(number.Int) <= 4
 		}
 	}
 

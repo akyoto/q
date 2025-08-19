@@ -296,6 +296,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Store:
 		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, instr.Length, instr.Source)
+	case *StoreNumber:
+		c.code = x86.StoreDynamicNumber(c.code, instr.Base, instr.Index, instr.Length, instr.Number)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	case *Xor:

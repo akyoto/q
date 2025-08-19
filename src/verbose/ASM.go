@@ -190,6 +190,14 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Index)
 			other.Print("], ")
 			register.Print(instr.Source)
+		case *asm.StoreNumber:
+			mnemonic.Printf("  store %db ", instr.Length)
+			other.Print("[")
+			register.Print(instr.Base)
+			other.Print(" + ")
+			register.Print(instr.Index)
+			other.Print("], ")
+			imm.Print(instr.Number)
 		case *asm.Subtract:
 			mnemonic.Print("  sub ")
 			register.Print(instr.Destination)
