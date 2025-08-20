@@ -18,8 +18,8 @@ Compiler for the q programming language.
         q build [file] --ssa      # static single assigment form
         q build [file] --verbose  # all of the above
 
-    Show this help:
+    Show commit date and hash:
 
-        q help
+        q version
 
 EOF

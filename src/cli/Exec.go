@@ -18,6 +18,9 @@ func Exec(args []string) int {
 	case "help":
 		return help()
 
+	case "version":
+		return version()
+
 	default:
 		_, err := os.Stat(args[0])
 
