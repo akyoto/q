@@ -9,7 +9,7 @@ import (
 // so that the left operand matches the destination register. It will also
 // try to match the right operand with an integer immediate.
 func (f *Function) reorderOperands(step *Step, instr *ssa.BinaryOp) {
-	if instr.Op != token.Add {
+	if instr.Op != token.Add && instr.Op != token.Mul {
 		return
 	}
 
