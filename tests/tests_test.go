@@ -42,6 +42,9 @@ var tests = []run{
 	{"phi", "", "", 0},
 	{"phi-simple", "", "", 0},
 	{"phi-advanced", "", "", 0},
+	{"hello", "", "Hello\nHello\nHello\n", 0},
+	{"escape", "", "a\tb\nc\td\n", 0},
+	{"script", "", "Hello\n", 0},
 	{"loop", "", "..........", 0},
 	{"loop-stacked", "", "..........", 0},
 	{"loop-count", "", "", 0},
@@ -65,9 +68,7 @@ var tests = []run{
 	{"return-string", "", "Hello\n", 0},
 	{"ignore-unused-field", "", "", 0},
 	{"slice", "", "Hello World", 0},
-	{"hello", "", "Hello\nHello\nHello\n", 0},
-	{"escape", "", "a\tb\nc\td\n", 0},
-	{"script", "", "Hello\n", 0},
+	{"reorder-add", "", "", 0},
 }
 
 func TestTests(t *testing.T) {
