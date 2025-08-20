@@ -37,7 +37,11 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// We couldn't do that during the scan phase because it's possible
 	// that a field references a type that will only be known after the
 	// full scan is finished.
-	parseFieldTypes(env.Structs(), env)
+	err = parseFieldTypes(env.Structs(), env)
+
+	if err != nil {
+		return nil, err
+	}
 
 	// Parse input and output types so we have type information
 	// ready for all functions before parallel compilation starts.

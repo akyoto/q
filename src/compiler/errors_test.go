@@ -15,6 +15,7 @@ var errs = []struct {
 	ExpectedError error
 }{
 	{"MissingMainFunction.q", compiler.MissingMainFunction},
+	{"UnknownType.q", &compiler.UnknownType{Name: "unknown"}},
 	{"UnusedImport.q", &compiler.UnusedImport{Package: "os"}},
 }
 

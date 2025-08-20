@@ -26,9 +26,8 @@ func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, erro
 				name := tokens[start].String(file.Bytes)
 
 				structure.AddField(&types.Field{
-					Tokens:   tokens[start:i],
-					Name:     name,
-					Position: token.Position(start),
+					Name:   name,
+					Tokens: tokens[start:i],
 				})
 			}
 
