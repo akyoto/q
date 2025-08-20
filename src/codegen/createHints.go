@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 )
 
 // createHints recommends registers that a value must reside in later on.
@@ -18,20 +17,11 @@ func (f *Function) createHints(step *Step) {
 		}
 
 		// For operations that allow reordering, reorder the operands
-		// so that the left operator is the more recent one.
-		if instr.Op == token.Add {
-			if step.Register == f.CPU.Call.Out[0] {
-				leftStep := f.ValueToStep[instr.Left]
-				rightStep := f.ValueToStep[instr.Right]
-				_, leftIsCall := leftStep.Value.(*ssa.Call)
-				_, rightIsCall := leftStep.Value.(*ssa.Call)
+		// so that the left operator matches the destination register.
+		f.reorderOperands(step, instr)
 
-				if leftIsCall && rightIsCall && rightStep.Index > leftStep.Index {
-					instr.Left, instr.Right = instr.Right, instr.Left
-				}
-			}
-		}
-
+		// For x86-64 it is advantageous to use the destination register
+		// as the register for the left operand.
 		f.ValueToStep[instr.Left].hint(step.Register)
 
 	case *ssa.Call:
