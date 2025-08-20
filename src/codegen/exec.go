@@ -258,6 +258,16 @@ func (f *Function) exec(step *Step) {
 			Source:      f.CPU.ExternCall.Out[0],
 		})
 
+	case *ssa.Copy:
+		if step.Register == -1 {
+			return
+		}
+
+		f.Assembler.Append(&asm.Move{
+			Destination: step.Register,
+			Source:      f.ValueToStep[step.Value].Register,
+		})
+
 	case *ssa.FromTuple:
 		source := f.CPU.Call.Out[instr.Index]
 
