@@ -13,6 +13,7 @@ var (
 	InvalidNumber          = errors.String("Invalid number")
 	InvalidRune            = errors.String("Invalid rune")
 	InvalidStructOperation = errors.String("Invalid operation on structs")
+	MissingFieldName       = errors.String("Missing field name in struct initialization")
 	MissingOperand         = errors.String("Missing operand")
 )
 
