@@ -1,6 +1,7 @@
 package global
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -18,10 +19,13 @@ func findLibrary() {
 			return
 		}
 
-		if dir == "/" {
-			panic("standard library not found")
+		newDir := filepath.Dir(dir)
+
+		if newDir == dir {
+			fmt.Fprintln(os.Stderr, "standard library not found")
+			os.Exit(1)
 		}
 
-		dir = filepath.Dir(dir)
+		dir = newDir
 	}
 }
