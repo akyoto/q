@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -30,8 +31,24 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 		structure, isStruct := value.(*ssa.Struct)
 
 		if isStruct {
-			for _, field := range structure.Arguments {
-				args = append(args, field)
+			if structure.Typ.Size() <= 8 {
+				// Packed integer: Use the first argument,
+				// then bitwise OR with the shifted field values.
+				cursor := structure.Arguments[0]
+				size := structure.Typ.Fields[0].Type.Size()
+
+				for i, field := range structure.Arguments[1:] {
+					sizeValue := f.Append(&ssa.Int{Int: size * 8})
+					shifted := f.Append(&ssa.BinaryOp{Op: token.Shl, Left: field, Right: sizeValue})
+					cursor = f.Append(&ssa.BinaryOp{Op: token.Or, Left: cursor, Right: shifted})
+					size += structure.Typ.Fields[i+1].Type.Size()
+				}
+
+				args = append(args, cursor)
+			} else {
+				for _, field := range structure.Arguments {
+					args = append(args, field)
+				}
 			}
 
 			continue

@@ -2,9 +2,15 @@
 // needs the raylib.dll file next to the executable.
 // It creates an empty window.
 //
+// Linux users can use WINE after adding raylib.dll:
+//
+//     q build examples/raylib --os windows
+//     wine examples/raylib/raylib.exe
+//
 // NOTE:
 // - the `float` data type is not implemented yet
-// - passing structs by value to extern calls is not implemented yet
+// - passing structs by value to extern calls
+//   currently only works up to a size of 8 bytes
 
 main() {
 	raylib.InitWindow(1280, 720, "raylib example\0".ptr)
@@ -18,13 +24,22 @@ main() {
 		}
 
 		raylib.BeginDrawing()
+		raylib.ClearBackground(Color{r: 32, g: 32, b: 32, a: 255})
 		raylib.EndDrawing()
 	}
+}
+
+Color {
+	r byte
+	g byte
+	b byte
+	a byte
 }
 
 extern {
 	raylib {
 		BeginDrawing()
+		ClearBackground(color Color)
 		EndDrawing()
 		GetCurrentMonitor() -> int
 		GetMonitorRefreshRate(monitor int) -> int
