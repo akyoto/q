@@ -9,8 +9,6 @@
 //
 // NOTE:
 // - the `float` data type is not implemented yet
-// - passing structs by value to extern calls
-//   currently only works up to a size of 8 bytes
 
 main() {
 	raylib.InitWindow(1280, 720, "raylib example\0".ptr)
