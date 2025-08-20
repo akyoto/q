@@ -18,8 +18,8 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 	}
 
 	for _, definition := range expr.Children[1:] {
-		if definition.IsLeaf() {
-			return nil, errors.New(MissingFieldName, f.File, definition.Source().StartPos)
+		if len(definition.Children) != 2 {
+			return nil, errors.New(InvalidFieldInit, f.File, definition.Source().StartPos)
 		}
 
 		left := definition.Children[0]

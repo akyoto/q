@@ -9,11 +9,11 @@ import (
 var (
 	InvalidCondition       = errors.String("Invalid condition")
 	InvalidExpression      = errors.String("Invalid expression")
+	InvalidFieldInit       = errors.String("Invalid field initialization (expected 'field: value')")
 	InvalidLoopHeader      = errors.String("Invalid loop header")
 	InvalidNumber          = errors.String("Invalid number")
 	InvalidRune            = errors.String("Invalid rune")
 	InvalidStructOperation = errors.String("Invalid operation on structs")
-	MissingFieldName       = errors.String("Missing field name in struct initialization")
 	MissingOperand         = errors.String("Missing operand")
 )
 
