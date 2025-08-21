@@ -13,9 +13,10 @@ func stack() string {
 		n      = runtime.Stack(buffer, false)
 		stack  = string(buffer[:n])
 		lines  = strings.Split(stack, "\n")
+		limit  = min(len(lines), 16)
 	)
 
-	for i := 6; i < len(lines); i += 2 {
+	for i := 6; i < limit; i += 2 {
 		line := strings.TrimSpace(lines[i])
 		space := strings.LastIndex(line, " ")
 

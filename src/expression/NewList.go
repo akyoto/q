@@ -8,8 +8,13 @@ import (
 func NewList(tokens token.List) []*Expression {
 	var list []*Expression
 
-	for param := range tokens.Split {
+	for position, param := range tokens.Split {
 		expression := Parse(param)
+
+		if expression.Token.Kind == token.Invalid {
+			expression.Token.Position = position
+		}
+
 		list = append(list, expression)
 	}
 

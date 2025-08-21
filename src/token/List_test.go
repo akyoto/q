@@ -22,7 +22,7 @@ func TestSplit(t *testing.T) {
 	tokens := token.Tokenize(src)
 	parameters := []string{}
 
-	for param := range tokens.Split {
+	for _, param := range tokens.Split {
 		parameters = append(parameters, param.String(src))
 	}
 
@@ -51,7 +51,7 @@ func TestSplitGroups(t *testing.T) {
 	tokens := token.Tokenize(src)
 	parameters := []string{}
 
-	for param := range tokens.Split {
+	for _, param := range tokens.Split {
 		parameters = append(parameters, param.String(src))
 	}
 
@@ -63,7 +63,7 @@ func TestSplitSingle(t *testing.T) {
 	tokens := token.Tokenize(src)
 	parameters := []string{}
 
-	for param := range tokens.Split {
+	for _, param := range tokens.Split {
 		parameters = append(parameters, param.String(src))
 	}
 

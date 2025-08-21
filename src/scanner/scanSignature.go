@@ -86,9 +86,9 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 	function := core.NewFunction(name, pkg, file)
 	parameters := tokens[inputStart:inputEnd]
 
-	for param := range parameters.Split {
+	for position, param := range parameters.Split {
 		if len(param) == 0 {
-			return nil, i, errors.New(MissingParameter, file, parameters[0].Position)
+			return nil, i, errors.New(MissingParameter, file, position)
 		}
 
 		if len(param) == 1 {
@@ -128,11 +128,9 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 		return nil, i, errors.New(MissingParameter, file, tokens[outputStart].Position)
 	}
 
-	errorPos := token.Position(outputStart)
-
-	for param := range outputTokens.Split {
+	for position, param := range outputTokens.Split {
 		if len(param) == 0 {
-			return nil, i, errors.New(MissingParameter, file, errorPos)
+			return nil, i, errors.New(MissingParameter, file, position)
 		}
 
 		if len(param) == 1 {
@@ -146,8 +144,6 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 				Tokens: param,
 			})
 		}
-
-		errorPos = param[len(param)-1].End() + 1
 	}
 
 	return function, i, nil

@@ -77,8 +77,8 @@ func (e *FileError) LineColumn() (int, int) {
 	return line, column
 }
 
-// Location returns the path, line and column separated by colons.
-func (e *FileError) Location() string {
+// Link returns a clickable link containing the path, line and column.
+func (e *FileError) Link() string {
 	path := e.Path()
 	line, column := e.LineColumn()
 	return fmt.Sprintf("%s:%d:%d", path, line, column)
@@ -93,6 +93,11 @@ func (e *FileError) Path() string {
 	}
 
 	return filepath.ToSlash(relative)
+}
+
+// Position returns the byte offset inside the file.
+func (e *FileError) Position() token.Position {
+	return e.position
 }
 
 // Stack returns the call stack at the time the error was created.

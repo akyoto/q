@@ -30,7 +30,7 @@ func (list List) LastIndexKind(kind Kind) int {
 }
 
 // Split calls the callback function on each set of tokens in a comma separated list.
-func (list List) Split(yield func(List) bool) {
+func (list List) Split(yield func(Position, List) bool) {
 	if len(list) == 0 {
 		return
 	}
@@ -53,7 +53,7 @@ func (list List) Split(yield func(List) bool) {
 
 			parameter := list[start:i]
 
-			if !yield(parameter) {
+			if !yield(list[start].Position, parameter) {
 				return
 			}
 
@@ -61,7 +61,7 @@ func (list List) Split(yield func(List) bool) {
 		}
 	}
 
-	yield(list[start:])
+	yield(list[len(list)-1].End(), list[start:])
 }
 
 // String returns the concatenated token strings.

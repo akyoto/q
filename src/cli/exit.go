@@ -30,7 +30,7 @@ func exit(err error) int {
 		line, offset := fileError.Line()
 		indent := strings.Repeat(" ", offset)
 		color.Redirect(os.Stderr)
-		ansi.Reset.Printf("%s\n\n", fileError.Location())
+		ansi.Reset.Printf("%s\n\n", fileError.Link())
 		ansi.Reset.Printf("    %s\n", line)
 		ansi.Red.Printf("%s    ┬\n%s    ╰─ ", indent, indent)
 		ansi.Reset.Printf("%s\n\n", fileError.Error())

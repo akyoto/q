@@ -54,7 +54,7 @@ func test(t *testing.T, path string) *errors.FileError {
 	assert.Equal(t, err.Error(), "EOF")
 	assert.Equal(t, err.Unwrap().Error(), "EOF")
 	assert.Equal(t, err.File().Path, path)
-	assert.Contains(t, err.Location(), ":3:1")
+	assert.Contains(t, err.Link(), ":3:1")
 	assert.Contains(t, err.Stack(), "FileError_test.go")
 	lineContents, _ := err.Line()
 	assert.Contains(t, string(contents), lineContents)
