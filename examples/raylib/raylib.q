@@ -22,16 +22,9 @@ main() {
 		}
 
 		raylib.BeginDrawing()
-		raylib.ClearBackground(Color{r: 32, g: 32, b: 32, a: 255})
+		raylib.ClearBackground(Color{r: 0, g: 0, b: 0, a: 255})
 		raylib.EndDrawing()
 	}
-}
-
-Color {
-	r byte
-	g byte
-	b byte
-	a byte
 }
 
 extern {
