@@ -24,6 +24,7 @@ var errs = []struct {
 	{"InvalidExpression.q", scanner.InvalidExpression},
 	{"InvalidFunctionDefinition.q", scanner.InvalidFunctionDefinition},
 	{"InvalidFunctionDefinition2.q", scanner.InvalidFunctionDefinition},
+	{"InvalidParameterName.q", scanner.InvalidParameterName},
 	{"InvalidTopLevel.q", &scanner.InvalidTopLevel{Instruction: "123"}},
 	{"InvalidTopLevel2.q", &scanner.InvalidTopLevel{Instruction: "\"Hello\""}},
 	{"InvalidTopLevel3.q", &scanner.InvalidTopLevel{Instruction: "+"}},
@@ -39,7 +40,7 @@ var errs = []struct {
 	{"MissingParameter3.q", scanner.MissingParameter},
 	{"MissingParameter4.q", scanner.MissingParameter},
 	{"MissingParameter5.q", scanner.MissingParameter},
-	{"MissingType.q", scanner.MissingType},
+	{"MissingParameterType.q", scanner.MissingParameterType},
 	{"UnknownImport.q", &scanner.UnknownImport{Package: "unknown"}},
 }
 

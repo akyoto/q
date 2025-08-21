@@ -60,7 +60,12 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return nil, err
 	}
 
-	ssaFunc := funcValue.(*ssa.Function)
+	ssaFunc, isFunction := funcValue.(*ssa.Function)
+
+	if !isFunction {
+		return nil, errors.New(InvalidCallExpression, f.File, identifier.Source().StartPos)
+	}
+
 	pkg := f.Env.Packages[ssaFunc.Package]
 	fn := pkg.Functions[ssaFunc.Name]
 	inputExpressions := expr.Children[1:]

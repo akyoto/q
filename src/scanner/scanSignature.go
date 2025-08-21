@@ -92,7 +92,11 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 		}
 
 		if len(param) == 1 {
-			return nil, i, errors.New(MissingType, file, param[0].End())
+			return nil, i, errors.New(MissingParameterType, file, param[0].End())
+		}
+
+		if param[0].Kind != token.Identifier {
+			return nil, i, errors.New(InvalidParameterName, file, param[0].Position)
 		}
 
 		function.Input = append(function.Input, &ssa.Parameter{
