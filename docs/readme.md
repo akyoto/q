@@ -6,8 +6,8 @@
 
 ## Features
 
-* High performance (`ssa` and `asm` optimizations)
-* Fast compilation (<100 μs for simple programs)
+* High performance (between C and Go)
+* Fast compilation (5x faster than most)
 * Tiny executables ("Hello World" is ~600 bytes)
 * Multiple platforms (Linux, Mac and Windows)
 * Zero dependencies (no llvm, no libc)
@@ -107,7 +107,7 @@ The following is a cheat sheet documenting the syntax.
 | Loop 10 times                    | `loop 0..10 {}`             | ✔️ Stable       |
 | Loop 10 times with a variable    | `loop i := 0..10 {}`        | ✔️ Stable       |
 | Branch                           | `if {} else {}`             | ✔️ Stable       |
-| Branch multiple conditions       | `switch {}`                 | ✔️ Stable       |
+| Branch multiple times            | `switch { cond {} _ {} }`   | ✔️ Stable       |
 | Define a constant                | `const { x 42 }`            | 🚧 Experimental |
 | Define an extern C function      | `extern { g { f() } }`      | ✔️ Stable       |
 | Allocate memory                  | `mem.alloc(4096)`           | ✔️ Stable       |
@@ -176,7 +176,7 @@ The typical flow for a build command is the following:
 | 🍏 Mac     |   16.3 KiB |   4.2 KiB |
 | 🪟 Windows |    1.7 KiB |   1.7 KiB |
 
-### Are there any benchmarks?
+### Are there any runtime benchmarks?
 
 Recursive Fibonacci benchmark (`n = 35`):
 
@@ -189,7 +189,9 @@ Recursive Fibonacci benchmark (`n = 35`):
 
 While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance uplift as this work progresses.
 
-### Are there benchmarks for compilation speed?
+### Are there any compiler benchmarks?
+
+The table below shows latency numbers on a 2015 Macbook:
 
 |       | x86-64                 |
 | ----- | ---------------------- |
@@ -199,7 +201,7 @@ While the current results lag behind optimized C, this is an expected stage of d
 | gcc   | **543.9 ms** ±  2.9 ms |
 | rustc | **639.9 ms** ±  3.1 ms |
 
-The table above shows latency numbers on a 2015 Macbook. Latency measures the time it takes a compiler to create an executable file with a nearly empty main function.
+Latency measures the time it takes a compiler to create an executable file with a nearly empty main function.
 
 Benchmarks for throughput have not been conducted yet.
 
@@ -221,6 +223,10 @@ main() {
 ```
 
 You need to create a file with the contents above and add execution permissions via `chmod +x`. Now you can run the script without an explicit compiler build. The generated machine code runs directly from RAM if the OS supports it.
+
+### Does it have a fast memory allocator?
+
+No, the current implementation is only temporary and it needs to be replaced with a faster one once the required language features have been implemented.
 
 ### Any security features?
 
