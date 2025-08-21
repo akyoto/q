@@ -193,15 +193,17 @@ While the current results lag behind optimized C, this is an expected stage of d
 
 The table below shows latency numbers on a 2015 Macbook:
 
-|       | x86-64                 |
-| ----- | ---------------------- |
-| q     |  **81.0 ms** ±  1.0 ms |
-| go    | **364.5 ms** ±  3.3 ms |
-| clang | **395.9 ms** ±  3.3 ms |
-| gcc   | **543.9 ms** ±  2.9 ms |
-| rustc | **639.9 ms** ±  3.1 ms |
+|                 | x86-64                   |
+| --------------- | ------------------------ |
+| q               |   **81.0 ms** ±   1.0 ms |
+| go @1.25        |  **364.5 ms** ±   3.3 ms |
+| clang @17.0.0   |  **395.9 ms** ±   3.3 ms |
+| rustc @1.89.0   |  **639.9 ms** ±   3.1 ms |
+| v @0.4.11       | **1117.0 ms** ±   3.0 ms |
+| odin @accdd7c2a | **2180.0 ms** ±  16.0 ms |
+| zig @0.14.1     | **2811.0 ms** ±  25.0 ms |
 
-Latency measures the time it takes a compiler to create an executable file with a nearly empty main function.
+Latency measures the time it takes a compiler to create an executable file with a nearly empty main function. It should not be confused with throughput.
 
 Benchmarks for throughput have not been conducted yet.
 
