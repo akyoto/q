@@ -38,12 +38,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 	// another named variable instead of using the cached value itself
 	// because it could lead to incorrect optimizations.
 	if !isStructType && block.IsIdentified(value) {
-		value = &ssa.Copy{
-			Value:  value,
-			Source: ssa.Source(right.Source()),
-		}
-
-		block.Append(value)
+		value = f.copy(value, ssa.Source(right.Source()))
 	}
 
 	_, isCall := value.(*ssa.Call)

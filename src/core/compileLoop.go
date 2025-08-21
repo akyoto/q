@@ -33,6 +33,10 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 			return err
 		}
 
+		if f.Block().IsIdentified(fromValue) {
+			fromValue = f.copy(fromValue, ssa.Source(from.Source()))
+		}
+
 		beforeLoop.Identify(name, fromValue)
 		beforeLoop.Append(&ssa.Jump{To: loopHead})
 		beforeLoop.AddSuccessor(loopHead)
