@@ -189,6 +189,20 @@ Recursive Fibonacci benchmark (`n = 35`):
 
 While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance uplift as this work progresses.
 
+### Are there benchmarks for compilation speed?
+
+|       | x86-64                 |
+| ----- | ---------------------- |
+| q     |  **81.0 ms** ±  1.0 ms |
+| go    | **364.5 ms** ±  3.3 ms |
+| clang | **395.9 ms** ±  3.3 ms |
+| gcc   | **543.9 ms** ±  2.9 ms |
+| rustc | **639.9 ms** ±  3.1 ms |
+
+The table above shows latency numbers on a 2015 Macbook. Latency measures the time it takes a compiler to create an executable file with a nearly empty main function.
+
+Benchmarks for throughput have not been conducted yet.
+
 ### What is the compiler based on?
 
 The backend is built on a [Static Single Assignment (SSA)](https://en.wikipedia.org/wiki/Static_single-assignment_form) intermediate representation, the same approach used by mature compilers such as `gcc`, `go`, and `llvm`. SSA greatly simplifies the implementation of common optimization passes, allowing the compiler to produce relatively high-quality assembly code despite the project's early stage of development.
