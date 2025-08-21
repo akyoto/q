@@ -61,6 +61,11 @@ func (list List) Split(yield func(Position, List) bool) {
 		}
 	}
 
+	if start < len(list) {
+		yield(list[start].Position, list[start:])
+		return
+	}
+
 	yield(list[len(list)-1].End(), list[start:])
 }
 

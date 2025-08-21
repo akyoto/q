@@ -22,6 +22,7 @@ var errs = []struct {
 	{"InvalidExpression3.q", core.InvalidExpression},
 	{"InvalidExpression4.q", core.InvalidExpression},
 	{"InvalidExpression5.q", core.InvalidExpression},
+	{"InvalidExpression6.q", core.InvalidExpression},
 	{"InvalidFieldInit.q", core.InvalidFieldInit},
 	{"InvalidFieldInit2.q", core.InvalidFieldInit},
 	{"InvalidLoopHeader.q", core.InvalidLoopHeader},
