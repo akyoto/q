@@ -76,6 +76,33 @@ The syntax is still highly unstable because I'm focusing my work on the correct 
 - [fibonacci](../examples/fibonacci/fibonacci.q)
 - [fizzbuzz](../examples/fizzbuzz/fizzbuzz.q)
 
+## Cheat Sheet
+
+| I need to...                     |                             | API stability   |
+| -------------------------------- | --------------------------- | --------------- |
+| Define a new variable            | `x := 1`                    | ✔️ Stable       |
+| Reassign an existing variable    | `x = 2`                     | ✔️ Stable       |
+| Define a function                | `main() {}`                 | ✔️ Stable       |
+| Define a struct                  | `Point {}`                  | ✔️ Stable       |
+| Define input and output types    | `f(a int) -> (b int) {}`    | ✔️ Stable       |
+| Instantiate a struct             | `Point{x: 1, y: 2}`         | ✔️ Stable       |
+| Instantiate a struct on the heap | `new(Point)`                | 🚧 Experimental |
+| Access struct fields             | `p.x`                       | ✔️ Stable       |
+| Dereference a pointer            | `[ptr]`                     | ✔️ Stable       |
+| Index a pointer                  | `ptr[0]`                    | ✔️ Stable       |
+| Slice a string                   | `"Hello"[1..3]`             | ✔️ Stable       |
+| Return multiple values           | `return 1, 2`               | ✔️ Stable       |
+| Loop                             | `loop {}`                   | ✔️ Stable       |
+| Loop 10 times                    | `loop 0..10 {}`             | ✔️ Stable       |
+| Loop 10 times with a variable    | `loop i := 0..10 {}`        | ✔️ Stable       |
+| Branch multiple conditions       | `switch{ ... }`             | ✔️ Stable       |
+| Define a constant                | `const { x 42 }`            | 🚧 Experimental |
+| Define an extern C function      | `extern { g { f() } }`      | ✔️ Stable       |
+| Allocate memory                  | `mem.alloc(4096)`           | ✔️ Stable       |
+| Free memory                      | `mem.free(buffer)`          | 🚧 Experimental |
+| Output a string                  | `io.write("Hello\n")`       | ✔️ Stable       |
+| Output an integer                | `io.writeInt(42)`           | 🚧 Experimental |
+
 ## Source
 
 The source code structure uses a flat layout without nesting:
