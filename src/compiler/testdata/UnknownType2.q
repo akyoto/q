@@ -1,0 +1,2 @@
+main() {}
+f(_ unknown) {}

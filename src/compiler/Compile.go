@@ -47,7 +47,11 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// ready for all functions before parallel compilation starts.
 	// This ensures that the function compilers have access to
 	// type checking for all function calls.
-	parseTypes(env.Functions(), env)
+	err = parseTypes(env.Functions(), env)
+
+	if err != nil {
+		return nil, err
+	}
 
 	// Start parallel compilation of all functions.
 	// We compile every function for syntax checks even if
