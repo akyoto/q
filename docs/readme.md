@@ -71,12 +71,21 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 The syntax is still highly unstable because I'm focusing my work on the correct machine code generation for all platforms and architectures. However, you can take a look at the [examples](../examples) and the [tests](../tests) to get a perspective on the current status.
 
+A few selected examples:
+
 - [hello](../examples/hello/hello.q)
 - [echo](../examples/echo/echo.q)
 - [fibonacci](../examples/fibonacci/fibonacci.q)
 - [fizzbuzz](../examples/fizzbuzz/fizzbuzz.q)
 
-## Cheat Sheet
+Advanced examples using unstable APIs:
+
+- [raylib](../examples/raylib/raylib.q)
+- [server](../examples/server/server.q)
+
+## Reference
+
+The following is a cheat sheet documenting the syntax.
 
 | I need to...                     |                             | API stability   |
 | -------------------------------- | --------------------------- | --------------- |
@@ -91,11 +100,14 @@ The syntax is still highly unstable because I'm focusing my work on the correct 
 | Dereference a pointer            | `[ptr]`                     | ✔️ Stable       |
 | Index a pointer                  | `ptr[0]`                    | ✔️ Stable       |
 | Slice a string                   | `"Hello"[1..3]`             | ✔️ Stable       |
+| Slice a string from index        | `"Hello"[1..]`              | ✔️ Stable       |
+| Slice a string until index         | `"Hello"[..3]`              | ✔️ Stable       |
 | Return multiple values           | `return 1, 2`               | ✔️ Stable       |
 | Loop                             | `loop {}`                   | ✔️ Stable       |
 | Loop 10 times                    | `loop 0..10 {}`             | ✔️ Stable       |
 | Loop 10 times with a variable    | `loop i := 0..10 {}`        | ✔️ Stable       |
-| Branch multiple conditions       | `switch{ ... }`             | ✔️ Stable       |
+| Branch                           | `if {} else {}`             | ✔️ Stable       |
+| Branch multiple conditions       | `switch {}`                 | ✔️ Stable       |
 | Define a constant                | `const { x 42 }`            | 🚧 Experimental |
 | Define an extern C function      | `extern { g { f() } }`      | ✔️ Stable       |
 | Allocate memory                  | `mem.alloc(4096)`           | ✔️ Stable       |
