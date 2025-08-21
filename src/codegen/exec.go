@@ -265,7 +265,7 @@ func (f *Function) exec(step *Step) {
 
 		f.Assembler.Append(&asm.Move{
 			Destination: step.Register,
-			Source:      f.ValueToStep[step.Value].Register,
+			Source:      f.ValueToStep[instr.Value].Register,
 		})
 
 	case *ssa.FromTuple:

@@ -151,6 +151,17 @@ func (block *Block) Identify(name string, value Value) {
 	block.Identifiers[name] = value
 }
 
+// IsIdentified returns true if the value can be obtained from one of the identifiers.
+func (block *Block) IsIdentified(value Value) bool {
+	for _, existing := range block.Identifiers {
+		if existing == value {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Index returns the position of the value or -1 if it doesn't exist within the block.
 func (block *Block) Index(search Value) int {
 	for i, value := range block.Instructions {
@@ -165,6 +176,11 @@ func (block *Block) Index(search Value) int {
 // InsertAt inserts the `value` at the given `index`.
 func (block *Block) InsertAt(value Value, index int) {
 	block.Instructions = slices.Insert(block.Instructions, index, value)
+}
+
+// Last returns the last value.
+func (block *Block) Last() Value {
+	return block.Instructions[len(block.Instructions)-1]
 }
 
 // RemoveNilValues removes all nil values from the block.

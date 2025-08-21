@@ -29,8 +29,24 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 		return err
 	}
 
-	_, isCall := value.(*ssa.Call)
+	block := f.Block()
 	structure, isStructType := value.Type().(*types.Struct)
+
+	// If the value we got was a value that is stored in a variable,
+	// it must have been returned from the optimizer as a cached value.
+	// We want to assure that every named variable creates a copy of
+	// another named variable instead of using the cached value itself
+	// because it could lead to incorrect optimizations.
+	if !isStructType && block.IsIdentified(value) {
+		value = &ssa.Copy{
+			Value:  value,
+			Source: ssa.Source(right.Source()),
+		}
+
+		block.Append(value)
+	}
+
+	_, isCall := value.(*ssa.Call)
 
 	if isCall && isStructType {
 		composite := &ssa.Struct{

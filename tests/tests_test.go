@@ -53,6 +53,7 @@ var tests = []run{
 	{"loop-limit", "", "", 0},
 	{"loop-limit-dynamic", "", "", 0},
 	{"loop-keepalive", "", "", 0},
+	{"loop-copy-value", "", "", 0},
 	{"memory", "", "Hello\n", 0},
 	{"out-of-memory", "", "", 1},
 	{"index-static", "", "", 0},
