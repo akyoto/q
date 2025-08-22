@@ -15,7 +15,7 @@
 ## Installation
 
 > [!WARNING]
-> Q is under heavy development and not ready for production yet.
+> Q is [still in development](https://git.urbach.dev/cli/q/issues/1) and not ready for production yet.
 >
 > Please read the [comment on the status](https://lobste.rs/s/t7osqo/q_programming_language) of the project.
 >
