@@ -23,48 +23,50 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 		return errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source().StartPos)
 	}
 
-	value, err := f.evaluate(right)
+	rightValue, err := f.evaluate(right)
 
 	if err != nil {
 		return err
 	}
-
-	structure, isStructType := value.Type().(*types.Struct)
 
 	// If the value we got was a value that is stored in a variable,
 	// it must have been returned from the optimizer as a cached value.
 	// We want to assure that every named variable creates a copy of
 	// another named variable instead of using the cached value itself
 	// because it could lead to incorrect optimizations.
-	if !isStructType && f.IsIdentified(value) {
-		value = f.copy(value, ssa.Source(right.Source()))
+	if f.IsIdentified(rightValue) {
+		rightValue = f.copy(rightValue, ssa.Source(right.Source()))
 	}
 
-	_, isCall := value.(*ssa.Call)
+	_, isCall := rightValue.(*ssa.Call)
 
-	if isCall && isStructType {
-		composite := &ssa.Struct{
-			Typ:       structure,
-			Arguments: make(ssa.Arguments, 0, len(structure.Fields)),
-			Source:    ssa.Source(left.Source()),
-		}
+	if isCall {
+		structure, isStructType := rightValue.Type().(*types.Struct)
 
-		for i := range structure.Fields {
-			field := &ssa.FromTuple{
-				Tuple:     value,
-				Index:     i,
-				Structure: composite,
+		if isStructType {
+			composite := &ssa.Struct{
+				Typ:       structure,
+				Arguments: make(ssa.Arguments, 0, len(structure.Fields)),
 				Source:    ssa.Source(left.Source()),
 			}
 
-			f.Block().Append(field)
-			composite.Arguments = append(composite.Arguments, field)
-		}
+			for i := range structure.Fields {
+				field := &ssa.FromTuple{
+					Tuple:     rightValue,
+					Index:     i,
+					Structure: composite,
+					Source:    ssa.Source(left.Source()),
+				}
 
-		f.Block().Identify(name, composite)
-		return nil
+				f.Block().Append(field)
+				composite.Arguments = append(composite.Arguments, field)
+			}
+
+			f.Block().Identify(name, composite)
+			return nil
+		}
 	}
 
-	f.Block().Identify(name, value)
+	f.Block().Identify(name, rightValue)
 	return nil
 }
