@@ -1,8 +1,9 @@
 import io
 import net
+import tcp
 
 main() {
-	socket := net.listenTCP(0, 8080)
+	socket := tcp.listen("", 8080)
 
 	if socket < 0 {
 		io.write("socket error\n")

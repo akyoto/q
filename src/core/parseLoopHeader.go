@@ -16,7 +16,7 @@ func (f *Function) parseLoopHeader(head *expression.Expression) (name string, fr
 		from = right.Children[0]
 		to = right.Children[1]
 	case token.Range:
-		name = fmt.Sprintf("_counter_%d", f.Count.Loop)
+		name = fmt.Sprintf("loop.counter.%d", f.Count.Loop)
 		from = head.Children[0]
 		to = head.Children[1]
 	}

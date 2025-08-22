@@ -13,13 +13,14 @@ func (f *Function) compileInputs() {
 	offset := 0
 
 	for i, input := range f.Input {
-		if strings.HasPrefix(input.Name, "_") {
-			continue
-		}
-
 		structType, isStructType := input.Typ.(*types.Struct)
 
 		if isStructType {
+			if strings.HasPrefix(input.Name, "_") {
+				offset += len(structType.Fields) - 1
+				continue
+			}
+
 			structure := &ssa.Struct{Typ: structType}
 
 			for _, field := range structType.Fields {
@@ -39,6 +40,10 @@ func (f *Function) compileInputs() {
 
 			offset--
 			f.Block().Identify(input.Name, structure)
+			continue
+		}
+
+		if strings.HasPrefix(input.Name, "_") {
 			continue
 		}
 
