@@ -239,6 +239,14 @@ func (f *Function) exec(step *Step) {
 			})
 		}
 
+		// Pushing an odd number of registers would not maintain the 16-byte
+		// stack alignment, so we allocate additional 8 bytes before pushing
+		// the 5th argument.
+		if len(pushed)&1 != 0 {
+			f.Assembler.Append(&asm.SubtractNumber{Destination: f.CPU.StackPointer, Source: f.CPU.StackPointer, Number: 8})
+		}
+
+		// TODO: Replace push instructions with store instructions using a fixed offset.
 		if len(pushed) > 0 {
 			f.Assembler.Append(&asm.Push{Registers: pushed})
 		}
@@ -247,6 +255,10 @@ func (f *Function) exec(step *Step) {
 
 		if len(pushed) > 0 {
 			f.Assembler.Append(&asm.Pop{Registers: pushed})
+		}
+
+		if len(pushed)&1 != 0 {
+			f.Assembler.Append(&asm.AddNumber{Destination: f.CPU.StackPointer, Source: f.CPU.StackPointer, Number: 8})
 		}
 
 		if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {

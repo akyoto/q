@@ -10,4 +10,5 @@ type CPU struct {
 	DivisorRestricted []Register
 	ShiftClobbered    []Register
 	ShiftRestricted   []Register
+	StackPointer      Register
 }
