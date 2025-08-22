@@ -69,9 +69,21 @@ func (block *Block) FindExisting(instr Value) Value {
 		return nil
 	}
 
-	for _, existing := range block.Instructions {
+	for _, existing := range slices.Backward(block.Instructions) {
 		if existing.IsConst() && instr.Equals(existing) {
 			return existing
+		}
+
+		_, isCall := existing.(*Call)
+
+		if isCall {
+			return nil
+		}
+
+		_, isExternCall := existing.(*CallExtern)
+
+		if isExternCall {
+			return nil
 		}
 	}
 

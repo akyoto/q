@@ -19,6 +19,12 @@ func (f *Function) needsRegister(s *Step) bool {
 		return false
 	}
 
+	_, isTuple := typ.(*types.Tuple)
+
+	if isTuple {
+		return false
+	}
+
 	users := s.Value.Users()
 
 	if len(users) == 0 {
