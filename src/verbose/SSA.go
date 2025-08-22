@@ -36,6 +36,10 @@ func SSA(root *core.Function) {
 			fmt.Print(step.Value.String())
 			ansi.Dim.Printf(" %s [%s] ", step.Value.Type().Name(), step.Register)
 
+			for identifier := range step.Block.IdentifiersFor(step.Value) {
+				ansi.Dim.Printf("%s ", identifier)
+			}
+
 			for _, live := range step.Live {
 				ansi.Dim.Printf("%p ", live.Value)
 			}

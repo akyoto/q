@@ -1,6 +1,7 @@
 package ssa
 
 import (
+	"iter"
 	"slices"
 )
 
@@ -139,6 +140,19 @@ func (block *Block) findIdentifier(name string, traversed map[*Block]Value) (Val
 		block.Identify(name, phi)
 		traversed[block] = phi
 		return phi, true
+	}
+}
+
+// IdentifiersFor returns an iterator for all the identifiers pointing to the given value.
+func (block *Block) IdentifiersFor(value Value) iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for name, val := range block.Identifiers {
+			if val == value {
+				if !yield(name) {
+					return
+				}
+			}
+		}
 	}
 }
 
