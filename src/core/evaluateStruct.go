@@ -23,8 +23,22 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 		}
 
 		left := definition.Children[0]
+
+		if left.Token.Kind != token.Identifier {
+			if left.Token.Kind == token.FieldAssign {
+				return nil, errors.New(MissingCommaBetweenFields, f.File, left.Source().StartPos)
+			}
+
+			return nil, errors.New(InvalidFieldInit, f.File, left.Source().StartPos)
+		}
+
 		fieldName := left.String(f.File.Bytes)
 		field := typ.FieldByName(fieldName)
+
+		if field == nil {
+			return nil, errors.New(&UnknownStructField{StructName: typ.Name(), FieldName: fieldName}, f.File, left.Source().StartPos)
+		}
+
 		right := definition.Children[1]
 		rightValue, err := f.evaluate(right)
 

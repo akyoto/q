@@ -7,15 +7,16 @@ import (
 )
 
 var (
-	InvalidCallExpression  = errors.String("Invalid call expression")
-	InvalidCondition       = errors.String("Invalid condition")
-	InvalidExpression      = errors.String("Invalid expression")
-	InvalidFieldInit       = errors.String("Invalid field initialization (expected 'field: value')")
-	InvalidLoopHeader      = errors.String("Invalid loop header")
-	InvalidNumber          = errors.String("Invalid number")
-	InvalidRune            = errors.String("Invalid rune")
-	InvalidStructOperation = errors.String("Invalid operation on structs")
-	MissingOperand         = errors.String("Missing operand")
+	InvalidCallExpression     = errors.String("Invalid call expression")
+	InvalidCondition          = errors.String("Invalid condition")
+	InvalidExpression         = errors.String("Invalid expression")
+	InvalidFieldInit          = errors.String("Invalid field initialization (expected 'field: value')")
+	InvalidLoopHeader         = errors.String("Invalid loop header")
+	InvalidNumber             = errors.String("Invalid number")
+	InvalidRune               = errors.String("Invalid rune")
+	InvalidStructOperation    = errors.String("Invalid operation on structs")
+	MissingCommaBetweenFields = errors.String("Missing ',' between struct fields")
+	MissingOperand            = errors.String("Missing operand")
 )
 
 // DefinitionCountMismatch error is created when the number of provided definitions doesn't match the return type.
