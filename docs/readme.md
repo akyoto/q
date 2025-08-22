@@ -6,7 +6,7 @@
 
 ## Features
 
-* High performance (between C and Go)
+* High performance (comparable to C and Go)
 * Fast compilation (5x faster than most)
 * Tiny executables ("Hello World" is ~600 bytes)
 * Multiple platforms (Linux, Mac and Windows)
@@ -187,7 +187,7 @@ Recursive Fibonacci benchmark (`n = 35`):
 | Go (1.25, new GC) | **57.7 ms** ±   1.4 ms | **38.1 ms** ±   7.7 ms |
 | C  (-O0, gcc 15)  | **66.4 ms** ±   1.5 ms | **52.3 ms** ±   5.2 ms |
 
-While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance uplift as this work progresses.
+While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance boost as this work progresses.
 
 ### Are there any compiler benchmarks?
 
