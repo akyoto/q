@@ -47,6 +47,17 @@ func (f *IR) Finalize() {
 	}
 }
 
+// IsIdentified returns true if the value can be obtained from one of the identifiers.
+func (f *IR) IsIdentified(value Value) bool {
+	for _, block := range f.Blocks {
+		if block.IsIdentified(value) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Values yields on each value.
 func (f *IR) Values(yield func(int, Value) bool) {
 	index := 0

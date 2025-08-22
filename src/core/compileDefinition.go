@@ -29,7 +29,6 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 		return err
 	}
 
-	block := f.Block()
 	structure, isStructType := value.Type().(*types.Struct)
 
 	// If the value we got was a value that is stored in a variable,
@@ -37,7 +36,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 	// We want to assure that every named variable creates a copy of
 	// another named variable instead of using the cached value itself
 	// because it could lead to incorrect optimizations.
-	if !isStructType && block.IsIdentified(value) {
+	if !isStructType && f.IsIdentified(value) {
 		value = f.copy(value, ssa.Source(right.Source()))
 	}
 

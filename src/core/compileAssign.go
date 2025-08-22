@@ -33,6 +33,10 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 		return err
 	}
 
+	if f.IsIdentified(rightValue) {
+		rightValue = f.copy(rightValue, ssa.Source(right.Source()))
+	}
+
 	if node.Expression.Token.Kind == token.Assign {
 		f.Block().Identify(name, rightValue)
 		return nil
