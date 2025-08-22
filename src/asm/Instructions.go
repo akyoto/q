@@ -40,16 +40,18 @@ type (
 		Label       string
 		Destination cpu.Register
 	}
-	MoveNumber       rn
-	Multiply         rrr
-	Negate           rr
-	Or               rrr
-	Pop              struct{ Registers []cpu.Register }
-	Push             struct{ Registers []cpu.Register }
-	Return           struct{}
-	ShiftLeft        rrr
-	ShiftRightSigned rrr
-	Store            struct {
+	MoveNumber             rn
+	Multiply               rrr
+	Negate                 rr
+	Or                     rrr
+	Pop                    struct{ Registers []cpu.Register }
+	Push                   struct{ Registers []cpu.Register }
+	Return                 struct{}
+	ShiftLeft              rrr
+	ShiftLeftNumber        rrn
+	ShiftRightSigned       rrr
+	ShiftRightSignedNumber rrn
+	Store                  struct {
 		Base   cpu.Register
 		Index  cpu.Register
 		Source cpu.Register

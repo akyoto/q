@@ -179,8 +179,12 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.Return())
 	case *ShiftLeft:
 		c.append(arm.ShiftLeft(instr.Destination, instr.Source, instr.Operand))
+	case *ShiftLeftNumber:
+		c.append(arm.ShiftLeftNumber(instr.Destination, instr.Source, instr.Number))
 	case *ShiftRightSigned:
 		c.append(arm.ShiftRightSigned(instr.Destination, instr.Source, instr.Operand))
+	case *ShiftRightSignedNumber:
+		c.append(arm.ShiftRightSignedNumber(instr.Destination, instr.Source, instr.Number))
 	case *Store:
 		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, arm.Offset, instr.Index, instr.Length))
 	case *Subtract:
