@@ -1,7 +1,7 @@
 import io
 
-accept(fd int, address *any, length int) -> int {
-	return syscall(_accept, fd, address, length)
+accept(fd int) -> int {
+	return syscall(_accept, fd, 0, 0)
 }
 
 close(fd int) -> int {

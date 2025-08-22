@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"strings"
 
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
@@ -12,7 +13,7 @@ func (f *Function) compileInputs() {
 	offset := 0
 
 	for i, input := range f.Input {
-		if input.Name == "_" {
+		if strings.HasPrefix(input.Name, "_") {
 			continue
 		}
 

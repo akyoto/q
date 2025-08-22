@@ -1,5 +1,5 @@
-accept(fd int, address *any, length int) -> int {
-	return ws2_32.accept(fd, address, length)
+accept(fd int) -> int {
+	return ws2_32.accept(fd, 0, 0)
 }
 
 close(fd int) -> int {

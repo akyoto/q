@@ -101,8 +101,9 @@ The following is a cheat sheet documenting the syntax.
 | Index a pointer                  | `ptr[0]`                    | ✔️ Stable       |
 | Slice a string                   | `"Hello"[1..3]`             | ✔️ Stable       |
 | Slice a string from index        | `"Hello"[1..]`              | ✔️ Stable       |
-| Slice a string until index         | `"Hello"[..3]`              | ✔️ Stable       |
+| Slice a string until index       | `"Hello"[..3]`              | ✔️ Stable       |
 | Return multiple values           | `return 1, 2`               | ✔️ Stable       |
+| Mark a parameter as unused       | `_x`                        | ✔️ Stable       |
 | Loop                             | `loop {}`                   | ✔️ Stable       |
 | Loop 10 times                    | `loop 0..10 {}`             | ✔️ Stable       |
 | Loop 10 times with a variable    | `loop i := 0..10 {}`        | ✔️ Stable       |
