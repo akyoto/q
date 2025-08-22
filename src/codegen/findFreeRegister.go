@@ -9,24 +9,23 @@ import (
 )
 
 // findFreeRegister finds a free register for the given value.
-func (f *Function) findFreeRegister(value *Step) cpu.Register {
+func (f *Function) findFreeRegister(step *Step) cpu.Register {
 	usedRegisters := 0
 
-	for _, step := range f.Steps {
+	for _, current := range f.Steps {
 		// These checks need to happen regardless of whether the value is alive after execution.
 		// If it is used as an operand, the operand restrictions of the architecture apply.
-		switch instr := step.Value.(type) {
-		case *ssa.BinaryOp:
-			switch instr.Op {
+		binaryOp, isBinaryOp := current.Value.(*ssa.BinaryOp)
+
+		if isBinaryOp {
+			switch binaryOp.Op {
 			case token.Div, token.Mod:
-				if instr.Right == value.Value {
-					for _, reg := range f.CPU.DivisorRestricted {
-						usedRegisters |= (1 << reg)
-					}
+				for _, reg := range f.CPU.DivisorRestricted {
+					usedRegisters |= (1 << reg)
 				}
 
 			case token.Shl, token.Shr:
-				if instr.Left == value.Value {
+				if current == step {
 					for _, reg := range f.CPU.ShiftRestricted {
 						usedRegisters |= (1 << reg)
 					}
@@ -35,13 +34,13 @@ func (f *Function) findFreeRegister(value *Step) cpu.Register {
 		}
 
 		// If it's not alive in this step, ignore it.
-		if !slices.Contains(step.Live, value) {
+		if !slices.Contains(current.Live, step) {
 			continue
 		}
 
 		// Mark all the neighbor registers that are alive
 		// at the same time as used.
-		for _, live := range step.Live {
+		for _, live := range current.Live {
 			if live.Register == -1 {
 				continue
 			}
@@ -50,7 +49,7 @@ func (f *Function) findFreeRegister(value *Step) cpu.Register {
 		}
 
 		// Ignore the definition itself.
-		if step == value {
+		if current == step {
 			continue
 		}
 
@@ -58,7 +57,7 @@ func (f *Function) findFreeRegister(value *Step) cpu.Register {
 		// would clobber and mark them as used.
 		var clobbered []cpu.Register
 
-		switch instr := step.Value.(type) {
+		switch instr := current.Value.(type) {
 		case *ssa.BinaryOp:
 			switch instr.Op {
 			case token.Div, token.Mod:
@@ -84,7 +83,7 @@ func (f *Function) findFreeRegister(value *Step) cpu.Register {
 	}
 
 	// Pick one of the register hints if possible.
-	for _, reg := range value.Hints {
+	for _, reg := range step.Hints {
 		if usedRegisters&(1<<reg) == 0 {
 			return reg
 		}
