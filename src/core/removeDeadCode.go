@@ -30,11 +30,7 @@ func (f *Function) removeDeadCode() error {
 				}
 
 				if partiallyUnused {
-					for _, input := range value.Inputs() {
-						input.RemoveUser(value)
-					}
-
-					block.Instructions[i] = nil
+					block.RemoveAt(i)
 					continue
 				}
 			}

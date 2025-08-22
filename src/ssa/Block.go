@@ -209,6 +209,17 @@ func (block *Block) Last() Value {
 	return block.Instructions[len(block.Instructions)-1]
 }
 
+// RemoveAt sets the value at the given index to nil.
+func (block *Block) RemoveAt(index int) {
+	value := block.Instructions[index]
+
+	for _, input := range value.Inputs() {
+		input.RemoveUser(value)
+	}
+
+	block.Instructions[index] = nil
+}
+
 // RemoveNilValues removes all nil values from the block.
 func (block *Block) RemoveNilValues() {
 	block.Instructions = slices.DeleteFunc(block.Instructions, func(value Value) bool {
