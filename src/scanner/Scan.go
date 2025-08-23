@@ -49,7 +49,8 @@ func Scan(build *config.Build) (*core.Environment, error) {
 
 			f.Env = env
 			pkg := env.AddPackage(f.Package, f.IsExtern())
-			pkg.Functions[f.Name] = f
+			variants := pkg.Functions[f.Name]
+			pkg.Functions[f.Name] = append(variants, f)
 			env.NumFunctions++
 
 		case file, ok := <-s.files:

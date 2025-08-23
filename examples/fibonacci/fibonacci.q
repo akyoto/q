@@ -1,7 +1,7 @@
 import io
 
 main() {
-	io.writeInt(fibonacci(10))
+	io.write(fibonacci(10))
 }
 
 fibonacci(n int) -> int {

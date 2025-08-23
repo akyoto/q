@@ -28,5 +28,5 @@ func TestFunction(t *testing.T) {
 
 	assert.True(t, len(deps) >= 2)
 	assert.Equal(t, deps[0].FullName, "main.main")
-	assert.Equal(t, deps[1].FullName, "io.write")
+	assert.Equal(t, deps[1].FullName, "io.write[string]")
 }

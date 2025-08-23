@@ -6,7 +6,7 @@ main() {
 
 collatz(x int) {
 	loop {
-		io.writeInt(x)
+		io.write(x)
 
 		if x == 1 {
 			return

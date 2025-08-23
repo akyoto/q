@@ -35,23 +35,30 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			imp.Used.Add(1)
 		}
 
-		function, exists := pkg.Functions[rightText]
+		variants, exists := pkg.Functions[rightText]
 
 		if !exists {
 			return nil, errors.New(&UnknownIdentifier{Name: fmt.Sprintf("%s.%s", pkg.Name, rightText)}, f.File, left.Token.Position)
 		}
 
-		if function.IsExtern() {
-			f.Assembler.Libraries.Append(function.Package, function.Name)
+		inputExpressions := expr.Parent.Children[1:]
+		fn, err := f.selectFunction(variants, inputExpressions, right)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if fn.IsExtern() {
+			f.Assembler.Libraries.Append(fn.Package, fn.Name)
 		} else {
-			f.Dependencies.Add(function)
+			f.Dependencies.Add(fn)
 		}
 
 		v := &ssa.Function{
-			Package:  function.Package,
-			Name:     function.Name,
-			Typ:      function.Type,
-			IsExtern: function.IsExtern(),
+			Package:  fn.Package,
+			Name:     fn.Name,
+			Typ:      fn.Type,
+			IsExtern: fn.IsExtern(),
 			Source:   expr.Source(),
 		}
 

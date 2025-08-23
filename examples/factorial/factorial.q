@@ -1,7 +1,7 @@
 import io
 
 main() {
-	io.writeInt(factorial(5))
+	io.write(factorial(5))
 }
 
 factorial(n int) -> int {

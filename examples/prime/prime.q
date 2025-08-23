@@ -7,7 +7,7 @@ main() {
 				io.write(" ")
 			}
 
-			io.writeInt(i)
+			io.write(i)
 		}
 	}
 }

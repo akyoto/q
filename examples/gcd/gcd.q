@@ -1,7 +1,7 @@
 import io
 
 main() {
-	io.writeInt(gcd(1071, 462))
+	io.write(gcd(1071, 462))
 }
 
 gcd(a int, b int) -> int {

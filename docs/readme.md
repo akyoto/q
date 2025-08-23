@@ -6,11 +6,11 @@
 
 ## Features
 
-* High performance (comparable to C and Go)
-* Fast compilation (5x faster than most)
-* Tiny executables ("Hello World" is ~600 bytes)
-* Multiple platforms (Linux, Mac and Windows)
-* Zero dependencies (no llvm, no libc)
+- High performance (comparable to C and Go)
+- Fast compilation (5x faster than most)
+- Tiny executables ("Hello World" is ~600 bytes)
+- Multiple platforms (Linux, Mac and Windows)
+- Zero dependencies (no llvm, no libc)
 
 ## Installation
 
@@ -57,6 +57,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-08-23**: Compile-time function polymorphism.
 - **2025-08-22**: General bugfixes.
 - **2025-08-19**: Performance improvements.
 - **2025-08-18**: Slices for strings.
@@ -88,34 +89,35 @@ Advanced examples using unstable APIs:
 
 The following is a cheat sheet documenting the syntax.
 
-| I need to...                     |                             | API stability   |
-| -------------------------------- | --------------------------- | --------------- |
-| Define a new variable            | `x := 1`                    | ✔️ Stable       |
-| Reassign an existing variable    | `x = 2`                     | ✔️ Stable       |
-| Define a function                | `main() {}`                 | ✔️ Stable       |
-| Define a struct                  | `Point {}`                  | ✔️ Stable       |
-| Define input and output types    | `f(a int) -> (b int) {}`    | ✔️ Stable       |
-| Instantiate a struct             | `Point{x: 1, y: 2}`         | ✔️ Stable       |
-| Instantiate a struct on the heap | `new(Point)`                | 🚧 Experimental |
-| Access struct fields             | `p.x`                       | ✔️ Stable       |
-| Dereference a pointer            | `[ptr]`                     | ✔️ Stable       |
-| Index a pointer                  | `ptr[0]`                    | ✔️ Stable       |
-| Slice a string                   | `"Hello"[1..3]`             | ✔️ Stable       |
-| Slice a string from index        | `"Hello"[1..]`              | ✔️ Stable       |
-| Slice a string until index       | `"Hello"[..3]`              | ✔️ Stable       |
-| Return multiple values           | `return 1, 2`               | ✔️ Stable       |
-| Loop                             | `loop {}`                   | ✔️ Stable       |
-| Loop 10 times                    | `loop 0..10 {}`             | ✔️ Stable       |
-| Loop 10 times with a variable    | `loop i := 0..10 {}`        | ✔️ Stable       |
-| Branch                           | `if {} else {}`             | ✔️ Stable       |
-| Branch multiple times            | `switch { cond {} _ {} }`   | ✔️ Stable       |
-| Define a constant                | `const { x 42 }`            | 🚧 Experimental |
-| Define an extern C function      | `extern { g { f() } }`      | ✔️ Stable       |
-| Allocate memory                  | `mem.alloc(4096)`           | ✔️ Stable       |
-| Free memory                      | `mem.free(buffer)`          | 🚧 Experimental |
-| Output a string                  | `io.write("Hello\n")`       | ✔️ Stable       |
-| Output an integer                | `io.writeInt(42)`           | 🚧 Experimental |
-| Mark a parameter as unused       | `_`                         | ✔️ Stable       |
+| I need to...                         |                              | API stability   |
+| ------------------------------------ | ---------------------------- | --------------- |
+| Define a new variable                | `x := 1`                     | ✔️ Stable       |
+| Reassign an existing variable        | `x = 2`                      | ✔️ Stable       |
+| Define a function                    | `main() {}`                  | ✔️ Stable       |
+| Define a struct                      | `Point {}`                   | ✔️ Stable       |
+| Define input and output types        | `f(a int) -> (b int) {}`     | ✔️ Stable       |
+| Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
+| Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
+| Instantiate a struct on the heap     | `new(Point)`                 | 🚧 Experimental |
+| Access struct fields                 | `p.x`                        | ✔️ Stable       |
+| Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
+| Index a pointer                      | `ptr[0]`                     | ✔️ Stable       |
+| Slice a string                       | `"Hello"[1..3]`              | ✔️ Stable       |
+| Slice a string from index            | `"Hello"[1..]`               | ✔️ Stable       |
+| Slice a string until index           | `"Hello"[..3]`               | ✔️ Stable       |
+| Return multiple values               | `return 1, 2`                | ✔️ Stable       |
+| Loop                                 | `loop {}`                    | ✔️ Stable       |
+| Loop 10 times                        | `loop 0..10 {}`              | ✔️ Stable       |
+| Loop 10 times with a variable        | `loop i := 0..10 {}`         | ✔️ Stable       |
+| Branch                               | `if {} else {}`              | ✔️ Stable       |
+| Branch multiple times                | `switch { cond {} _ {} }`    | ✔️ Stable       |
+| Define a constant                    | `const { x 42 }`             | 🚧 Experimental |
+| Define an extern C function          | `extern { g { f() } }`       | ✔️ Stable       |
+| Allocate memory                      | `mem.alloc(4096)`            | ✔️ Stable       |
+| Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
+| Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |
+| Output an integer                    | `io.write(42)`               | ✔️ Stable       |
+| Mark a parameter as unused           | `_`                          | ✔️ Stable       |
 
 ## Source
 
@@ -172,22 +174,22 @@ The typical flow for a build command is the following:
 
 ### How tiny is a Hello World?
 
-|            | arm64      | x86-64    |
-| ---------- | ---------- | --------- |
-| 🐧 Linux   |  646 bytes | 646 bytes |
-| 🍏 Mac     |   16.3 KiB |   4.2 KiB |
-| 🪟 Windows |    1.7 KiB |   1.7 KiB |
+|            | arm64     | x86-64    |
+| ---------- | --------- | --------- |
+| 🐧 Linux   | 646 bytes | 646 bytes |
+| 🍏 Mac     | 16.3 KiB  | 4.2 KiB   |
+| 🪟 Windows | 1.7 KiB   | 1.7 KiB   |
 
 ### Are there any runtime benchmarks?
 
 Recursive Fibonacci benchmark (`n = 35`):
 
-|                   | arm64                  | x86-64                 |
-| ----------------- | ---------------------- | ---------------------- |
-| C  (-O3, gcc 15)  | **41.4 ms** ±   1.4 ms | **26.2 ms** ±   4.1 ms |
-| Q  (2025-08-20)   | **54.2 ms** ±   1.6 ms | **37.3 ms** ±   2.9 ms |
-| Go (1.25, new GC) | **57.7 ms** ±   1.4 ms | **38.1 ms** ±   7.7 ms |
-| C  (-O0, gcc 15)  | **66.4 ms** ±   1.5 ms | **52.3 ms** ±   5.2 ms |
+|                   | arm64                | x86-64               |
+| ----------------- | -------------------- | -------------------- |
+| C (-O3, gcc 15)   | **41.4 ms** ± 1.4 ms | **26.2 ms** ± 4.1 ms |
+| Q (2025-08-20)    | **54.2 ms** ± 1.6 ms | **37.3 ms** ± 2.9 ms |
+| Go (1.25, new GC) | **57.7 ms** ± 1.4 ms | **38.1 ms** ± 7.7 ms |
+| C (-O0, gcc 15)   | **66.4 ms** ± 1.5 ms | **52.3 ms** ± 5.2 ms |
 
 While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance boost as this work progresses.
 
@@ -195,29 +197,29 @@ While the current results lag behind optimized C, this is an expected stage of d
 
 The table below shows latency numbers on a 2015 Macbook:
 
-|                 | x86-64                   |
-| --------------- | ------------------------ |
-| q               |   **81.0 ms** ±   1.0 ms |
-| go @1.25        |  **364.5 ms** ±   3.3 ms |
-| clang @17.0.0   |  **395.9 ms** ±   3.3 ms |
-| rustc @1.89.0   |  **639.9 ms** ±   3.1 ms |
-| v @0.4.11       | **1117.0 ms** ±   3.0 ms |
-| zig @0.15.1     | **1315.0 ms** ±  12.0 ms |
-| odin @accdd7c2a | **1748.0 ms** ±   8.0 ms |
+|                 | x86-64                  |
+| --------------- | ----------------------- |
+| q               | **81.0 ms** ± 1.0 ms    |
+| go @1.25        | **364.5 ms** ± 3.3 ms   |
+| clang @17.0.0   | **395.9 ms** ± 3.3 ms   |
+| rustc @1.89.0   | **639.9 ms** ± 3.1 ms   |
+| v @0.4.11       | **1117.0 ms** ± 3.0 ms  |
+| zig @0.15.1     | **1315.0 ms** ± 12.0 ms |
+| odin @accdd7c2a | **1748.0 ms** ± 8.0 ms  |
 
 Latency measures the time it takes a compiler to create an executable file with a nearly empty main function. It should not be confused with throughput.
 
 Advanced benchmarks for throughput have not been conducted yet, but the following table shows timings in an extremely simplified test parsing 1000 Fibonacci functions named `fib0` to `fib999`:
 
-|                 | x86-64                   |
-| --------------- | ------------------------ |
-| q               |   **96.0 ms** ±   1.5 ms |
-| go @1.25        |  **372.2 ms** ±   5.3 ms |
-| clang @17.0.0   |  **550.8 ms** ±   3.8 ms |
-| rustc @1.89.0   | **1101.0 ms** ±   4.0 ms |
-| v @0.4.11       | **1256.0 ms** ±   4.0 ms |
-| zig @0.15.1     | **1407.0 ms** ±  12.0 ms |
-| odin @accdd7c2a | **1770.0 ms** ±   7.0 ms |
+|                 | x86-64                  |
+| --------------- | ----------------------- |
+| q               | **96.0 ms** ± 1.5 ms    |
+| go @1.25        | **372.2 ms** ± 5.3 ms   |
+| clang @17.0.0   | **550.8 ms** ± 3.8 ms   |
+| rustc @1.89.0   | **1101.0 ms** ± 4.0 ms  |
+| v @0.4.11       | **1256.0 ms** ± 4.0 ms  |
+| zig @0.15.1     | **1407.0 ms** ± 12.0 ms |
+| odin @accdd7c2a | **1770.0 ms** ± 7.0 ms  |
 
 ### What is the compiler based on?
 
@@ -248,10 +250,10 @@ No, the current implementation is only temporary and it needs to be replaced wit
 
 **W^X**: All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
 
-|        | Read | Execute | Write |
-| ------ | ---- | ------- | ----- |
-| Code   | ✔️   | ✔️      | ❌    |
-| Data   | ✔️   | ❌      | ❌    |
+|      | Read | Execute | Write |
+| ---- | ---- | ------- | ----- |
+| Code | ✔️   | ✔️      | ❌    |
+| Data | ✔️   | ❌      | ❌    |
 
 ### Any editor extensions?
 
@@ -317,7 +319,7 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 
 ### Any debugging tools?
 
-I recently added a preliminary `io.writeInt` to have some basic output for numeric values during compiler development.
+I implemented a few `io.write` variants to have some basic output for numeric values during compiler development.
 
 You can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables.
 

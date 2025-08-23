@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"iter"
+	"strings"
 
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
@@ -41,6 +42,23 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 			}
 
 			f.Type.Output[i] = output.Typ
+		}
+
+		if len(env.Packages[f.Package].Functions[f.Name]) > 1 {
+			suffix := strings.Builder{}
+			suffix.WriteByte('[')
+
+			for i, input := range f.Input {
+				suffix.WriteString(input.Typ.Name())
+
+				if i != len(f.Input)-1 {
+					suffix.WriteByte(',')
+				}
+			}
+
+			suffix.WriteByte(']')
+			f.Name += suffix.String()
+			f.FullName += suffix.String()
 		}
 	}
 

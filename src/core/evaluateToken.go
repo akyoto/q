@@ -61,16 +61,23 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 			return &ssa.Package{Name: name}, nil
 		}
 
-		function := f.Env.Function(f.File.Package, name)
+		pkg := f.Env.Packages[f.File.Package]
+		variants := pkg.Functions[name]
+		inputExpressions := expr.Parent.Children[1:]
+		fn, err := f.selectFunction(variants, inputExpressions, expr)
 
-		if function != nil {
-			f.Dependencies.Add(function)
+		if err != nil {
+			return nil, err
+		}
+
+		if fn != nil {
+			f.Dependencies.Add(fn)
 
 			v := &ssa.Function{
-				Package:  function.Package,
-				Name:     function.Name,
-				Typ:      function.Type,
-				IsExtern: function.IsExtern(),
+				Package:  fn.Package,
+				Name:     fn.Name,
+				Typ:      fn.Type,
+				IsExtern: fn.IsExtern(),
 				Source:   expr.Source(),
 			}
 

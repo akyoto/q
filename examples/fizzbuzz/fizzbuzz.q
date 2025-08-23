@@ -10,7 +10,7 @@ fizzbuzz(n int) {
 			x % 15 == 0 { io.write("FizzBuzz") }
 			x % 5 == 0  { io.write("Buzz") }
 			x % 3 == 0  { io.write("Fizz") }
-			_           { io.writeInt(x) }
+			_           { io.write(x) }
 		}
 
 		if x != n {

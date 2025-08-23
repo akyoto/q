@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -67,13 +69,19 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	}
 
 	pkg := f.Env.Packages[ssaFunc.Package]
-	fn := pkg.Functions[ssaFunc.Name]
-	inputExpressions := expr.Children[1:]
+	funcName := ssaFunc.Name
+	funcName, _, _ = strings.Cut(funcName, "[")
+	variants := pkg.Functions[funcName]
+	var fn *Function
 
-	if len(inputExpressions) != len(fn.Input) {
-		return nil, errors.New(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, identifier.Token.End())
+	for _, variant := range variants {
+		if variant.Name == ssaFunc.Name {
+			fn = variant
+			break
+		}
 	}
 
+	inputExpressions := expr.Children[1:]
 	args, err := f.decompose(inputExpressions, fn.Input, false)
 
 	if err != nil {

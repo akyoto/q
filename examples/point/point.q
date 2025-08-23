@@ -19,7 +19,7 @@ main() {
 
 write(p *Point) {
 	io.write("Point: ")
-	io.writeInt(p.x)
+	io.write(p.x)
 	io.write(", ")
-	io.writeInt(p.y)
+	io.write(p.y)
 }
