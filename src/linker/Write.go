@@ -15,8 +15,8 @@ import (
 // Write writes an executable to the given writer.
 func Write(writer io.WriteSeeker, env *core.Environment) {
 	program := asm.Assembler{
-		Instructions: make([]asm.Instruction, 0, 32),
-		Data:         make(data.Data, 32),
+		Instructions: make([]asm.Instruction, 0, 256),
+		Data:         make(data.Data, 16),
 	}
 
 	// This will place the init function immediately after the entry point
