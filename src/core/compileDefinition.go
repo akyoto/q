@@ -35,7 +35,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 	// another named variable instead of using the cached value itself
 	// because it could lead to incorrect optimizations.
 	if f.IsIdentified(rightValue) {
-		rightValue = f.copy(rightValue, ssa.Source(right.Source()))
+		rightValue = f.copy(rightValue, right.Source())
 	}
 
 	_, isCall := rightValue.(*ssa.Call)
@@ -47,7 +47,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 			composite := &ssa.Struct{
 				Typ:       structure,
 				Arguments: make(ssa.Arguments, 0, len(structure.Fields)),
-				Source:    ssa.Source(left.Source()),
+				Source:    left.Source(),
 			}
 
 			for i := range structure.Fields {
@@ -55,7 +55,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 					Tuple:     rightValue,
 					Index:     i,
 					Structure: composite,
-					Source:    ssa.Source(left.Source()),
+					Source:    left.Source(),
 				}
 
 				f.Block().Append(field)

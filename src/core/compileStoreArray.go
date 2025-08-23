@@ -49,7 +49,7 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		Index:   indexValue,
 		Value:   rightValue,
 		Length:  uint8(pointer.To.Size()),
-		Source:  ssa.Source(node.Expression.Source()),
+		Source:  node.Expression.Source(),
 	})
 
 	return nil

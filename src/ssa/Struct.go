@@ -14,10 +14,7 @@ type Struct struct {
 	Source
 }
 
-func (v *Struct) IsConst() bool    { return true }
-func (v *Struct) String() string   { return fmt.Sprintf("%s{%s}", v.Typ.Name(), v.Arguments.String()) }
-func (v *Struct) Type() types.Type { return v.Typ }
-
+// Equals returns true if the structs are equal.
 func (a *Struct) Equals(v Value) bool {
 	b, sameType := v.(*Struct)
 
@@ -27,3 +24,14 @@ func (a *Struct) Equals(v Value) bool {
 
 	return a.Arguments.Equals(b.Arguments)
 }
+
+// IsConst returns true because two instances using the same values are interchangeable.
+func (s *Struct) IsConst() bool { return true }
+
+// String returns a human-readable representation of the struct.
+func (s *Struct) String() string {
+	return fmt.Sprintf("%s{%s}", s.Typ.Name(), s.Arguments.String())
+}
+
+// Type returns the type of the struct.
+func (s *Struct) Type() types.Type { return s.Typ }

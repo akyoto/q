@@ -13,10 +13,7 @@ type Phi struct {
 	Liveness
 }
 
-func (v *Phi) IsConst() bool {
-	return true
-}
-
+// Equals returns true if the phi nodes are equal.
 func (a *Phi) Equals(v Value) bool {
 	b, sameType := v.(*Phi)
 
@@ -27,10 +24,17 @@ func (a *Phi) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
-func (v *Phi) String() string {
-	return fmt.Sprintf("phi(%s)", v.Arguments.String())
+// IsConst returns true because two equal phi nodes produce the same value.
+func (p *Phi) IsConst() bool {
+	return true
 }
 
-func (v *Phi) Type() types.Type {
-	return v.Typ
+// String returns a human-readable representation of the phi node.
+func (p *Phi) String() string {
+	return fmt.Sprintf("phi(%s)", p.Arguments.String())
+}
+
+// Type returns the type of the phi node.
+func (p *Phi) Type() types.Type {
+	return p.Typ
 }

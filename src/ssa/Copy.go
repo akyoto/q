@@ -13,6 +13,7 @@ type Copy struct {
 	Source
 }
 
+// Equals returns true if the copies are equal.
 func (a *Copy) Equals(v Value) bool {
 	b, sameType := v.(*Copy)
 
@@ -23,24 +24,29 @@ func (a *Copy) Equals(v Value) bool {
 	return a.Value == b.Value
 }
 
-func (v *Copy) Inputs() []Value {
-	return []Value{v.Value}
+// Inputs returns the value to be copied.
+func (c *Copy) Inputs() []Value {
+	return []Value{c.Value}
 }
 
-func (v *Copy) IsConst() bool {
+// IsConst returns false because a copy is a new value.
+func (c *Copy) IsConst() bool {
 	return false
 }
 
-func (v *Copy) Replace(old Value, new Value) {
-	if v.Value == old {
-		v.Value = new
+// Replace replaces the value to be copied if it matches.
+func (c *Copy) Replace(old Value, new Value) {
+	if c.Value == old {
+		c.Value = new
 	}
 }
 
-func (v *Copy) String() string {
-	return fmt.Sprintf("copy(%p)", v.Value)
+// String returns a human-readable representation of the copy.
+func (c *Copy) String() string {
+	return fmt.Sprintf("copy(%p)", c.Value)
 }
 
-func (v *Copy) Type() types.Type {
-	return v.Value.Type()
+// Type returns the type of the copied value.
+func (c *Copy) Type() types.Type {
+	return c.Value.Type()
 }

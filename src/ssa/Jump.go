@@ -10,6 +10,7 @@ type Jump struct {
 	To *Block
 }
 
+// Equals returns true if the jumps are equal.
 func (a *Jump) Equals(v Value) bool {
 	b, sameType := v.(*Jump)
 
@@ -20,12 +21,15 @@ func (a *Jump) Equals(v Value) bool {
 	return a.To == b.To
 }
 
-func (v *Jump) Inputs() []Value {
+// Inputs returns nil because a jump has no inputs.
+func (j *Jump) Inputs() []Value {
 	return nil
 }
 
-func (v *Jump) Replace(Value, Value) {}
+// Replace does nothing because a jump has no inputs.
+func (j *Jump) Replace(Value, Value) {}
 
-func (v *Jump) String() string {
-	return fmt.Sprintf("jump(%s)", v.To.Label)
+// String returns a human-readable representation of the jump.
+func (j *Jump) String() string {
+	return fmt.Sprintf("jump(%s)", j.To.Label)
 }

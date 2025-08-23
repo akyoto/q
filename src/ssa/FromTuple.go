@@ -15,11 +15,7 @@ type FromTuple struct {
 	Source
 }
 
-func (v *FromTuple) Inputs() []Value { return []Value{v.Tuple} }
-func (v *FromTuple) IsConst() bool   { return true }
-func (v *FromTuple) String() string  { return fmt.Sprintf("field(%p, %d)", v.Tuple, v.Index) }
-func (v *FromTuple) Struct() *Struct { return v.Structure }
-
+// Equals returns true if the tuple accesses are equal.
 func (a *FromTuple) Equals(v Value) bool {
 	b, sameType := v.(*FromTuple)
 
@@ -30,18 +26,32 @@ func (a *FromTuple) Equals(v Value) bool {
 	return a.Tuple == b.Tuple && a.Index == b.Index
 }
 
-func (v *FromTuple) Replace(old Value, new Value) {
-	if v.Tuple == old {
-		v.Tuple = new
+// Inputs returns the tuple.
+func (f *FromTuple) Inputs() []Value { return []Value{f.Tuple} }
+
+// IsConst returns true because accessing the same element will always have the same value.
+func (f *FromTuple) IsConst() bool { return true }
+
+// Replace replaces the tuple if it matches.
+func (f *FromTuple) Replace(old Value, new Value) {
+	if f.Tuple == old {
+		f.Tuple = new
 	}
 }
 
-func (v *FromTuple) Type() types.Type {
-	switch typ := v.Tuple.Type().(type) {
+// String returns a human-readable representation of the tuple access.
+func (f *FromTuple) String() string { return fmt.Sprintf("field(%p, %d)", f.Tuple, f.Index) }
+
+// Struct returns the struct that this tuple is a part of.
+func (f *FromTuple) Struct() *Struct { return f.Structure }
+
+// Type returns the type of the tuple element.
+func (f *FromTuple) Type() types.Type {
+	switch typ := f.Tuple.Type().(type) {
 	case *types.Struct:
-		return typ.Fields[v.Index].Type
+		return typ.Fields[f.Index].Type
 	case *types.Tuple:
-		return typ.Types[v.Index]
+		return typ.Types[f.Index]
 	default:
 		panic("not implemented")
 	}

@@ -7,10 +7,7 @@ type Package struct {
 	Void
 }
 
-func (v *Package) Inputs() []Value      { return nil }
-func (v *Package) Replace(Value, Value) {}
-func (v *Package) String() string       { return v.Name }
-
+// Equals returns true if the packages are equal.
 func (a *Package) Equals(v Value) bool {
 	b, sameType := v.(*Package)
 
@@ -20,3 +17,12 @@ func (a *Package) Equals(v Value) bool {
 
 	return a.Name == b.Name
 }
+
+// Inputs returns nil because a package has no inputs.
+func (p *Package) Inputs() []Value { return nil }
+
+// Replace does nothing because a package has no inputs.
+func (p *Package) Replace(Value, Value) {}
+
+// String returns the name of the package.
+func (p *Package) String() string { return p.Name }

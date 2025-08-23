@@ -5,19 +5,22 @@ type Liveness struct {
 	users []Value
 }
 
-func (v *Liveness) AddUser(user Value) {
-	v.users = append(v.users, user)
+// AddUser adds a new user of the value.
+func (l *Liveness) AddUser(user Value) {
+	l.users = append(l.users, user)
 }
 
-func (v *Liveness) RemoveUser(user Value) {
-	for i, search := range v.users {
+// RemoveUser removes a user of the value.
+func (l *Liveness) RemoveUser(user Value) {
+	for i, search := range l.users {
 		if search == user {
-			v.users = append(v.users[:i], v.users[i+1:]...)
+			l.users = append(l.users[:i], l.users[i+1:]...)
 			return
 		}
 	}
 }
 
-func (v *Liveness) Users() []Value {
-	return v.users
+// Users returns the users of the value.
+func (l *Liveness) Users() []Value {
+	return l.users
 }

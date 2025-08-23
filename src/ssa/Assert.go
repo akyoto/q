@@ -10,6 +10,7 @@ type Assert struct {
 	Condition Value
 }
 
+// Equals returns true if the assert instructions are equal.
 func (a *Assert) Equals(v Value) bool {
 	b, sameType := v.(*Assert)
 
@@ -20,16 +21,19 @@ func (a *Assert) Equals(v Value) bool {
 	return a.Condition.Equals(b.Condition)
 }
 
+// Inputs returns the condition.
 func (v *Assert) Inputs() []Value {
 	return []Value{v.Condition}
 }
 
+// Replace replaces the condition if it matches.
 func (v *Assert) Replace(old Value, new Value) {
 	if v.Condition == old {
 		v.Condition = new
 	}
 }
 
+// String returns a human-readable representation of the assert.
 func (v *Assert) String() string {
 	return fmt.Sprintf("assert %s", v.Condition.String())
 }

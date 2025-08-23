@@ -52,7 +52,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			Name:     function.Name,
 			Typ:      function.Type,
 			IsExtern: function.IsExtern(),
-			Source:   ssa.Source(expr.Source()),
+			Source:   expr.Source(),
 		}
 
 		return v, nil

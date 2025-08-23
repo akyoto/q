@@ -61,7 +61,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 				slice := &ssa.Struct{
 					Typ:       types.String,
 					Arguments: []ssa.Value{newPointer, newLength},
-					Source:    ssa.Source(expr.Source()),
+					Source:    expr.Source(),
 				}
 
 				return slice, nil
@@ -77,7 +77,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 					slice := &ssa.Struct{
 						Typ:       types.String,
 						Arguments: []ssa.Value{addressValue, newLength},
-						Source:    ssa.Source(expr.Source()),
+						Source:    expr.Source(),
 					}
 
 					return slice, nil
@@ -110,7 +110,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 				slice := &ssa.Struct{
 					Typ:       types.String,
 					Arguments: []ssa.Value{newPointer, newLength},
-					Source:    ssa.Source(expr.Source()),
+					Source:    expr.Source(),
 				}
 
 				return slice, nil
@@ -130,7 +130,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		Typ:     pointer.To,
 		Address: addressValue,
 		Index:   indexValue,
-		Source:  ssa.Source(expr.Source()),
+		Source:  expr.Source(),
 	})
 
 	return v, nil

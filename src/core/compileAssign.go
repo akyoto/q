@@ -34,7 +34,7 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 	}
 
 	if f.IsIdentified(rightValue) {
-		rightValue = f.copy(rightValue, ssa.Source(right.Source()))
+		rightValue = f.copy(rightValue, right.Source())
 	}
 
 	if node.Expression.Token.Kind == token.Assign {
@@ -48,7 +48,7 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 		Op:     operator,
 		Left:   leftValue,
 		Right:  rightValue,
-		Source: ssa.Source(node.Expression.Source()),
+		Source: node.Expression.Source(),
 	})
 
 	f.Block().Identify(name, operation)

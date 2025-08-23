@@ -16,11 +16,7 @@ type Function struct {
 	IsExtern bool
 }
 
-func (v *Function) Inputs() []Value      { return nil }
-func (v *Function) IsConst() bool        { return true }
-func (v *Function) Replace(Value, Value) {}
-func (v *Function) Type() types.Type     { return v.Typ }
-
+// Equals returns true if the functions are equal.
 func (a *Function) Equals(v Value) bool {
 	b, sameType := v.(*Function)
 
@@ -31,10 +27,23 @@ func (a *Function) Equals(v Value) bool {
 	return a.Package == b.Package && a.Name == b.Name
 }
 
-func (v *Function) String() string {
-	if v.Package == "" {
-		return v.Name
+// Inputs returns nil because a function reference has no inputs.
+func (f *Function) Inputs() []Value { return nil }
+
+// IsConst returns true because a function reference is always constant.
+func (f *Function) IsConst() bool { return true }
+
+// Replace does nothing because a function reference has no inputs.
+func (f *Function) Replace(Value, Value) {}
+
+// String returns a human-readable representation of the function.
+func (f *Function) String() string {
+	if f.Package == "" {
+		return f.Name
 	}
 
-	return fmt.Sprintf("%s.%s", v.Package, v.Name)
+	return fmt.Sprintf("%s.%s", f.Package, f.Name)
 }
+
+// Type returns the type of the function.
+func (f *Function) Type() types.Type { return f.Typ }

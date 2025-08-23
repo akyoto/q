@@ -17,9 +17,7 @@ type BinaryOp struct {
 	Op token.Kind
 }
 
-func (v *BinaryOp) Inputs() []Value { return []Value{v.Left, v.Right} }
-func (v *BinaryOp) IsConst() bool   { return v.Left.IsConst() && v.Right.IsConst() }
-
+// Equals returns true if the binary operations are equal.
 func (a *BinaryOp) Equals(v Value) bool {
 	b, sameType := v.(*BinaryOp)
 
@@ -34,24 +32,37 @@ func (a *BinaryOp) Equals(v Value) bool {
 	return a.Left.Equals(b.Left) && a.Right.Equals(b.Right)
 }
 
-func (v *BinaryOp) Replace(old Value, new Value) {
-	if v.Left == old {
-		v.Left = new
+// Inputs returns the left and right operands.
+func (op *BinaryOp) Inputs() []Value {
+	return []Value{op.Left, op.Right}
+}
+
+// IsConst returns true if both operands are constant.
+func (op *BinaryOp) IsConst() bool {
+	return op.Left.IsConst() && op.Right.IsConst()
+}
+
+// Replace replaces the left or right operand if it matches.
+func (op *BinaryOp) Replace(old Value, new Value) {
+	if op.Left == old {
+		op.Left = new
 	}
 
-	if v.Right == old {
-		v.Right = new
+	if op.Right == old {
+		op.Right = new
 	}
 }
 
-func (v *BinaryOp) String() string {
-	return fmt.Sprintf("%p %s %p", v.Left, expression.Operators[v.Op].Symbol, v.Right)
+// String returns a human-readable representation of the binary operation.
+func (op *BinaryOp) String() string {
+	return fmt.Sprintf("%p %s %p", op.Left, expression.Operators[op.Op].Symbol, op.Right)
 }
 
-func (v *BinaryOp) Type() types.Type {
-	if v.Op.IsComparison() {
+// Type returns the type of the result of the binary operation.
+func (op *BinaryOp) Type() types.Type {
+	if op.Op.IsComparison() {
 		return types.Bool
 	}
 
-	return v.Left.Type()
+	return op.Left.Type()
 }

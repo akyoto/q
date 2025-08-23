@@ -16,9 +16,7 @@ type UnaryOp struct {
 	Op token.Kind
 }
 
-func (v *UnaryOp) Inputs() []Value { return []Value{v.Operand} }
-func (v *UnaryOp) IsConst() bool   { return v.Operand.IsConst() }
-
+// Equals returns true if the unary operations are equal.
 func (a *UnaryOp) Equals(v Value) bool {
 	b, sameType := v.(*UnaryOp)
 
@@ -33,16 +31,25 @@ func (a *UnaryOp) Equals(v Value) bool {
 	return a.Operand.Equals(b.Operand)
 }
 
-func (v *UnaryOp) Replace(old Value, new Value) {
-	if v.Operand == old {
-		v.Operand = new
+// Inputs returns the operand.
+func (u *UnaryOp) Inputs() []Value { return []Value{u.Operand} }
+
+// IsConst returns true if the operand is constant.
+func (u *UnaryOp) IsConst() bool { return u.Operand.IsConst() }
+
+// Replace replaces the operand if it matches.
+func (u *UnaryOp) Replace(old Value, new Value) {
+	if u.Operand == old {
+		u.Operand = new
 	}
 }
 
-func (v *UnaryOp) String() string {
-	return fmt.Sprintf("%s(%s)", expression.Operators[v.Op].Symbol, v.Operand)
+// String returns a human-readable representation of the unary operation.
+func (u *UnaryOp) String() string {
+	return fmt.Sprintf("%s(%s)", expression.Operators[u.Op].Symbol, u.Operand)
 }
 
-func (v *UnaryOp) Type() types.Type {
-	return v.Operand.Type()
+// Type returns the type of the operand.
+func (u *UnaryOp) Type() types.Type {
+	return u.Operand.Type()
 }

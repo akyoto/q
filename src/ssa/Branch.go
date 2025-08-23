@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Branch is a conditional branch.
 type Branch struct {
 	Void
 	Condition Value
@@ -11,6 +12,7 @@ type Branch struct {
 	Else      *Block
 }
 
+// Equals returns true if the branches are equal.
 func (a *Branch) Equals(v Value) bool {
 	b, sameType := v.(*Branch)
 
@@ -21,16 +23,19 @@ func (a *Branch) Equals(v Value) bool {
 	return a.Condition.Equals(b.Condition) && a.Then == b.Then && a.Else == b.Else
 }
 
-func (v *Branch) Inputs() []Value {
-	return []Value{v.Condition}
+// Inputs returns the condition.
+func (b *Branch) Inputs() []Value {
+	return []Value{b.Condition}
 }
 
-func (v *Branch) Replace(old Value, new Value) {
-	if v.Condition == old {
-		v.Condition = new
+// Replace replaces the condition if it matches.
+func (b *Branch) Replace(old Value, new Value) {
+	if b.Condition == old {
+		b.Condition = new
 	}
 }
 
-func (v *Branch) String() string {
-	return fmt.Sprintf("branch(%p, %s, %s)", v.Condition, v.Then.Label, v.Else.Label)
+// String returns a human-readable representation of the branch.
+func (b *Branch) String() string {
+	return fmt.Sprintf("branch(%p, %s, %s)", b.Condition, b.Then.Label, b.Else.Label)
 }

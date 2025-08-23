@@ -15,6 +15,7 @@ type Load struct {
 	Source
 }
 
+// Equals returns true if the loads are equal.
 func (a *Load) Equals(v Value) bool {
 	b, sameType := v.(*Load)
 
@@ -25,28 +26,33 @@ func (a *Load) Equals(v Value) bool {
 	return a.Address == b.Address && a.Index == b.Index
 }
 
-func (v *Load) IsConst() bool {
+// IsConst returns false because a load is a memory access.
+func (l *Load) IsConst() bool {
 	return false
 }
 
-func (v *Load) Inputs() []Value {
-	return []Value{v.Address, v.Index}
+// Inputs returns the address and index of the load.
+func (l *Load) Inputs() []Value {
+	return []Value{l.Address, l.Index}
 }
 
-func (v *Load) Replace(old Value, new Value) {
-	if v.Address == old {
-		v.Address = new
+// Replace replaces the address or index if it matches.
+func (l *Load) Replace(old Value, new Value) {
+	if l.Address == old {
+		l.Address = new
 	}
 
-	if v.Index == old {
-		v.Index = new
+	if l.Index == old {
+		l.Index = new
 	}
 }
 
-func (v *Load) String() string {
-	return fmt.Sprintf("load(%db, %p + %p)", v.Typ.Size(), v.Address, v.Index)
+// String returns a human-readable representation of the load.
+func (l *Load) String() string {
+	return fmt.Sprintf("load(%db, %p + %p)", l.Typ.Size(), l.Address, l.Index)
 }
 
-func (v *Load) Type() types.Type {
-	return v.Typ
+// Type returns the type of the loaded value.
+func (l *Load) Type() types.Type {
+	return l.Typ
 }

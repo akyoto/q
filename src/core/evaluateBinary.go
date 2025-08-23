@@ -35,7 +35,7 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 		Left:   leftValue,
 		Right:  rightValue,
 		Op:     expr.Token.Kind,
-		Source: ssa.Source(expr.Source()),
+		Source: expr.Source(),
 	}
 
 	if v.Op.IsComparison() {

@@ -32,7 +32,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 					},
 				},
 				Arguments: []ssa.Value{size},
-				Source:    ssa.Source(expr.Source()),
+				Source:    expr.Source(),
 			})
 
 			f.Dependencies.Add(malloc)
@@ -47,7 +47,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 
 			syscall := &ssa.Syscall{
 				Arguments: args,
-				Source:    ssa.Source(expr.Source()),
+				Source:    expr.Source(),
 			}
 
 			return f.Append(syscall), nil
@@ -84,7 +84,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		v := f.Append(&ssa.CallExtern{Call: ssa.Call{
 			Func:      ssaFunc,
 			Arguments: args,
-			Source:    ssa.Source(expr.Source()),
+			Source:    expr.Source(),
 		}})
 
 		return v, nil
@@ -93,7 +93,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	v := f.Append(&ssa.Call{
 		Func:      ssaFunc,
 		Arguments: args,
-		Source:    ssa.Source(expr.Source()),
+		Source:    expr.Source(),
 	})
 
 	return v, nil

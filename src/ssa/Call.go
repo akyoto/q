@@ -14,8 +14,7 @@ type Call struct {
 	Source
 }
 
-func (v *Call) IsConst() bool { return false }
-
+// Equals returns true if the calls are equal.
 func (a *Call) Equals(v Value) bool {
 	b, sameType := v.(*Call)
 
@@ -26,18 +25,23 @@ func (a *Call) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
-func (v *Call) String() string {
-	return fmt.Sprintf("%s(%s)", v.Func.String(), v.Arguments.String())
+// IsConst returns false because a function call can have side effects.
+func (c *Call) IsConst() bool { return false }
+
+// String returns a human-readable representation of the call.
+func (c *Call) String() string {
+	return fmt.Sprintf("%s(%s)", c.Func.String(), c.Arguments.String())
 }
 
-func (v *Call) Type() types.Type {
-	if len(v.Func.Typ.Output) == 0 {
+// Type returns the return type of the function.
+func (c *Call) Type() types.Type {
+	if len(c.Func.Typ.Output) == 0 {
 		return types.Void
 	}
 
-	if len(v.Func.Typ.Output) == 1 {
-		return v.Func.Typ.Output[0]
+	if len(c.Func.Typ.Output) == 1 {
+		return c.Func.Typ.Output[0]
 	}
 
-	return &types.Tuple{Types: v.Func.Typ.Output}
+	return &types.Tuple{Types: c.Func.Typ.Output}
 }

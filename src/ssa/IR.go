@@ -6,32 +6,32 @@ type IR struct {
 }
 
 // AddBlock adds a new block to the function.
-func (f *IR) AddBlock(block *Block) {
-	f.Blocks = append(f.Blocks, block)
+func (ir *IR) AddBlock(block *Block) {
+	ir.Blocks = append(ir.Blocks, block)
 }
 
 // Append adds a new value to the last block.
-func (f *IR) Append(instr Value) Value {
-	existing := f.Block().FindExisting(instr)
+func (ir *IR) Append(instr Value) Value {
+	existing := ir.Block().FindExisting(instr)
 
 	if existing != nil {
 		return existing
 	}
 
-	f.Block().Append(instr)
+	ir.Block().Append(instr)
 	return instr
 }
 
 // Block returns the last block.
-func (f *IR) Block() *Block {
-	return f.Blocks[len(f.Blocks)-1]
+func (ir *IR) Block() *Block {
+	return ir.Blocks[len(ir.Blocks)-1]
 }
 
 // CountValues returns the total number of values.
-func (f *IR) CountValues() int {
+func (ir *IR) CountValues() int {
 	count := 0
 
-	for _, block := range f.Blocks {
+	for _, block := range ir.Blocks {
 		count += len(block.Instructions)
 	}
 
@@ -39,17 +39,18 @@ func (f *IR) CountValues() int {
 }
 
 // Finalize creates the list of users for each value.
-func (f *IR) Finalize() {
-	for _, value := range f.Values {
+func (ir *IR) Finalize() {
+	ir.Values(func(_ int, value Value) bool {
 		for _, input := range value.Inputs() {
 			input.AddUser(value)
 		}
-	}
+		return true
+	})
 }
 
 // IsIdentified returns true if the value can be obtained from one of the identifiers.
-func (f *IR) IsIdentified(value Value) bool {
-	for _, block := range f.Blocks {
+func (ir *IR) IsIdentified(value Value) bool {
+	for _, block := range ir.Blocks {
 		if block.IsIdentified(value) {
 			return true
 		}
@@ -59,10 +60,10 @@ func (f *IR) IsIdentified(value Value) bool {
 }
 
 // Values yields on each value.
-func (f *IR) Values(yield func(int, Value) bool) {
+func (ir *IR) Values(yield func(int, Value) bool) {
 	index := 0
 
-	for _, block := range f.Blocks {
+	for _, block := range ir.Blocks {
 		for _, instr := range block.Instructions {
 			if !yield(index, instr) {
 				return

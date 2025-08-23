@@ -29,7 +29,7 @@ func (f *Function) evaluateUnary(expr *expression.Expression) (ssa.Value, error)
 	v := f.Append(&ssa.UnaryOp{
 		Operand: leftValue,
 		Op:      expr.Token.Kind,
-		Source:  ssa.Source(expr.Source()),
+		Source:  expr.Source(),
 	})
 
 	return v, nil

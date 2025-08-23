@@ -14,6 +14,7 @@ type Store struct {
 	Source
 }
 
+// Equals returns true if the stores are equal.
 func (a *Store) Equals(v Value) bool {
 	b, sameType := v.(*Store)
 
@@ -24,24 +25,27 @@ func (a *Store) Equals(v Value) bool {
 	return a.Address == b.Address && a.Index == b.Index && a.Value == b.Value && a.Length == b.Length
 }
 
-func (v *Store) Inputs() []Value {
-	return []Value{v.Address, v.Index, v.Value}
+// Inputs returns the address, index, and value of the store.
+func (s *Store) Inputs() []Value {
+	return []Value{s.Address, s.Index, s.Value}
 }
 
-func (v *Store) Replace(old Value, new Value) {
-	if v.Address == old {
-		v.Address = new
+// Replace replaces the address, index, or value if it matches.
+func (s *Store) Replace(old Value, new Value) {
+	if s.Address == old {
+		s.Address = new
 	}
 
-	if v.Index == old {
-		v.Index = new
+	if s.Index == old {
+		s.Index = new
 	}
 
-	if v.Value == old {
-		v.Value = new
+	if s.Value == old {
+		s.Value = new
 	}
 }
 
-func (v *Store) String() string {
-	return fmt.Sprintf("store(%db, %p + %p, %p)", v.Length, v.Address, v.Index, v.Value)
+// String returns a human-readable representation of the store.
+func (s *Store) String() string {
+	return fmt.Sprintf("store(%db, %p + %p, %p)", s.Length, s.Address, s.Index, s.Value)
 }

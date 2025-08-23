@@ -18,7 +18,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 		case "false":
 			v := f.Append(&ssa.Bool{
 				Bool:   false,
-				Source: ssa.Source(expr.Source()),
+				Source: expr.Source(),
 			})
 
 			return v, nil
@@ -26,7 +26,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 		case "true":
 			v := f.Append(&ssa.Bool{
 				Bool:   true,
-				Source: ssa.Source(expr.Source()),
+				Source: expr.Source(),
 			})
 
 			return v, nil
@@ -49,7 +49,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 
 			v := f.Append(&ssa.Int{
 				Int:    number,
-				Source: ssa.Source(expr.Source()),
+				Source: expr.Source(),
 			})
 
 			return v, nil
@@ -71,7 +71,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 				Name:     function.Name,
 				Typ:      function.Type,
 				IsExtern: function.IsExtern(),
-				Source:   ssa.Source(expr.Source()),
+				Source:   expr.Source(),
 			}
 
 			return v, nil
@@ -88,7 +88,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 
 		v := f.Append(&ssa.Int{
 			Int:    number,
-			Source: ssa.Source(expr.Source()),
+			Source: expr.Source(),
 		})
 
 		return v, nil
@@ -99,19 +99,19 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 
 		v := &ssa.Struct{
 			Typ:    types.String,
-			Source: ssa.Source(expr.Source()),
+			Source: expr.Source(),
 		}
 
 		length := f.Append(&ssa.Int{
 			Int:       len(data),
 			Structure: v,
-			Source:    ssa.Source(expr.Source()),
+			Source:    expr.Source(),
 		})
 
 		pointer := f.Append(&ssa.Bytes{
 			Bytes:     data,
 			Structure: v,
-			Source:    ssa.Source(expr.Source()),
+			Source:    expr.Source(),
 		})
 
 		v.Arguments = []ssa.Value{pointer, length}

@@ -14,13 +14,7 @@ type Int struct {
 	Source
 }
 
-func (v *Int) Inputs() []Value      { return nil }
-func (v *Int) IsConst() bool        { return true }
-func (v *Int) Replace(Value, Value) {}
-func (v *Int) String() string       { return strconv.Itoa(v.Int) }
-func (v *Int) Struct() *Struct      { return v.Structure }
-func (v *Int) Type() types.Type     { return types.AnyInt }
-
+// Equals returns true if the integers are equal.
 func (a *Int) Equals(v Value) bool {
 	b, sameType := v.(*Int)
 
@@ -30,3 +24,21 @@ func (a *Int) Equals(v Value) bool {
 
 	return a.Int == b.Int
 }
+
+// Inputs returns nil because an integer has no inputs.
+func (i *Int) Inputs() []Value { return nil }
+
+// IsConst returns true because an integer is always constant.
+func (i *Int) IsConst() bool { return true }
+
+// Replace does nothing because an integer has no inputs.
+func (i *Int) Replace(Value, Value) {}
+
+// String returns a human-readable representation of the integer.
+func (i *Int) String() string { return strconv.Itoa(i.Int) }
+
+// Struct returns the struct that this integer is a part of.
+func (i *Int) Struct() *Struct { return i.Structure }
+
+// Type returns the type of the integer.
+func (i *Int) Type() types.Type { return types.AnyInt }

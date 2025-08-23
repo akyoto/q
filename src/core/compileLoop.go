@@ -34,7 +34,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		}
 
 		if f.Block().IsIdentified(fromValue) {
-			fromValue = f.copy(fromValue, ssa.Source(from.Source()))
+			fromValue = f.copy(fromValue, from.Source())
 		}
 
 		beforeLoop.Identify(name, fromValue)
@@ -53,9 +53,9 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		}
 
 		condition := f.Append(&ssa.BinaryOp{
+			Op:    token.Less,
 			Left:  fromValue,
 			Right: toValue,
-			Op:    token.Less,
 		})
 
 		bodyLabel := f.CreateLabel("loop.body", f.Count.Loop)

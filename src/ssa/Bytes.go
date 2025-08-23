@@ -15,13 +15,7 @@ type Bytes struct {
 	Source
 }
 
-func (v *Bytes) Inputs() []Value      { return nil }
-func (v *Bytes) IsConst() bool        { return true }
-func (v *Bytes) Replace(Value, Value) {}
-func (v *Bytes) String() string       { return strconv.Quote(string(v.Bytes)) }
-func (v *Bytes) Struct() *Struct      { return v.Structure }
-func (v *Bytes) Type() types.Type     { return types.CString }
-
+// Equals returns true if the byte slices are equal.
 func (a *Bytes) Equals(v Value) bool {
 	b, sameType := v.(*Bytes)
 
@@ -31,3 +25,21 @@ func (a *Bytes) Equals(v Value) bool {
 
 	return bytes.Equal(a.Bytes, b.Bytes)
 }
+
+// Inputs returns nil because a byte slice has no inputs.
+func (b *Bytes) Inputs() []Value { return nil }
+
+// IsConst returns true because a byte slice is always constant.
+func (b *Bytes) IsConst() bool { return true }
+
+// Replace does nothing because a byte slice has no inputs.
+func (b *Bytes) Replace(Value, Value) {}
+
+// String returns a human-readable representation of the byte slice.
+func (b *Bytes) String() string { return strconv.Quote(string(b.Bytes)) }
+
+// Struct returns the struct that this byte slice is a part of.
+func (b *Bytes) Struct() *Struct { return b.Structure }
+
+// Type returns the CString type.
+func (b *Bytes) Type() types.Type { return types.CString }

@@ -36,7 +36,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 			Op:     removeAssign(node.Expression.Token.Kind),
 			Left:   leftValue,
 			Right:  rightValue,
-			Source: ssa.Source(node.Expression.Source()),
+			Source: node.Expression.Source(),
 		})
 	}
 
@@ -50,7 +50,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 			Index:   offset,
 			Value:   rightValue,
 			Length:  uint8(field.Type.Size()),
-			Source:  ssa.Source(node.Expression.Source()),
+			Source:  node.Expression.Source(),
 		})
 
 	case *types.Struct:
