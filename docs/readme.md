@@ -177,8 +177,8 @@ The typical flow for a build command is the following:
 |            | arm64     | x86-64    |
 | ---------- | --------- | --------- |
 | 🐧 Linux   | 646 bytes | 646 bytes |
-| 🍏 Mac     | 16.3 KiB  | 4.2 KiB   |
-| 🪟 Windows | 1.7 KiB   | 1.7 KiB   |
+| 🍏 Mac     |  16.3 KiB |   4.2 KiB |
+| 🪟 Windows |   1.7 KiB |   1.7 KiB |
 
 ### Are there any runtime benchmarks?
 
@@ -199,13 +199,13 @@ The table below shows latency numbers on a 2015 Macbook:
 
 |                 | x86-64                  |
 | --------------- | ----------------------- |
-| q               | **81.0 ms** ± 1.0 ms    |
-| go @1.25        | **364.5 ms** ± 3.3 ms   |
-| clang @17.0.0   | **395.9 ms** ± 3.3 ms   |
-| rustc @1.89.0   | **639.9 ms** ± 3.1 ms   |
-| v @0.4.11       | **1117.0 ms** ± 3.0 ms  |
+| q               |   **81.0 ms** ±  1.0 ms |
+| go @1.25        |  **364.5 ms** ±  3.3 ms |
+| clang @17.0.0   |  **395.9 ms** ±  3.3 ms |
+| rustc @1.89.0   |  **639.9 ms** ±  3.1 ms |
+| v @0.4.11       | **1117.0 ms** ±  3.0 ms |
 | zig @0.15.1     | **1315.0 ms** ± 12.0 ms |
-| odin @accdd7c2a | **1748.0 ms** ± 8.0 ms  |
+| odin @accdd7c2a | **1748.0 ms** ±  8.0 ms |
 
 Latency measures the time it takes a compiler to create an executable file with a nearly empty main function. It should not be confused with throughput.
 
@@ -213,13 +213,13 @@ Advanced benchmarks for throughput have not been conducted yet, but the followin
 
 |                 | x86-64                  |
 | --------------- | ----------------------- |
-| q               | **96.0 ms** ± 1.5 ms    |
-| go @1.25        | **372.2 ms** ± 5.3 ms   |
-| clang @17.0.0   | **550.8 ms** ± 3.8 ms   |
-| rustc @1.89.0   | **1101.0 ms** ± 4.0 ms  |
-| v @0.4.11       | **1256.0 ms** ± 4.0 ms  |
+| q               |   **96.0 ms** ±  1.5 ms |
+| go @1.25        |  **372.2 ms** ±  5.3 ms |
+| clang @17.0.0   |  **550.8 ms** ±  3.8 ms |
+| rustc @1.89.0   | **1101.0 ms** ±  4.0 ms |
+| v @0.4.11       | **1256.0 ms** ±  4.0 ms |
 | zig @0.15.1     | **1407.0 ms** ± 12.0 ms |
-| odin @accdd7c2a | **1770.0 ms** ± 7.0 ms  |
+| odin @accdd7c2a | **1770.0 ms** ±  7.0 ms |
 
 ### What is the compiler based on?
 
