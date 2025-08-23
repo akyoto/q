@@ -268,7 +268,7 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 - [Kofi](https://ko-fi.com/akyoto)
 - [GitHub](https://github.com/sponsors/akyoto)
-- [Stripe](https://buy.stripe.com/4gw7vf5Jxflf83m7st)
+- [Stripe](https://donate.stripe.com/4gw7vf5Jxflf83m7st)
 
 ### If I donate, what will my money be used for?
 
