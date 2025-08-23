@@ -29,6 +29,7 @@ var errs = []struct {
 	{"InvalidStructOperation.q", core.InvalidStructOperation},
 	{"InvalidStructOperation2.q", core.InvalidStructOperation},
 	{"MissingOperand.q", core.MissingOperand},
+	{"NoMatchingFunction.q", &core.NoMatchingFunction{Function: "main.f"}},
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},
 	{"ReturnCountMismatch.q", &core.ReturnCountMismatch{Count: 1, ExpectedCount: 0}},

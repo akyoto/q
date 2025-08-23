@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -62,7 +64,12 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 		}
 
 		pkg := f.Env.Packages[f.File.Package]
-		variants := pkg.Functions[name]
+		variants, exists := pkg.Functions[name]
+
+		if !exists {
+			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
+		}
+
 		inputExpressions := expr.Parent.Children[1:]
 		fn, err := f.selectFunction(variants, inputExpressions, expr)
 
@@ -84,7 +91,7 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 			return v, nil
 		}
 
-		return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
+		return nil, errors.New(&NoMatchingFunction{Function: fmt.Sprintf("%s.%s", pkg.Name, name)}, f.File, expr.Token.Position)
 
 	case token.Number, token.Rune:
 		number, err := toNumber(expr.Token, f.File)

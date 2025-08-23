@@ -34,6 +34,15 @@ func (err *DefinitionCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough variables for the return value of '%s'", err.Function)
 }
 
+// NoMatchingFunction is created when a function is not defined for the given type.
+type NoMatchingFunction struct {
+	Function string
+}
+
+func (err *NoMatchingFunction) Error() string {
+	return fmt.Sprintf("No matching function for call to '%s'", err.Function)
+}
+
 // ParameterCountMismatch error is created when the number of provided parameters doesn't match the function signature.
 type ParameterCountMismatch struct {
 	Function      string

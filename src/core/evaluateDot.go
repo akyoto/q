@@ -48,6 +48,10 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			return nil, err
 		}
 
+		if fn == nil {
+			return nil, errors.New(&NoMatchingFunction{Function: fmt.Sprintf("%s.%s", pkg.Name, rightText)}, f.File, left.Token.Position)
+		}
+
 		if fn.IsExtern() {
 			f.Assembler.Libraries.Append(fn.Package, fn.Name)
 		} else {
