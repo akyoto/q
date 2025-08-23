@@ -57,6 +57,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-08-22**: General bugfixes.
 - **2025-08-19**: Performance improvements.
 - **2025-08-18**: Slices for strings.
 - **2025-08-17**: Struct allocation by value/reference.
@@ -103,7 +104,6 @@ The following is a cheat sheet documenting the syntax.
 | Slice a string from index        | `"Hello"[1..]`              | ✔️ Stable       |
 | Slice a string until index       | `"Hello"[..3]`              | ✔️ Stable       |
 | Return multiple values           | `return 1, 2`               | ✔️ Stable       |
-| Mark a parameter as unused       | `_x`                        | ✔️ Stable       |
 | Loop                             | `loop {}`                   | ✔️ Stable       |
 | Loop 10 times                    | `loop 0..10 {}`             | ✔️ Stable       |
 | Loop 10 times with a variable    | `loop i := 0..10 {}`        | ✔️ Stable       |
@@ -115,6 +115,7 @@ The following is a cheat sheet documenting the syntax.
 | Free memory                      | `mem.free(buffer)`          | 🚧 Experimental |
 | Output a string                  | `io.write("Hello\n")`       | ✔️ Stable       |
 | Output an integer                | `io.writeInt(42)`           | 🚧 Experimental |
+| Mark a parameter as unused       | `_`                         | ✔️ Stable       |
 
 ## Source
 
@@ -201,8 +202,8 @@ The table below shows latency numbers on a 2015 Macbook:
 | clang @17.0.0   |  **395.9 ms** ±   3.3 ms |
 | rustc @1.89.0   |  **639.9 ms** ±   3.1 ms |
 | v @0.4.11       | **1117.0 ms** ±   3.0 ms |
+| zig @0.15.1     | **1315.0 ms** ±  12.0 ms |
 | odin @accdd7c2a | **1748.0 ms** ±   8.0 ms |
-| zig @0.14.1     | **2811.0 ms** ±  25.0 ms |
 
 Latency measures the time it takes a compiler to create an executable file with a nearly empty main function. It should not be confused with throughput.
 
@@ -215,8 +216,8 @@ Advanced benchmarks for throughput have not been conducted yet, but the followin
 | clang @17.0.0   |  **550.8 ms** ±   3.8 ms |
 | rustc @1.89.0   | **1101.0 ms** ±   4.0 ms |
 | v @0.4.11       | **1256.0 ms** ±   4.0 ms |
+| zig @0.15.1     | **1407.0 ms** ±  12.0 ms |
 | odin @accdd7c2a | **1770.0 ms** ±   7.0 ms |
-| zig @0.14.1     | **2869.0 ms** ±  15.0 ms |
 
 ### What is the compiler based on?
 
