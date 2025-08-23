@@ -5,6 +5,7 @@ type Build struct {
 	Files       []string
 	Arch        Arch
 	OS          OS
+	Filter      string
 	Dry         bool
 	ShowASM     bool
 	ShowHeaders bool

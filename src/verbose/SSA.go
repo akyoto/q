@@ -15,6 +15,10 @@ var HeaderSSA string
 // SSA shows the SSA IR.
 func SSA(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
+		if filter(f.FullName, f.Env.Build.Filter) {
+			return
+		}
+
 		ansi.Yellow.Println(f.FullName + ":")
 
 		for _, step := range f.Steps {

@@ -18,6 +18,10 @@ var HeaderASM string
 // ASM shows the assembly code.
 func ASM(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
+		if filter(f.FullName, f.Env.Build.Filter) {
+			return
+		}
+
 		printAssembly(f)
 	})
 }

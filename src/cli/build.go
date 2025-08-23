@@ -62,6 +62,15 @@ func newBuild(args []string) (*config.Build, error) {
 		case "--dry":
 			build.Dry = true
 
+		case "--func":
+			i++
+
+			if i >= len(args) {
+				return nil, &ExpectedParameter{Parameter: "func"}
+			}
+
+			build.Filter = args[i]
+
 		case "--ssa":
 			build.ShowSSA = true
 

@@ -14,9 +14,10 @@ Compiler for the q programming language.
 
     Show output from various stages:
 
-        q build [file] --asm      # assembly code
-        q build [file] --ssa      # static single assigment form
-        q build [file] --verbose  # all of the above
+        --asm            # assembly code
+        --func [name]    # filter by function name
+        --ssa            # static single assigment form
+        --verbose        # all stages
 
     Show commit date and hash:
 
