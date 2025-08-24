@@ -112,7 +112,7 @@ The following is a cheat sheet documenting the syntax.
 | Branch                               | `if {} else {}`              | ✔️ Stable       |
 | Branch multiple times                | `switch { cond {} _ {} }`    | ✔️ Stable       |
 | Define a constant                    | `const { x 42 }`             | 🚧 Experimental |
-| Define an extern C function          | `extern { g { f() } }`       | ✔️ Stable       |
+| Declare an external function         | `extern { g { f() } }`       | ✔️ Stable       |
 | Allocate memory                      | `mem.alloc(4096)`            | ✔️ Stable       |
 | Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
 | Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |

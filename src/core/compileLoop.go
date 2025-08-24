@@ -103,7 +103,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 	}
 
 	// The initial compilation of the loop body does not know
-	// that the code is repeated in a loop. Therefore we need
+	// that the code is repeated in a loop. Therefore, we need
 	// to find identifiers that were both defined outside the loop
 	// and modified within the loop. For these identifiers,
 	// we create phi functions at the top of the loop head.
@@ -129,7 +129,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 	// Insert phi functions that capture both the value
 	// outside of the loop and the modification within it.
 	// We initially only knew about the value outside of the loop,
-	// so we need to replace all of its occurences in the loop blocks
+	// so we need to replace all of its occurrences in the loop blocks
 	// with the new phi function.
 	replacements := make(map[ssa.Value]*ssa.Phi, modified.Count())
 
