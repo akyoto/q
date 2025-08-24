@@ -33,7 +33,10 @@ func (f *Function) createHints(step *Step) {
 		for r, param := range instr.Arguments {
 			if r >= len(f.CPU.ExternCall.In) {
 				// Temporary hack to allow arguments 5 and 6 to be hinted as r10 and r11, then pushed later.
-				f.ValueToStep[param].hint(f.CPU.ExternCall.Clobbered[1+r])
+				if 1+r < len(f.CPU.ExternCall.Clobbered) {
+					f.ValueToStep[param].hint(f.CPU.ExternCall.Clobbered[1+r])
+				}
+
 				continue
 			}
 

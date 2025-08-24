@@ -1,4 +1,5 @@
 const {
 	_open 0x5
 	_close 0x6
+	_fstat64 0x153
 }
