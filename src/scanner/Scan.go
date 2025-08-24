@@ -49,9 +49,21 @@ func Scan(build *config.Build) (*core.Environment, error) {
 
 			f.Env = env
 			pkg := env.AddPackage(f.Package, f.IsExtern())
-			variants := pkg.Functions[f.Name]
-			pkg.Functions[f.Name] = append(variants, f)
 			env.NumFunctions++
+
+			existing := pkg.Functions[f.Name]
+
+			if existing == nil {
+				pkg.Functions[f.Name] = f
+				continue
+			}
+
+			for existing.Next != nil {
+				existing = existing.Next
+			}
+
+			existing.Next = f
+			f.Previous = existing
 
 		case file, ok := <-s.files:
 			if !ok {

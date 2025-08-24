@@ -29,7 +29,7 @@ func (env *Environment) AddPackage(name string, isExtern bool) *Package {
 		pkg = &Package{
 			Name:      name,
 			Constants: make(map[string]*Constant),
-			Functions: make(map[string][]*Function, 8),
+			Functions: make(map[string]*Function, 8),
 			Structs:   make(map[string]*types.Struct),
 			IsExtern:  isExtern,
 		}
@@ -48,22 +48,22 @@ func (env *Environment) Function(pkgName string, name string) *Function {
 		return nil
 	}
 
-	variants, exists := pkg.Functions[name]
+	fn, exists := pkg.Functions[name]
 
 	if !exists {
 		return nil
 	}
 
-	return variants[0]
+	return fn
 }
 
 // Functions returns an iterator over all functions.
 func (env *Environment) Functions() iter.Seq[*Function] {
 	return func(yield func(*Function) bool) {
 		for _, pkg := range env.Packages {
-			for _, variants := range pkg.Functions {
-				for _, fn := range variants {
-					if !yield(fn) {
+			for _, fn := range pkg.Functions {
+				for variant := range fn.Variants {
+					if !yield(variant) {
 						return
 					}
 				}

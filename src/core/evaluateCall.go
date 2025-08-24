@@ -71,10 +71,10 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	pkg := f.Env.Packages[ssaFunc.Package]
 	funcName := ssaFunc.Name
 	funcName, _, _ = strings.Cut(funcName, "[")
-	variants := pkg.Functions[funcName]
+	generic := pkg.Functions[funcName]
 	var fn *Function
 
-	for _, variant := range variants {
+	for variant := range generic.Variants {
 		if variant.Name == ssaFunc.Name {
 			fn = variant
 			break

@@ -44,7 +44,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 			f.Type.Output[i] = output.Typ
 		}
 
-		if len(env.Packages[f.Package].Functions[f.Name]) > 1 {
+		if f.Previous != nil || f.Next != nil {
 			suffix := strings.Builder{}
 			suffix.WriteByte('[')
 

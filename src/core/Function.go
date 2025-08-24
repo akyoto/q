@@ -21,6 +21,8 @@ type Function struct {
 	Output       []*ssa.Parameter
 	Body         token.List
 	Dependencies set.Ordered[*Function]
+	Previous     *Function
+	Next         *Function
 	ssa.IR
 	codegen.Function
 }
@@ -38,4 +40,19 @@ func (f *Function) IsLeaf() bool {
 // String returns the unique name.
 func (f *Function) String() string {
 	return f.FullName
+}
+
+// Variants returns all function overloads.
+func (f *Function) Variants(yield func(*Function) bool) {
+	for {
+		if !yield(f) {
+			return
+		}
+
+		f = f.Next
+
+		if f == nil {
+			return
+		}
+	}
 }
