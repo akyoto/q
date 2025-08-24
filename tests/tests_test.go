@@ -56,6 +56,8 @@ var tests = []run{
 	{"loop-keepalive", "", "", 0},
 	{"loop-copy-from", "", "", 0},
 	{"loop-copy-until", "", "", 0},
+	{"factorial", "", "", 0},
+	{"fibonacci", "", "", 0},
 	{"memory", "", "Hello\n", 0},
 	{"out-of-memory", "", "", 1},
 	{"index-static", "", "", 0},

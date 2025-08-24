@@ -10,3 +10,7 @@ write(n int) {
 
 	writeDigit(n % 10)
 }
+
+writeDigit(n int) {
+	write("0123456789"[n..n+1])
+}
