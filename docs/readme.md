@@ -327,6 +327,19 @@ You can also use the excellent [blinkenlights](https://justine.lol/blinkenlights
 
 [#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev).
 
+## Thanks
+
+In alphabetical order:
+
+- [Anto "xplshn"](https://github.com/xplshn) | feedback on public compiler interfaces
+- [Furkan](https://github.com/mfbulut) | first one to buy me a coffee
+- [James Mills](https://github.com/prologic) | first one to contact me about the project
+- [Laurent Demailly](https://github.com/ldemailly) | indispensable help with Mac debugging
+- [Max van IJsselmuiden](https://github.com/maxvij) | feedback and Mac debugging
+- [Nikita Proskourine](https://github.com/Deobfuscator) | first monthly supporter on GitHub
+- [Tibor Halter](https://github.com/zupa-hu) | invited me to lobste.rs | detailed feedback and bug reporting
+- my wife :) | providing syntax feedback as a non-programmer
+
 ## License
 
 Please see the [license documentation](https://urbach.dev/license).
