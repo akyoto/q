@@ -136,7 +136,7 @@ Resources are shared objects such as files, memory or database handles. The use 
 Any type, even integers, can be turned into a resource by prefixing the type with `!`. For example, consider these minimal functions:
 
 ```
-acquire() -> !int { return 1 }
+alloc() -> !int { return 1 }
 use(_ int) {}
 free(_ !int) {}
 ```
@@ -144,65 +144,54 @@ free(_ !int) {}
 With this, forgetting to call `free` becomes impossible:
 
 ```
-main() {
-	x := acquire()
-	use(x)
-}
+x := alloc()
+use(x)
 ```
 
 ```
-    x := acquire()
-         ┬
-         ╰─ Resource of type '!int' not consumed
+x := alloc()
+     ┬
+     ╰─ Resource of type '!int' not consumed
 ```
 
 Attempting a use-after-free is also rejected:
 
 ```
-main() {
-	x := acquire()
-	use(x)
-	free(x)
-	use(x)
-}
+x := alloc()
+free(x)
+use(x)
 ```
 
 ```
-    free(x)
-    use(x)
-        ┬
-        ╰─ Unknown identifier 'x'
+use(x)
+    ┬
+    ╰─ Unknown identifier 'x'
 ```
 
 Likewise, a double-free is disallowed:
 
 ```
-main() {
-	x := acquire()
-	use(x)
-	free(x)
-	free(x)
-}
+x := alloc()
+free(x)
+free(x)
 ```
 
 ```
-    free(x)
-    free(x)
-         ┬
-         ╰─ Unknown identifier 'x'
+free(x)
+free(x)
+     ┬
+     ╰─ Unknown identifier 'x'
 ```
 
 The compiler only accepts the correct usage order:
 
 ```
-main() {
-	x := acquire()
-	use(x)
-	free(x)
-}
+x := alloc()
+use(x)
+free(x)
 ```
 
-The `!` prefix marks a type to be consumed exactly once. When a `!int` is passed to another `!int`, the original variable is invalidated in subsequent code. As an exception, converting `!int` to `int` bypasses this rule, allowing multiple uses.
+The `!` prefix marks a type to be consumed exactly once. It has no runtime overhead. When a `!int` is passed to another `!int`, the original variable is invalidated in subsequent code. As an exception, converting `!int` to `int` bypasses this rule, allowing multiple uses.
 
 ## Source
 
