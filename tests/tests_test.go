@@ -56,6 +56,7 @@ var tests = []run{
 	{"loop-keepalive", "", "", 0},
 	{"loop-copy-from", "", "", 0},
 	{"loop-copy-until", "", "", 0},
+	{"loop-modify-struct", "", "12345", 0},
 	{"factorial", "", "", 0},
 	{"fibonacci", "", "", 0},
 	{"memory", "", "Hello\n", 0},

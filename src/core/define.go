@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -28,6 +30,14 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 	_, isCall := value.(*ssa.Call)
 
 	if !isCall {
+		structure, isStructType := value.(*ssa.Struct)
+
+		if isStructType {
+			for i, field := range structure.Typ.Fields {
+				f.Block().Identify(fmt.Sprintf("%s.%s", name, field.Name), structure.Arguments[i])
+			}
+		}
+
 		f.Block().Identify(name, value)
 		return nil
 	}
@@ -45,16 +55,17 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 		Source:    identifier.Source(),
 	}
 
-	for i := range structure.Fields {
-		field := &ssa.FromTuple{
+	for i, field := range structure.Fields {
+		fieldValue := &ssa.FromTuple{
 			Tuple:     value,
 			Index:     i,
 			Structure: composite,
 			Source:    identifier.Source(),
 		}
 
-		f.Block().Append(field)
-		composite.Arguments = append(composite.Arguments, field)
+		f.Block().Append(fieldValue)
+		f.Block().Identify(fmt.Sprintf("%s.%s", name, field.Name), fieldValue)
+		composite.Arguments = append(composite.Arguments, fieldValue)
 	}
 
 	f.Block().Identify(name, composite)
