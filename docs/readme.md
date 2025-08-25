@@ -193,6 +193,8 @@ free(x)
 
 The `!` prefix marks a type to be consumed exactly once. It has no runtime overhead. When a `!int` is passed to another `!int`, the original variable is invalidated in subsequent code. As an exception, converting `!int` to `int` bypasses this rule, allowing multiple uses.
 
+The standard library currently makes use of this feature in the file `open()` and `close()` syscalls, securing file handles on the type system level.
+
 ## Source
 
 The source code structure uses a flat layout without nesting:
