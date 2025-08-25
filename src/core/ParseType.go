@@ -11,6 +11,17 @@ func ParseType[T ~[]token.Token](tokens T, source []byte, env *Environment) type
 		return nil
 	}
 
+	if tokens[0].Kind == token.Not {
+		to := tokens[1:]
+		typ := ParseType(to, source, env)
+
+		if typ == nil {
+			return nil
+		}
+
+		return &types.Resource{Of: typ}
+	}
+
 	if tokens[0].Kind == token.Mul {
 		to := tokens[1:]
 		typ := ParseType(to, source, env)

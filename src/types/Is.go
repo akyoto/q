@@ -18,6 +18,18 @@ func Is(a Type, b Type) bool {
 		return true
 	}
 
+	aResource, aIsResource := a.(*Resource)
+
+	if aIsResource && Is(b, aResource.Of) {
+		return true
+	}
+
+	bResource, bIsResource := b.(*Resource)
+
+	if aIsResource && bIsResource {
+		return aResource.Of == bResource.Of
+	}
+
 	aArray, aIsArray := a.(*Array)
 
 	if aIsArray && bIsPointer && (bPointer.To == Any || aArray.Of == bPointer.To) {

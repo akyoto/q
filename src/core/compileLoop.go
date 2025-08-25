@@ -3,7 +3,6 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
-	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -38,8 +37,8 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		}
 
 		beforeLoop.Identify(name, fromValue)
-		beforeLoop.Append(&ssa.Jump{To: loopHead})
 		beforeLoop.AddSuccessor(loopHead)
+		beforeLoop.Append(&ssa.Jump{To: loopHead})
 
 		// Loop starts, this is the jump target for new iterations.
 		// The upper limit is recalculated on every iteration.
@@ -68,7 +67,6 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		})
 
 		loopHead.AddSuccessor(bodyBlock)
-		loopHead.AddSuccessor(loopExit)
 
 		// Loop condition is true from now on so we'll
 		// execute the code inside the loop body.
@@ -102,13 +100,18 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		}
 	}
 
+	// Jump back to the loop head.
+	f.Append(&ssa.Jump{To: loopHead})
+	f.Block().AddSuccessor(loopHead)
+
 	// The initial compilation of the loop body does not know
 	// that the code is repeated in a loop. Therefore, we need
 	// to find identifiers that were both defined outside the loop
 	// and modified within the loop. For these identifiers,
-	// we create phi functions at the top of the loop head.
+	// we created Phi functions at the top of the loop head.
+	// All that's left to do is to replace all the occurrences
+	// of the old values with their new Phi in the loop blocks.
 	loopBlocks := f.Blocks[loopBlockIndex:len(f.Blocks)]
-	modified := set.Ordered[string]{}
 
 	for _, block := range loopBlocks {
 		if block.Loop != nil {
@@ -117,48 +120,21 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 
 		block.Loop = loopHead
 
-		for name := range block.Identifiers {
-			_, existedBeforeLoop := beforeLoop.FindIdentifier(name)
-
-			if existedBeforeLoop {
-				modified.Add(name)
-			}
-		}
-	}
-
-	// Insert phi functions that capture both the value
-	// outside of the loop and the modification within it.
-	// We initially only knew about the value outside of the loop,
-	// so we need to replace all of its occurrences in the loop blocks
-	// with the new phi function.
-	replacements := make(map[ssa.Value]*ssa.Phi, modified.Count())
-
-	for identifier := range modified.All() {
-		oldValue, _ := beforeLoop.FindIdentifier(identifier)
-		newValue, _ := f.Block().FindIdentifier(identifier)
-		phi := &ssa.Phi{Arguments: []ssa.Value{oldValue, newValue}, Typ: oldValue.Type()}
-		replacement, exists := replacements[oldValue]
-
-		if exists && replacement.Equals(phi) {
-			loopHead.Identify(identifier, replacement)
-			continue
-		}
-
-		replacements[oldValue] = phi
-
-		for _, block := range loopBlocks {
+		for phi := range loopHead.Phis {
 			for _, instr := range block.Instructions {
-				instr.Replace(oldValue, phi)
+				if instr == phi {
+					continue
+				}
+
+				instr.Replace(phi.Arguments[0], phi)
 			}
 		}
-
-		loopHead.InsertAt(phi, 0)
-		loopHead.Identify(identifier, phi)
 	}
 
-	// Jump back to the loop head.
-	f.Append(&ssa.Jump{To: loopHead})
-	f.Block().AddSuccessor(loopHead)
+	if loop.Head != nil {
+		loopHead.AddSuccessor(loopExit)
+	}
+
 	f.AddBlock(loopExit)
 	return nil
 }

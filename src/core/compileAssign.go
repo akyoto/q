@@ -5,6 +5,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // compileAssign compiles an assignment.
@@ -34,7 +35,13 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 	}
 
 	if f.IsIdentified(rightValue) {
-		rightValue = f.copy(rightValue, right.Source())
+		_, isResource := rightValue.Type().(*types.Resource)
+
+		if isResource {
+			f.Block().Unidentify(rightValue)
+		} else {
+			rightValue = f.copy(rightValue, right.Source())
+		}
 	}
 
 	if node.Expression.Token.Kind == token.Assign {

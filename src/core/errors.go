@@ -58,6 +58,15 @@ func (err *ParameterCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough parameters in '%s' function call", err.Function)
 }
 
+// ResourceNotConsumed error is created when a resource has not been consumed in an exit block.
+type ResourceNotConsumed struct {
+	TypeName string
+}
+
+func (err *ResourceNotConsumed) Error() string {
+	return fmt.Sprintf("Resource of type '%s' not consumed", err.TypeName)
+}
+
 // ReturnCountMismatch error is created when the number of returned values doesn't match the return type.
 type ReturnCountMismatch struct {
 	Count         int

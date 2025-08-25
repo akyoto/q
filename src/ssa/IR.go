@@ -38,14 +38,33 @@ func (ir *IR) CountValues() int {
 	return count
 }
 
+// ExitBlocks is an iterator for all exit blocks.
+func (ir *IR) ExitBlocks(yield func(*Block) bool) {
+	for i, block := range ir.Blocks {
+		if i < len(ir.Blocks)-1 {
+			last := block.Last()
+			_, isReturn := last.(*Return)
+
+			if !isReturn {
+				continue
+			}
+		}
+
+		if !yield(block) {
+			return
+		}
+	}
+}
+
 // Finalize creates the list of users for each value.
 func (ir *IR) Finalize() {
-	ir.Values(func(_ int, value Value) bool {
-		for _, input := range value.Inputs() {
-			input.AddUser(value)
+	for _, block := range ir.Blocks {
+		for _, value := range block.Instructions {
+			for _, input := range value.Inputs() {
+				input.AddUser(value)
+			}
 		}
-		return true
-	})
+	}
 }
 
 // IsIdentified returns true if the value can be obtained from one of the identifiers.

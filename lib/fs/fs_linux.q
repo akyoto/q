@@ -1,4 +1,4 @@
-open(path *byte, flags int, mode int) -> int {
+open(path *byte, flags int, mode int) -> !int {
 	return syscall(_openat, -100, path, flags, mode)
 }
 
@@ -8,6 +8,6 @@ size(fd int) -> int {
 	return stats.st_size
 }
 
-close(fd int) -> int {
+close(fd !int) -> int {
 	return syscall(_close, fd)
 }

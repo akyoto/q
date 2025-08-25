@@ -19,13 +19,27 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 			return nil, err
 		}
 
-		if typeCheck != nil && !types.Is(value.Type(), typeCheck[i].Typ) {
-			return nil, errors.New(&TypeMismatch{
-				Encountered:   value.Type().Name(),
-				Expected:      typeCheck[i].Typ.Name(),
-				ParameterName: typeCheck[i].Name,
-				IsReturn:      isReturn,
-			}, f.File, node.Source().StartPos)
+		if typeCheck != nil {
+			valueType := value.Type()
+			expectedType := typeCheck[i].Typ
+
+			_, valueIsResource := valueType.(*types.Resource)
+			expectedResource, expectedIsResource := expectedType.(*types.Resource)
+
+			if valueIsResource && expectedIsResource {
+				f.Block().Unidentify(value)
+			}
+
+			if isReturn && expectedIsResource && types.Is(valueType, expectedResource.Of) {
+				// pass type check.
+			} else if !types.Is(valueType, expectedType) {
+				return nil, errors.New(&TypeMismatch{
+					Encountered:   value.Type().Name(),
+					Expected:      typeCheck[i].Typ.Name(),
+					ParameterName: typeCheck[i].Name,
+					IsReturn:      isReturn,
+				}, f.File, node.Source().StartPos)
+			}
 		}
 
 		structure, isStruct := value.(*ssa.Struct)

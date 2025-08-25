@@ -2,6 +2,7 @@ package ssa
 
 import (
 	"iter"
+	"maps"
 	"slices"
 )
 
@@ -25,6 +26,50 @@ func NewBlock(label string) *Block {
 // AddSuccessor adds the given block as a successor.
 func (b *Block) AddSuccessor(successor *Block) {
 	successor.Predecessors = append(successor.Predecessors, b)
+
+	if b.Identifiers == nil {
+		return
+	}
+
+	if successor.Identifiers == nil {
+		successor.Identifiers = make(map[string]Value, len(b.Identifiers))
+
+		if len(successor.Predecessors) == 1 {
+			maps.Copy(successor.Identifiers, b.Identifiers)
+			return
+		}
+	}
+
+	for name, oldValue := range successor.Identifiers {
+		newValue, exists := b.Identifiers[name]
+
+		if !exists {
+			delete(successor.Identifiers, name)
+			continue
+		}
+
+		if oldValue == newValue {
+			continue
+		}
+
+		phi, isPhi := oldValue.(*Phi)
+
+		if !isPhi || successor.Index(phi) == -1 {
+			phi = &Phi{
+				Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
+				Typ:       oldValue.Type(),
+			}
+
+			for i := range phi.Arguments {
+				phi.Arguments[i] = oldValue
+			}
+
+			successor.InsertAt(phi, 0)
+			successor.Identifiers[name] = phi
+		}
+
+		phi.Arguments = append(phi.Arguments, newValue)
+	}
 }
 
 // Append adds a new value to the block.
@@ -88,62 +133,8 @@ func (b *Block) FindExisting(instr Value) Value {
 // FindIdentifier searches for all the possible values the identifier
 // can have and combines them to a phi instruction if necessary.
 func (b *Block) FindIdentifier(name string) (value Value, exists bool) {
-	return b.findIdentifier(name, make(map[*Block]Value))
-}
-
-// findIdentifier searches for all the possible values the identifier
-// can have and combines them to a phi instruction if necessary.
-func (b *Block) findIdentifier(name string, traversed map[*Block]Value) (Value, bool) {
-	if cached, isTraversed := traversed[b]; isTraversed {
-		return cached, cached != nil
-	}
-
-	if value, exists := b.Identifiers[name]; exists {
-		traversed[b] = value
-		return value, true
-	}
-
-	traversed[b] = nil
-
-	switch len(b.Predecessors) {
-	case 0:
-		return nil, false
-	case 1:
-		value, exists := b.Predecessors[0].findIdentifier(name, traversed)
-
-		if exists {
-			traversed[b] = value
-		}
-
-		return value, exists
-	default:
-		var values []Value
-
-		for _, pre := range b.Predecessors {
-			value, exists := pre.findIdentifier(name, traversed)
-
-			if !exists {
-				return nil, false
-			}
-
-			values = append(values, value)
-			traversed[b] = value
-		}
-
-		if len(values) == 0 {
-			return nil, false
-		}
-
-		if allSame(values) {
-			return values[0], true
-		}
-
-		phi := &Phi{Arguments: values, Typ: values[0].Type()}
-		b.InsertAt(phi, 0)
-		b.Identify(name, phi)
-		traversed[b] = phi
-		return phi, true
-	}
+	value, exists = b.Identifiers[name]
+	return
 }
 
 // IdentifiersFor returns an iterator for all the identifiers pointing to the given value.
@@ -197,7 +188,22 @@ func (b *Block) InsertAt(value Value, index int) {
 
 // Last returns the last value.
 func (b *Block) Last() Value {
+	if len(b.Instructions) == 0 {
+		return nil
+	}
+
 	return b.Instructions[len(b.Instructions)-1]
+}
+
+// Phis is an iterator for all phis at the top of the block.
+func (b *Block) Phis(yield func(*Phi) bool) {
+	for _, instr := range b.Instructions {
+		phi, isPhi := instr.(*Phi)
+
+		if !isPhi || !yield(phi) {
+			return
+		}
+	}
 }
 
 // RemoveAt sets the value at the given index to nil.
@@ -228,4 +234,14 @@ func (b *Block) ReplaceAllUses(old Value, new Value) {
 // String returns the block label.
 func (b *Block) String() string {
 	return b.Label
+}
+
+// Unidentify deletes the identifier for the given value.
+func (b *Block) Unidentify(value Value) {
+	for name, existing := range b.Identifiers {
+		if existing == value {
+			delete(b.Identifiers, name)
+			return
+		}
+	}
 }

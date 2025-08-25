@@ -9,6 +9,7 @@
 - High performance (comparable to C and Go)
 - Fast compilation (5x faster than most)
 - Tiny executables ("Hello World" is ~600 bytes)
+- Resource safety (use-after-free is a compile error)
 - Multiple platforms (Linux, Mac and Windows)
 - Zero dependencies (no llvm, no libc)
 
@@ -57,7 +58,8 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
-- **2025-08-23**: Compile-time function polymorphism.
+- **2025-08-25**: Resource safety.
+- **2025-08-23**: Function overloading.
 - **2025-08-22**: General bugfixes.
 - **2025-08-19**: Performance improvements.
 - **2025-08-18**: Slices for strings.
@@ -117,7 +119,90 @@ The following is a cheat sheet documenting the syntax.
 | Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
 | Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |
 | Output an integer                    | `io.write(42)`               | ✔️ Stable       |
+| Mark a type as a resource            | `!int`                       | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
+
+## Resources
+
+> [!WARNING]
+> This feature is very new and still undergoing refinement.
+
+Resources are shared objects such as files, memory or database handles. The use of resource types prevents the following problems:
+
+- **Resource leaks** (forgetting to free a resource)
+- **Use-after-free** (using a resource after it was freed)
+- **Double-free** (freeing a resource twice)
+
+Any type, even integers, can be turned into a resource by prefixing the type with `!`. For example, consider these minimal functions:
+
+```
+acquire() -> !int { return 1 }
+use(_ int) {}
+free(_ !int) {}
+```
+
+With this, forgetting to call `free` becomes impossible:
+
+```
+main() {
+	x := acquire()
+	use(x)
+}
+```
+
+```
+    x := acquire()
+         ┬
+         ╰─ Resource of type '!int' not consumed
+```
+
+Attempting a use-after-free is also rejected:
+
+```
+main() {
+	x := acquire()
+	use(x)
+	free(x)
+	use(x)
+}
+```
+
+```
+    free(x)
+    use(x)
+        ┬
+        ╰─ Unknown identifier 'x'
+```
+
+Likewise, a double-free is disallowed:
+
+```
+main() {
+	x := acquire()
+	use(x)
+	free(x)
+	free(x)
+}
+```
+
+```
+    free(x)
+    free(x)
+         ┬
+         ╰─ Unknown identifier 'x'
+```
+
+The compiler only accepts the correct usage order:
+
+```
+main() {
+	x := acquire()
+	use(x)
+	free(x)
+}
+```
+
+The `!` prefix marks a type to be consumed exactly once. When a `!int` is passed to another `!int`, the original variable is invalidated in subsequent code. As an exception, converting `!int` to `int` bypasses this rule, allowing multiple uses.
 
 ## Source
 

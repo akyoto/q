@@ -20,5 +20,12 @@ func (f *Function) Compile() {
 	}
 
 	f.Finalize()
-	f.Err = f.removeDeadCode()
+	err = f.removeDeadCode()
+
+	if err != nil {
+		f.Err = err
+		return
+	}
+
+	f.Err = f.checkResources()
 }

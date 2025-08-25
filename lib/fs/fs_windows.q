@@ -1,4 +1,4 @@
-open(path *byte, _flags int, _mode int) -> int {
+open(path *byte, _flags int, _mode int) -> !int {
 	return kernel32.CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
 }
 
@@ -8,7 +8,7 @@ size(fd int) -> int {
 	return [fileSize]
 }
 
-close(fd int) -> bool {
+close(fd !int) -> bool {
 	return kernel32.CloseHandle(fd)
 }
 

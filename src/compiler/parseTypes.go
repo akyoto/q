@@ -32,6 +32,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 			typeTokens := output.Tokens
 
 			if len(output.Tokens) > 1 && output.Tokens[0].Kind == token.Identifier {
+				output.Name = output.Tokens[0].String(f.File.Bytes)
 				typeTokens = typeTokens[1:]
 			}
 

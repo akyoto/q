@@ -99,25 +99,24 @@ func TestBlockFindIdentifier(t *testing.T) {
 	elseBlock := ssa.NewBlock("if.else")
 	mergeBlock := ssa.NewBlock("merge")
 
-	branch.AddSuccessor(thenBlock)
-	branch.AddSuccessor(elseBlock)
-	thenBlock.AddSuccessor(mergeBlock)
-	elseBlock.AddSuccessor(mergeBlock)
-
 	branchValue := ssa.Value(&ssa.Int{Int: 1})
 	branch.Append(branchValue)
 	branch.Identify("branch", branchValue)
 	branch.Identify("x", branchValue)
+	branch.AddSuccessor(thenBlock)
+	branch.AddSuccessor(elseBlock)
 
 	thenValue := ssa.Value(&ssa.Int{Int: 2})
 	thenBlock.Append(thenValue)
 	thenBlock.Identify("then", thenValue)
 	thenBlock.Identify("x", thenValue)
+	thenBlock.AddSuccessor(mergeBlock)
 
 	elseValue := ssa.Value(&ssa.Int{Int: 3})
 	elseBlock.Append(elseValue)
 	elseBlock.Identify("else", elseValue)
 	elseBlock.Identify("x", elseValue)
+	elseBlock.AddSuccessor(mergeBlock)
 
 	mergeValue := ssa.Value(&ssa.Int{Int: 4})
 	mergeBlock.Append(mergeValue)

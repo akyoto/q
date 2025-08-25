@@ -24,7 +24,13 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 	// another named variable instead of using the cached value itself
 	// because it could lead to incorrect optimizations.
 	if f.IsIdentified(value) {
-		value = f.copy(value, identifier.Source())
+		_, isResource := value.Type().(*types.Resource)
+
+		if isResource {
+			f.Block().Unidentify(value)
+		} else {
+			value = f.copy(value, identifier.Source())
+		}
 	}
 
 	_, isCall := value.(*ssa.Call)

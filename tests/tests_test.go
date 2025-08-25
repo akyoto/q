@@ -78,6 +78,7 @@ var tests = []run{
 	{"reorder-add", "", "", 0},
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
+	{"resource", "", "", 0},
 }
 
 func TestTests(t *testing.T) {
