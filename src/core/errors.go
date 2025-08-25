@@ -117,6 +117,16 @@ func (err *UnknownIdentifier) Error() string {
 	return fmt.Sprintf("Unknown identifier '%s'", err.Name)
 }
 
+// UndefinedStructField is created when an undefined struct field is accessed.
+type UndefinedStructField struct {
+	Identifier string
+	FieldName  string
+}
+
+func (err *UndefinedStructField) Error() string {
+	return fmt.Sprintf("Struct field '%s' of '%s' has an undefined value", err.FieldName, err.Identifier)
+}
+
 // UnknownStructField represents unknown struct fields.
 type UnknownStructField struct {
 	StructName       string
