@@ -11,17 +11,6 @@ import (
 
 // exec executes a step which appends it to the assembler's instruction list.
 func (f *Function) exec(step *Step) {
-	if f.isLastStepInBlock(step) {
-		for _, live := range step.Live {
-			if live.Phi != nil && live.Register != live.Phi.Register {
-				f.Assembler.Append(&asm.Move{
-					Destination: live.Phi.Register,
-					Source:      live.Register,
-				})
-			}
-		}
-	}
-
 	switch instr := step.Value.(type) {
 	case *ssa.Assert:
 		f.jumpIfFalse(instr.Condition.(*ssa.BinaryOp).Op, "run.crash")
@@ -208,6 +197,7 @@ func (f *Function) exec(step *Step) {
 			})
 		}
 
+		f.insertPhiMoves(step)
 		following := f.Steps[step.Index+1].Value.(*Label)
 
 		switch following.Name {
@@ -338,6 +328,7 @@ func (f *Function) exec(step *Step) {
 		})
 
 	case *ssa.Jump:
+		f.insertPhiMoves(step)
 		f.Assembler.Append(&asm.Jump{Label: instr.To.Label})
 
 	case *Label:
