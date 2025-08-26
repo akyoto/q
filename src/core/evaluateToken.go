@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -40,58 +38,13 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 			return value, nil
 		}
 
-		constant, exists := f.Env.Packages[f.Package].Constants[name]
-
-		if exists {
-			number, err := toNumber(constant.Value.Token, constant.File)
-
-			if err != nil {
-				return nil, err
-			}
-
-			v := f.Append(&ssa.Int{
-				Int:    number,
-				Source: expr.Source(),
-			})
-
-			return v, nil
-		}
-
 		_, exists = f.Env.Packages[name]
 
 		if exists {
 			return &ssa.Package{Name: name}, nil
 		}
 
-		pkg := f.Env.Packages[f.File.Package]
-		variants, exists := pkg.Functions[name]
-
-		if !exists {
-			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Token.Position)
-		}
-
-		inputExpressions := expr.Parent.Children[1:]
-		fn, err := f.selectFunction(variants, inputExpressions, expr)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if fn != nil {
-			f.Dependencies.Add(fn)
-
-			v := &ssa.Function{
-				Package:  fn.Package,
-				Name:     fn.Name,
-				Typ:      fn.Type,
-				IsExtern: fn.IsExtern(),
-				Source:   expr.Source(),
-			}
-
-			return v, nil
-		}
-
-		return nil, errors.New(&NoMatchingFunction{Function: fmt.Sprintf("%s.%s", pkg.Name, name)}, f.File, expr.Token.Position)
+		return f.evaluateDotPackage(f.Env.Packages[f.File.Package], name, expr)
 
 	case token.Number, token.Rune:
 		number, err := toNumber(expr.Token, f.File)

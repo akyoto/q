@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -39,38 +37,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			imp.Used.Add(1)
 		}
 
-		variants, exists := pkg.Functions[rightText]
-
-		if !exists {
-			return nil, errors.New(&UnknownIdentifier{Name: fmt.Sprintf("%s.%s", pkg.Name, rightText)}, f.File, left.Token.Position)
-		}
-
-		inputExpressions := expr.Parent.Children[1:]
-		fn, err := f.selectFunction(variants, inputExpressions, right)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if fn == nil {
-			return nil, errors.New(&NoMatchingFunction{Function: fmt.Sprintf("%s.%s", pkg.Name, rightText)}, f.File, left.Token.Position)
-		}
-
-		if fn.IsExtern() {
-			f.Assembler.Libraries.Append(fn.Package, fn.Name)
-		} else {
-			f.Dependencies.Add(fn)
-		}
-
-		v := &ssa.Function{
-			Package:  fn.Package,
-			Name:     fn.Name,
-			Typ:      fn.Type,
-			IsExtern: fn.IsExtern(),
-			Source:   expr.Source(),
-		}
-
-		return v, nil
+		return f.evaluateDotPackage(pkg, rightText, expr)
 
 	case *ssa.Struct:
 		field := types.Unwrap(leftValue.Typ).(*types.Struct).FieldByName(rightText)
