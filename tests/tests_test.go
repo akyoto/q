@@ -31,6 +31,8 @@ var tests = []run{
 	{"negative", "", "", 0},
 	{"negation", "", "", 0},
 	{"assign", "", "", 0},
+	{"overflow", "", "", 0},
+	{"underflow", "", "", 0},
 	{"param", "", "", 0},
 	{"param-multi", "", "", 0},
 	{"param-order", "", "", 0},
