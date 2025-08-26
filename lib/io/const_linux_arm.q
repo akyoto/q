@@ -1,4 +1,4 @@
 const {
-	_read 63
-	_write 64
+	_read = 63
+	_write = 64
 }

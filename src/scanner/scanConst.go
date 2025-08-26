@@ -29,7 +29,12 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
 				name := tokens[start].String(file.Bytes)
-				valueTokens := tokens[start+1 : i]
+
+				if tokens[start+1].Kind != token.Assign {
+					return i, errors.New(MissingAssign, file, tokens[start+1].Position)
+				}
+
+				valueTokens := tokens[start+2 : i]
 
 				if len(valueTokens) == 0 {
 					return i, errors.New(MissingExpression, file, tokens[start].End())

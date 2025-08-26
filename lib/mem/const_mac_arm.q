@@ -1,4 +1,4 @@
 const {
-	_mmap 0xC5
-	_munmap 0x49
+	_mmap = 0xC5
+	_munmap = 0x49
 }

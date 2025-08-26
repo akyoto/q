@@ -1,4 +1,4 @@
 const {
-	_mmap 9
-	_munmap 11
+	_mmap = 9
+	_munmap = 11
 }

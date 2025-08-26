@@ -114,7 +114,7 @@ The following is a cheat sheet documenting the syntax.
 | Loop 10 times with a variable        | `loop i := 0..10 {}`         | ✔️ Stable       |
 | Branch                               | `if {} else {}`              | ✔️ Stable       |
 | Branch multiple times                | `switch { cond {} _ {} }`    | ✔️ Stable       |
-| Define a constant                    | `const { x 42 }`             | 🚧 Experimental |
+| Define a constant                    | `const { x = 42 }`           | ✔️ Stable       |
 | Declare an external function         | `extern { g { f() } }`       | ✔️ Stable       |
 | Allocate memory                      | `mem.alloc(4096)`            | ✔️ Stable       |
 | Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |

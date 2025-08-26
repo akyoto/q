@@ -1,3 +1,3 @@
 const {
-	_exit 0x1
+	_exit = 0x1
 }

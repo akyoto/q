@@ -1,4 +1,4 @@
 const {
-	_read 0
-	_write 1
+	_read = 0
+	_write = 1
 }
