@@ -7,8 +7,9 @@
 ## Features
 
 - High performance (comparable to C and Go)
-- Fast compilation (5x faster than most)
+- Fast compilation (5-10x faster than most)
 - Tiny executables ("Hello World" is ~600 bytes)
+- Static analysis (no need for external linters)
 - Resource safety (use-after-free is a compile error)
 - Multiple platforms (Linux, Mac and Windows)
 - Zero dependencies (no llvm, no libc)
@@ -119,15 +120,16 @@ The following is a cheat sheet documenting the syntax.
 | Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
 | Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |
 | Output an integer                    | `io.write(42)`               | ✔️ Stable       |
-| Mark a type as a resource            | `!int`                       | 🚧 Experimental |
+| Mark a type as a resource            | `!`                          | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
 
 ## Resources
 
 > [!WARNING]
 > This feature is very new and still undergoing refinement.
+> For more information, refer to linear types or borrowing in other languages.
 
-Resources are shared objects such as files, memory or database handles. The use of resource types prevents the following problems:
+Resources are shared objects such as files, memory or network sockets. The use of resource types prevents the following problems:
 
 - **Resource leaks** (forgetting to free a resource)
 - **Use-after-free** (using a resource after it was freed)
