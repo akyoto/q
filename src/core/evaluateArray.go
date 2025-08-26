@@ -17,7 +17,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, err
 	}
 
-	addressType := addressValue.Type()
+	addressType := types.Unwrap(addressValue.Type())
 	var length ssa.Value
 
 	if addressType == types.String {

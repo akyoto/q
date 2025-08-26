@@ -18,4 +18,5 @@ main() {
 	s[4] = 'd'
 
 	io.write(s)
+	mem.free(buffer)
 }

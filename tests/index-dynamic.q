@@ -7,4 +7,6 @@ main() {
 		a[i] = i
 		assert a[i] == i
 	}
+
+	mem.free(a)
 }

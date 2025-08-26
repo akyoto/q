@@ -8,7 +8,7 @@ import (
 
 // Struct is a list of values that can be addressed by name.
 type Struct struct {
-	Typ *types.Struct
+	Typ types.Type
 	Arguments
 	Liveness
 	Source

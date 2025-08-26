@@ -7,7 +7,7 @@ import (
 
 // needsRegister returns true if the value requires a register.
 func (f *Function) needsRegister(s *Step) bool {
-	typ := s.Value.Type()
+	typ := types.Unwrap(s.Value.Type())
 
 	if typ == types.Void {
 		return false

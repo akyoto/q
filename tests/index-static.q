@@ -17,4 +17,6 @@ main() {
 	assert a[1] == 1
 	assert a[2] == 2
 	assert a[3] == 3
+
+	mem.free(a)
 }

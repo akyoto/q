@@ -50,10 +50,11 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 				// Packed integer: Use the first argument,
 				// then bitwise OR with the shifted field values.
 				cursor := structure.Arguments[0]
-				size := structure.Typ.Fields[0].Type.Size()
+				typ := types.Unwrap(structure.Typ).(*types.Struct)
+				size := typ.Fields[0].Type.Size()
 
 				for i, field := range structure.Arguments[1:] {
-					fieldSize := structure.Typ.Fields[i+1].Type.Size()
+					fieldSize := typ.Fields[i+1].Type.Size()
 
 					if size+fieldSize > 8 {
 						// The field doesn't fit into the register anymore.

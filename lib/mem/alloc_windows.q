@@ -1,6 +1,6 @@
 import run
 
-alloc(length int) -> (buffer string) {
+alloc(length int) -> (buffer !string) {
 	x := kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
 
 	if x == 0 {
@@ -10,7 +10,7 @@ alloc(length int) -> (buffer string) {
 	return string{ptr: x, len: length}
 }
 
-free(buffer string) {
+free(buffer !string) {
 	kernel32.VirtualFree(buffer.ptr, buffer.len, decommit)
 }
 

@@ -39,7 +39,7 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 		structure, isStructType := value.(*ssa.Struct)
 
 		if isStructType {
-			for i, field := range structure.Typ.Fields {
+			for i, field := range types.Unwrap(structure.Typ).(*types.Struct).Fields {
 				f.Block().Identify(fmt.Sprintf("%s.%s", name, field.Name), structure.Arguments[i])
 			}
 		}
@@ -48,7 +48,7 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 		return nil
 	}
 
-	structure, isStructType := value.Type().(*types.Struct)
+	structure, isStructType := types.Unwrap(value.Type()).(*types.Struct)
 
 	if !isStructType {
 		f.Block().Identify(name, value)
@@ -56,7 +56,7 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 	}
 
 	composite := &ssa.Struct{
-		Typ:       structure,
+		Typ:       value.Type(),
 		Arguments: make(ssa.Arguments, 0, len(structure.Fields)),
 		Source:    identifier.Source(),
 	}

@@ -47,7 +47,7 @@ func (f *FromTuple) Struct() *Struct { return f.Structure }
 
 // Type returns the type of the tuple element.
 func (f *FromTuple) Type() types.Type {
-	switch typ := f.Tuple.Type().(type) {
+	switch typ := types.Unwrap(f.Tuple.Type()).(type) {
 	case *types.Struct:
 		return typ.Fields[f.Index].Type
 	case *types.Tuple:

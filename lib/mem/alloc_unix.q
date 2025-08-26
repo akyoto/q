@@ -1,6 +1,6 @@
 import run
 
-alloc(length int) -> (buffer string) {
+alloc(length int) -> (buffer !string) {
 	x := mmap(0, length, read|write, private|anonymous)
 
 	if x < 0x1000 {
@@ -10,6 +10,6 @@ alloc(length int) -> (buffer string) {
 	return string{ptr: x, len: length}
 }
 
-free(buffer string) {
+free(buffer !string) {
 	munmap(buffer.ptr, buffer.len)
 }

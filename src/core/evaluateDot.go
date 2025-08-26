@@ -69,7 +69,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return v, nil
 
 	case *ssa.Struct:
-		field := leftValue.Typ.FieldByName(rightText)
+		field := types.Unwrap(leftValue.Typ).(*types.Struct).FieldByName(rightText)
 
 		if field == nil {
 			return nil, errors.New(&UnknownStructField{StructName: leftValue.Typ.Name(), FieldName: rightText}, f.File, right.Token.Position)

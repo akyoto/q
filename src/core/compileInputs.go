@@ -13,7 +13,7 @@ func (f *Function) compileInputs() {
 	offset := 0
 
 	for i, input := range f.Input {
-		structType, isStructType := input.Typ.(*types.Struct)
+		structType, isStructType := types.Unwrap(input.Typ).(*types.Struct)
 
 		if isStructType {
 			if strings.HasPrefix(input.Name, "_") {

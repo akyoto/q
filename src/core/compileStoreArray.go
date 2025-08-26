@@ -18,7 +18,7 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return err
 	}
 
-	addressType := addressValue.Type()
+	addressType := types.Unwrap(addressValue.Type())
 
 	if addressType == types.String {
 		addressValue = addressValue.(*ssa.Struct).Arguments[0]
