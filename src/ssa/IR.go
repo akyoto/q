@@ -77,18 +77,3 @@ func (ir *IR) IsIdentified(value Value) bool {
 
 	return false
 }
-
-// Values yields on each value.
-func (ir *IR) Values(yield func(int, Value) bool) {
-	index := 0
-
-	for _, block := range ir.Blocks {
-		for _, instr := range block.Instructions {
-			if !yield(index, instr) {
-				return
-			}
-
-			index++
-		}
-	}
-}
