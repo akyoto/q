@@ -1,7 +1,7 @@
 import io
 import mem
 
-readFile(path string) -> string {
+readFile(path string) -> !string {
 	newPath := mem.alloc(path.len + 1)
 
 	loop i := 0..path.len {
@@ -24,7 +24,7 @@ readFile(path string) -> string {
 
 		if n <= 0 {
 			close(fd)
-			return buffer[..pos]
+			return buffer
 		}
 
 		pos += n
