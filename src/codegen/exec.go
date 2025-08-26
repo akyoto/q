@@ -53,6 +53,20 @@ func (f *Function) exec(step *Step) {
 					Number:      number.Int,
 				})
 
+			case token.And:
+				f.Assembler.Append(&asm.AndNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+
+			case token.Or:
+				f.Assembler.Append(&asm.OrNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+
 			case token.Shl:
 				f.Assembler.Append(&asm.ShiftLeftNumber{
 					Destination: step.Register,
@@ -69,6 +83,13 @@ func (f *Function) exec(step *Step) {
 
 			case token.Sub:
 				f.Assembler.Append(&asm.SubtractNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+
+			case token.Xor:
+				f.Assembler.Append(&asm.XorNumber{
 					Destination: step.Register,
 					Source:      left.Register,
 					Number:      number.Int,

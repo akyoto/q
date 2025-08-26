@@ -28,11 +28,23 @@ func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 				_, encodable := arm.AddRegisterNumber(0, 0, number.Int)
 				return encodable
 
+			case token.And:
+				_, encodable := arm.AndRegisterNumber(0, 0, number.Int)
+				return encodable
+
+			case token.Or:
+				_, encodable := arm.OrRegisterNumber(0, 0, number.Int)
+				return encodable
+
 			case token.Shl, token.Shr:
 				return number.Int >= 0 && number.Int <= 63
 
 			case token.Sub:
 				_, encodable := arm.SubRegisterNumber(0, 0, number.Int)
+				return encodable
+
+			case token.Xor:
+				_, encodable := arm.XorRegisterNumber(0, 0, number.Int)
 				return encodable
 			}
 
@@ -42,7 +54,7 @@ func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 			}
 
 			switch instr.Op {
-			case token.Add, token.Sub:
+			case token.Add, token.And, token.Or, token.Sub, token.Xor:
 				return sizeof.Signed(number.Int) <= 4
 
 			case token.Shl, token.Shr:

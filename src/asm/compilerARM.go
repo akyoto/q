@@ -26,6 +26,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(code)
 	case *And:
 		c.append(arm.AndRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *AndNumber:
+		code, _ := arm.AndRegisterNumber(instr.Destination, instr.Source, instr.Number)
+		c.append(code)
 	case *Call:
 		c.append(arm.Call(0))
 		patch := c.PatchLast4Bytes()
@@ -153,6 +156,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.NegateRegister(instr.Destination, instr.Source))
 	case *Or:
 		c.append(arm.OrRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *OrNumber:
+		code, _ := arm.OrRegisterNumber(instr.Destination, instr.Source, instr.Number)
+		c.append(code)
 	case *Pop:
 		registers := instr.Registers
 		count := len(registers)
@@ -205,6 +211,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *Xor:
 		c.append(arm.XorRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *XorNumber:
+		code, _ := arm.XorRegisterNumber(instr.Destination, instr.Source, instr.Number)
+		c.append(code)
 	default:
 		panic("unknown instruction")
 	}

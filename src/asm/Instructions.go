@@ -44,6 +44,7 @@ type (
 	Multiply               rrr
 	Negate                 rr
 	Or                     rrr
+	OrNumber               rrn
 	Pop                    struct{ Registers []cpu.Register }
 	Push                   struct{ Registers []cpu.Register }
 	Return                 struct{}
@@ -72,4 +73,5 @@ type (
 	StackFrameEnd struct{ FramePointer bool }
 	Syscall       struct{}
 	Xor           rrr
+	XorNumber     rrn
 )

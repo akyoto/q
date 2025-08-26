@@ -230,6 +230,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.OrRegisterRegister(c.code, instr.Destination, instr.Operand)
+	case *OrNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.OrRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Pop:
 		for _, register := range slices.Backward(instr.Registers) {
 			c.code = x86.PopRegister(c.code, register)
@@ -318,6 +324,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.XorRegisterRegister(c.code, instr.Destination, instr.Operand)
+	case *XorNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.XorRegisterNumber(c.code, instr.Destination, instr.Number)
 	default:
 		panic("unknown instruction")
 	}

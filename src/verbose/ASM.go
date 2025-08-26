@@ -164,6 +164,13 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
+		case *asm.OrNumber:
+			mnemonic.Print("  or ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			imm.Print(instr.Number)
 		case *asm.Pop:
 			mnemonic.Print("  pop ")
 			register.Print(instr.Registers)
@@ -241,6 +248,13 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
+		case *asm.XorNumber:
+			mnemonic.Print("  xor ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			imm.Print(instr.Number)
 		default:
 			ansi.Red.Print("  unknown: " + reflect.TypeOf(instr).String())
 		}
