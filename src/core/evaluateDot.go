@@ -11,6 +11,10 @@ import (
 
 // evaluateDot converts a dot expression to an SSA value.
 func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
+	if len(expr.Children) != 2 {
+		return nil, errors.New(InvalidExpression, f.File, expr.Source().StartPos)
+	}
+
 	left := expr.Children[0]
 	right := expr.Children[1]
 	leftText := left.String(f.File.Bytes)
@@ -84,7 +88,13 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return value, nil
 
 	default:
-		field := leftValue.Type().(*types.Pointer).To.(*types.Struct).FieldByName(rightText)
+		pointer, isPointer := leftValue.Type().(*types.Pointer)
+
+		if !isPointer {
+			return nil, errors.New(&NotDataStruct{TypeName: leftValue.Type().Name()}, f.File, left.Source().StartPos)
+		}
+
+		field := pointer.To.(*types.Struct).FieldByName(rightText)
 		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 
 		load := f.Append(&ssa.Load{

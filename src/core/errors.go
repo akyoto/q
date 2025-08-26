@@ -43,6 +43,15 @@ func (err *NoMatchingFunction) Error() string {
 	return fmt.Sprintf("No matching function for call to '%s'", err.Function)
 }
 
+// NotDataStruct is created when accessing field of a non-struct type.
+type NotDataStruct struct {
+	TypeName string
+}
+
+func (err *NotDataStruct) Error() string {
+	return fmt.Sprintf("Type '%s' is not a data structure", err.TypeName)
+}
+
 // ParameterCountMismatch error is created when the number of provided parameters doesn't match the function signature.
 type ParameterCountMismatch struct {
 	Function      string
