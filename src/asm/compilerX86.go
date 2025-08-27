@@ -87,8 +87,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.CompareRegisterNumber(c.code, instr.Destination, instr.Number)
 		}
 	case *Divide:
-		if instr.Operand == x86.R0 {
-			panic("divide operand register cannot be R0")
+		if instr.Operand == x86.R2 {
+			panic("divisor register cannot be R2")
 		}
 
 		if instr.Source != x86.R0 {

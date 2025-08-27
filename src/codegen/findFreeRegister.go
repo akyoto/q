@@ -11,6 +11,18 @@ import (
 // findFreeRegister finds a free register for the given value.
 func (f *Function) findFreeRegister(step *Step) cpu.Register {
 	usedRegisters := 0
+	binaryOp, isBinaryOp := step.Value.(*ssa.BinaryOp)
+
+	if isBinaryOp {
+		switch binaryOp.Op {
+		case token.Add, token.Mul, token.Sub:
+			right := f.ValueToStep[binaryOp.Right]
+
+			if right.Register != -1 {
+				usedRegisters |= (1 << right.Register)
+			}
+		}
+	}
 
 	for _, current := range f.Steps {
 		// These checks need to happen regardless of whether the value is alive after execution.
@@ -19,9 +31,16 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 
 		if isBinaryOp {
 			switch binaryOp.Op {
+			case token.Add, token.Mul, token.Sub:
+				if current.Register != -1 && binaryOp.Right == step.Value {
+					usedRegisters |= (1 << current.Register)
+				}
+
 			case token.Div, token.Mod:
-				for _, reg := range f.CPU.DivisorRestricted {
-					usedRegisters |= (1 << reg)
+				if binaryOp.Right == step.Value {
+					for _, reg := range f.CPU.DivisorRestricted {
+						usedRegisters |= (1 << reg)
+					}
 				}
 
 			case token.Shl, token.Shr:

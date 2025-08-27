@@ -34,11 +34,11 @@ func TestAssembler(t *testing.T) {
 	b.Append(&asm.Add{Destination: 0, Source: 1, Operand: 2})
 	b.Append(&asm.Subtract{Destination: 0, Source: 1, Operand: 2})
 	b.Append(&asm.Multiply{Destination: 0, Source: 1, Operand: 2})
-	b.Append(&asm.Divide{Destination: 0, Source: 1, Operand: 2})
+	b.Append(&asm.Divide{Destination: 0, Source: 1, Operand: 3})
 	b.Append(&asm.Add{Destination: 1, Source: 1, Operand: 2})
 	b.Append(&asm.Subtract{Destination: 1, Source: 1, Operand: 2})
 	b.Append(&asm.Multiply{Destination: 1, Source: 1, Operand: 2})
-	b.Append(&asm.Divide{Destination: 1, Source: 1, Operand: 2})
+	b.Append(&asm.Divide{Destination: 1, Source: 1, Operand: 3})
 	b.Append(&asm.Return{})
 
 	c := &asm.Assembler{}

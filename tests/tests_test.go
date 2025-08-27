@@ -45,6 +45,7 @@ var tests = []run{
 	{"phi", "", "", 0},
 	{"phi-simple", "", "", 0},
 	{"phi-advanced", "", "", 0},
+	{"register-restrictions", "", "", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"escape", "", "a\tb\nc\td\n", 0},
 	{"script", "", "Hello\n", 0},
