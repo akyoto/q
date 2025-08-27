@@ -9,7 +9,7 @@ import (
 type Step struct {
 	Value    ssa.Value
 	Block    *ssa.Block
-	Phi      *Step
+	Phis     []*Step
 	Live     []*Step
 	Hints    []cpu.Register
 	Index    int
