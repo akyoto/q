@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/cpu"
+	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -9,7 +10,7 @@ import (
 type Step struct {
 	Value    ssa.Value
 	Block    *ssa.Block
-	Phis     []*Step
+	Phis     set.Ordered[*Step]
 	Live     []*Step
 	Hints    []cpu.Register
 	Index    int

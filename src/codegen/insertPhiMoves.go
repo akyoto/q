@@ -11,7 +11,7 @@ import (
 // It must be called right before a Jump instruction.
 func (f *Function) insertPhiMoves(step *Step) {
 	for _, live := range step.Live {
-		for _, phi := range live.Phis {
+		for phi := range live.Phis.All() {
 			if live.Register == phi.Register {
 				continue
 			}

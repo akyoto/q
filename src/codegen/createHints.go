@@ -56,7 +56,7 @@ func (f *Function) createHints(step *Step) {
 	case *ssa.Phi:
 		for _, variant := range instr.Arguments {
 			variant := f.ValueToStep[variant]
-			variant.Phis = append(variant.Phis, step)
+			variant.Phis.Add(step)
 
 			if step.Register != -1 {
 				variant.hint(step.Register)
