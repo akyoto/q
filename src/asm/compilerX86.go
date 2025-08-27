@@ -18,6 +18,10 @@ type compilerX86 struct {
 func (c *compilerX86) Compile(instr Instruction) {
 	switch instr := instr.(type) {
 	case *Add:
+		if instr.Destination == instr.Operand {
+			panic("add destination register cannot be equal to the operand register")
+		}
+
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
@@ -83,6 +87,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.CompareRegisterNumber(c.code, instr.Destination, instr.Number)
 		}
 	case *Divide:
+		if instr.Operand == x86.R0 {
+			panic("divide operand register cannot be R0")
+		}
+
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
@@ -183,6 +191,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
 		}
 	case *Modulo:
+		if instr.Operand == x86.R0 {
+			panic("modulo operand register cannot be R0")
+		}
+
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
@@ -213,6 +225,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *MoveNumber:
 		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Multiply:
+		if instr.Destination == instr.Operand {
+			panic("multiply destination register cannot be equal to the operand register")
+		}
+
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
@@ -287,6 +303,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		c.code = x86.ShiftRightSignedNumber(c.code, instr.Destination, byte(instr.Number))
 	case *Subtract:
+		if instr.Destination == instr.Operand {
+			panic("subtract destination register cannot be equal to the operand register")
+		}
+
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}

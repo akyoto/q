@@ -126,7 +126,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.LoadDynamicRegister(instr.Destination, instr.Base, arm.Offset, instr.Index, instr.Length))
 	case *Modulo:
 		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
-			panic("modulo operation needs a separate destination register")
+			panic("modulo destination register cannot be equal to the source or operand register")
 		}
 
 		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
