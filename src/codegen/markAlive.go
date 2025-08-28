@@ -20,8 +20,9 @@ func (f *Function) markAlive(live *Step, instructions []ssa.Value, block *ssa.Bl
 
 		if live.Value == current {
 			_, isParam := current.(*ssa.Parameter)
+			_, isPhi := current.(*ssa.Phi)
 
-			if !isParam {
+			if !isParam && !isPhi {
 				return
 			}
 		}

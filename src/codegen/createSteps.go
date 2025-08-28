@@ -38,14 +38,16 @@ func (f *Function) createSteps(ir ssa.IR) {
 	}
 
 	for _, step := range slices.Backward(f.Steps) {
-		f.createHints(step)
+		f.hintABI(step)
 		f.createLiveRanges(step)
 	}
 
-	for _, step := range f.Steps {
+	for _, step := range slices.Backward(f.Steps) {
 		if step.Register == -1 && f.needsRegister(step) {
 			f.assignFreeRegister(step)
 		}
+
+		f.hintDestination(step)
 	}
 
 	f.reorderParameters()
