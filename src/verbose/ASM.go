@@ -186,6 +186,13 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
+		case *asm.ShiftLeftNumber:
+			mnemonic.Print("  shift << ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			imm.Print(instr.Number)
 		case *asm.ShiftRightSigned:
 			mnemonic.Print("  shift >> ")
 			register.Print(instr.Destination)
@@ -193,6 +200,13 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
+		case *asm.ShiftRightSignedNumber:
+			mnemonic.Print("  shift >> ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			imm.Print(instr.Number)
 		case *asm.Store:
 			mnemonic.Printf("  store %db ", instr.Length)
 			other.Print("[")
