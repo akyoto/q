@@ -37,8 +37,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		}
 
 		beforeLoop.Identify(name, fromValue)
-		beforeLoop.AddSuccessor(loopHead)
-		beforeLoop.Append(&ssa.Jump{To: loopHead})
+		f.jump(loopHead)
 
 		// Loop starts, this is the jump target for new iterations.
 		// The upper limit is recalculated on every iteration.
@@ -87,8 +86,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 
 		f.Block().Identify(name, nextIteration)
 	} else {
-		beforeLoop.Append(&ssa.Jump{To: loopHead})
-		beforeLoop.AddSuccessor(loopHead)
+		f.jump(loopHead)
 		f.AddBlock(loopHead)
 
 		// For infinite loops, there are no conditions to check,
@@ -101,8 +99,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 	}
 
 	// Jump back to the loop head.
-	f.Append(&ssa.Jump{To: loopHead})
-	f.Block().AddSuccessor(loopHead)
+	f.jump(loopHead)
 
 	// The initial compilation of the loop body does not know
 	// that the code is repeated in a loop. Therefore, we need

@@ -19,8 +19,7 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 				return err
 			}
 
-			f.Block().AddSuccessor(exitBlock)
-			f.Append(&ssa.Jump{To: exitBlock})
+			f.jump(exitBlock)
 			f.AddBlock(exitBlock)
 			break
 		}
@@ -53,8 +52,7 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 			return err
 		}
 
-		f.Block().Append(&ssa.Jump{To: exitBlock})
-		f.Block().AddSuccessor(exitBlock)
+		f.jump(exitBlock)
 		f.AddBlock(elseBlock)
 	}
 

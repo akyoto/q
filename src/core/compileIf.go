@@ -31,12 +31,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		_, isReturn := f.Block().Last().(*ssa.Return)
-
-		if !isReturn {
-			f.Block().AddSuccessor(exitBlock)
-			f.Append(&ssa.Jump{To: exitBlock})
-		}
+		f.jump(exitBlock)
 	} else {
 		elseLabel := f.CreateLabel("if.else", f.Count.Branch)
 		elseBlock := ssa.NewBlock(elseLabel)
@@ -55,12 +50,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		_, isReturn := f.Block().Last().(*ssa.Return)
-
-		if !isReturn {
-			f.Block().AddSuccessor(exitBlock)
-			f.Append(&ssa.Jump{To: exitBlock})
-		}
+		f.jump(exitBlock)
 
 		// Append the if.else block
 		f.AddBlock(elseBlock)
@@ -70,8 +60,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		f.Block().AddSuccessor(exitBlock)
-		f.Append(&ssa.Jump{To: exitBlock})
+		f.jump(exitBlock)
 	}
 
 	f.AddBlock(exitBlock)
