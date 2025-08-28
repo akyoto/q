@@ -10,6 +10,8 @@ import (
 // from their current register to the Phi target register.
 // It must be called right before a Jump instruction.
 func (f *Function) insertPhiMoves(step *Step) {
+	start := len(f.Assembler.Instructions)
+
 	for _, live := range step.Live {
 		for phi := range live.Phis.All() {
 			if live.Register == phi.Register {
@@ -26,4 +28,8 @@ func (f *Function) insertPhiMoves(step *Step) {
 			})
 		}
 	}
+
+	end := len(f.Assembler.Instructions)
+	moves := f.Assembler.Instructions[start:end]
+	reorderPhiMoves(moves)
 }
