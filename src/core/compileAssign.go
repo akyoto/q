@@ -39,6 +39,8 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 
 		if isResource {
 			f.Block().Unidentify(rightValue)
+		} else {
+			rightValue = f.copy(rightValue, right.Source())
 		}
 	}
 

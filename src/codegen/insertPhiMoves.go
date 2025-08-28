@@ -1,8 +1,6 @@
 package codegen
 
 import (
-	"slices"
-
 	"git.urbach.dev/cli/q/src/asm"
 )
 
@@ -13,12 +11,12 @@ func (f *Function) insertPhiMoves(step *Step) {
 	start := len(f.Assembler.Instructions)
 
 	for _, live := range step.Live {
+		if live.Block != step.Block {
+			continue
+		}
+
 		for phi := range live.Phis.All() {
 			if live.Register == phi.Register {
-				continue
-			}
-
-			if !slices.Contains(phi.Block.Predecessors, step.Block) {
 				continue
 			}
 
