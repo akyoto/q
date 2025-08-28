@@ -38,10 +38,12 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 			return value, nil
 		}
 
-		_, exists = f.Env.Packages[name]
+		if name != f.File.Package {
+			_, exists := f.Env.Packages[name]
 
-		if exists {
-			return &ssa.Package{Name: name}, nil
+			if exists {
+				return &ssa.Package{Name: name}, nil
+			}
 		}
 
 		return f.evaluateDotPackage(f.Env.Packages[f.File.Package], name, expr)
