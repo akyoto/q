@@ -3,6 +3,7 @@ package codegen
 import (
 	"slices"
 
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -13,9 +14,22 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 	usedRegisters := 0
 	binaryOp, isBinaryOp := step.Value.(*ssa.BinaryOp)
 
-	if isBinaryOp {
-		switch binaryOp.Op {
-		case token.Add, token.Mul, token.Sub:
+	if isBinaryOp && !binaryOp.Op.IsComparison() {
+		switch f.build.Arch {
+		case config.ARM:
+			if binaryOp.Op == token.Mod {
+				left := f.ValueToStep[binaryOp.Left]
+				right := f.ValueToStep[binaryOp.Right]
+
+				if left.Register != -1 {
+					usedRegisters |= (1 << left.Register)
+				}
+
+				if right.Register != -1 {
+					usedRegisters |= (1 << right.Register)
+				}
+			}
+		case config.X86:
 			right := f.ValueToStep[binaryOp.Right]
 
 			if right.Register != -1 {
@@ -29,13 +43,25 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 		// If it is used as an operand, the operand restrictions of the architecture apply.
 		binaryOp, isBinaryOp := current.Value.(*ssa.BinaryOp)
 
-		if isBinaryOp {
-			switch binaryOp.Op {
-			case token.Add, token.Mul, token.Sub:
+		if isBinaryOp && !binaryOp.Op.IsComparison() {
+			switch f.build.Arch {
+			case config.ARM:
+				if current.Register != -1 && binaryOp.Op == token.Mod {
+					if binaryOp.Left == step.Value {
+						usedRegisters |= (1 << current.Register)
+					}
+
+					if binaryOp.Right == step.Value {
+						usedRegisters |= (1 << current.Register)
+					}
+				}
+			case config.X86:
 				if current.Register != -1 && binaryOp.Right == step.Value {
 					usedRegisters |= (1 << current.Register)
 				}
+			}
 
+			switch binaryOp.Op {
 			case token.Div, token.Mod:
 				if binaryOp.Right == step.Value {
 					for _, reg := range f.CPU.DivisorRestricted {

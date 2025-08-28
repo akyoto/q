@@ -267,6 +267,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 			panic("shift destination cannot be R1")
 		}
 
+		if instr.Destination == instr.Operand {
+			panic("shift destination register cannot be equal to the operand register")
+		}
+
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 		}
@@ -285,6 +289,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *ShiftRightSigned:
 		if instr.Destination == x86.R1 {
 			panic("shift destination cannot be R1")
+		}
+
+		if instr.Destination == instr.Operand {
+			panic("shift destination register cannot be equal to the operand register")
 		}
 
 		if instr.Destination != instr.Source {
