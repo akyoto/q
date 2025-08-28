@@ -267,10 +267,10 @@ Recursive Fibonacci benchmark (`n = 35`):
 
 |                   | arm64                | x86-64               |
 | ----------------- | -------------------- | -------------------- |
-| C (-O3, gcc 15)   | **41.4 ms** ± 1.4 ms | **26.2 ms** ± 4.1 ms |
-| Q (2025-08-20)    | **54.2 ms** ± 1.6 ms | **37.3 ms** ± 2.9 ms |
-| Go (1.25, new GC) | **57.7 ms** ± 1.4 ms | **38.1 ms** ± 7.7 ms |
-| C (-O0, gcc 15)   | **66.4 ms** ± 1.5 ms | **52.3 ms** ± 5.2 ms |
+| C (-O3, gcc 15)   | **41.4 ms** ± 1.4 ms | **24.5 ms** ± 3.2 ms |
+| Q (2025-08-20)    | **54.2 ms** ± 1.6 ms | **34.8 ms** ± 2.3 ms |
+| Go (1.25, new GC) | **57.7 ms** ± 1.4 ms | **37.9 ms** ± 6.9 ms |
+| C (-O0, gcc 15)   | **66.4 ms** ± 1.5 ms | **47.8 ms** ± 4.4 ms |
 
 While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance boost as this work progresses.
 
