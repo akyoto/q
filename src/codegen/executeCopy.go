@@ -10,8 +10,14 @@ func (f *Function) executeCopy(step *Step, instr *ssa.Copy) {
 		return
 	}
 
+	copy := f.ValueToStep[instr.Value]
+
+	if step.Register == copy.Register {
+		return
+	}
+
 	f.Assembler.Append(&asm.Move{
 		Destination: step.Register,
-		Source:      f.ValueToStep[instr.Value].Register,
+		Source:      copy.Register,
 	})
 }
