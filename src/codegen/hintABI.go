@@ -33,6 +33,19 @@ func (f *Function) hintABI(step *Step) {
 		if step.Register == -1 {
 			step.Register = f.CPU.Call.In[instr.Index]
 		}
+
+		for _, user := range step.Value.Users() {
+			switch user := user.(type) {
+			case *ssa.BinaryOp:
+				if !user.Op.IsComparison() && user.Left == step.Value {
+					f.ValueToStep[user].hint(step.Register)
+				}
+			case *ssa.Phi:
+				f.ValueToStep[user].hint(step.Register)
+			case *ssa.UnaryOp:
+				f.ValueToStep[user].hint(step.Register)
+			}
+		}
 	case *ssa.Return:
 		for r, param := range instr.Arguments {
 			f.ValueToStep[param].hint(f.CPU.Call.Out[r])
