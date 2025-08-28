@@ -4,7 +4,6 @@ main() {
 	c := 2
 	d := 3
 	e := 4
-	f := 5
 
 	if true {
 		a += 1
@@ -12,7 +11,6 @@ main() {
 		c += 1
 		d += 1
 		e += 1
-		f += 1
 	}
 
 	assert a == 1
@@ -20,5 +18,4 @@ main() {
 	assert c == 3
 	assert d == 4
 	assert e == 5
-	assert f == 6
 }

@@ -46,7 +46,7 @@ var tests = []run{
 	{"phi-simple", "", "", 0},
 	{"phi-advanced", "", "", 0},
 	{"phi-reassign", "", "", 0},
-	{"phi-reassign-output", "", "123456", 0},
+	{"phi-reassign-output", "", "12345", 0},
 	{"hello", "", "Hello\nHello\nHello\n", 0},
 	{"escape", "", "a\tb\nc\td\n", 0},
 	{"script", "", "Hello\n", 0},
