@@ -15,24 +15,9 @@ func (f *Function) GenerateAssembly(ir ssa.IR, build *config.Build, hasStackFram
 	f.build = build
 	f.CPU = selectCPU(build)
 
-	// Transform SSA graph to a flat slice of steps we have to execute.
+	// Transform SSA graph to a flat slice of steps we can execute one by one.
 	f.createSteps(ir)
 
-	// Execute all steps.
-	f.enter()
-
-	for _, step := range f.Steps {
-		f.exec(step)
-	}
-
-	if len(f.Steps) == 0 {
-		f.leave()
-		return
-	}
-
-	_, lastIsReturn := f.Steps[len(f.Steps)-1].Value.(*ssa.Return)
-
-	if !lastIsReturn {
-		f.leave()
-	}
+	// Execute all steps to produce assembly code.
+	f.generate()
 }
