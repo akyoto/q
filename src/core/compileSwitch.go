@@ -25,12 +25,12 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 		}
 
 		f.Count.Branch++
-		thenLabel := f.CreateLabel("if.then", f.Count.Branch)
+		thenLabel := f.CreateLabel("case.then", f.Count.Branch)
 		thenBlock := ssa.NewBlock(thenLabel)
 		var elseBlock *ssa.Block
 
 		if i < len(s.Cases)-1 {
-			elseLabel := f.CreateLabel("if.else", f.Count.Branch)
+			elseLabel := f.CreateLabel("case.else", f.Count.Branch)
 			elseBlock = ssa.NewBlock(elseLabel)
 		} else {
 			elseBlock = exitBlock
