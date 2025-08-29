@@ -26,6 +26,10 @@ func (f *Function) reorderPhis() {
 				return aIndex - bIndex
 			})
 
+			for i, phi := range phis {
+				phi.Index = start + i
+			}
+
 			start = -1
 		}
 	}
