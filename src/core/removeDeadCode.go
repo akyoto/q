@@ -17,6 +17,13 @@ func (f *Function) removeDeadCode() error {
 				continue
 			}
 
+			_, isPhi := value.(*ssa.Phi)
+
+			if isPhi {
+				block.RemoveAt(i)
+				continue
+			}
+
 			structField, isFieldOfStruct := value.(ssa.StructField)
 
 			if isFieldOfStruct && structField.Struct() != nil {

@@ -23,6 +23,14 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 	name := left.String(f.File.Bytes)
 	leftValue, exists := f.Block().FindIdentifier(name)
 
+	if exists {
+		phi, isPhi := leftValue.(*ssa.Phi)
+
+		if isPhi && phi.IsPartiallyUndefined() {
+			return errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
+		}
+	}
+
 	if !exists {
 		return errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
 	}

@@ -13,6 +13,12 @@ func (f *Function) needsRegister(s *Step) bool {
 		return false
 	}
 
+	_, isPhi := s.Value.(*ssa.Phi)
+
+	if isPhi {
+		return true
+	}
+
 	_, isStruct := typ.(*types.Struct)
 
 	if isStruct {

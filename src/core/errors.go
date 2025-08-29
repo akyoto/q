@@ -76,6 +76,15 @@ func (err *ResourceNotConsumed) Error() string {
 	return fmt.Sprintf("Resource of type '%s' not consumed", err.TypeName)
 }
 
+// ResourcePartiallyConsumed error is created when a resource has only partially been consumed in an exit block.
+type ResourcePartiallyConsumed struct {
+	TypeName string
+}
+
+func (err *ResourcePartiallyConsumed) Error() string {
+	return fmt.Sprintf("Resource of type '%s' not consumed in all branches", err.TypeName)
+}
+
 // ReturnCountMismatch error is created when the number of returned values doesn't match the return type.
 type ReturnCountMismatch struct {
 	Count         int
@@ -133,6 +142,15 @@ func (err *UnknownIdentifier) Error() string {
 	}
 
 	return fmt.Sprintf("Unknown identifier '%s'", err.Name)
+}
+
+// PartiallyUnknownIdentifier represents identifiers that were only defined in one branch.
+type PartiallyUnknownIdentifier struct {
+	Name string
+}
+
+func (err *PartiallyUnknownIdentifier) Error() string {
+	return fmt.Sprintf("Identifier '%s' is not defined in every branch", err.Name)
 }
 
 // UndefinedStructField is created when an undefined struct field is accessed.

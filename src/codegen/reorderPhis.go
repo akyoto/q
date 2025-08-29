@@ -21,8 +21,8 @@ func (f *Function) reorderPhis() {
 			phis := f.Steps[start:end]
 
 			slices.SortStableFunc(phis, func(a *Step, b *Step) int {
-				aIndex := f.ValueToStep[a.Value.(*ssa.Phi).Arguments[0]].Index
-				bIndex := f.ValueToStep[b.Value.(*ssa.Phi).Arguments[0]].Index
+				aIndex := f.ValueToStep[a.Value.(*ssa.Phi).FirstDefined()].Index
+				bIndex := f.ValueToStep[b.Value.(*ssa.Phi).FirstDefined()].Index
 				return aIndex - bIndex
 			})
 

@@ -20,7 +20,7 @@ func (f *Function) hintDestination(step *Step) {
 		// as the register for the left operand.
 		f.ValueToStep[instr.Left].hint(step.Register)
 	case *ssa.Phi:
-		for _, variant := range instr.Arguments {
+		for variant := range instr.DefinedArguments {
 			variant := f.ValueToStep[variant]
 			variant.Phis.Add(step)
 			variant.hint(step.Register)

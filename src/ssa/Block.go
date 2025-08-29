@@ -40,35 +40,62 @@ func (b *Block) AddSuccessor(successor *Block) {
 		}
 	}
 
-	for name, oldValue := range successor.Identifiers {
-		newValue, exists := b.Identifiers[name]
+	keys := make(map[string]struct{}, max(len(b.Identifiers), len(successor.Identifiers)))
 
-		if !exists {
-			delete(successor.Identifiers, name)
-			continue
-		}
+	for name := range successor.Identifiers {
+		keys[name] = struct{}{}
+	}
 
-		if oldValue == newValue {
-			continue
-		}
+	for name := range b.Identifiers {
+		keys[name] = struct{}{}
+	}
 
-		phi, isPhi := oldValue.(*Phi)
+	for name := range keys {
+		oldValue, oldExists := successor.Identifiers[name]
+		newValue, newExists := b.Identifiers[name]
 
-		if !isPhi || successor.Index(phi) == -1 {
-			phi = &Phi{
+		switch {
+		case oldExists:
+			if oldValue == newValue {
+				continue
+			}
+
+			phi, isPhi := oldValue.(*Phi)
+
+			if !isPhi || successor.Index(phi) == -1 {
+				phi = &Phi{
+					Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
+					Typ:       oldValue.Type(),
+				}
+
+				for i := range phi.Arguments {
+					phi.Arguments[i] = oldValue
+				}
+
+				successor.InsertAt(phi, 0)
+				successor.Identifiers[name] = phi
+			}
+
+			if newExists {
+				phi.Arguments = append(phi.Arguments, newValue)
+			} else {
+				phi.Arguments = append(phi.Arguments, Undefined)
+			}
+
+		case newExists:
+			phi := &Phi{
 				Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
-				Typ:       oldValue.Type(),
+				Typ:       newValue.Type(),
 			}
 
 			for i := range phi.Arguments {
-				phi.Arguments[i] = oldValue
+				phi.Arguments[i] = Undefined
 			}
 
 			successor.InsertAt(phi, 0)
 			successor.Identifiers[name] = phi
+			phi.Arguments = append(phi.Arguments, newValue)
 		}
-
-		phi.Arguments = append(phi.Arguments, newValue)
 	}
 }
 

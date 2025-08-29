@@ -26,6 +26,12 @@ func (f *Function) checkResources() error {
 				continue
 			}
 
+			phi, isPhi := value.(*ssa.Phi)
+
+			if isPhi && phi.IsPartiallyUndefined() {
+				return errors.New(&ResourcePartiallyConsumed{TypeName: resource.Name()}, f.File, phi.FirstDefined().(ssa.HasSource).Start())
+			}
+
 			return errors.New(&ResourceNotConsumed{TypeName: resource.Name()}, f.File, value.(ssa.HasSource).Start())
 		}
 	}

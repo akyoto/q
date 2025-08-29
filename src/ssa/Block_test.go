@@ -150,8 +150,12 @@ func TestBlockFindIdentifier(t *testing.T) {
 	_, exists = elseBlock.FindIdentifier("then")
 	assert.False(t, exists)
 
-	_, exists = mergeBlock.FindIdentifier("then")
-	assert.False(t, exists)
+	partial, exists := mergeBlock.FindIdentifier("then")
+	assert.True(t, exists)
+	phi, isPhi := partial.(*ssa.Phi)
+	assert.True(t, isPhi)
+	assert.True(t, phi.IsPartiallyUndefined())
+	assert.Equal(t, phi.FirstDefined(), value)
 
 	// Else
 	_, exists = branch.FindIdentifier("else")
@@ -164,8 +168,12 @@ func TestBlockFindIdentifier(t *testing.T) {
 	assert.True(t, exists)
 	assert.Equal(t, value, elseValue)
 
-	_, exists = mergeBlock.FindIdentifier("else")
-	assert.False(t, exists)
+	partial, exists = mergeBlock.FindIdentifier("else")
+	assert.True(t, exists)
+	phi, isPhi = partial.(*ssa.Phi)
+	assert.True(t, isPhi)
+	assert.True(t, phi.IsPartiallyUndefined())
+	assert.Equal(t, phi.FirstDefined(), value)
 
 	// Merge
 	_, exists = branch.FindIdentifier("merge")
@@ -184,7 +192,7 @@ func TestBlockFindIdentifier(t *testing.T) {
 	// Phi
 	value, exists = mergeBlock.FindIdentifier("x")
 	assert.True(t, exists)
-	phi, isPhi := value.(*ssa.Phi)
+	phi, isPhi = value.(*ssa.Phi)
 	assert.True(t, isPhi)
 	assert.Equal(t, phi.Arguments[0], thenValue)
 	assert.Equal(t, phi.Arguments[1], elseValue)

@@ -1,5 +1,5 @@
 main() {
-	if 0 == 0 {
+	if true {
 		x := 1
 	}
 
