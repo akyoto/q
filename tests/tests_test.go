@@ -80,6 +80,7 @@ var tests = []run{
 	{"return-string", "", "Hello\n", 0},
 	{"ignore-unused-field", "", "", 0},
 	{"slice", "", "Hello World", 0},
+	{"string-equal", "", "", 0},
 	{"reorder-add", "", "", 0},
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
