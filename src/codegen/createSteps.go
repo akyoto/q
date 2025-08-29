@@ -37,6 +37,8 @@ func (f *Function) createSteps(ir ssa.IR) {
 		}
 	}
 
+	f.reorderPhis()
+
 	for _, step := range slices.Backward(f.Steps) {
 		f.hintABI(step)
 		f.createLiveRanges(step)
