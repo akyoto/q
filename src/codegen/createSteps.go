@@ -12,6 +12,7 @@ func (f *Function) createSteps(ir ssa.IR) {
 	storage := make([]Step, count)
 	f.Steps = make([]*Step, count)
 	f.ValueToStep = make(map[ssa.Value]*Step, count)
+	f.BlockToRegion = make(map[*ssa.Block]region, len(ir.Blocks))
 	i := 0
 
 	for _, block := range ir.Blocks {
@@ -23,6 +24,11 @@ func (f *Function) createSteps(ir ssa.IR) {
 			step.Register = -1
 			f.Steps[i] = step
 			i++
+		}
+
+		f.BlockToRegion[block] = region{
+			Start: uint32(i),
+			End:   uint32(i + len(block.Instructions)),
 		}
 
 		for _, instr := range block.Instructions {

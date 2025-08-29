@@ -14,6 +14,7 @@ type Function struct {
 	Assembler         asm.Assembler
 	Steps             []*Step
 	ValueToStep       map[ssa.Value]*Step
+	BlockToRegion     map[*ssa.Block]region
 	CPU               *cpu.CPU
 	Preserved         set.Ordered[cpu.Register]
 	Count             count
