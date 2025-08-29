@@ -17,11 +17,15 @@ func (f *Function) removeDeadCode() error {
 				continue
 			}
 
-			_, isPhi := value.(*ssa.Phi)
+			phi, isPhi := value.(*ssa.Phi)
 
 			if isPhi {
-				block.RemoveAt(i)
-				continue
+				if phi.IsPartiallyUndefined() {
+					block.RemoveAt(i)
+					continue
+				}
+
+				value = phi.FirstDefined()
 			}
 
 			structField, isFieldOfStruct := value.(ssa.StructField)
