@@ -27,6 +27,10 @@ func (test *run) Run(t *testing.T, path string) {
 		env, err := compiler.Compile(build)
 		assert.Nil(t, err)
 
+		if test.ExitCode == -1 {
+			return
+		}
+
 		tmpDir := filepath.Join(os.TempDir(), "q", "tests")
 		err = os.MkdirAll(tmpDir, 0o755)
 		assert.Nil(t, err)
