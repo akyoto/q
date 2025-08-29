@@ -46,8 +46,14 @@ func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step) {
 	}
 
 	for _, pre := range block.Predecessors {
-		if pre.CanReachPredecessor(live.Block) {
-			f.markAlive(live, pre, use)
+		if pre == block {
+			continue
 		}
+
+		if !pre.CanReachPredecessor(live.Block) {
+			continue
+		}
+
+		f.markAlive(live, pre, use)
 	}
 }
