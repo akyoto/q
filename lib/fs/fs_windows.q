@@ -1,5 +1,7 @@
 open(path *byte, _flags int, _mode int) -> !int {
-	return kernel32.CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+	fd := kernel32.CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+	assert fd != -1
+	return fd
 }
 
 size(fd int) -> int {

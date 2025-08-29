@@ -1,5 +1,7 @@
 open(path *byte, flags int, mode int) -> !int {
-	return syscall(_openat, -100, path, flags, mode)
+	fd := syscall(_openat, -100, path, flags, mode)
+	assert fd >= 0
+	return fd
 }
 
 size(fd int) -> int {
