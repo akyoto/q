@@ -58,6 +58,19 @@ func TestSplitGroups(t *testing.T) {
 	assert.DeepEqual(t, parameters, []string{"f(1,2)", "g(3,4)"})
 }
 
+func TestSplitGroupsTrail(t *testing.T) {
+	src := []byte("f(1,2),")
+	tokens := token.Tokenize(src)
+	tokens = tokens[:len(tokens)-1]
+	parameters := []string{}
+
+	for _, param := range tokens.Split {
+		parameters = append(parameters, param.String(src))
+	}
+
+	assert.DeepEqual(t, parameters, []string{"f(1,2)", ""})
+}
+
 func TestSplitSingle(t *testing.T) {
 	src := []byte("123")
 	tokens := token.Tokenize(src)

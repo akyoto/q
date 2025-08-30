@@ -3,7 +3,6 @@ package ssa
 import (
 	"fmt"
 
-	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -55,7 +54,7 @@ func (op *BinaryOp) Replace(old Value, new Value) {
 
 // String returns a human-readable representation of the binary operation.
 func (op *BinaryOp) String() string {
-	return fmt.Sprintf("%p %s %p", op.Left, expression.Operators[op.Op].Symbol, op.Right)
+	return fmt.Sprintf("%p %s %p", op.Left, op.Op, op.Right)
 }
 
 // Type returns the type of the result of the binary operation.

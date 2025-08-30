@@ -71,6 +71,10 @@ func (list List) Split(yield func(Position, List) bool) {
 
 // String returns the concatenated token strings.
 func (list List) String(source []byte) string {
+	if len(list) == 0 {
+		return ""
+	}
+
 	start := list[0].Position
 	end := list[len(list)-1].End()
 	return unsafe.String(unsafe.SliceData(source[start:end]), end-start)

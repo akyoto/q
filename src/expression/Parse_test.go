@@ -101,6 +101,7 @@ func TestParse(t *testing.T) {
 		{"Function calls 25", "a(1-2*3)", "(λ a (- 1 (* 2 3)))"},
 		{"Function calls 26", "1+2*a()+4", "(+ (+ 1 (* 2 (λ a))) 4)"},
 		{"Function calls 27", "a(b,c)*2+15*4", "(+ (* (λ a b c) 2) (* 15 4))"},
+		{"Function calls 28", "a(,)", "(λ a  )"},
 
 		{"Package function calls", "a.b(c)", "(λ (. a b) c)"},
 		{"Package function calls 2", "a.b(c,d)", "(λ (. a b) c d)"},

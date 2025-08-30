@@ -17,11 +17,11 @@ func (expr *Expression) write(builder *strings.Builder, source []byte) {
 
 	switch expr.Token.Kind {
 	case token.Call:
-		builder.WriteString(Operators[token.Call].Symbol)
+		builder.WriteString(token.Call.String())
 	case token.Array:
-		builder.WriteString(Operators[token.Array].Symbol)
+		builder.WriteString(token.Array.String())
 	case token.Struct:
-		builder.WriteString(Operators[token.Struct].Symbol)
+		builder.WriteString(token.Struct.String())
 	default:
 		builder.WriteString(expr.Token.String(source))
 	}

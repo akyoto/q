@@ -3,7 +3,6 @@ package ssa
 import (
 	"fmt"
 
-	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -46,7 +45,7 @@ func (u *UnaryOp) Replace(old Value, new Value) {
 
 // String returns a human-readable representation of the unary operation.
 func (u *UnaryOp) String() string {
-	return fmt.Sprintf("%s(%s)", expression.Operators[u.Op].Symbol, u.Operand)
+	return fmt.Sprintf("%s(%s)", u.Op, u.Operand)
 }
 
 // Type returns the type of the operand.
