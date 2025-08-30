@@ -19,6 +19,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 		}
 
 		for i, input := range f.Input {
+			input.Name = input.Tokens[0].String(f.File.Bytes)
 			input.Typ = core.ParseType(input.Tokens[1:], f.File.Bytes, env)
 
 			if input.Typ == nil {
@@ -33,6 +34,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 
 			if len(output.Tokens) > 1 && output.Tokens[0].Kind == token.Identifier {
 				output.Name = output.Tokens[0].String(f.File.Bytes)
+				output.Source.EndPos = output.Tokens[0].End()
 				typeTokens = typeTokens[1:]
 			}
 

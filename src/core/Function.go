@@ -27,6 +27,22 @@ type Function struct {
 	codegen.Function
 }
 
+// AddInput adds an input parameter.
+func (f *Function) AddInput(tokens token.List, source token.Source) {
+	f.Input = append(f.Input, &ssa.Parameter{
+		Tokens: tokens,
+		Source: source,
+	})
+}
+
+// AddOutput adds an output parameter.
+func (f *Function) AddOutput(tokens token.List, source token.Source) {
+	f.Output = append(f.Output, &ssa.Parameter{
+		Tokens: tokens,
+		Source: source,
+	})
+}
+
 // IsExtern returns true if the function has no body.
 func (f *Function) IsExtern() bool {
 	return f.Body == nil

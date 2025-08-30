@@ -4,7 +4,6 @@ import (
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
-	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
 
@@ -96,14 +95,10 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 		}
 
 		if param[0].Kind != token.Identifier {
-			return nil, i, errors.New(InvalidParameterName, file, param[0].Position)
+			return nil, i, errors.New(InvalidParameterName, file, position)
 		}
 
-		function.Input = append(function.Input, &ssa.Parameter{
-			Name:   param[0].String(file.Bytes),
-			Tokens: param,
-			Source: token.Source{StartPos: param[0].Position, EndPos: param[0].End()},
-		})
+		function.AddInput(param, token.Source{StartPos: position, EndPos: param[0].End()})
 	}
 
 	if outputStart == -1 {
@@ -130,7 +125,7 @@ func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimite
 			return nil, i, errors.New(MissingParameter, file, position)
 		}
 
-		function.Output = append(function.Output, &ssa.Parameter{Tokens: param})
+		function.AddOutput(param, token.Source{StartPos: position, EndPos: param[len(param)-1].End()})
 	}
 
 	return function, i, nil
