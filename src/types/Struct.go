@@ -1,10 +1,8 @@
 package types
 
-import "git.urbach.dev/cli/q/src/fs"
-
 // Struct is a structure in memory whose regions are addressable with named fields.
 type Struct struct {
-	File       *fs.File
+	File       any
 	Package    string
 	UniqueName string
 	name       string
@@ -12,7 +10,7 @@ type Struct struct {
 }
 
 // NewStruct creates a new struct.
-func NewStruct(file *fs.File, pkg string, name string) *Struct {
+func NewStruct(file any, pkg string, name string) *Struct {
 	return &Struct{
 		File:       file,
 		Package:    pkg,
