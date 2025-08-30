@@ -33,11 +33,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		close(s.errors)
 	}()
 
-	env := &core.Environment{
-		Build:    build,
-		Files:    make([]*fs.File, 0, 8),
-		Packages: make(map[string]*core.Package, 8),
-	}
+	env := core.NewEnvironment(build)
 
 	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.errors != nil {
 		select {
