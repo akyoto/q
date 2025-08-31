@@ -65,18 +65,6 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return nil, errors.New(InvalidCallExpression, f.File, identifier.Source().StartPos)
 	}
 
-	// pkg := f.Env.Packages[ssaFunc.Package]
-	// funcName := ssaFunc.Name
-	// funcName, _, _ = strings.Cut(funcName, "[")
-	// generic := pkg.Functions[funcName]
-	// var fn *Function
-
-	// for variant := range generic.Variants {
-	// 	if variant.Name == ssaFunc.Name {
-	// 		fn = variant
-	// 		break
-	// 	}
-	// }
 	fn := ssaFunc.FunctionRef.(*Function)
 	inputExpressions := expr.Children[1:]
 	args, err := f.decompose(inputExpressions, fn.Input, false)
