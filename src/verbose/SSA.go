@@ -37,7 +37,7 @@ func SSA(root *core.Function) {
 			_, isLabel := step.Value.(*codegen.Label)
 
 			if isLabel {
-				fmt.Print(step.Value.String() + ":")
+				fmt.Printf("\n%s:", step.Value.String())
 
 				for _, pre := range step.Block.Predecessors {
 					ansi.Dim.Print(" ⇠ ")
