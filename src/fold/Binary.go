@@ -1,11 +1,9 @@
-package core
+package fold
 
-import (
-	"git.urbach.dev/cli/q/src/token"
-)
+import "git.urbach.dev/cli/q/src/token"
 
-// foldBinary calculates the result of the binary operation.
-func foldBinary(op token.Kind, a int, b int) int {
+// Binary calculates the result of the binary operation.
+func Binary(op token.Kind, a int, b int) int {
 	switch op {
 	case token.Add:
 		return a + b

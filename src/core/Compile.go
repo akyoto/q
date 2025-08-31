@@ -1,6 +1,9 @@
 package core
 
-import "git.urbach.dev/cli/q/src/ast"
+import (
+	"git.urbach.dev/cli/q/src/ast"
+	"git.urbach.dev/cli/q/src/fold"
+)
 
 // Compile translates tokens to SSA form.
 func (f *Function) Compile() {
@@ -19,7 +22,7 @@ func (f *Function) Compile() {
 		return
 	}
 
-	folded := foldConstants(f.IR)
+	folded := fold.Constants(f.IR)
 	f.Finalize()
 	err = f.removeDeadCode(folded)
 

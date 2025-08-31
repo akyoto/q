@@ -59,6 +59,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-08-31**: Constant folding.
 - **2025-08-25**: Resource safety.
 - **2025-08-23**: Function overloading.
 - **2025-08-22**: General bugfixes.
@@ -219,6 +220,7 @@ The source code structure uses a flat layout without nesting:
 - [errors](../src/errors) - Error handling that reports lines and columns
 - [exe](../src/exe) - Generic executable format to calculate section offsets
 - [expression](../src/expression) - Expression parser generating trees
+- [fold](../src/fold) - Constant folding
 - [fs](../src/fs) - File system access
 - [global](../src/global) - Global variables like the working directory
 - [linker](../src/linker) - Frontend for generating executable files
