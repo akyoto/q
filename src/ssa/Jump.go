@@ -31,5 +31,5 @@ func (j *Jump) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the jump.
 func (j *Jump) String() string {
-	return fmt.Sprintf("jump(%s)", j.To.Label)
+	return fmt.Sprintf("jump(%s)", CleanLabel(j.To.Label))
 }

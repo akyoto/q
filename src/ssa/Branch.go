@@ -37,5 +37,5 @@ func (b *Branch) Replace(old Value, new Value) {
 
 // String returns a human-readable representation of the branch.
 func (b *Branch) String() string {
-	return fmt.Sprintf("branch(%p, %s, %s)", b.Condition, b.Then.Label, b.Else.Label)
+	return fmt.Sprintf("branch(%p, %s, %s)", b.Condition, CleanLabel(b.Then.Label), CleanLabel(b.Else.Label))
 }

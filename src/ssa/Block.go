@@ -260,7 +260,7 @@ func (b *Block) ReplaceAllUses(old Value, new Value) {
 
 // String returns the block label.
 func (b *Block) String() string {
-	return b.Label
+	return CleanLabel(b.Label)
 }
 
 // Unidentify deletes the identifier for the given value.

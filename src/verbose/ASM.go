@@ -4,10 +4,10 @@ import (
 	_ "embed"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/core"
+	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/go/color/ansi"
 )
@@ -69,7 +69,7 @@ func printAssembly(f *core.Function) {
 			imm.Print(instr.Number)
 		case *asm.Call:
 			mnemonic.Print("  call ")
-			label.Print(instr.Label)
+			label.Print(ssa.CleanLabel(instr.Label))
 		case *asm.CallExtern:
 			mnemonic.Print("  call extern ")
 			label.Print(instr.Library + "." + instr.Function)
@@ -108,12 +108,12 @@ func printAssembly(f *core.Function) {
 				mnemonic.Print("  jump ")
 			}
 
-			label.Print(strings.TrimPrefix(instr.Label, f.FullName))
+			label.Print(ssa.CleanLabel(instr.Label))
 		case *asm.Label:
 			if instr.Name == f.FullName {
 				function.Printf("%s:", instr.Name)
 			} else {
-				label.Printf("\n%s:", strings.TrimPrefix(instr.Name, f.FullName))
+				label.Printf("\n%s:", ssa.CleanLabel(instr.Name))
 			}
 		case *asm.Load:
 			mnemonic.Printf("  load %db ", instr.Length)
@@ -134,7 +134,7 @@ func printAssembly(f *core.Function) {
 			mnemonic.Print("  address ")
 			register.Print(instr.Destination)
 			other.Print(", ")
-			label.Print(instr.Label)
+			label.Print(ssa.CleanLabel(instr.Label))
 		case *asm.Move:
 			mnemonic.Print("  move ")
 			register.Print(instr.Destination)
