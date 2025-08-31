@@ -26,5 +26,6 @@ func New(files ...string) *Build {
 		b.OS = Windows
 	}
 
+	b.Optimize(true)
 	return b
 }

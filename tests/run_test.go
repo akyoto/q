@@ -20,10 +20,18 @@ type run struct {
 	ExitCode int
 }
 
-// Run builds and runs the file to check if the output matches the expected output.
+// Run compiles a debug and release version and tests both.
 func (test *run) Run(t *testing.T, path string) {
-	t.Run(test.Name, func(t *testing.T) {
-		build := config.New(path)
+	build := config.New(path)
+	build.Optimize(false)
+	test.RunBuild(t, test.Name+"/debug", build)
+	build.Optimize(true)
+	test.RunBuild(t, test.Name+"/release", build)
+}
+
+// RunBuild builds and runs the file to check if the output matches the expected output.
+func (test *run) RunBuild(t *testing.T, name string, build *config.Build) {
+	t.Run(name, func(t *testing.T) {
 		env, err := compiler.Compile(build)
 		assert.Nil(t, err)
 
