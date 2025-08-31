@@ -14,9 +14,9 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 	fullName := fmt.Sprintf("%s.%s", pkg, name)
 
 	return &Function{
-		Name:    name,
-		Package: pkg,
-		File:    file,
+		name: name,
+		pkg:  pkg,
+		File: file,
 		IR: ssa.IR{
 			Blocks: []*ssa.Block{
 				{

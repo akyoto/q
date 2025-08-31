@@ -8,12 +8,10 @@ import (
 
 // Function is a reference to a function.
 type Function struct {
-	Typ     *types.Function
-	Package string
-	Name    string
+	Typ *types.Function
+	FunctionRef
 	Liveness
 	Source
-	IsExtern bool
 }
 
 // Equals returns true if the functions are equal.
@@ -24,7 +22,7 @@ func (a *Function) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Package == b.Package && a.Name == b.Name
+	return a.Package() == b.Package() && a.Name() == b.Name()
 }
 
 // Inputs returns nil because a function reference has no inputs.
@@ -38,11 +36,11 @@ func (f *Function) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the function.
 func (f *Function) String() string {
-	if f.Package == "" {
-		return f.Name
+	if f.Package() == "" {
+		return f.Name()
 	}
 
-	return fmt.Sprintf("%s.%s", f.Package, f.Name)
+	return fmt.Sprintf("%s.%s", f.Package(), f.Name())
 }
 
 // Type returns the type of the function.

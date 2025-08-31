@@ -11,7 +11,7 @@ import (
 func TestCall(t *testing.T) {
 	fn := ssa.IR{}
 	fn.AddBlock(ssa.NewBlock("fn"))
-	myfunc := &ssa.Function{Name: "myfunc", Typ: &types.Function{}}
+	myfunc := &ssa.Function{Typ: &types.Function{}}
 	call := fn.Append(&ssa.Call{Func: myfunc, Arguments: ssa.Arguments{}})
 	one := fn.Append(&ssa.Int{Int: 1})
 	call2 := fn.Append(&ssa.Call{Func: myfunc, Arguments: ssa.Arguments{one}})
@@ -26,7 +26,6 @@ func TestCallEquals(t *testing.T) {
 	fn.AddBlock(ssa.NewBlock("fn"))
 
 	sum := &ssa.Function{
-		Name: "sum",
 		Typ: &types.Function{
 			Input:  []types.Type{types.Int, types.Int},
 			Output: []types.Type{types.Int},
@@ -47,7 +46,6 @@ func TestCallReturnType(t *testing.T) {
 	fn.AddBlock(ssa.NewBlock("fn"))
 
 	sum := &ssa.Function{
-		Name: "sum",
 		Typ: &types.Function{
 			Input:  []types.Type{types.Int, types.Int},
 			Output: []types.Type{types.Int},

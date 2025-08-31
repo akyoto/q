@@ -60,8 +60,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 			}
 
 			suffix.WriteByte(']')
-			f.Name += suffix.String()
-			f.FullName += suffix.String()
+			f.AddSuffix(suffix.String())
 		}
 	}
 

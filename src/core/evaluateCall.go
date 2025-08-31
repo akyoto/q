@@ -1,8 +1,6 @@
 package core
 
 import (
-	"strings"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -27,8 +25,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 
 			call := f.Append(&ssa.Call{
 				Func: &ssa.Function{
-					Package: "mem",
-					Name:    "alloc",
+					FunctionRef: malloc,
 					Typ: &types.Function{
 						Output: []types.Type{returnType},
 					},
@@ -68,19 +65,19 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return nil, errors.New(InvalidCallExpression, f.File, identifier.Source().StartPos)
 	}
 
-	pkg := f.Env.Packages[ssaFunc.Package]
-	funcName := ssaFunc.Name
-	funcName, _, _ = strings.Cut(funcName, "[")
-	generic := pkg.Functions[funcName]
-	var fn *Function
+	// pkg := f.Env.Packages[ssaFunc.Package]
+	// funcName := ssaFunc.Name
+	// funcName, _, _ = strings.Cut(funcName, "[")
+	// generic := pkg.Functions[funcName]
+	// var fn *Function
 
-	for variant := range generic.Variants {
-		if variant.Name == ssaFunc.Name {
-			fn = variant
-			break
-		}
-	}
-
+	// for variant := range generic.Variants {
+	// 	if variant.Name == ssaFunc.Name {
+	// 		fn = variant
+	// 		break
+	// 	}
+	// }
+	fn := ssaFunc.FunctionRef.(*Function)
 	inputExpressions := expr.Children[1:]
 	args, err := f.decompose(inputExpressions, fn.Input, false)
 

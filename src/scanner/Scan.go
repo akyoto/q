@@ -44,13 +44,13 @@ func Scan(build *config.Build) (*core.Environment, error) {
 			}
 
 			f.Env = env
-			pkg := env.AddPackage(f.Package, f.IsExtern())
+			pkg := env.AddPackage(f.Package(), f.IsExtern())
 			env.NumFunctions++
 
-			existing := pkg.Functions[f.Name]
+			existing := pkg.Functions[f.Name()]
 
 			if existing == nil {
-				pkg.Functions[f.Name] = f
+				pkg.Functions[f.Name()] = f
 				continue
 			}
 

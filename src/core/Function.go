@@ -11,8 +11,6 @@ import (
 
 // Function is the smallest unit of code.
 type Function struct {
-	Name         string
-	Package      string
 	File         *fs.File
 	Type         *types.Function
 	Err          error
@@ -23,6 +21,8 @@ type Function struct {
 	Dependencies set.Ordered[*Function]
 	Previous     *Function
 	Next         *Function
+	name         string
+	pkg          string
 	ssa.IR
 	codegen.Function
 }
@@ -43,6 +43,12 @@ func (f *Function) AddOutput(tokens token.List, source token.Source) {
 	})
 }
 
+// AddSuffix adds a suffix to the name and is used for generic functions.
+func (f *Function) AddSuffix(suffix string) {
+	f.name += suffix
+	f.FullName += suffix
+}
+
 // IsExtern returns true if the function has no body.
 func (f *Function) IsExtern() bool {
 	return f.Body == nil
@@ -51,6 +57,16 @@ func (f *Function) IsExtern() bool {
 // IsLeaf returns true if the function doesn't call other functions.
 func (f *Function) IsLeaf() bool {
 	return f.Dependencies.Count() == 0
+}
+
+// Name returns the function name.
+func (f *Function) Name() string {
+	return f.name
+}
+
+// Package returns the package name.
+func (f *Function) Package() string {
+	return f.pkg
 }
 
 // String returns the unique name.

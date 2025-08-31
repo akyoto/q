@@ -40,7 +40,7 @@ func (f *Function) executeCallExtern(step *Step, instr *ssa.CallExtern) {
 		f.Assembler.Append(&asm.Push{Registers: pushed})
 	}
 
-	f.Assembler.Append(&asm.CallExtern{Library: instr.Func.Package, Function: instr.Func.Name})
+	f.Assembler.Append(&asm.CallExtern{Library: instr.Func.Package(), Function: instr.Func.Name()})
 
 	if len(pushed) > 0 {
 		f.Assembler.Append(&asm.Pop{Registers: pushed})

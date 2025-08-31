@@ -49,17 +49,15 @@ func (f *Function) evaluateDotPackage(pkg *Package, rightText string, expr *expr
 	}
 
 	if fn.IsExtern() {
-		f.Assembler.Libraries.Append(fn.Package, fn.Name)
+		f.Assembler.Libraries.Append(fn.Package(), fn.Name())
 	} else {
 		f.Dependencies.Add(fn)
 	}
 
 	v := &ssa.Function{
-		Package:  fn.Package,
-		Name:     fn.Name,
-		Typ:      fn.Type,
-		IsExtern: fn.IsExtern(),
-		Source:   expr.Source(),
+		FunctionRef: fn,
+		Typ:         fn.Type,
+		Source:      expr.Source(),
 	}
 
 	return v, nil
