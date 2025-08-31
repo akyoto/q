@@ -3,6 +3,7 @@ package verbose
 import (
 	_ "embed"
 	"fmt"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -92,6 +93,10 @@ func SSA(root *core.Function) {
 
 			if len(step.Live) > 0 {
 				ansi.Dim.Printf("live: ")
+
+				slices.SortStableFunc(step.Live, func(a *codegen.Step, b *codegen.Step) int {
+					return a.Index - b.Index
+				})
 
 				for _, live := range step.Live {
 					ansi.Dim.Printf("%s%d ", tmpPrefix, live.Index)
