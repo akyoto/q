@@ -19,8 +19,9 @@ func (f *Function) Compile() {
 		return
 	}
 
+	folded := foldConstants(f.IR)
 	f.Finalize()
-	err = f.removeDeadCode()
+	err = f.removeDeadCode(folded)
 
 	if err != nil {
 		f.Err = err

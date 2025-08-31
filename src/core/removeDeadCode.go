@@ -6,7 +6,7 @@ import (
 )
 
 // removeDeadCode checks for dead values and also removes the ones that are partially allowed.
-func (f *Function) removeDeadCode() error {
+func (f *Function) removeDeadCode(folded map[ssa.Value]struct{}) error {
 	for _, block := range f.Blocks {
 		for i, value := range block.Instructions {
 			if !value.IsConst() {
@@ -14,6 +14,13 @@ func (f *Function) removeDeadCode() error {
 			}
 
 			if len(value.Users()) > 0 {
+				continue
+			}
+
+			_, isFolded := folded[value]
+
+			if isFolded {
+				block.RemoveAt(i)
 				continue
 			}
 
