@@ -6,6 +6,12 @@ func Is(a Type, b Type) bool {
 		return true
 	}
 
+	bUnion, bIsUnion := b.(*Union)
+
+	if bIsUnion {
+		return bUnion.Index(a) != -1
+	}
+
 	aPointer, aIsPointer := a.(*Pointer)
 	bPointer, bIsPointer := b.(*Pointer)
 

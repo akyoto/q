@@ -32,7 +32,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 		for i, output := range f.Output {
 			typeTokens := output.Tokens
 
-			if len(output.Tokens) > 1 && output.Tokens[0].Kind == token.Identifier {
+			if len(output.Tokens) > 1 && output.Tokens[0].Kind == token.Identifier && output.Tokens[1].Kind != token.Or {
 				output.Name = output.Tokens[0].String(f.File.Bytes)
 				output.Source.EndPos = output.Tokens[0].End()
 				typeTokens = typeTokens[1:]

@@ -11,6 +11,28 @@ func ParseType[T ~[]token.Token](tokens T, source []byte, env *Environment) type
 		return nil
 	}
 
+	var union *types.Union
+
+	for i, t := range tokens {
+		if t.Kind != token.Or {
+			continue
+		}
+
+		if union == nil {
+			union = &types.Union{
+				Types: make([]types.Type, 0, 2),
+			}
+		}
+
+		union.Types = append(union.Types, ParseType(tokens[:i], source, env))
+		tokens = tokens[i+1:]
+	}
+
+	if union != nil {
+		union.Types = append(union.Types, ParseType(tokens, source, env))
+		return union
+	}
+
 	if tokens[0].Kind == token.Not {
 		to := tokens[1:]
 		typ := ParseType(to, source, env)

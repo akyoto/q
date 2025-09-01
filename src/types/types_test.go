@@ -45,6 +45,15 @@ func TestBasics(t *testing.T) {
 	// assert.False(t, types.Is(types.Any, types.Int))
 }
 
+func TestUnions(t *testing.T) {
+	intOrFloat := &types.Union{Types: []types.Type{types.Int, types.Float}}
+	assert.True(t, types.Is(types.Int, intOrFloat))
+	assert.True(t, types.Is(types.Float, intOrFloat))
+	assert.False(t, types.Is(types.String, intOrFloat))
+	assert.Equal(t, intOrFloat.Index(types.Int), 0)
+	assert.Equal(t, intOrFloat.Index(types.Float), 1)
+}
+
 func TestSpecialCases(t *testing.T) {
 	// Case #1:
 	// For syscalls whose return type is `any` we currently allow casting them to anything.
