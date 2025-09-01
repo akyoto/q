@@ -20,7 +20,7 @@ func Is(a Type, b Type) bool {
 	}
 
 	// TODO: Remove this temporary hack to allow integers as pointers
-	if bIsPointer && a == AnyInt {
+	if b == AnyPointer && a == AnyInt {
 		return true
 	}
 

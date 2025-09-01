@@ -40,6 +40,14 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 					IsReturn:      isReturn,
 				}, f.File, node.Source().StartPos)
 			}
+
+			union, isUnion := expectedType.(*types.Union)
+
+			if isUnion {
+				index := union.Index(valueType)
+				tag := f.Append(&ssa.Int{Int: index})
+				args = append(args, tag)
+			}
 		}
 
 		structure, isStruct := value.(*ssa.Struct)
