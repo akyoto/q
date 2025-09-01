@@ -75,18 +75,27 @@ func Parse(tokens token.List) *Expression {
 				group.Token.Position = tokens[groupPosition].Position
 			}
 
-			if cursor == nil {
-				if t.Kind == token.ArrayEnd {
-					cursor = New()
-					cursor.Token.Position = tokens[groupPosition].Position
-					cursor.Token.Kind = token.Array
-					cursor.precedence = precedence(token.Array)
+			if t.Kind == token.ArrayEnd {
+				array := New()
+				array.Token.Position = tokens[groupPosition].Position
+				array.Token.Kind = token.Array
+				array.precedence = precedence(token.Array)
+
+				if cursor == nil {
+					cursor = array
 					cursor.AddChild(group)
 					root = cursor
 				} else {
-					cursor = group
-					root = group
+					array.AddChild(group)
+					cursor.AddChild(array)
 				}
+
+				continue
+			}
+
+			if cursor == nil {
+				cursor = group
+				root = group
 			} else {
 				cursor.AddChild(group)
 			}

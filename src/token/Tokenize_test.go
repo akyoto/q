@@ -602,3 +602,20 @@ func TestScript(t *testing.T) {
 		assert.Equal(t, tokens[i].Kind, kind)
 	}
 }
+
+func TestDereference(t *testing.T) {
+	tokens := token.Tokenize([]byte("a=[b]"))
+
+	expected := []token.Kind{
+		token.Identifier,
+		token.Assign,
+		token.ArrayStart,
+		token.Identifier,
+		token.ArrayEnd,
+		token.EOF,
+	}
+
+	for i, kind := range expected {
+		assert.Equal(t, tokens[i].Kind, kind)
+	}
+}

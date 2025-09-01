@@ -121,6 +121,8 @@ func TestParse(t *testing.T) {
 		{"Dereferencing 2", "[a+b]", "(@ (+ a b))"},
 		{"Dereferencing 3", "[a+b]=c", "(= (@ (+ a b)) c)"},
 		{"Dereferencing 4", "[a+b]=c+d", "(= (@ (+ a b)) (+ c d))"},
+		{"Dereferencing 5", "p=[a]", "(= p (@ a))"},
+		{"Dereferencing 6", "p=[a].x", "(= p (. (@ a) x))"},
 
 		{"Structs", "a{}", "($ a)"},
 		{"Structs 2", "a{b:c}", "($ a (: b c))"},
