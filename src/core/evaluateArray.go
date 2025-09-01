@@ -32,6 +32,12 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source().StartPos)
 	}
 
+	_, isPointerToStruct := pointer.To.(*types.Struct)
+
+	if isPointerToStruct {
+		return nil, errors.New(&NotImplemented{Subject: "struct pointer dereferencing"}, f.File, address.Source().StartPos)
+	}
+
 	var indexValue ssa.Value
 
 	if len(expr.Children) > 1 {

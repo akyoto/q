@@ -52,6 +52,15 @@ func (err *NotDataStruct) Error() string {
 	return fmt.Sprintf("Type '%s' is not a data structure", err.TypeName)
 }
 
+// NotImplemented represents an error where the implementation is currently missing.
+type NotImplemented struct {
+	Subject string
+}
+
+func (err *NotImplemented) Error() string {
+	return fmt.Sprintf("Not implemented: %s", err.Subject)
+}
+
 // ParameterCountMismatch error is created when the number of provided parameters doesn't match the function signature.
 type ParameterCountMismatch struct {
 	Function      string
