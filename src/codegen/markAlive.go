@@ -22,7 +22,7 @@ func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step) {
 
 	region := f.BlockToRegion[block]
 
-	if use.Block == block {
+	if use.Block == block && (block.Loop == nil || live.Block.Loop != nil) {
 		region.End = uint32(use.Index)
 	}
 
