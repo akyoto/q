@@ -118,12 +118,18 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		block.Loop = loopHead
 
 		for phi := range loopHead.Phis {
+			oldValue := phi.Arguments[0]
+
+			if oldValue == ssa.Undefined {
+				continue
+			}
+
 			for _, instr := range block.Instructions {
 				if instr == phi {
 					continue
 				}
 
-				instr.Replace(phi.Arguments[0], phi)
+				instr.Replace(oldValue, phi)
 			}
 		}
 	}

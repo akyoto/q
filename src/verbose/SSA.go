@@ -23,14 +23,15 @@ func SSA(root *core.Function) {
 			return
 		}
 
-		pointerToIndex := make(map[string]int, len(f.Steps))
-
-		for _, step := range f.Steps {
-			pointerToIndex[fmt.Sprintf("%p", step.Value)] = step.Index
-		}
-
 		tmpColor := ansi.Green
 		tmpPrefix := "α"
+		pointerToName := make(map[string]string, len(f.Steps))
+		pointerToName[fmt.Sprintf("%p", ssa.Undefined)] = "?"
+
+		for _, step := range f.Steps {
+			pointerToName[fmt.Sprintf("%p", step.Value)] = fmt.Sprintf("%s%d", tmpPrefix, step.Index)
+		}
+
 		ansi.Yellow.Println(f.FullName + ":")
 
 		for _, step := range f.Steps {
@@ -73,9 +74,9 @@ func SSA(root *core.Function) {
 						end = len(value) - pos - 2
 					}
 
-					index := pointerToIndex[value[pos:pos+2+end]]
+					name := pointerToName[value[pos:pos+2+end]]
 					fmt.Print(value[:pos])
-					tmpColor.Printf("%s%d", tmpPrefix, index)
+					tmpColor.Printf("%s", name)
 					value = value[pos+2+end:]
 					pos = strings.Index(value, "0x")
 				}

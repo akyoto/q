@@ -31,7 +31,7 @@ func (c *Copy) Inputs() []Value {
 
 // IsConst returns false because a copy is a new value.
 func (c *Copy) IsConst() bool {
-	return false
+	return true
 }
 
 // Replace replaces the value to be copied if it matches.
