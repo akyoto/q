@@ -76,7 +76,7 @@ func SSA(root *core.Function) {
 
 					name := pointerToName[value[pos:pos+2+end]]
 					fmt.Print(value[:pos])
-					tmpColor.Printf("%s", name)
+					tmpColor.Print(name)
 					value = value[pos+2+end:]
 					pos = strings.Index(value, "0x")
 				}

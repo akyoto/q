@@ -29,7 +29,7 @@ func (c *Copy) Inputs() []Value {
 	return []Value{c.Value}
 }
 
-// IsConst returns false because a copy is a new value.
+// IsConst returns true.
 func (c *Copy) IsConst() bool {
 	return true
 }
