@@ -18,6 +18,11 @@ func (f *Function) GenerateAssembly(ir ssa.IR, build *config.Build, hasStackFram
 	// Transform SSA graph to a flat slice of steps we can execute one by one.
 	f.createSteps(ir)
 
+	// Create the stack frame and preserve registers if needed.
+	f.enter()
+
 	// Execute all steps to produce assembly code.
-	f.generate()
+	for _, step := range f.Steps {
+		f.execute(step)
+	}
 }

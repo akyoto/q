@@ -2,7 +2,6 @@ package core
 
 import (
 	"git.urbach.dev/cli/q/src/ast"
-	"git.urbach.dev/cli/q/src/fold"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -23,19 +22,9 @@ func (f *Function) Compile() {
 		return
 	}
 
-	var folded map[ssa.Value]struct{}
-
-	if f.Env.Build.FoldConstants {
-		folded = fold.Constants(f.IR)
+	if f.needsReturn() {
+		f.Block().Append(&ssa.Return{})
 	}
 
-	f.Finalize()
-	err = f.removeDeadCode(folded)
-
-	if err != nil {
-		f.Err = err
-		return
-	}
-
-	f.Err = f.checkResources()
+	f.Err = f.optimize()
 }

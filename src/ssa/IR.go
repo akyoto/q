@@ -27,6 +27,17 @@ func (ir *IR) Block() *Block {
 	return ir.Blocks[len(ir.Blocks)-1]
 }
 
+// ComputeUsers creates the list of users for each value.
+func (ir *IR) ComputeUsers() {
+	for _, block := range ir.Blocks {
+		for _, value := range block.Instructions {
+			for _, input := range value.Inputs() {
+				input.AddUser(value)
+			}
+		}
+	}
+}
+
 // CountValues returns the total number of values.
 func (ir *IR) CountValues() int {
 	count := 0
@@ -40,29 +51,15 @@ func (ir *IR) CountValues() int {
 
 // ExitBlocks is an iterator for all exit blocks.
 func (ir *IR) ExitBlocks(yield func(*Block) bool) {
-	for i, block := range ir.Blocks {
-		if i < len(ir.Blocks)-1 {
-			last := block.Last()
-			_, isReturn := last.(*Return)
+	for _, block := range ir.Blocks {
+		_, returns := block.Last().(*Return)
 
-			if !isReturn {
-				continue
-			}
+		if !returns {
+			continue
 		}
 
 		if !yield(block) {
 			return
-		}
-	}
-}
-
-// Finalize creates the list of users for each value.
-func (ir *IR) Finalize() {
-	for _, block := range ir.Blocks {
-		for _, value := range block.Instructions {
-			for _, input := range value.Inputs() {
-				input.AddUser(value)
-			}
 		}
 	}
 }
