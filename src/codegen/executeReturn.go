@@ -15,8 +15,8 @@ func (f *Function) executeReturn(instr *ssa.Return) {
 	for i, arg := range instr.Arguments {
 		retVal := f.ValueToStep[arg]
 
-		if retVal.Register == -1 || retVal.Register == f.CPU.Call.Out[i] {
-			return
+		if retVal.Register == f.CPU.Call.Out[i] {
+			continue
 		}
 
 		f.Assembler.Append(&asm.Move{
