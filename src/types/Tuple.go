@@ -1,6 +1,6 @@
 package types
 
-import "fmt"
+import "strings"
 
 // Tuple is a collection of multiple types.
 type Tuple struct {
@@ -9,7 +9,19 @@ type Tuple struct {
 
 // Name returns the type name.
 func (t *Tuple) Name() string {
-	return fmt.Sprintf("[%d]tuple", len(t.Types))
+	b := strings.Builder{}
+	b.WriteString("(")
+
+	for i, typ := range t.Types {
+		b.WriteString(typ.Name())
+
+		if i != len(t.Types)-1 {
+			b.WriteString(", ")
+		}
+	}
+
+	b.WriteString(")")
+	return b.String()
 }
 
 // Size returns the total size in bytes.
