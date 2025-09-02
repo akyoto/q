@@ -17,6 +17,12 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 	}
 
 	if left.IsLeaf() {
+		call, isCall := rightValue.(*ssa.Call)
+
+		if isCall && len(call.Func.Typ.Output) != 1 {
+			return errors.New(&DefinitionCountMismatch{Function: call.Func.String(), Count: 1, ExpectedCount: len(call.Func.Typ.Output)}, f.File, left.Source().StartPos)
+		}
+
 		return f.define(left, rightValue)
 	}
 
