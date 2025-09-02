@@ -1,35 +1,35 @@
-import os
+import run
 
 main() {
 	x := 0
 
 	if x != x && x != x {
-		os.exit(1)
+		run.exit(1)
 	}
 
 	if x == x && x != x {
-		os.exit(1)
+		run.exit(1)
 	}
 
 	if x != x && x == x {
-		os.exit(1)
+		run.exit(1)
 	}
 
 	if x == x && x != x && x != x {
-		os.exit(1)
+		run.exit(1)
 	}
 
 	if x != x && x == x && x != x {
-		os.exit(1)
+		run.exit(1)
 	}
 
 	if x != x && x != x && x == x {
-		os.exit(1)
+		run.exit(1)
 	}
 
 	if x == x && x == x && x == x {
-		os.exit(0)
+		run.exit(0)
 	}
 
-	os.exit(1)
+	run.exit(1)
 }

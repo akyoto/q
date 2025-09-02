@@ -1,6 +1,6 @@
 import io
 import mem
-import os
+import run
 
 main() {
 	buffer := mem.alloc(6)
@@ -39,6 +39,6 @@ writeByte(n byte) {
 		n == 'l'  { io.write("l") }
 		n == 'o'  { io.write("o") }
 		n == '\n' { io.write("\n") }
-		_         { os.exit(1) }
+		_         { run.exit(1) }
 	}
 }

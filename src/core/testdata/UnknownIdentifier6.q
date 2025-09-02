@@ -1,3 +1,3 @@
 main() {
-	os.exit(0)
+	run.exit(0)
 }

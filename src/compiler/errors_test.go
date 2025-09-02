@@ -18,7 +18,7 @@ var errs = []struct {
 	{"UnknownType.q", &compiler.UnknownType{Name: "unknown"}},
 	{"UnknownType2.q", &compiler.UnknownType{Name: "unknown"}},
 	{"UnknownType3.q", &compiler.UnknownType{Name: "unknown"}},
-	{"UnusedImport.q", &compiler.UnusedImport{Package: "os"}},
+	{"UnusedImport.q", &compiler.UnusedImport{Package: "run"}},
 }
 
 func TestErrors(t *testing.T) {

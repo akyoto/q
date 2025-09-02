@@ -1,4 +1,4 @@
-import os
+import run
 
 main() {
 	x := 10
@@ -181,9 +181,9 @@ main() {
 }
 
 fail() {
-	os.exit(1)
+	run.exit(1)
 }
 
 success() {
-	os.exit(0)
+	run.exit(0)
 }

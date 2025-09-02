@@ -1,10 +1,12 @@
-import os
-
 init() {
 	main.main()
-	os.exit(0)
+	exit(0)
 }
 
 crash() {
-	os.exit(1)
+	exit(1)
+}
+
+exit(code int) {
+	syscall(_exit, code)
 }

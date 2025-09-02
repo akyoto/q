@@ -115,7 +115,7 @@ func (a *Assembler) Skip(instr Instruction) bool {
 	// Call to os.exit + anything is skipped if it's not a label
 	call, isCall := a.Last().(*Call)
 
-	if isCall && call.Label == "os.exit" {
+	if isCall && call.Label == "run.exit" {
 		switch instr.(type) {
 		case *Label:
 		default:

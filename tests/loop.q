@@ -1,5 +1,5 @@
 import io
-import os
+import run
 
 main() {
 	n := 10
@@ -13,5 +13,5 @@ main() {
 		n -= 1
 	}
 
-	os.exit(1)
+	run.exit(1)
 }

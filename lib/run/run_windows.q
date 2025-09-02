@@ -1,5 +1,3 @@
-import os
-
 init() {
 	utf8 := 65001
 	kernel32.SetConsoleCP(utf8)
@@ -8,11 +6,15 @@ init() {
 	ws2_32.WSAStartup(0x0202, wsa)
 	main.main()
 	ws2_32.WSACleanup()
-	os.exit(0)
+	exit(0)
 }
 
 crash() {
-	os.exit(1)
+	exit(1)
+}
+
+exit(code int) {
+	kernel32.ExitProcess(code)
 }
 
 WsaData {
@@ -25,6 +27,7 @@ WsaData {
 
 extern {
 	kernel32 {
+		ExitProcess(code uint)
 		SetConsoleCP(cp uint)
 		SetConsoleOutputCP(cp uint)
 	}
