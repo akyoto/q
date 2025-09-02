@@ -83,11 +83,19 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return v, nil
 	}
 
+	if f == f.Env.Init && fn == f.Env.Main {
+		f.runAll("init")
+	}
+
 	v := f.Append(&ssa.Call{
 		Func:      ssaFunc,
 		Arguments: args,
 		Source:    expr.Source(),
 	})
+
+	if f == f.Env.Init && fn == f.Env.Main {
+		f.runAll("exit")
+	}
 
 	return v, nil
 }
