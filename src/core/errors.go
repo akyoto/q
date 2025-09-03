@@ -34,6 +34,15 @@ func (err *DefinitionCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough variables for the return value of '%s'", err.Function)
 }
 
+// ErrorNotChecked is created when a variable is accessed without checking its error value.
+type ErrorNotChecked struct {
+	Identifier string
+}
+
+func (err *ErrorNotChecked) Error() string {
+	return fmt.Sprintf("Error must be checked before accessing '%s'", err.Identifier)
+}
+
 // NoMatchingFunction is created when a function is not defined for the given type.
 type NoMatchingFunction struct {
 	Function string

@@ -70,15 +70,19 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			case condition.Token.Kind == token.NotEqual && right.Int == 0:
 				elseBlock.Unidentify(left)
 
-				for _, protected := range f.Protected[left] {
+				for _, protected := range f.Block().Protected[left] {
 					thenBlock.Unidentify(protected)
 				}
+
+				delete(f.Block().Protected, left)
 			case condition.Token.Kind == token.Equal && right.Int == 0:
 				thenBlock.Unidentify(left)
 
-				for _, protected := range f.Protected[left] {
+				for _, protected := range f.Block().Protected[left] {
 					elseBlock.Unidentify(protected)
 				}
+
+				delete(f.Block().Protected, left)
 			}
 		}
 

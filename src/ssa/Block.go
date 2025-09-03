@@ -9,6 +9,7 @@ import (
 // Block is a list of instructions that can be targeted in branches.
 type Block struct {
 	Identifiers  map[string]Value
+	Protected    map[Value][]Value
 	Loop         *Block
 	Label        string
 	Instructions []Value

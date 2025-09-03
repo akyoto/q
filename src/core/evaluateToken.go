@@ -1,6 +1,8 @@
 package core
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -35,6 +37,12 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 		value, exists := f.Block().FindIdentifier(name)
 
 		if exists {
+			for _, p := range f.Block().Protected {
+				if slices.Contains(p, value) {
+					return nil, errors.New(&ErrorNotChecked{Identifier: name}, f.File, expr.Token.Position)
+				}
+			}
+
 			return value, nil
 		}
 
