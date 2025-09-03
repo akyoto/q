@@ -6,7 +6,7 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// FromTuple is a value inside of a tuple.
+// FromTuple is a value inside of a struct or tuple.
 type FromTuple struct {
 	Tuple     Value
 	Index     int

@@ -1,19 +1,23 @@
 import net
 
-listen(_address string, port uint16) -> int {
-	s := net.socket(v4, tcp, 0)
+listen(_address string, port uint16) -> (int, error) {
+	s, err := net.socket(v4, tcp, 0)
 
-	if s < 0 {
-		return s
+	if err != 0 {
+		return 0, err
 	}
 
-	if net.bind(s, 0, port) != 0 {
-		return -1
+	err := net.bind(s, 0, port)
+
+	if err != 0 {
+		return 0, err
 	}
 
-	if net.listen(s, backlog) != 0 {
-		return -1
+	err := net.listen(s, backlog)
+
+	if err != 0 {
+		return 0, err
 	}
 
-	return s
+	return s, 0
 }

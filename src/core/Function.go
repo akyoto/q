@@ -19,6 +19,7 @@ type Function struct {
 	Output       []*ssa.Parameter
 	Body         token.List
 	Dependencies set.Ordered[*Function]
+	Protected    map[ssa.Value][]ssa.Value
 	Previous     *Function
 	Next         *Function
 	name         string

@@ -3,10 +3,10 @@ import net
 import tcp
 
 main() {
-	socket := tcp.listen("", 8080)
+	socket, err := tcp.listen("", 8080)
 
-	if socket < 0 {
-		io.write("socket error\n")
+	if err != 0 {
+		io.write("listen error\n")
 		return
 	}
 
@@ -14,9 +14,9 @@ main() {
 	io.write("listening...\n")
 
 	loop {
-		conn := net.accept(socket)
+		conn, err := net.accept(socket)
 
-		if conn >= 0 {
+		if err == 0 {
 			net.send(conn, "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\nHello\n")
 			net.close(conn)
 		} else {

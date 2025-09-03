@@ -1,17 +1,32 @@
-open(path *byte, _flags int, _mode int) -> !int {
+open(path *byte, _flags int, _mode int) -> (!int, error) {
 	fd := kernel32.CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
-	assert fd != -1
-	return fd
+
+	if fd == -1 {
+		return 0, fd
+	}
+
+	return fd, 0
 }
 
-size(fd int) -> int {
+size(fd int) -> (int, error) {
 	fileSize := new(int64)
-	kernel32.GetFileSizeEx(fd, fileSize)
-	return [fileSize]
+	success := kernel32.GetFileSizeEx(fd, fileSize)
+
+	if success {
+		return [fileSize], 0
+	}
+
+	return 0, -1
 }
 
-close(fd !int) -> bool {
-	return kernel32.CloseHandle(fd)
+close(fd !int) -> error {
+	success := kernel32.CloseHandle(fd)
+
+	if success {
+		return 0
+	}
+
+	return -1
 }
 
 extern {

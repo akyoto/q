@@ -61,6 +61,27 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			return err
 		}
 
+		left := conditionValue.(*ssa.BinaryOp).Left
+
+		if left.Type() == types.Error {
+			right := conditionValue.Inputs()[1].(*ssa.Int)
+
+			switch {
+			case condition.Token.Kind == token.NotEqual && right.Int == 0:
+				elseBlock.Unidentify(left)
+
+				for _, protected := range f.Protected[left] {
+					thenBlock.Unidentify(protected)
+				}
+			case condition.Token.Kind == token.Equal && right.Int == 0:
+				thenBlock.Unidentify(left)
+
+				for _, protected := range f.Protected[left] {
+					elseBlock.Unidentify(protected)
+				}
+			}
+		}
+
 		branch := &ssa.Branch{
 			Condition: conditionValue,
 			Then:      thenBlock,

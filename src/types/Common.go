@@ -6,6 +6,7 @@ var (
 	AnyInt     = &Base{name: "int"}
 	AnyPointer = &Pointer{To: Any}
 	Bool       = &Base{name: "bool", size: 1}
+	Error      = &Base{name: "error", size: 8}
 	Int64      = &Base{name: "int64", size: 8}
 	Int32      = &Base{name: "int32", size: 4}
 	Int16      = &Base{name: "int16", size: 2}
@@ -21,7 +22,6 @@ var (
 
 var (
 	Byte  = UInt8
-	Error = Int64
 	Float = Float64
 	Int   = Int64
 	UInt  = UInt64

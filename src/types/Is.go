@@ -48,18 +48,18 @@ func Is(a Type, b Type) bool {
 		return true
 	}
 
-	if a == AnyInt {
+	if a == AnyInt || a == Error {
 		switch b {
-		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, AnyInt:
+		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, Error, AnyInt:
 			return true
 		default:
 			return false
 		}
 	}
 
-	if b == AnyInt {
+	if b == AnyInt || b == Error {
 		switch a {
-		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, AnyInt:
+		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, Error, AnyInt:
 			return true
 		default:
 			return false

@@ -1,15 +1,24 @@
-open(path *byte, flags int, mode int) -> !int {
+open(path *byte, flags int, mode int) -> (!int, error) {
 	fd := syscall(_open, path, flags, mode)
-	assert fd >= 0
-	return fd
+
+	if fd < 0 {
+		return 0, fd
+	}
+
+	return fd, 0
 }
 
-size(fd int) -> int {
+size(fd int) -> (int, error) {
 	stats := new(stat)
-	syscall(_fstat64, fd, stats)
-	return stats.st_size
+	err := syscall(_fstat64, fd, stats)
+
+	if err != 0 {
+		return 0, err
+	}
+
+	return stats.st_size, 0
 }
 
-close(fd !int) -> int {
+close(fd !int) -> error {
 	return syscall(_close, fd)
 }

@@ -43,5 +43,20 @@ func (c *Call) Type() types.Type {
 		return c.Func.Typ.Output[0]
 	}
 
-	return &types.Tuple{Types: c.Func.Typ.Output}
+	tuple := &types.Tuple{}
+
+	for _, typ := range c.Func.Typ.Output {
+		structure, isStruct := types.Unwrap(typ).(*types.Struct)
+
+		if !isStruct {
+			tuple.Types = append(tuple.Types, typ)
+			continue
+		}
+
+		for _, field := range structure.Fields {
+			tuple.Types = append(tuple.Types, field.Type)
+		}
+	}
+
+	return tuple
 }
