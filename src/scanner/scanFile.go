@@ -1,8 +1,6 @@
 package scanner
 
 import (
-	"os"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
@@ -10,7 +8,7 @@ import (
 
 // scanFile scans a single file.
 func (s *scanner) scanFile(path string, pkg string) error {
-	contents, err := os.ReadFile(path)
+	contents, err := fs.ReadFile(path)
 
 	if err != nil {
 		return err
