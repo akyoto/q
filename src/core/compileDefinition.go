@@ -78,11 +78,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 			f.Block().Identify(name, value)
 
 			if value.Type() == types.Error {
-				if f.Block().Protected == nil {
-					f.Block().Protected = make(map[ssa.Value][]ssa.Value)
-				}
-
-				f.Block().Protected[value] = protected
+				f.Block().Protect(value, protected)
 				protected = nil
 			} else {
 				protected = append(protected, value)

@@ -28,6 +28,14 @@ func NewBlock(label string) *Block {
 func (b *Block) AddSuccessor(successor *Block) {
 	successor.Predecessors = append(successor.Predecessors, b)
 
+	if b.Protected != nil {
+		if successor.Protected == nil {
+			successor.Protected = make(map[Value][]Value, len(b.Protected))
+		}
+
+		maps.Copy(successor.Protected, b.Protected)
+	}
+
 	if b.Identifiers == nil {
 		return
 	}
@@ -272,4 +280,18 @@ func (b *Block) Unidentify(value Value) {
 			return
 		}
 	}
+}
+
+// Protect protects the given value from being accessed before the error value is checked.
+func (b *Block) Protect(err Value, protected []Value) {
+	if b.Protected == nil {
+		b.Protected = make(map[Value][]Value)
+	}
+
+	b.Protected[err] = protected
+}
+
+// Unprotect stops protecting the variables for the given error value.
+func (b *Block) Unprotect(err Value) {
+	delete(b.Protected, err)
 }

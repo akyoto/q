@@ -1,7 +1,12 @@
 main() {
 	value, err := f()
-	use(value)
+
+	if err != 0 {
+		return
+	}
+
+	use(err)
 }
 
 f() -> (int, error) { return 0, 0 }
-use(_ int) {}
+use(_ error) {}

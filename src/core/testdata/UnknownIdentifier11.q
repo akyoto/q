@@ -1,5 +1,10 @@
 main() {
 	value, err := f()
+
+	if err == 0 {
+		return
+	}
+
 	use(value)
 }
 

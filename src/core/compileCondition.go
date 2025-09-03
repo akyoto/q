@@ -61,10 +61,11 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			return err
 		}
 
-		left := conditionValue.(*ssa.BinaryOp).Left
+		comparison := conditionValue.(*ssa.BinaryOp)
+		left := comparison.Left
 
 		if left.Type() == types.Error {
-			right := conditionValue.Inputs()[1].(*ssa.Int)
+			right := comparison.Right.(*ssa.Int)
 
 			switch {
 			case condition.Token.Kind == token.NotEqual && right.Int == 0:
@@ -74,7 +75,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 					thenBlock.Unidentify(protected)
 				}
 
-				delete(f.Block().Protected, left)
+				elseBlock.Unprotect(left)
 			case condition.Token.Kind == token.Equal && right.Int == 0:
 				thenBlock.Unidentify(left)
 
@@ -82,7 +83,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 					elseBlock.Unidentify(protected)
 				}
 
-				delete(f.Block().Protected, left)
+				thenBlock.Unprotect(left)
 			}
 		}
 
