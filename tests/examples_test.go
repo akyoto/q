@@ -20,6 +20,7 @@ var examples = []run{
 	{"point", "", "Point: 1, 2", 0},
 	{"echo", "Echo", "Echo", 0},
 	{"readfile", "", "", -1},
+	{"raylib", "", "", -1},
 	{"server", "", "", -1},
 }
 
