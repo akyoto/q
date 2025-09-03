@@ -51,9 +51,7 @@ func (list List) Split(yield func(Position, List) bool) {
 				continue
 			}
 
-			parameter := list[start:i]
-
-			if !yield(list[start].Position, parameter) {
+			if !yield(list[start].Position, list[start:i]) {
 				return
 			}
 

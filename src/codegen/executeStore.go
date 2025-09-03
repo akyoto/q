@@ -15,14 +15,14 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			Base:   address.Register,
 			Index:  index.Register,
 			Number: source.Value.(*ssa.Int).Int,
-			Length: byte(instr.Length),
+			Length: instr.Length,
 		})
 	} else {
 		f.Assembler.Append(&asm.Store{
 			Base:   address.Register,
 			Index:  index.Register,
 			Source: source.Register,
-			Length: byte(instr.Length),
+			Length: instr.Length,
 		})
 	}
 }

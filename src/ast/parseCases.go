@@ -8,7 +8,7 @@ import (
 
 // parseCases generates the cases inside a switch statement.
 func parseCases(tokens token.List, file *fs.File) ([]Case, error) {
-	var cases []Case
+	cases := make([]Case, 0, 4)
 
 	for caseTokens := range tokens.Instructions {
 		blockStart, _, body, err := block(caseTokens, file)

@@ -75,7 +75,7 @@ func (ir *IR) IsIdentified(value Value) bool {
 	return false
 }
 
-// ReplaceAll replaces all occurences of the given `old` value with the `new` value.
+// ReplaceAll replaces all occurrences of the given `old` value with the `new` value.
 func (ir *IR) ReplaceAll(old Value, new Value) {
 	for _, block := range ir.Blocks {
 		for _, value := range block.Instructions {
