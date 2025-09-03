@@ -1,6 +1,9 @@
 package ast
 
-import "git.urbach.dev/cli/q/src/expression"
+import (
+	"git.urbach.dev/cli/q/src/expression"
+	"git.urbach.dev/cli/q/src/token"
+)
 
 type (
 	Node any
@@ -34,6 +37,7 @@ type (
 		Body AST
 	}
 	Return struct {
+		Token  token.Token
 		Values []*expression.Expression
 	}
 	Switch struct {

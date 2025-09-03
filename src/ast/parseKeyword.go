@@ -59,11 +59,11 @@ func parseKeyword(tokens token.List, file *fs.File, nodes AST) (Node, error) {
 
 	case token.Return:
 		if len(tokens) == 1 {
-			return &Return{}, nil
+			return &Return{Token: tokens[0]}, nil
 		}
 
 		values := expression.NewList(tokens[1:])
-		return &Return{Values: values}, nil
+		return &Return{Token: tokens[0], Values: values}, nil
 
 	case token.Switch:
 		blockStart := tokens.IndexKind(token.BlockStart)

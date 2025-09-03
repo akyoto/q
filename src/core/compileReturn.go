@@ -8,13 +8,19 @@ import (
 
 // compileReturn compiles a return instruction.
 func (f *Function) compileReturn(node *ast.Return) error {
+	if len(node.Values) != len(f.Output) {
+		position := node.Token.End()
+
+		if len(node.Values) > 0 {
+			position = node.Values[0].Token.Position
+		}
+
+		return errors.New(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, position)
+	}
+
 	if len(node.Values) == 0 {
 		f.Append(&ssa.Return{})
 		return nil
-	}
-
-	if len(node.Values) != len(f.Output) {
-		return errors.New(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, node.Values[0].Token.Position)
 	}
 
 	args, err := f.decompose(node.Values, f.Output, true)

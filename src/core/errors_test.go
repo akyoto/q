@@ -48,6 +48,8 @@ var errs = []struct {
 	{"ResourceTypeMismatch.q", &core.TypeMismatch{Encountered: "int64", Expected: "!int64", ParameterName: "_", IsReturn: false}},
 	{"ReturnCountMismatch.q", &core.ReturnCountMismatch{Count: 1, ExpectedCount: 0}},
 	{"ReturnCountMismatch2.q", &core.ReturnCountMismatch{Count: 1, ExpectedCount: 2}},
+	{"ReturnCountMismatch3.q", &core.ReturnCountMismatch{Count: 0, ExpectedCount: 1}},
+	{"ReturnCountMismatch4.q", &core.ReturnCountMismatch{Count: 0, ExpectedCount: 1}},
 	{"TypeMismatch.q", &core.TypeMismatch{Encountered: "string", Expected: "int64", ParameterName: "x", IsReturn: false}},
 	{"TypeMismatch2.q", &core.TypeMismatch{Encountered: "string", Expected: "int64", ParameterName: "y", IsReturn: true}},
 	{"UndefinedStructField.q", &core.UndefinedStructField{Identifier: "p", FieldName: "y"}},

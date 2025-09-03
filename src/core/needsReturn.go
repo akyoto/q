@@ -8,6 +8,12 @@ func (f *Function) needsReturn() bool {
 		return false
 	}
 
-	_, endsWithReturn := f.Block().Last().(*ssa.Return)
+	lastBlock := f.Block()
+
+	if lastBlock.Loop != nil {
+		return false
+	}
+
+	_, endsWithReturn := lastBlock.Last().(*ssa.Return)
 	return !endsWithReturn
 }

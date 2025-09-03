@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fold"
 	"git.urbach.dev/cli/q/src/ssa"
 )
@@ -11,6 +12,17 @@ func (f *Function) optimize() error {
 	// an infinite loop. These should be removed to avoid
 	// unnecessary return statements in the later phases.
 	f.removeDeadBlocks()
+
+	// After the removal of dead blocks, if the last block is
+	// not part of a loop and did not end with a return
+	// statement, an implicit return is inserted.
+	if f.needsReturn() {
+		if len(f.Output) > 0 {
+			return errors.New(&ReturnCountMismatch{Count: 0, ExpectedCount: len(f.Output)}, f.File, f.Output[0].StartPos)
+		}
+
+		f.Block().Append(&ssa.Return{})
+	}
 
 	// Binary operations with constant operands are evaluated
 	// at compile time. For example, 1 + 2 becomes 3, and the
