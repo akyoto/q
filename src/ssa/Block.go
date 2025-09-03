@@ -28,7 +28,7 @@ func NewBlock(label string) *Block {
 func (b *Block) AddSuccessor(successor *Block) {
 	successor.Predecessors = append(successor.Predecessors, b)
 
-	if b.Protected != nil {
+	if len(b.Protected) > 0 {
 		if successor.Protected == nil {
 			successor.Protected = make(map[Value][]Value, len(b.Protected))
 		}
