@@ -40,3 +40,15 @@ func BenchmarkWalk(b *testing.B) {
 		assert.Nil(b, err)
 	}
 }
+
+func BenchmarkReadFile(b *testing.B) {
+	for b.Loop() {
+		fs.ReadFile("ReadFile_test.go")
+	}
+}
+
+func BenchmarkReadFileStdLib(b *testing.B) {
+	for b.Loop() {
+		os.ReadFile("ReadFile_test.go")
+	}
+}
