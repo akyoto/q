@@ -113,6 +113,8 @@ func ParseType[T ~[]token.Token](tokens T, source []byte, env *Environment) type
 		return types.Float64
 	case "float32":
 		return types.Float32
+	case "error":
+		return types.Error
 	case "any":
 		return types.Any
 	}

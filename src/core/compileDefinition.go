@@ -23,22 +23,32 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 			return errors.New(&DefinitionCountMismatch{Function: call.Func.String(), Count: 1, ExpectedCount: len(call.Func.Typ.Output)}, f.File, left.Source().StartPos)
 		}
 
+		name := left.String(f.File.Bytes)
+
+		if name == "_" {
+			return nil
+		}
+
 		return f.define(left, rightValue)
 	}
 
 	count := 0
 
 	for leaf := range left.Leaves() {
-		value := f.Append(&ssa.FromTuple{
-			Tuple:  rightValue,
-			Index:  count,
-			Source: leaf.Source(),
-		})
+		name := leaf.String(f.File.Bytes)
 
-		err = f.define(leaf, value)
+		if name != "_" {
+			value := f.Append(&ssa.FromTuple{
+				Tuple:  rightValue,
+				Index:  count,
+				Source: leaf.Source(),
+			})
 
-		if err != nil {
-			return err
+			err = f.define(leaf, value)
+
+			if err != nil {
+				return err
+			}
 		}
 
 		count++

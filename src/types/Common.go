@@ -20,6 +20,14 @@ var (
 )
 
 var (
+	Byte  = UInt8
+	Error = Int64
+	Float = Float64
+	Int   = Int64
+	UInt  = UInt64
+)
+
+var (
 	CString = &Pointer{To: Byte}
 	String  = &Struct{
 		Package:    "",
@@ -30,11 +38,4 @@ var (
 			{Name: "len", Type: Int, Index: 1, Offset: 8},
 		},
 	}
-)
-
-var (
-	Byte  = UInt8
-	Float = Float64
-	Int   = Int64
-	UInt  = UInt64
 )
