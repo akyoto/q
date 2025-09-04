@@ -4,6 +4,6 @@ package codegen
 func (f *Function) createLiveRanges(live *Step) {
 	for _, user := range live.Value.Users() {
 		use := f.ValueToStep[user]
-		f.markAlive(live, use.Block, use)
+		f.markAlive(live, use.Block, use, true)
 	}
 }

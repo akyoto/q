@@ -8,21 +8,21 @@ import (
 
 // markAlive marks the `live` value in the `block` as alive and recursively
 // proceeds in the predecessors of `block` if they can reach the definition.
-func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step) {
+func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step, first bool) {
 	if use.Block == block {
 		phi, isPhi := use.Value.(*ssa.Phi)
 
 		if isPhi {
 			index := phi.Arguments.Index(live.Value)
 			pre := block.Predecessors[index]
-			f.markAlive(live, pre, use)
+			f.markAlive(live, pre, use, false)
 			return
 		}
 	}
 
 	region := f.BlockToRegion[block]
 
-	if use.Block == block && (block.Loop == nil || live.Block.Loop != nil) {
+	if first && use.Block == block && (block.Loop == nil || live.Block.Loop != nil) {
 		region.End = uint32(use.Index)
 	}
 
@@ -54,6 +54,6 @@ func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step) {
 			continue
 		}
 
-		f.markAlive(live, pre, use)
+		f.markAlive(live, pre, use, false)
 	}
 }

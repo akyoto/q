@@ -83,6 +83,7 @@ var tests = []run{
 	{"ignore-unused-field", "", "", 0},
 	{"slice", "", "Hello World", 0},
 	{"string-equal", "", "", 0},
+	{"string-index", "", "", 0},
 	{"reorder-add", "", "", 0},
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
