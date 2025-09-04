@@ -1,15 +1,11 @@
 import io
 import mem
+import strings
 
 readFile(path string) -> (!string, error) {
-	newPath := mem.alloc(path.len + 1)
-
-	loop i := 0..path.len {
-		newPath[i] = path[i]
-	}
-
-	fd, err := open(newPath.ptr, 0, 0)
-	mem.free(newPath)
+	cpath := strings.c(path)
+	fd, err := open(cpath.ptr, 0, 0)
+	mem.free(cpath)
 
 	if err != 0 {
 		return "", err

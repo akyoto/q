@@ -22,6 +22,7 @@ var examples = []run{
 	{"readfile", "", "", -1},
 	{"raylib", "", "", -1},
 	{"server", "", "", -1},
+	{"shell", "", "", -1},
 }
 
 func TestExamples(t *testing.T) {

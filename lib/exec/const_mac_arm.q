@@ -1,0 +1,5 @@
+const {
+	_fork = 0x2
+	_execve = 0x3B
+	_waitid = 0xAD
+}
