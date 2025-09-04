@@ -37,6 +37,7 @@ func (f *Function) createSteps(ir ssa.IR) {
 			step.Value = instr
 			step.Block = block
 			step.Register = -1
+			step.Live = make([]*Step, 0, 4)
 			f.Steps[i] = step
 			f.ValueToStep[instr] = step
 			i++
