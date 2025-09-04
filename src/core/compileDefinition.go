@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
@@ -103,7 +101,7 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 			}
 
 			f.Block().Append(fieldValue)
-			f.Block().Identify(fmt.Sprintf("%s.%s", name, field.Name), fieldValue)
+			f.Block().Identify(name+"."+field.Name, fieldValue)
 			composite.Arguments = append(composite.Arguments, fieldValue)
 			protected = append(protected, fieldValue)
 			count++

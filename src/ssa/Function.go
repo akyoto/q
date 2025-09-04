@@ -1,8 +1,6 @@
 package ssa
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -40,7 +38,7 @@ func (f *Function) String() string {
 		return f.Name()
 	}
 
-	return fmt.Sprintf("%s.%s", f.Package(), f.Name())
+	return f.Package() + "." + f.Name()
 }
 
 // Type returns the type of the function.

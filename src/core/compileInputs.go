@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"strings"
 
 	"git.urbach.dev/cli/q/src/ssa"
@@ -26,7 +25,7 @@ func (f *Function) compileInputs() {
 			for _, field := range structType.Fields {
 				param := &ssa.Parameter{
 					Index:     uint8(offset + i),
-					Name:      fmt.Sprintf("%s.%s", input.Name, field.Name),
+					Name:      input.Name + "." + field.Name,
 					Typ:       field.Type,
 					Tokens:    input.Tokens,
 					Structure: structure,

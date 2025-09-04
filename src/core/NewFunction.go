@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/codegen"
 	"git.urbach.dev/cli/q/src/fs"
@@ -11,7 +9,7 @@ import (
 
 // NewFunction creates a new function.
 func NewFunction(name string, pkg string, file *fs.File) *Function {
-	fullName := fmt.Sprintf("%s.%s", pkg, name)
+	fullName := pkg + "." + name
 
 	return &Function{
 		name: name,

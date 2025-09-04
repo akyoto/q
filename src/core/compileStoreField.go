@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -64,7 +62,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 	case *types.Struct:
 		field := pointer.FieldByName(fieldName)
 		addressValue.(*ssa.Struct).Arguments[field.Index] = rightValue
-		f.Block().Identify(fmt.Sprintf("%s.%s", address.String(f.File.Bytes), fieldName), rightValue)
+		f.Block().Identify(address.String(f.File.Bytes)+"."+fieldName, rightValue)
 	}
 
 	return nil

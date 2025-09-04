@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -31,7 +29,7 @@ func (f *Function) evaluateDotPackage(pkg *Package, rightText string, expr *expr
 
 	if !exists {
 		if pkg.Name != f.File.Package {
-			rightText = fmt.Sprintf("%s.%s", pkg.Name, rightText)
+			rightText = pkg.Name + "." + rightText
 		}
 
 		return nil, errors.New(&UnknownIdentifier{Name: rightText}, f.File, expr.Source().StartPos)
@@ -45,7 +43,7 @@ func (f *Function) evaluateDotPackage(pkg *Package, rightText string, expr *expr
 	}
 
 	if fn == nil {
-		return nil, errors.New(&NoMatchingFunction{Function: fmt.Sprintf("%s.%s", pkg.Name, rightText)}, f.File, expr.Source().StartPos)
+		return nil, errors.New(&NoMatchingFunction{Function: pkg.Name + "." + rightText}, f.File, expr.Source().StartPos)
 	}
 
 	if fn.IsExtern() {
