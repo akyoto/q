@@ -8,6 +8,7 @@ import (
 // CreateLabel creates a label that is tied to this function by using a suffix.
 func (f *Function) CreateLabel(prefix string, count counter) string {
 	tmp := strings.Builder{}
+	tmp.Grow(len(f.FullName) + 1 + len(prefix) + 1 + 1)
 	tmp.WriteString(f.FullName)
 	tmp.WriteString(":")
 	tmp.WriteString(prefix)
