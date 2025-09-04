@@ -84,6 +84,7 @@ var tests = []run{
 	{"slice", "", "Hello World", 0},
 	{"string-equal", "", "", 0},
 	{"string-index", "", "", 0},
+	{"string-cut", "", "", 0},
 	{"reorder-add", "", "", 0},
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
