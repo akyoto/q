@@ -4,14 +4,13 @@ import (
 	"encoding/binary"
 
 	"git.urbach.dev/cli/q/src/cpu"
-	"git.urbach.dev/cli/q/src/sizeof"
 )
 
 // MoveRegisterNumber moves an integer into the given register.
 func MoveRegisterNumber(code []byte, destination cpu.Register, number int) []byte {
 	w := byte(0)
 
-	if sizeof.Signed(int64(number)) == 8 {
+	if cpu.SizeInt(int64(number)) == 8 {
 		w = 1
 	}
 

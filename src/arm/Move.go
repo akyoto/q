@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 
 	"git.urbach.dev/cli/q/src/cpu"
-	"git.urbach.dev/cli/q/src/sizeof"
 )
 
 // MoveRegisterNumber moves a number into the given register.
@@ -40,7 +39,7 @@ func MoveRegisterNumberMI(code []byte, destination cpu.Register, number int) []b
 
 // MoveRegisterNumberSI moves a number into the given register using a single instruction.
 func MoveRegisterNumberSI(destination cpu.Register, number int) (uint32, bool) {
-	if sizeof.Signed(number) <= 2 {
+	if cpu.SizeInt(number) <= 2 {
 		if number < 0 {
 			return MoveInvertedNumber(destination, uint16(^number), 0), true
 		}
@@ -48,7 +47,7 @@ func MoveRegisterNumberSI(destination cpu.Register, number int) (uint32, bool) {
 		return MoveZero(destination, 0, uint16(number)), true
 	}
 
-	if (number&0xFFFFFFFFFFFF == 0xFFFFFFFFFFFF) && sizeof.Signed(number>>48) <= 2 {
+	if (number&0xFFFFFFFFFFFF == 0xFFFFFFFFFFFF) && cpu.SizeInt(number>>48) <= 2 {
 		return MoveInvertedNumber(destination, uint16((^number)>>48), 3), true
 	}
 
@@ -58,11 +57,11 @@ func MoveRegisterNumberSI(destination cpu.Register, number int) (uint32, bool) {
 		return code, true
 	}
 
-	if (number&0xFFFFFFFF == 0xFFFFFFFF) && sizeof.Signed(number>>32) <= 2 {
+	if (number&0xFFFFFFFF == 0xFFFFFFFF) && cpu.SizeInt(number>>32) <= 2 {
 		return MoveInvertedNumber(destination, uint16((^number)>>32), 2), true
 	}
 
-	if (number&0xFFFF == 0xFFFF) && sizeof.Signed(number>>16) <= 2 {
+	if (number&0xFFFF == 0xFFFF) && cpu.SizeInt(number>>16) <= 2 {
 		return MoveInvertedNumber(destination, uint16((^number)>>16), 1), true
 	}
 

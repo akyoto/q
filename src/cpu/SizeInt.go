@@ -1,9 +1,9 @@
-package sizeof
+package cpu
 
 import "math"
 
-// Signed tells you how many bytes are needed to encode this signed number.
-func Signed[T int | int8 | int16 | int32 | int64](number T) int {
+// SizeInt tells you how many bytes are needed to encode this signed number.
+func SizeInt[T int | int8 | int16 | int32 | int64](number T) int {
 	x := int64(number)
 
 	switch {

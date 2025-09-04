@@ -3,7 +3,7 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/arm"
 	"git.urbach.dev/cli/q/src/config"
-	"git.urbach.dev/cli/q/src/sizeof"
+	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -50,12 +50,12 @@ func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 
 		case config.X86:
 			if instr.Op.IsComparison() {
-				return sizeof.Signed(number.Int) <= 4
+				return cpu.SizeInt(number.Int) <= 4
 			}
 
 			switch instr.Op {
 			case token.Add, token.And, token.Or, token.Sub, token.Xor:
-				return sizeof.Signed(number.Int) <= 4
+				return cpu.SizeInt(number.Int) <= 4
 
 			case token.Shl, token.Shr:
 				return number.Int >= 0 && number.Int <= 63
@@ -67,7 +67,7 @@ func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 		case config.ARM:
 			return false
 		case config.X86:
-			return instr.Value == number && sizeof.Signed(number.Int) <= 4
+			return instr.Value == number && cpu.SizeInt(number.Int) <= 4
 		}
 	}
 

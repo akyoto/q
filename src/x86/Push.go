@@ -2,12 +2,11 @@ package x86
 
 import (
 	"git.urbach.dev/cli/q/src/cpu"
-	"git.urbach.dev/cli/q/src/sizeof"
 )
 
 // PushNumber pushes a number onto the stack.
 func PushNumber(code []byte, number int32) []byte {
-	length := sizeof.Signed(number)
+	length := cpu.SizeInt(number)
 
 	if length >= 2 {
 		return append(

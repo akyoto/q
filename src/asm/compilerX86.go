@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"slices"
 
+	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/exe"
-	"git.urbach.dev/cli/q/src/sizeof"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/x86"
 )
@@ -135,7 +135,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 			switch code[0] {
 			case 0x74, 0x75, 0x7C, 0x7D, 0x7E, 0x7F, 0xEB:
-				if sizeof.Signed(offset) == 1 {
+				if cpu.SizeInt(offset) == 1 {
 					code[1] = byte(offset)
 					return code
 				}
