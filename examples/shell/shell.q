@@ -15,7 +15,15 @@ main() {
 			return
 		}
 
-		cmd(buffer[..n-1])
+		if buffer[n-1] == '\n' {
+			n -= 1
+		}
+
+		if n > 0 && buffer[n-1] == '\r' {
+			n -= 1
+		}
+
+		cmd(buffer[..n])
 	}
 }
 

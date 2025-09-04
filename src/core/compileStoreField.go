@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"git.urbach.dev/cli/q/src/ast"
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
@@ -45,6 +46,11 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 	switch pointer := addressValue.Type().(type) {
 	case *types.Pointer:
 		field := pointer.To.(*types.Struct).FieldByName(fieldName)
+
+		if field == nil {
+			return errors.New(&UnknownStructField{StructName: pointer.To.Name(), FieldName: fieldName}, f.File, left.Children[1].Source().StartPos)
+		}
+
 		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 
 		f.Append(&ssa.Store{
