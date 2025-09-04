@@ -257,7 +257,6 @@ The source code structure uses a flat layout without nesting:
 - [pe](../src/pe) - PE format for Windows executables
 - [scanner](../src/scanner) - Scanner that parses top-level instructions
 - [set](../src/set) - Generic set implementation
-- [sizeof](../src/sizeof) - Calculates the byte size of numbers
 - [ssa](../src/ssa) - Static single assignment types
 - [token](../src/token) - Tokenizer
 - [types](../src/types) - Type system
