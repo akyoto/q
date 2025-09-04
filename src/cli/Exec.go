@@ -12,11 +12,11 @@ func Exec(args []string) int {
 	case "build":
 		return build(args[1:])
 
-	case "run":
-		return run(args[1:])
-
 	case "help":
 		return help()
+
+	case "run":
+		return run(args[1:])
 
 	case "version":
 		return version()

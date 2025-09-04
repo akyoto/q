@@ -6,8 +6,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// checkResources checks for resources that were not deconstructed.
-func (f *Function) checkResources() error {
+// verifyDeallocation verifies that all resources have been deallocated.
+func (f *Function) verifyDeallocation() error {
 	for exitBlock := range f.ExitBlocks {
 		for _, value := range exitBlock.Identifiers {
 			if value == nil {

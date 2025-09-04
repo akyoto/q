@@ -47,5 +47,5 @@ func (f *Function) optimize() error {
 
 	// Resource types that are still defined at the end of a
 	// scope must be freed.
-	return f.checkResources()
+	return f.verifyDeallocation()
 }

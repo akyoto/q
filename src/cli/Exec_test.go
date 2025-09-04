@@ -21,6 +21,7 @@ func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--verbose"}), 0)
 	assert.Equal(t, cli.Exec([]string{"help"}), 0)
 	assert.Equal(t, cli.Exec([]string{"run", "../../examples/hello"}), 0)
+	assert.Equal(t, cli.Exec([]string{"version"}), 0)
 	assert.Equal(t, cli.Exec([]string{"../../tests/script.q"}), 0)
 }
 

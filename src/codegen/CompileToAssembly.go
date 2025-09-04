@@ -5,8 +5,8 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-// GenerateAssembly converts the SSA IR to assembler instructions.
-func (f *Function) GenerateAssembly(ir ssa.IR, build *config.Build, hasStackFrame bool, hasExternCalls bool) {
+// CompileToAssembly converts the SSA IR to assembler instructions.
+func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFrame bool, hasExternCalls bool) {
 	f.isInit = f.FullName == "run.init"
 	f.isExit = f.FullName == "run.exit"
 	f.needsFramePointer = !f.isInit && !f.isExit

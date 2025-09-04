@@ -2,6 +2,10 @@ package codegen
 
 import "git.urbach.dev/cli/q/src/asm"
 
+const (
+	alignFunction = 0x20
+)
+
 // enter sets up the stack frame.
 func (f *Function) enter() {
 	f.Assembler.Append(&asm.Label{Name: f.FullName, Align: alignFunction})
