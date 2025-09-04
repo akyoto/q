@@ -202,6 +202,33 @@ The standard library currently makes use of this feature in two packages:
 - `fs.open` must be followed by `fs.close`
 - `mem.alloc` must be followed by `mem.free`
 
+## Errors
+
+Any function can define an `error` type return value at the end:
+
+```
+a, b, err := canFail()
+```
+
+An error value protects all the return values to the left of it.
+The protected values `a` and `b` can not be accessed without checking `err` first.
+Additionally, error variables like `err` are invalidated after the branch that checked them.
+
+```
+a, b, err := canFail()
+
+// a and b are inaccessible
+
+if err != 0 {
+	return
+}
+
+// a and b are accessible
+// err is no longer defined
+```
+
+The `error` type is currently defined to be an integer. This will most likely change in a future version.
+
 ## Source
 
 The source code structure uses a flat layout without nesting:
