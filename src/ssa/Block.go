@@ -69,21 +69,33 @@ func (b *Block) AddSuccessor(successor *Block) {
 				continue
 			}
 
-			phi, isPhi := oldValue.(*Phi)
+			definedLocally := successor.Index(oldValue) != -1
 
-			if !isPhi || successor.Index(phi) == -1 {
-				phi = &Phi{
-					Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
-					Typ:       oldValue.Type(),
+			if definedLocally {
+				phi, isPhi := oldValue.(*Phi)
+
+				if isPhi {
+					if newExists {
+						phi.Arguments = append(phi.Arguments, newValue)
+					} else {
+						phi.Arguments = append(phi.Arguments, Undefined)
+					}
 				}
 
-				for i := range phi.Arguments {
-					phi.Arguments[i] = oldValue
-				}
-
-				successor.InsertAt(phi, 0)
-				successor.Identifiers[name] = phi
+				continue
 			}
+
+			phi := &Phi{
+				Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
+				Typ:       oldValue.Type(),
+			}
+
+			for i := range phi.Arguments {
+				phi.Arguments[i] = oldValue
+			}
+
+			successor.InsertAt(phi, 0)
+			successor.Identifiers[name] = phi
 
 			if newExists {
 				phi.Arguments = append(phi.Arguments, newValue)
