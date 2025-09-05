@@ -1,3 +1,13 @@
 fork() -> int {
-	return syscall(_fork)
+	pid := syscall(_fork)
+
+	if pid == getpid() {
+		return 0
+	}
+
+	return pid
+}
+
+getpid() -> int {
+	return syscall(_getpid)
 }

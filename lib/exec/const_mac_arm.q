@@ -1,5 +1,6 @@
 const {
-	_fork = 0x2
 	_execve = 0x3B
-	_waitid = 0xAD
+	_fork = 0x2
+	_getpid = 0x14
+	_wait4 = 0x7
 }
