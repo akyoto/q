@@ -44,6 +44,10 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return err
 	}
 
+	if !types.Is(rightValue.Type(), pointer.To) {
+		return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: pointer.To.Name()}, f.File, right.Source().StartPos)
+	}
+
 	f.Append(&ssa.Store{
 		Address: addressValue,
 		Index:   indexValue,

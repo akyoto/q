@@ -136,7 +136,7 @@ func (err *TypeMismatch) Error() string {
 		return fmt.Sprintf("Expected parameter '%s' of %s '%s' (encountered '%s')", err.ParameterName, subject, err.Expected, err.Encountered)
 	}
 
-	return fmt.Sprintf("Expected %s '%s' instead of '%s'", subject, err.Expected, err.Encountered)
+	return fmt.Sprintf("Expected %s '%s' (encountered '%s')", subject, err.Expected, err.Encountered)
 }
 
 // TypeNotIndexable represents an error where a type does not allow indexing.
