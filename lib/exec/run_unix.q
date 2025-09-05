@@ -3,11 +3,14 @@ import run
 import strings
 
 run(path string) -> error {
-	cpath := strings.c(path)
 	pid := fork()
 
 	if pid == 0 {
-		err := execve(cpath.ptr, 0, 0)
+		cpath := strings.c(path)
+		argv := new(Argv)
+		argv.path = cpath.ptr
+		err := execve(cpath.ptr, argv, 0)
+		mem.free(cpath)
 		run.exit(err)
 	}
 
@@ -15,11 +18,9 @@ run(path string) -> error {
 	result := wait4(pid, status, 0, 0)
 
 	if result < 0 {
-		mem.free(cpath)
 		return result
 	}
 
-	mem.free(cpath)
 	return ([status] >> 8) & 0xFF
 }
 
