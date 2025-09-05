@@ -1,7 +1,7 @@
 import run
 
 alloc(length int) -> (buffer !string) {
-	x := mmap(0, length, read|write, private|anonymous)
+	x := mmap(0, length, read|write, private|anonymous, -1, 0)
 
 	if x < 0x1000 {
 		run.crash()

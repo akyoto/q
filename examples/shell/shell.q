@@ -1,6 +1,7 @@
 import exec
 import io
 import mem
+import strings
 
 main() {
 	length := 256
@@ -15,19 +16,13 @@ main() {
 			return
 		}
 
-		if buffer[n-1] == '\n' {
-			n -= 1
-		}
-
-		if n > 0 && buffer[n-1] == '\r' {
-			n -= 1
-		}
-
-		cmd(buffer[..n])
+		input := buffer[..n]
+		path := strings.trim(input)
+		execute(path)
 	}
 }
 
-cmd(path string) {
+execute(path string) {
 	if path.len == 0 {
 		return
 	}

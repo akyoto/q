@@ -55,6 +55,20 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return value, nil
 
 	default:
+		structure, isStruct := leftValue.Type().(*types.Struct)
+
+		if isStruct {
+			field := structure.FieldByName(rightText)
+
+			value := f.Append(&ssa.FromTuple{
+				Tuple:  leftValue,
+				Index:  int(field.Index),
+				Source: left.Source(),
+			})
+
+			return value, nil
+		}
+
 		pointer, isPointer := leftValue.Type().(*types.Pointer)
 
 		if !isPointer {
