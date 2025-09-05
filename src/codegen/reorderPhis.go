@@ -21,9 +21,22 @@ func (f *Function) reorderPhis() {
 			phis := f.Steps[start:end]
 
 			slices.SortStableFunc(phis, func(a *Step, b *Step) int {
-				aIndex := f.ValueToStep[a.Value.(*ssa.Phi).FirstDefined()].Index
-				bIndex := f.ValueToStep[b.Value.(*ssa.Phi).FirstDefined()].Index
-				return aIndex - bIndex
+				aPhi := a.Value.(*ssa.Phi)
+				bPhi := b.Value.(*ssa.Phi)
+
+				for i := range aPhi.Arguments {
+					aValue := aPhi.Arguments[i]
+					bValue := bPhi.Arguments[i]
+					aIndex := f.ValueToStep[aValue].Index
+					bIndex := f.ValueToStep[bValue].Index
+					cmp := aIndex - bIndex
+
+					if cmp != 0 {
+						return cmp
+					}
+				}
+
+				return 0
 			})
 
 			for i, phi := range phis {

@@ -24,6 +24,14 @@ func (f *Function) optimize() error {
 		f.Block().Append(&ssa.Return{})
 	}
 
+	// Copies were inserted for assignments to be safe in case
+	// loops would replace an existing value with a phi inside
+	// the loop. Now that all the loop replacements happened,
+	// we can safely remove the copies.
+	if f.Env.Build.RemoveCopies {
+		f.removeCopies()
+	}
+
 	// Binary operations with constant operands are evaluated
 	// at compile time. For example, 1 + 2 becomes 3, and the
 	// result is propagated to subsequent operations.
