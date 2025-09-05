@@ -4,8 +4,7 @@ import mem
 import strings
 
 main() {
-	length := 256
-	buffer := mem.alloc(length)
+	buffer := mem.alloc(256)
 
 	loop {
 		io.write("λ ")
