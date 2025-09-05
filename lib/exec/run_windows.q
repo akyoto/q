@@ -2,20 +2,24 @@ import mem
 import strings
 
 run(path string) -> error {
-	si := new(StartupInfo)
-	si.size = 104
-	pi := new(ProcessInformation)
+	startInfo := new(StartupInfo)
+	startInfo.size = 104
+	processInfo := new(ProcessInformation)
 	cpath := strings.c(path)
-	success := kernel32.CreateProcessA(0, cpath.ptr, 0, 0, false, 0, 0, 0, si, pi)
+	success := kernel32.CreateProcessA(0, cpath.ptr, 0, 0, false, 0, 0, 0, startInfo, processInfo)
 	mem.free(cpath)
 
 	if success == false {
+		delete(processInfo)
+		delete(startInfo)
 		return -1
 	}
 
-	kernel32.WaitForSingleObject(pi.process, 0xFFFFFFFF)
-	kernel32.CloseHandle(pi.process)
-	kernel32.CloseHandle(pi.thread)
+	kernel32.WaitForSingleObject(processInfo.process, 0xFFFFFFFF)
+	kernel32.CloseHandle(processInfo.process)
+	kernel32.CloseHandle(processInfo.thread)
+	delete(processInfo)
+	delete(startInfo)
 	return 0
 }
 

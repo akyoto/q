@@ -37,6 +37,33 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 			f.Dependencies.Add(malloc)
 			return call, nil
 
+		case "delete":
+			value, err := f.evaluate(expr.Children[1])
+
+			if err != nil {
+				return nil, err
+			}
+
+			typ := value.Type().(*types.Pointer).To
+			free := f.Env.Function("mem", "free")
+
+			size := f.Append(&ssa.Int{
+				Int: typ.Size(),
+			})
+
+			call := f.Append(&ssa.Call{
+				Func: &ssa.Function{
+					FunctionRef: free,
+					Typ:         &types.Function{},
+				},
+				Arguments: []ssa.Value{value, size},
+				Source:    expr.Source(),
+			})
+
+			f.Dependencies.Add(free)
+			f.Block().Unidentify(value)
+			return call, nil
+
 		case "syscall":
 			args, err := f.decompose(expr.Children[1:], nil, false)
 

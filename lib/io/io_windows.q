@@ -1,27 +1,35 @@
 read(buffer string) -> (read int) {
 	stdin := kernel32.GetStdHandle(-10)
-	count := new(uint32)
-	kernel32.ReadFile(stdin, buffer.ptr, buffer.len, count, 0)
-	return [count]
+	ptr := new(uint32)
+	kernel32.ReadFile(stdin, buffer.ptr, buffer.len, ptr, 0)
+	count := [ptr]
+	delete(ptr)
+	return count
 }
 
 readFrom(fd int, buffer string) -> (read int) {
-	count := new(uint32)
-	kernel32.ReadFile(fd, buffer.ptr, buffer.len, count, 0)
-	return [count]
+	ptr := new(uint32)
+	kernel32.ReadFile(fd, buffer.ptr, buffer.len, ptr, 0)
+	count := [ptr]
+	delete(ptr)
+	return count
 }
 
 write(buffer string) -> (written int) {
 	stdout := kernel32.GetStdHandle(-11)
-	count := new(uint32)
-	kernel32.WriteFile(stdout, buffer.ptr, buffer.len, count, 0)
-	return [count]
+	ptr := new(uint32)
+	kernel32.WriteFile(stdout, buffer.ptr, buffer.len, ptr, 0)
+	count := [ptr]
+	delete(ptr)
+	return count
 }
 
 writeTo(fd int, buffer string) -> (written int) {
-	count := new(uint32)
-	kernel32.WriteFile(fd, buffer.ptr, buffer.len, count, 0)
-	return [count]
+	ptr := new(uint32)
+	kernel32.WriteFile(fd, buffer.ptr, buffer.len, ptr, 0)
+	count := [ptr]
+	delete(ptr)
+	return count
 }
 
 extern {

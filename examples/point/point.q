@@ -15,6 +15,7 @@ Point(x int, y int) -> *Point {
 main() {
 	p := Point(1, 2)
 	write(p)
+	delete(p)
 }
 
 write(p *Point) {

@@ -1,6 +1,7 @@
 init() {
 	wsa := new(WsaData)
 	ws2_32.WSAStartup(0x0202, wsa)
+	delete(wsa)
 }
 
 exit() {

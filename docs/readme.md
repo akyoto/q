@@ -104,6 +104,7 @@ The following is a cheat sheet documenting the syntax.
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
 | Instantiate a struct on the heap     | `new(Point)`                 | 🚧 Experimental |
+| Delete a struct from the heap        | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
 | Index a pointer                      | `ptr[0]`                     | ✔️ Stable       |

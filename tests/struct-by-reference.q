@@ -29,4 +29,5 @@ main() {
 	assert p.x == 3
 	assert p.y == 3
 	assert p.x == p.y
+	delete(p)
 }

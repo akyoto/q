@@ -11,5 +11,7 @@ bind(socket int, address int64, port uint16) -> error {
 	addr.sin_family = 2
 	addr.sin_port = htons(port)
 	addr.sin_addr = address
-	return syscall(_bind, socket, addr, 16)
+	err := syscall(_bind, socket, addr, 16)
+	delete(addr)
+	return err
 }

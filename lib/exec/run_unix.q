@@ -10,6 +10,7 @@ run(path string) -> error {
 		argv := new(Argv)
 		argv.path = cpath.ptr
 		err := execve(cpath.ptr, argv, 0)
+		delete(argv)
 		mem.free(cpath)
 		run.exit(err)
 	}
@@ -21,7 +22,9 @@ run(path string) -> error {
 		return result
 	}
 
-	return ([status] >> 8) & 0xFF
+	exitCode := ([status] >> 8) & 0xFF
+	delete(status)
+	return exitCode
 }
 
 execve(path *byte, argv *any, envp *any) -> error {

@@ -9,13 +9,16 @@ open(path *byte, _flags int, _mode int) -> (!int, error) {
 }
 
 size(fd int) -> (int, error) {
-	fileSize := new(int64)
-	success := kernel32.GetFileSizeEx(fd, fileSize)
+	ptr := new(int64)
+	success := kernel32.GetFileSizeEx(fd, ptr)
 
 	if success {
-		return [fileSize], 0
+		size := [ptr]
+		delete(ptr)
+		return size, 0
 	}
 
+	delete(ptr)
 	return 0, -1
 }
 

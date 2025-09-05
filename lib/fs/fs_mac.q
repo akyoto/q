@@ -13,10 +13,13 @@ size(fd int) -> (int, error) {
 	err := syscall(_fstat64, fd, stats)
 
 	if err != 0 {
+		delete(stats)
 		return 0, err
 	}
 
-	return stats.st_size, 0
+	size := stats.st_size
+	delete(stats)
+	return size, 0
 }
 
 close(fd !int) -> error {
