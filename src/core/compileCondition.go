@@ -96,6 +96,9 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		f.Append(branch)
 		return nil
 
+	case token.Not:
+		return f.compileCondition(condition.Children[0], elseBlock, thenBlock)
+
 	default:
 		value, err := f.evaluate(condition)
 

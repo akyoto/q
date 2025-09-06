@@ -30,6 +30,7 @@ var tests = []run{
 	{"modulo", "", "", 0},
 	{"negative", "", "", 0},
 	{"negation", "", "", 0},
+	{"not", "", "", 0},
 	{"assign", "", "", 0},
 	{"overflow", "", "", 0},
 	{"underflow", "", "", 0},
