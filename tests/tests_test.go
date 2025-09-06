@@ -86,6 +86,8 @@ var tests = []run{
 	{"strings-index", "", "", 0},
 	{"strings-cut", "", "", 0},
 	{"strings-trim", "", "", 0},
+	{"strings-prefix", "", "", 0},
+	{"strings-suffix", "", "", 0},
 	{"reorder-add", "", "", 0},
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
