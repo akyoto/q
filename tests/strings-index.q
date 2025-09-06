@@ -25,12 +25,12 @@ main() {
 	assert err == 0
 	assert posLL == 2
 
-	_, err := strings.index("Hello", "Hello World")
-	assert err != 0
+	_, err1 := strings.index("Hello", "Hello World")
+	assert err1 != 0
 
-	_, err := strings.index("Hello", "hello")
-	assert err != 0
+	_, err2 := strings.index("Hello", "hello")
+	assert err2 != 0
 
-	_, err := strings.index("Hello", "ella")
-	assert err != 0
+	_, err3 := strings.index("Hello", "ella")
+	assert err3 != 0
 }

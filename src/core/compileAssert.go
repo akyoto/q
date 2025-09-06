@@ -3,39 +3,32 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
-	"git.urbach.dev/cli/q/src/types"
 )
 
 // compileAssert compiles an assertion.
 func (f *Function) compileAssert(assert *ast.Assert) error {
-	cond, err := f.evaluate(assert.Condition)
+	f.Count.Assert++
+	thenLabel := f.CreateLabel("assert.then", f.Count.Assert)
+	elseLabel := f.CreateLabel("assert.else", f.Count.Assert)
+	thenBlock := ssa.NewBlock(thenLabel)
+	elseBlock := ssa.NewBlock(elseLabel)
+	f.Block().AddSuccessor(thenBlock)
+	f.Block().AddSuccessor(elseBlock)
+	err := f.compileCondition(assert.Condition, thenBlock, elseBlock)
 
 	if err != nil {
 		return err
 	}
 
-	comparison := cond.(*ssa.BinaryOp)
-	left := comparison.Left
+	f.AddBlock(elseBlock)
+	crash := f.Env.Function("run", "crash")
 
-	if left.Type() == types.Error {
-		right := comparison.Right.(*ssa.Int)
+	elseBlock.Append(&ssa.Call{Func: &ssa.Function{
+		Typ:         crash.Type,
+		FunctionRef: crash,
+	}})
 
-		switch {
-		case assert.Condition.Token.Kind == token.NotEqual && right.Int == 0:
-			for _, protected := range f.Block().Protected[left] {
-				f.Block().Unidentify(protected)
-			}
-
-			f.Block().Unidentify(left)
-			f.Block().Unprotect(left)
-		case assert.Condition.Token.Kind == token.Equal && right.Int == 0:
-			f.Block().Unidentify(left)
-			f.Block().Unprotect(left)
-		}
-	}
-
-	f.Append(&ssa.Assert{Condition: cond})
-	f.Dependencies.Add(f.Env.Function("run", "crash"))
+	f.Dependencies.Add(crash)
+	f.AddBlock(thenBlock)
 	return nil
 }
