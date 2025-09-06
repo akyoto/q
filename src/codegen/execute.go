@@ -7,8 +7,6 @@ import (
 // execute executes a step which appends it to the assembler's instruction list.
 func (f *Function) execute(step *Step) {
 	switch instr := step.Value.(type) {
-	case *ssa.Assert:
-		f.executeAssert(instr)
 	case *ssa.BinaryOp:
 		f.executeBinaryOp(step, instr)
 	case *ssa.Bool:
