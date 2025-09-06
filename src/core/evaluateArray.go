@@ -32,10 +32,24 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source().StartPos)
 	}
 
-	_, isPointerToStruct := pointer.To.(*types.Struct)
+	structure, isPointerToStruct := pointer.To.(*types.Struct)
 
 	if isPointerToStruct {
-		return nil, errors.New(&NotImplemented{Subject: "struct pointer dereferencing"}, f.File, address.Source().StartPos)
+		fields := make([]ssa.Value, 0, len(structure.Fields))
+
+		for _, field := range structure.Fields {
+			fieldValue := f.Append(&ssa.Load{
+				Typ:     field.Type,
+				Address: addressValue,
+				Index:   f.Append(&ssa.Int{Int: int(field.Offset)}),
+				Source:  expr.Source(),
+			})
+
+			fields = append(fields, fieldValue)
+		}
+
+		value := &ssa.Struct{Typ: structure, Arguments: fields}
+		return value, nil
 	}
 
 	var indexValue ssa.Value
