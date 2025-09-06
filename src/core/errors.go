@@ -213,3 +213,13 @@ type VariableAlreadyExists struct {
 func (err *VariableAlreadyExists) Error() string {
 	return fmt.Sprintf("Variable '%s' already exists", err.Name)
 }
+
+// WriteToImmutable error is created when a memory store to an immutable type has been attempted.
+type WriteToImmutable struct {
+	Name     string
+	TypeName string
+}
+
+func (err *WriteToImmutable) Error() string {
+	return fmt.Sprintf("'%s' of type '%s' is immutable", err.Name, err.TypeName)
+}

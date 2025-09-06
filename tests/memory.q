@@ -4,7 +4,12 @@ import run
 
 main() {
 	buffer := mem.alloc(6)
-	fill(buffer)
+	buffer[0] = 'H'
+	buffer[1] = 'e'
+	buffer[2] = 'l'
+	buffer[3] = 'l'
+	buffer[4] = 'o'
+	buffer[5] = '\n'
 	check(buffer)
 
 	loop i := 0..buffer.len {
@@ -12,15 +17,6 @@ main() {
 	}
 
 	mem.free(buffer)
-}
-
-fill(buffer string) {
-	buffer[0] = 'H'
-	buffer[1] = 'e'
-	buffer[2] = 'l'
-	buffer[3] = 'l'
-	buffer[4] = 'o'
-	buffer[5] = '\n'
 }
 
 check(buffer string) {

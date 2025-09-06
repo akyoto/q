@@ -55,7 +55,8 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return value, nil
 
 	default:
-		structure, isStruct := leftValue.Type().(*types.Struct)
+		leftUnwrapped := types.Unwrap(leftValue.Type())
+		structure, isStruct := leftUnwrapped.(*types.Struct)
 
 		if isStruct {
 			field := structure.FieldByName(rightText)
@@ -69,13 +70,19 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			return value, nil
 		}
 
-		pointer, isPointer := leftValue.Type().(*types.Pointer)
+		pointer, isPointer := leftUnwrapped.(*types.Pointer)
 
 		if !isPointer {
 			return nil, errors.New(&NotDataStruct{TypeName: leftValue.Type().Name()}, f.File, left.Source().StartPos)
 		}
 
-		field := pointer.To.(*types.Struct).FieldByName(rightText)
+		structure, isStructPointer := pointer.To.(*types.Struct)
+
+		if !isStructPointer {
+			return nil, errors.New(&NotDataStruct{TypeName: pointer.To.Name()}, f.File, left.Source().StartPos)
+		}
+
+		field := structure.FieldByName(rightText)
 		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 
 		load := f.Append(&ssa.Load{

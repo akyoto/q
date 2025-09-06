@@ -37,6 +37,7 @@ var errs = []struct {
 	{"MissingOperand.q", core.MissingOperand},
 	{"NoMatchingFunction.q", &core.NoMatchingFunction{Function: "main.f"}},
 	{"NotDataStruct.q", &core.NotDataStruct{TypeName: "int"}},
+	{"NotDataStruct2.q", &core.NotDataStruct{TypeName: "int64"}},
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},
 	{"PartiallyUnknownIdentifier.q", &core.PartiallyUnknownIdentifier{Name: "x"}},
@@ -78,6 +79,7 @@ var errs = []struct {
 	{"UnusedValue6.q", &core.UnusedValue{Value: "x2"}},
 	{"VariableAlreadyExists.q", &core.VariableAlreadyExists{Name: "x"}},
 	{"VariableAlreadyExists2.q", &core.VariableAlreadyExists{Name: "x"}},
+	{"WriteToImmutable.q", &core.WriteToImmutable{Name: "s", TypeName: "string"}},
 }
 
 func TestErrors(t *testing.T) {
