@@ -1,3 +1,10 @@
+ProcessInformation {
+	process *any
+	thread *any
+	processId uint32
+	threadId uint32
+}
+
 StartupInfo {
 	size uint32
 	reserved *uint16
@@ -17,11 +24,4 @@ StartupInfo {
 	stdIn *any
 	stdOut *any
 	stdError *any
-}
-
-ProcessInformation {
-	process *any
-	thread *any
-	processId uint32
-	threadId uint32
 }

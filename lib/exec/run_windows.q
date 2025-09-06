@@ -9,7 +9,7 @@ run(path string) -> error {
 	success := kernel32.CreateProcessA(0, cpath.ptr, 0, 0, false, 0, 0, 0, startInfo, processInfo)
 	mem.free(cpath)
 
-	if success == false {
+	if !success {
 		delete(processInfo)
 		delete(startInfo)
 		return -1
