@@ -88,6 +88,7 @@ var tests = []run{
 	{"strings-trim", "", "", 0},
 	{"strings-prefix", "", "", 0},
 	{"strings-suffix", "", "", 0},
+	{"strings-concat", "", "", 0},
 	{"reorder-add", "", "", 0},
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
