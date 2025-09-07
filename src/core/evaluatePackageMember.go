@@ -6,8 +6,8 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-// evaluateDotPackage converts a pkg.something expression to an SSA value.
-func (f *Function) evaluateDotPackage(pkg *Package, rightText string, expr *expression.Expression) (ssa.Value, error) {
+// evaluatePackageMember converts a pkg.something expression to an SSA value.
+func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *expression.Expression) (ssa.Value, error) {
 	constant, exists := pkg.Constants[rightText]
 
 	if exists {

@@ -37,7 +37,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			imp.Used.Add(1)
 		}
 
-		return f.evaluateDotPackage(pkg, rightText, expr)
+		return f.evaluatePackageMember(pkg, rightText, expr)
 
 	case *ssa.Struct:
 		field := types.Unwrap(leftValue.Typ).(*types.Struct).FieldByName(rightText)
