@@ -14,5 +14,4 @@ func TestInit(t *testing.T) {
 	assert.True(t, len(global.Library) > 0)
 	assert.Equal(t, global.OS, runtime.GOOS)
 	assert.True(t, len(global.Root) > 0)
-	assert.True(t, len(global.WorkingDirectory) > 0)
 }

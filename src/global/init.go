@@ -9,12 +9,11 @@ import (
 
 // Global variables that are useful in all packages.
 var (
-	Arch             string
-	Executable       string
-	Library          string
-	OS               string
-	Root             string
-	WorkingDirectory string
+	Arch       string
+	Executable string
+	Library    string
+	OS         string
+	Root       string
 )
 
 // init is the very first thing that's executed.
@@ -32,12 +31,6 @@ func init() {
 	}
 
 	Executable, err = filepath.EvalSymlinks(Executable)
-
-	if err != nil {
-		panic(err)
-	}
-
-	WorkingDirectory, err = os.Getwd()
 
 	if err != nil {
 		panic(err)

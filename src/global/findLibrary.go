@@ -9,7 +9,11 @@ import (
 // findLibrary tries to go up each directory from the working directory and check for the existence of a "lib" directory.
 // This is needed for tests to work correctly.
 func findLibrary() {
-	dir := WorkingDirectory
+	dir, err := os.Getwd()
+
+	if err != nil {
+		panic(err)
+	}
 
 	for {
 		Library = filepath.Join(dir, "lib")
