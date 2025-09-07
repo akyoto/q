@@ -35,7 +35,7 @@ close(fd !int) -> error {
 extern {
 	kernel32 {
 		CloseHandle(handle int) -> (success bool)
-		CreateFileA(path *byte, desiredAccess uint32, shareMode uint32, securityAttributes *any, creationDisposition uint32, flagsAndAttributes uint32, templateFile int) -> (fd int)
+		CreateFileA(path *byte, desiredAccess uint32, shareMode uint32, securityAttributes *any|nil, creationDisposition uint32, flagsAndAttributes uint32, templateFile int) -> (fd int)
 		GetFileSizeEx(fd int, fileSize *int64) -> (success bool)
 	}
 }

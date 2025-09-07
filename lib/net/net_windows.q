@@ -38,11 +38,11 @@ send(fd int, buffer string) -> int {
 
 extern {
 	ws2_32 {
-		accept(fd int, address *any, length int) -> int
+		accept(fd int, address *any|nil, length int) -> int
 		bind(socket int, address *any, length int) -> (error int)
 		closesocket(fd int) -> int
 		listen(fd int, backlog int) -> int
-		recv(fd int, address *byte, length int, flags int) -> int
+		recv(fd int, address *byte|nil, length int, flags int) -> int
 		socket(family int, type int, protocol int) -> int
 		send(fd int, address *byte, length int, flags int) -> int
 		shutdown(fd int, how int) -> int
