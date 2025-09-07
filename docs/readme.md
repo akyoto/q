@@ -444,12 +444,13 @@ If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](
 In alphabetical order:
 
 - [Anto "xplshn"](https://github.com/xplshn) | feedback on public compiler interfaces
+- [Bjorn De Meyer](https://github.com/bjorndm) | feedback on PL design
 - [Furkan](https://github.com/mfbulut) | first one to buy me a coffee
 - [James Mills](https://github.com/prologic) | first one to contact me about the project
 - [Laurent Demailly](https://github.com/ldemailly) | indispensable help with Mac debugging
 - [Max van IJsselmuiden](https://github.com/maxvij) | feedback and Mac debugging
 - [Nikita Proskourine](https://github.com/Deobfuscator) | first monthly supporter on GitHub
-- [Tibor Halter](https://github.com/zupa-hu) | invited me to lobste.rs | detailed feedback and bug reporting
+- [Tibor Halter](https://github.com/zupa-hu) | detailed feedback and bug reporting
 - my wife :) | providing syntax feedback as a non-programmer
 
 ## License
