@@ -8,8 +8,9 @@
 
 - High performance (comparable to C and Go)
 - Fast compilation (5-10x faster than most)
-- Tiny executables ("Hello World" is ~600 bytes)
+- Tiny executables ("Hello World" is 0.6 KiB)
 - Static analysis (no need for external linters)
+- Pointer safety (pointers cannot be nil)
 - Resource safety (use-after-free is a compile error)
 - Multiple platforms (Linux, Mac and Windows)
 - Zero dependencies (no llvm, no libc)
@@ -288,11 +289,11 @@ There is also an [interactive view](https://graph-q.urbach.dev/) powered by gopk
 
 ### How tiny is a Hello World?
 
-|            | arm64     | x86-64    |
-| ---------- | --------- | --------- |
-| 🐧 Linux   | 646 bytes | 646 bytes |
-| 🍏 Mac     |  16.3 KiB |   4.2 KiB |
-| 🪟 Windows |   1.7 KiB |   1.7 KiB |
+|            | arm64    | x86-64  |
+| ---------- | -------- | ------- |
+| 🐧 Linux   |  0.6 KiB | 0.6 KiB |
+| 🍏 Mac     | 16.3 KiB | 4.2 KiB |
+| 🪟 Windows |  1.7 KiB | 1.7 KiB |
 
 ### Are there any runtime benchmarks?
 
