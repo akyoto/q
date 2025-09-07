@@ -35,7 +35,7 @@ writeTo(fd int, buffer string) -> (written int) {
 extern {
 	kernel32 {
 		GetStdHandle(device int64) -> (handle int64)
-		ReadFile(fd int64, buffer *byte, length uint32, read *uint32, overlapped *any) -> (success bool)
-		WriteFile(fd int64, buffer *byte, length uint32, written *uint32, overlapped *any) -> (success bool)
+		ReadFile(fd int64, buffer *byte, length uint32, read *uint32, overlapped *any|nil) -> (success bool)
+		WriteFile(fd int64, buffer *byte, length uint32, written *uint32, overlapped *any|nil) -> (success bool)
 	}
 }

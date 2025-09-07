@@ -12,6 +12,7 @@ var (
 	Int8       = &Base{name: "int8", size: 1}
 	Float64    = &Base{name: "float64", size: 8}
 	Float32    = &Base{name: "float32", size: 4}
+	Nil        = &Base{name: "nil", size: 8}
 	UInt64     = &Base{name: "uint64", size: 8}
 	UInt32     = &Base{name: "uint32", size: 4}
 	UInt16     = &Base{name: "uint16", size: 2}

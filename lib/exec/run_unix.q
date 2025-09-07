@@ -27,10 +27,10 @@ run(path string) -> error {
 	return exitCode
 }
 
-execve(path *byte, argv *any, envp *any) -> error {
+execve(path *byte, argv *any, envp *any|nil) -> error {
 	return syscall(_execve, path, argv, envp)
 }
 
-wait4(pid int, status *int32, options int, rusage *any) -> error {
+wait4(pid int, status *int32, options int, rusage *any|nil) -> error {
 	return syscall(_wait4, pid, status, options, rusage)
 }

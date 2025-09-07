@@ -6,22 +6,17 @@ func Is(a Type, b Type) bool {
 		return true
 	}
 
+	aPointer, aIsPointer := a.(*Pointer)
+	bPointer, bIsPointer := b.(*Pointer)
+
+	if aIsPointer && bIsPointer && (aPointer.To == bPointer.To || bPointer.To == Any) {
+		return true
+	}
+
 	bUnion, bIsUnion := b.(*Union)
 
 	if bIsUnion {
 		return bUnion.Index(a) != -1
-	}
-
-	aPointer, aIsPointer := a.(*Pointer)
-	bPointer, bIsPointer := b.(*Pointer)
-
-	if aIsPointer && bIsPointer && (bPointer.To == Any || aPointer.To == bPointer.To) {
-		return true
-	}
-
-	// TODO: Remove this temporary hack to allow integers as pointers
-	if bIsPointer && a == AnyInt {
-		return true
 	}
 
 	aResource, aIsResource := a.(*Resource)
@@ -38,7 +33,7 @@ func Is(a Type, b Type) bool {
 
 	if a == AnyInt || a == Error {
 		switch b {
-		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, Error, AnyInt:
+		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, Error, Nil, AnyInt:
 			return true
 		default:
 			return false

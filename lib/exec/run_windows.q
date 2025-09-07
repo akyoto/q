@@ -26,7 +26,7 @@ run(path string) -> error {
 extern {
 	kernel32 {
 		CloseHandle(handle *any) -> bool
-		CreateProcessA(applicationName *byte, commandLine *byte, processAttributes *any, threadAttributes *any, inheritHandles bool, creationFlags uint32, environment *uint16, currentDirectory *uint16, startupInfo *any, processInformation *any) -> (success bool)
+		CreateProcessA(applicationName *byte|nil, commandLine *byte, processAttributes *any|nil, threadAttributes *any|nil, inheritHandles bool, creationFlags uint32, environment *uint16|nil, currentDirectory *uint16|nil, startupInfo *any, processInformation *any) -> (success bool)
 		WaitForSingleObject(handle *any, milliseconds uint32) -> uint32
 	}
 }

@@ -59,6 +59,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-09-07**: Pointers cannot be nil.
 - **2025-09-03**: Error handling.
 - **2025-08-31**: Constant folding.
 - **2025-08-25**: Resource safety.

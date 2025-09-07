@@ -38,8 +38,12 @@ func TestBasics(t *testing.T) {
 	assert.False(t, types.Is(types.Any, types.Int))
 	assert.False(t, types.Is(types.Any, types.Float))
 
-	// TODO: This check is currently disabled due to some temporary hacks, add it back later.
-	//assert.False(t, types.Is(types.AnyInt, types.AnyPointer))
+}
+
+func TestNil(t *testing.T) {
+	assert.False(t, types.Is(types.Nil, types.AnyPointer))
+	assert.False(t, types.Is(types.AnyInt, types.AnyPointer))
+	assert.True(t, types.Is(types.AnyInt, types.Nil))
 }
 
 func TestUnions(t *testing.T) {

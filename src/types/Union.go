@@ -41,7 +41,7 @@ func (u *Union) Size() int {
 		size = max(size, typ.Size())
 	}
 
-	return size + 8
+	return size
 }
 
 // String returns the type name.

@@ -112,6 +112,8 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 		return types.Float32, nil
 	case "error":
 		return types.Error, nil
+	case "nil":
+		return types.Nil, nil
 	case "any":
 		return types.Any, nil
 	}

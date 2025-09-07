@@ -43,13 +43,14 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 				}, f.File, node.Source().StartPos)
 			}
 
-			union, isUnion := expectedType.(*types.Union)
+			// NOTE: The following code is disabled because it only applies to tagged unions.
+			// union, isUnion := expectedType.(*types.Union)
 
-			if isUnion {
-				index := union.Index(valueType)
-				tag := f.Append(&ssa.Int{Int: index})
-				args = append(args, tag)
-			}
+			// if isUnion {
+			// 	index := union.Index(valueType)
+			// 	tag := f.Append(&ssa.Int{Int: index})
+			// 	args = append(args, tag)
+			// }
 		}
 
 		structure, isStruct := value.(*ssa.Struct)
