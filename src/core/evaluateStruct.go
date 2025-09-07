@@ -10,11 +10,21 @@ import (
 
 // evaluateStruct converts a struct expression to an SSA value.
 func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error) {
-	typ := ParseType([]token.Token{expr.Children[0].Token}, f.File.Bytes, f.Env).(*types.Struct)
+	typ, err := TypeFromTokens(token.List{expr.Children[0].Token}, f.File, f.Env)
+
+	if err != nil {
+		return nil, err
+	}
+
+	structType, isStructType := typ.(*types.Struct)
+
+	if !isStructType {
+		panic("not a struct")
+	}
 
 	structure := &ssa.Struct{
-		Typ:       typ,
-		Arguments: make(ssa.Arguments, len(typ.Fields)),
+		Typ:       structType,
+		Arguments: make(ssa.Arguments, len(structType.Fields)),
 	}
 
 	for _, definition := range expr.Children[1:] {
@@ -33,7 +43,7 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 		}
 
 		fieldName := left.String(f.File.Bytes)
-		field := typ.FieldByName(fieldName)
+		field := structType.FieldByName(fieldName)
 
 		if field == nil {
 			return nil, errors.New(&UnknownStructField{StructName: typ.Name(), FieldName: fieldName}, f.File, left.Source().StartPos)

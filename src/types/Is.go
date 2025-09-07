@@ -36,18 +36,6 @@ func Is(a Type, b Type) bool {
 		return aResource.Of == bResource.Of
 	}
 
-	aArray, aIsArray := a.(*Array)
-
-	if aIsArray && bIsPointer && (bPointer.To == Any || aArray.Of == bPointer.To) {
-		return true
-	}
-
-	bArray, bIsArray := b.(*Array)
-
-	if aIsArray && bIsArray && (bArray.Of == Any || aArray.Of == bArray.Of) {
-		return true
-	}
-
 	if a == AnyInt || a == Error {
 		switch b {
 		case Int64, Int32, Int16, Int8, UInt64, UInt32, UInt16, UInt8, Error, AnyInt:

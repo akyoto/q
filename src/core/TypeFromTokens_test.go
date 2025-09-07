@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	"git.urbach.dev/cli/q/src/core"
+	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 	"git.urbach.dev/go/assert"
 )
 
-func TestParseType(t *testing.T) {
+func TestTypeFromTokens(t *testing.T) {
 	tests := []struct {
 		Source       string
 		ExpectedType types.Type
@@ -33,8 +34,6 @@ func TestParseType(t *testing.T) {
 		{"any", types.Any},
 		{"*any", types.AnyPointer},
 		{"*byte", &types.Pointer{To: types.Byte}},
-		{"[]any", types.AnyArray},
-		{"[]byte", &types.Array{Of: types.Byte}},
 		{"123", nil},
 		{"*", nil},
 		{"[]", nil},
@@ -46,13 +45,9 @@ func TestParseType(t *testing.T) {
 		t.Run(test.Source, func(t *testing.T) {
 			src := []byte(test.Source)
 			tokens := token.Tokenize(src)
-			typ := core.ParseType(tokens, src, nil)
+			file := &fs.File{Tokens: tokens, Bytes: src}
+			typ, _ := core.TypeFromTokens(tokens, file, nil)
 			assert.True(t, types.Is(typ, test.ExpectedType))
 		})
 	}
-}
-
-func TestParseNil(t *testing.T) {
-	tokens := []token.Token(nil)
-	assert.Nil(t, core.ParseType(tokens, nil, nil))
 }

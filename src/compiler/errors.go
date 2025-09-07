@@ -11,15 +11,6 @@ var (
 	MissingMainFunction = errors.String("Missing main function")
 )
 
-// UnknownType error is created when a type could not be found.
-type UnknownType struct {
-	Name string
-}
-
-func (err *UnknownType) Error() string {
-	return fmt.Sprintf("Unknown type '%s'", err.Name)
-}
-
 // UnusedImport error is created when an import is never used.
 type UnusedImport struct {
 	Package string

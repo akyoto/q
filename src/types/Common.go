@@ -2,7 +2,6 @@ package types
 
 var (
 	Any        = &Base{name: "any", size: 0}
-	AnyArray   = &Array{Of: Any}
 	AnyInt     = &Base{name: "int"}
 	AnyPointer = &Pointer{To: Any}
 	Bool       = &Base{name: "bool", size: 1}

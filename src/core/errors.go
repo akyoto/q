@@ -196,6 +196,15 @@ func (err *UnknownStructField) Error() string {
 	return fmt.Sprintf("Unknown struct field '%s' in '%s'", err.FieldName, err.StructName)
 }
 
+// UnknownType error is created when a type could not be found.
+type UnknownType struct {
+	Name string
+}
+
+func (err *UnknownType) Error() string {
+	return fmt.Sprintf("Unknown type '%s'", err.Name)
+}
+
 // UnusedValue error is created when a value is never used.
 type UnusedValue struct {
 	Value string

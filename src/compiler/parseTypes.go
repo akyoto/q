@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"git.urbach.dev/cli/q/src/core"
-	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -20,12 +19,13 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 
 		for i, input := range f.Input {
 			input.Name = input.Tokens[0].String(f.File.Bytes)
-			input.Typ = core.ParseType(input.Tokens[1:], f.File.Bytes, env)
+			typ, err := core.TypeFromTokens(input.Tokens[1:], f.File, env)
 
-			if input.Typ == nil {
-				return errors.New(&UnknownType{Name: input.Tokens[1:].String(f.File.Bytes)}, f.File, input.Tokens[1].Position)
+			if err != nil {
+				return err
 			}
 
+			input.Typ = typ
 			f.Type.Input[i] = input.Typ
 		}
 
@@ -38,12 +38,13 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 				typeTokens = typeTokens[1:]
 			}
 
-			output.Typ = core.ParseType(typeTokens, f.File.Bytes, env)
+			typ, err := core.TypeFromTokens(typeTokens, f.File, env)
 
-			if output.Typ == nil {
-				return errors.New(&UnknownType{Name: typeTokens.String(f.File.Bytes)}, f.File, typeTokens[0].Position)
+			if err != nil {
+				return err
 			}
 
+			output.Typ = typ
 			f.Type.Output[i] = output.Typ
 		}
 

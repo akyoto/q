@@ -15,7 +15,12 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	if identifier.Token.Kind == token.Identifier {
 		switch identifier.String(f.File.Bytes) {
 		case "new":
-			typ := ParseType([]token.Token{expr.Children[1].Token}, f.File.Bytes, f.Env)
+			typ, err := TypeFromTokens([]token.Token{expr.Children[1].Token}, f.File, f.Env)
+
+			if err != nil {
+				return nil, err
+			}
+
 			malloc := f.Env.Function("mem", "alloc")
 			returnType := &types.Pointer{To: typ}
 
