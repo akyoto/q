@@ -4,16 +4,50 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // define gives a value an identifier.
-func (f *Function) define(identifier *expression.Expression, value ssa.Value) error {
-	name := identifier.String(f.File.Bytes)
-	_, exists := f.Block().FindIdentifier(name)
+func (f *Function) define(left *expression.Expression, right *expression.Expression, isAssign bool) error {
+	rightValue, err := f.evaluate(right)
 
-	if exists {
-		return errors.New(&VariableAlreadyExists{Name: name}, f.File, identifier.Source().StartPos)
+	if err != nil {
+		return err
+	}
+
+	name := left.String(f.File.Bytes)
+
+	if name == "_" {
+		return nil
+	}
+
+	call, isCall := rightValue.(*ssa.Call)
+
+	if isCall && len(call.Func.Typ.Output) != 1 {
+		return errors.New(&DefinitionCountMismatch{Function: call.Func.String(), Count: 1, ExpectedCount: len(call.Func.Typ.Output)}, f.File, left.Source().StartPos)
+	}
+
+	leftValue, exists := f.Block().FindIdentifier(name)
+
+	if !isAssign && exists {
+		return errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source().StartPos)
+	}
+
+	if isAssign {
+		if !exists {
+			return errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
+		}
+
+		phi, isPhi := leftValue.(*ssa.Phi)
+
+		if isPhi && phi.IsPartiallyUndefined() {
+			return errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
+		}
+
+		if !types.Is(rightValue.Type(), leftValue.Type()) {
+			return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: leftValue.Type().Name()}, f.File, right.Source().StartPos)
+		}
 	}
 
 	// If the value we got was a value that is stored in a variable,
@@ -21,20 +55,34 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 	// We want to assure that every named variable creates a copy of
 	// another named variable instead of using the cached value itself
 	// because it could lead to incorrect optimizations.
-	if f.IsIdentified(value) {
-		_, isResource := value.Type().(*types.Resource)
+	if f.IsIdentified(rightValue) {
+		_, isResource := rightValue.Type().(*types.Resource)
 
 		if isResource {
-			f.Block().Unidentify(value)
+			f.Block().Unidentify(rightValue)
 		} else {
-			value = f.copy(value, identifier.Source())
+			rightValue = f.copy(rightValue, left.Source())
 		}
 	}
 
-	_, isCall := value.(*ssa.Call)
+	root := left.Parent
+
+	if isAssign && root.Token.Kind != token.Assign {
+		operator := removeAssign(root.Token.Kind)
+
+		operation := f.Append(&ssa.BinaryOp{
+			Op:     operator,
+			Left:   leftValue,
+			Right:  rightValue,
+			Source: root.Source(),
+		})
+
+		f.Block().Identify(name, operation)
+		return nil
+	}
 
 	if !isCall {
-		structure, isStructType := value.(*ssa.Struct)
+		structure, isStructType := rightValue.(*ssa.Struct)
 
 		if isStructType {
 			for i, field := range types.Unwrap(structure.Typ).(*types.Struct).Fields {
@@ -42,29 +90,29 @@ func (f *Function) define(identifier *expression.Expression, value ssa.Value) er
 			}
 		}
 
-		f.Block().Identify(name, value)
+		f.Block().Identify(name, rightValue)
 		return nil
 	}
 
-	structure, isStructType := types.Unwrap(value.Type()).(*types.Struct)
+	structure, isStructType := types.Unwrap(rightValue.Type()).(*types.Struct)
 
 	if !isStructType {
-		f.Block().Identify(name, value)
+		f.Block().Identify(name, rightValue)
 		return nil
 	}
 
 	composite := &ssa.Struct{
-		Typ:       value.Type(),
+		Typ:       rightValue.Type(),
 		Arguments: make(ssa.Arguments, 0, len(structure.Fields)),
-		Source:    identifier.Source(),
+		Source:    left.Source(),
 	}
 
 	for i, field := range structure.Fields {
 		fieldValue := &ssa.FromTuple{
-			Tuple:     value,
+			Tuple:     rightValue,
 			Index:     i,
 			Structure: composite,
-			Source:    identifier.Source(),
+			Source:    left.Source(),
 		}
 
 		f.Block().Append(fieldValue)
