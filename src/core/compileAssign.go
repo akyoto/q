@@ -42,6 +42,10 @@ func (f *Function) compileAssign(node *ast.Assign) error {
 		return err
 	}
 
+	if !types.Is(rightValue.Type(), leftValue.Type()) {
+		return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: leftValue.Type().Name()}, f.File, right.Source().StartPos)
+	}
+
 	if f.IsIdentified(rightValue) {
 		_, isResource := rightValue.Type().(*types.Resource)
 
