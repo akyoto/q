@@ -2,7 +2,7 @@ package types
 
 // Is returns true if the encountered type `a` can be converted into the expected type `b`.
 func Is(a Type, b Type) bool {
-	if a == b || a == Any || b == Any {
+	if a == b || b == Any {
 		return true
 	}
 

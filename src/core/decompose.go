@@ -19,7 +19,9 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 			return nil, err
 		}
 
-		if typeCheck != nil {
+		_, isSyscall := value.(*ssa.Syscall)
+
+		if typeCheck != nil && !isSyscall {
 			valueType := value.Type()
 			expectedType := typeCheck[i].Typ
 
