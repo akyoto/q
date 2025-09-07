@@ -6,21 +6,19 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// block retrieves the start and end position of a block.
-func block(tokens token.List, file *fs.File) (blockStart int, blockEnd int, body AST, err error) {
-	blockStart = tokens.IndexKind(token.BlockStart)
-	blockEnd = tokens.LastIndexKind(token.BlockEnd)
+// block returns the start and end of the block, the block's body, and an error if one occurred.
+func block(tokens token.List, file *fs.File) (int, int, AST, error) {
+	blockStart := tokens.IndexKind(token.BlockStart)
+	blockEnd := tokens.LastIndexKind(token.BlockEnd)
 
 	if blockStart == -1 {
-		err = errors.New(MissingBlockStart, file, tokens[0].End())
-		return
+		return 0, 0, nil, errors.New(MissingBlockStart, file, tokens[0].End())
 	}
 
 	if blockEnd == -1 {
-		err = errors.New(MissingBlockEnd, file, tokens[len(tokens)-1].End())
-		return
+		return 0, 0, nil, errors.New(MissingBlockEnd, file, tokens[len(tokens)-1].End())
 	}
 
-	body, err = Parse(tokens[blockStart+1:blockEnd], file)
-	return
+	body, err := Parse(tokens[blockStart+1:blockEnd], file)
+	return blockStart, blockEnd, body, err
 }
