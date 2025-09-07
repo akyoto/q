@@ -13,11 +13,5 @@ func (f *Function) compileDefinition(node *ast.Define) error {
 		return f.define(left, right, false)
 	}
 
-	rightValue, err := f.evaluate(right)
-
-	if err != nil {
-		return err
-	}
-
-	return f.compose(left, rightValue)
+	return f.defineMulti(left, right, false)
 }

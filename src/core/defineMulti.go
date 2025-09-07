@@ -7,15 +7,20 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// compose creates SSA values from expressions and composes structs from their individual fields.
-func (f *Function) compose(left *expression.Expression, rightValue ssa.Value) error {
+// defineMulti creates SSA values from expressions and composes structs from their individual fields.
+func (f *Function) defineMulti(left *expression.Expression, right *expression.Expression, isAssign bool) error {
+	rightValue, err := f.evaluate(right)
+
+	if err != nil {
+		return err
+	}
+
+	fn := rightValue.(*ssa.Call).Func
 	leaves := make([]*expression.Expression, 0, 2)
 
 	for leaf := range left.Leaves() {
 		leaves = append(leaves, leaf)
 	}
-
-	fn := rightValue.(*ssa.Call).Func
 
 	if len(leaves) != len(fn.Typ.Output) {
 		return errors.New(&DefinitionCountMismatch{Function: fn.String(), Count: len(leaves), ExpectedCount: len(fn.Typ.Output)}, f.File, left.Source().StartPos)
@@ -32,10 +37,26 @@ func (f *Function) compose(left *expression.Expression, rightValue ssa.Value) er
 			continue
 		}
 
-		_, exists := f.Block().FindIdentifier(name)
+		leftValue, exists := f.Block().FindIdentifier(name)
 
-		if exists {
+		if !isAssign && exists {
 			return errors.New(&VariableAlreadyExists{Name: name}, f.File, identifier.Source().StartPos)
+		}
+
+		if isAssign {
+			if !exists {
+				return errors.New(&UnknownIdentifier{Name: name}, f.File, identifier.Source().StartPos)
+			}
+
+			phi, isPhi := leftValue.(*ssa.Phi)
+
+			if isPhi && phi.IsPartiallyUndefined() {
+				return errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, identifier.Source().StartPos)
+			}
+
+			if !types.Is(fn.Typ.Output[i], leftValue.Type()) {
+				return errors.New(&TypeMismatch{Encountered: fn.Typ.Output[i].Name(), Expected: leftValue.Type().Name()}, f.File, right.Source().StartPos)
+			}
 		}
 
 		structure, isStructType := types.Unwrap(fn.Typ.Output[i]).(*types.Struct)
