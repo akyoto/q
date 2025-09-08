@@ -60,13 +60,12 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
-- **2025-09-07**: Pointers cannot be nil.
+- **2025-09-08**: Function pointers.
+- **2025-09-07**: Pointer safety.
 - **2025-09-03**: Error handling.
 - **2025-08-31**: Constant folding.
 - **2025-08-25**: Resource safety.
 - **2025-08-23**: Function overloading.
-- **2025-08-22**: General bugfixes.
-- **2025-08-19**: Performance improvements.
 - **2025-08-18**: Slices for strings.
 - **2025-08-17**: Struct allocation by value/reference.
 - **2025-08-16**: Multiple return values.

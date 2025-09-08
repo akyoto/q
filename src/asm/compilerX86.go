@@ -78,6 +78,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, uint32(offset))
 			return code
 		}
+	case *CallRegister:
+		c.code = x86.CallRegister(c.code, instr.Address)
 	case *Compare:
 		c.code = x86.CompareRegisterRegister(c.code, instr.Destination, instr.Source)
 	case *CompareNumber:

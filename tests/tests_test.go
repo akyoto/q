@@ -96,6 +96,7 @@ var tests = []run{
 	{"free-registers", "", "", 0},
 	{"overload", "", "", 0},
 	{"resource", "", "", 0},
+	{"function-pointer", "", "", 0},
 }
 
 func TestTests(t *testing.T) {

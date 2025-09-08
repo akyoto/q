@@ -19,7 +19,13 @@ func (f *Function) executeCall(step *Step, instr *ssa.Call) {
 		})
 	}
 
-	f.Assembler.Append(&asm.Call{Label: instr.Func.String()})
+	functionPointer, isPointer := f.ValueToStep[instr.Func]
+
+	if isPointer {
+		f.Assembler.Append(&asm.CallRegister{Address: functionPointer.Register})
+	} else {
+		f.Assembler.Append(&asm.Call{Label: instr.Func.String()})
+	}
 
 	if step.Register == -1 || step.Register == f.CPU.Call.Out[0] {
 		return

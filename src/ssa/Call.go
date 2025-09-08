@@ -25,6 +25,11 @@ func (a *Call) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
+// Inputs is the function pointer and the list of arguments.
+func (c *Call) Inputs() []Value {
+	return append(c.Arguments, c.Func)
+}
+
 // IsConst returns false because a function call can have side effects.
 func (c *Call) IsConst() bool { return false }
 

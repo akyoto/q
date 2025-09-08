@@ -64,6 +64,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 	case *CallExternStart:
 	case *CallExternEnd:
+	case *CallRegister:
+		c.append(arm.CallRegister(instr.Address))
 	case *Compare:
 		c.append(arm.CompareRegisterRegister(instr.Destination, instr.Source))
 	case *CompareNumber:

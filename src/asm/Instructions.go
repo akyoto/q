@@ -17,6 +17,7 @@ type (
 	}
 	CallExternStart struct{}
 	CallExternEnd   struct{}
+	CallRegister    struct{ Address cpu.Register }
 	Compare         rr
 	CompareNumber   rn
 	Divide          rrr

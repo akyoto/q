@@ -23,6 +23,8 @@ func (f *Function) execute(step *Step) {
 		f.executeCopy(step, instr)
 	case *ssa.FromTuple:
 		f.executeFromTuple(step, instr)
+	case *ssa.Function:
+		f.executeFunction(step, instr)
 	case *ssa.Int:
 		f.executeInt(step, instr)
 	case *ssa.Jump:
