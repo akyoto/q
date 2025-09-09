@@ -10,14 +10,13 @@ import (
 // evaluateBinary converts a binary expression to an SSA value.
 func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error) {
 	left := expr.Children[0]
-	right := expr.Children[1]
-
 	leftValue, err := f.evaluate(left)
 
 	if err != nil {
 		return nil, err
 	}
 
+	right := expr.Children[1]
 	rightValue, err := f.evaluate(right)
 
 	if err != nil {

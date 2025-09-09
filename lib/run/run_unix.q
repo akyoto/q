@@ -7,6 +7,6 @@ crash() {
 	exit(1)
 }
 
-exit(code int) {
+exit(code byte) {
 	syscall(_exit, code)
 }

@@ -76,55 +76,10 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 	}
 
 	name := tokens[0].String(file.Bytes)
+	typ := TypeByName(name, env)
 
-	switch name {
-	case "string":
-		return types.String, nil
-	case "int":
-		return types.Int, nil
-	case "int64":
-		return types.Int64, nil
-	case "int32":
-		return types.Int32, nil
-	case "int16":
-		return types.Int16, nil
-	case "int8":
-		return types.Int8, nil
-	case "uint":
-		return types.UInt, nil
-	case "uint64":
-		return types.UInt64, nil
-	case "uint32":
-		return types.UInt32, nil
-	case "uint16":
-		return types.UInt16, nil
-	case "uint8":
-		return types.UInt8, nil
-	case "byte":
-		return types.Byte, nil
-	case "bool":
-		return types.Bool, nil
-	case "float":
-		return types.Float, nil
-	case "float64":
-		return types.Float64, nil
-	case "float32":
-		return types.Float32, nil
-	case "error":
-		return types.Error, nil
-	case "nil":
-		return types.Nil, nil
-	case "any":
-		return types.Any, nil
-	}
-
-	if env != nil {
-		// TODO: Optimize this and check for the correct package.
-		for structure := range env.Structs() {
-			if structure.Name() == name {
-				return structure, nil
-			}
-		}
+	if typ != nil {
+		return typ, nil
 	}
 
 	return nil, errors.New(&UnknownType{Name: tokens.String(file.Bytes)}, file, tokens[0].Position)

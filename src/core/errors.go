@@ -17,6 +17,7 @@ var (
 	InvalidStructOperation    = errors.String("Invalid operation on structs")
 	MissingCommaBetweenFields = errors.String("Missing ',' between struct fields")
 	MissingOperand            = errors.String("Missing operand")
+	UnnecessaryCast           = errors.String("Unnecessary type cast")
 )
 
 // DefinitionCountMismatch error is created when the number of provided definitions doesn't match the return type.

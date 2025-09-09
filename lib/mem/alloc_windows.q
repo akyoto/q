@@ -1,6 +1,6 @@
 import run
 
-alloc(length int) -> (buffer !string) {
+alloc(length uint) -> (buffer !string) {
 	x := kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
 
 	if x == 0 {

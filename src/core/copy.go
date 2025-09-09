@@ -21,6 +21,7 @@ func (f *Function) copy(value ssa.Value, source ssa.Source) ssa.Value {
 
 	c := &ssa.Copy{
 		Value:  value,
+		Typ:    value.Type(),
 		Source: source,
 	}
 

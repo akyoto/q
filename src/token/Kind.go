@@ -39,6 +39,7 @@ const (
 	Call                              // x()
 	Array                             // [x]
 	Struct                            // x{}
+	Cast                              // as
 	Separator                         // ,
 	___ASSIGNMENTS___                 // <assignments>
 	Assign                            // =

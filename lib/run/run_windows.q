@@ -7,8 +7,8 @@ crash() {
 	exit(1)
 }
 
-exit(code int) {
-	kernel32.ExitProcess(code)
+exit(code byte) {
+	kernel32.ExitProcess(code as uint)
 }
 
 extern {

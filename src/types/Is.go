@@ -49,15 +49,5 @@ func Is(a Type, b Type) bool {
 		}
 	}
 
-	// TODO: Remove temporary hack to allow int64 -> uint32 conversion
-	if a == Int64 && (b == UInt64 || b == UInt32) {
-		return true
-	}
-
-	// TODO: Remove temporary hack to allow uint32 -> int64 conversion
-	if (a == UInt32 || a == UInt64) && b == Int64 {
-		return true
-	}
-
 	return false
 }

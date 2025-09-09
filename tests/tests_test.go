@@ -97,6 +97,7 @@ var tests = []run{
 	{"overload", "", "", 0},
 	{"resource", "", "", 0},
 	{"function-pointer", "", "", 0},
+	{"type-cast", "", "", 0},
 }
 
 func TestTests(t *testing.T) {

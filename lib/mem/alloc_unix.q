@@ -1,6 +1,6 @@
 import run
 
-alloc(length int) -> (buffer !string) {
+alloc(length uint) -> (buffer !string) {
 	x := mmap(0, length, read|write, private|anonymous, -1, 0)
 
 	if x < 0x1000 {

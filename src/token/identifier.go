@@ -13,6 +13,8 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 	kind := Identifier
 
 	switch string(identifier) {
+	case "as":
+		kind = Cast
 	case "assert":
 		kind = Assert
 	case "const":

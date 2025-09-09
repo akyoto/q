@@ -35,7 +35,7 @@ var (
 		name:       "string",
 		Fields: []*Field{
 			{Name: "ptr", Type: CString, Index: 0, Offset: 0},
-			{Name: "len", Type: Int, Index: 1, Offset: 8},
+			{Name: "len", Type: UInt, Index: 1, Offset: 8},
 		},
 	}
 )

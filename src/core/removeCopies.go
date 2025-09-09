@@ -18,6 +18,10 @@ func (f *Function) removeCopies() {
 				continue
 			}
 
+			if copy.Typ != copy.Value.Type() {
+				continue
+			}
+
 			if replacements == nil {
 				replacements = make(map[ssa.Value]ssa.Value)
 			}

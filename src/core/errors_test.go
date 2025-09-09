@@ -76,6 +76,7 @@ var errs = []struct {
 	{"UnknownType2.q", &core.UnknownType{Name: "unknown"}},
 	{"UnknownType3.q", &core.UnknownType{Name: "unknown"}},
 	{"UnknownType4.q", &core.UnknownType{Name: "unknown"}},
+	{"UnnecessaryCast.q", core.UnnecessaryCast},
 	{"UnusedValue.q", &core.UnusedValue{Value: "42"}},
 	{"UnusedValue2.q", &core.UnusedValue{Value: "2 + 3"}},
 	{"UnusedValue3.q", &core.UnusedValue{Value: "\"not used\""}},

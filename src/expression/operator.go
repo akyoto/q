@@ -31,6 +31,7 @@ var Operators = [64]operator{
 	token.And:    {4, 2},
 	token.Xor:    {4, 2},
 	token.Or:     {4, 2},
+	token.Cast:   {4, 2},
 
 	token.Greater:      {3, 2},
 	token.Less:         {3, 2},

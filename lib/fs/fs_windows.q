@@ -8,12 +8,12 @@ open(path *byte, _flags int, _mode int) -> (!int, error) {
 	return fd, 0
 }
 
-size(fd int) -> (int, error) {
+size(fd int) -> (uint, error) {
 	ptr := new(int64)
 	success := kernel32.GetFileSizeEx(fd, ptr)
 
 	if success {
-		size := [ptr]
+		size := [ptr] as uint
 		delete(ptr)
 		return size, 0
 	}

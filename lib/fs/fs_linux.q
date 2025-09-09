@@ -8,7 +8,7 @@ open(path *byte, flags int, mode int) -> (!int, error) {
 	return fd, 0
 }
 
-size(fd int) -> (int, error) {
+size(fd int) -> (uint, error) {
 	stats := new(stat)
 	err := syscall(_fstat, fd, stats)
 
@@ -17,7 +17,7 @@ size(fd int) -> (int, error) {
 		return 0, err
 	}
 
-	size := stats.st_size
+	size := stats.st_size as uint
 	delete(stats)
 	return size, 0
 }

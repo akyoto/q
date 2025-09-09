@@ -107,6 +107,21 @@ func Parse(tokens token.List) *Expression {
 			continue
 		}
 
+		if cursor != nil && cursor.Token.Kind == token.Cast {
+			start := t.Position
+			end := token.Position(tokens[len(tokens)-1].End())
+
+			virtualToken := token.Token{
+				Position: start,
+				Length:   token.Length(end - start),
+				Kind:     token.Identifier,
+			}
+
+			node := &CastExpression{Tokens: tokens[i:], Expression: Expression{Token: virtualToken}}
+			cursor.AddChild(&node.Expression)
+			return root
+		}
+
 		if t.Kind == token.Identifier || t.Kind == token.Number || t.Kind == token.String || t.Kind == token.Rune {
 			if cursor != nil {
 				node := NewLeaf(t)

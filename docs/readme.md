@@ -60,6 +60,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-09-09**: Type casts.
 - **2025-09-08**: Function pointers.
 - **2025-09-07**: Pointer safety.
 - **2025-09-03**: Error handling.
@@ -124,6 +125,7 @@ The following is a cheat sheet documenting the syntax.
 | Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
 | Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |
 | Output an integer                    | `io.write(42)`               | ✔️ Stable       |
+| Cast a type                          | `x as uint`                  | 🚧 Experimental |
 | Mark a type as a resource            | `!`                          | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
 
