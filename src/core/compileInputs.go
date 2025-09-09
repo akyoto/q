@@ -20,7 +20,10 @@ func (f *Function) compileInputs() {
 				continue
 			}
 
-			structure := &ssa.Struct{Typ: structType}
+			structure := &ssa.Struct{
+				Typ:    structType,
+				Source: input.Source,
+			}
 
 			for _, field := range structType.Fields {
 				param := &ssa.Parameter{
