@@ -2,7 +2,7 @@ import mem
 
 main() {
 	buffer := mem.alloc(4)
-	intPtr := buffer.ptr as *int
+	intPtr := buffer.ptr as *int32
 	intPtr[0] = 0x12345678
 	assert buffer[0] == 0x78
 	assert buffer[1] == 0x56
