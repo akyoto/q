@@ -19,7 +19,7 @@ listen(fd int, backlog int) -> error {
 }
 
 recv(fd int, buffer string) -> int {
-	return ws2_32.recv(fd, buffer.ptr, buffer.len, 0)
+	return ws2_32.recv(fd, buffer.ptr, buffer.len as int, 0)
 }
 
 socket(family int, type int, protocol int) -> (int, error) {
@@ -33,7 +33,7 @@ socket(family int, type int, protocol int) -> (int, error) {
 }
 
 send(fd int, buffer string) -> int {
-	return ws2_32.send(fd, buffer.ptr, buffer.len, 0)
+	return ws2_32.send(fd, buffer.ptr, buffer.len as int, 0)
 }
 
 extern {
