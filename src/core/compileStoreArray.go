@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -19,15 +20,10 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 	}
 
 	addressType := types.Unwrap(addressValue.Type())
+	addressStruct, addressIsStruct := addressValue.(*ssa.Struct)
 
-	if addressType == types.String {
-		_, isResource := addressValue.Type().(*types.Resource)
-
-		if !isResource {
-			return errors.New(&WriteToImmutable{Name: address.SourceString(f.File.Bytes), TypeName: addressValue.Type().Name()}, f.File, address.Source().StartPos)
-		}
-
-		addressValue = addressValue.(*ssa.Struct).Arguments[0]
+	if addressIsStruct {
+		addressValue = addressStruct.Arguments[0]
 		addressType = addressValue.Type()
 	}
 
@@ -41,6 +37,17 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 
 	if err != nil {
 		return err
+	}
+
+	if pointer.To.Size() > 1 {
+		size := f.Append(&ssa.Int{Int: pointer.To.Size()})
+
+		indexValue = f.Append(&ssa.BinaryOp{
+			Op:     token.Mul,
+			Left:   indexValue,
+			Right:  size,
+			Source: index.Source(),
+		})
 	}
 
 	right := node.Expression.Children[1]

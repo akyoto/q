@@ -85,7 +85,6 @@ var errs = []struct {
 	{"UnusedValue6.q", &core.UnusedValue{Value: "x2"}},
 	{"VariableAlreadyExists.q", &core.VariableAlreadyExists{Name: "x"}},
 	{"VariableAlreadyExists2.q", &core.VariableAlreadyExists{Name: "x"}},
-	{"WriteToImmutable.q", &core.WriteToImmutable{Name: "s", TypeName: "string"}},
 }
 
 func TestErrors(t *testing.T) {

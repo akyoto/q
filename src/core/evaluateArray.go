@@ -18,11 +18,12 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 	}
 
 	addressType := types.Unwrap(addressValue.Type())
+	addressStruct, addressIsStruct := addressValue.(*ssa.Struct)
 	var length ssa.Value
 
-	if addressType == types.String {
-		length = addressValue.(*ssa.Struct).Arguments[1]
-		addressValue = addressValue.(*ssa.Struct).Arguments[0]
+	if addressIsStruct {
+		length = addressStruct.Arguments[1]
+		addressValue = addressStruct.Arguments[0]
 		addressType = addressValue.Type()
 	}
 
@@ -65,6 +66,17 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 			if err != nil {
 				return nil, err
 			}
+		}
+
+		if pointer.To.Size() > 1 {
+			size := f.Append(&ssa.Int{Int: pointer.To.Size()})
+
+			indexValue = f.Append(&ssa.BinaryOp{
+				Op:     token.Mul,
+				Left:   indexValue,
+				Right:  size,
+				Source: index.Source(),
+			})
 		}
 	} else {
 		indexValue = f.Append(&ssa.Int{Int: 0})
