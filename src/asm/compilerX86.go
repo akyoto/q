@@ -187,10 +187,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		c.labels[instr.Name] = len(c.code)
 	case *Load:
+		scale := toX86Scale(instr.Scale, instr.Length)
+
 		if instr.Length <= 2 {
-			c.code = x86.LoadDynamicRegisterZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, x86.Scale1, instr.Length)
+			c.code = x86.LoadDynamicRegisterZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
 		} else {
-			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, x86.Scale1, instr.Length)
+			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
 		}
 	case *Modulo:
 		if instr.Operand == x86.R0 {
@@ -312,6 +314,26 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.ShiftRightSignedNumber(c.code, instr.Destination, byte(instr.Number))
+	case *StackFrameStart:
+		if instr.FramePointer {
+			c.code = x86.PushRegister(c.code, x86.R5)
+			c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
+		}
+
+		if instr.ExternCalls {
+			c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
+		}
+	case *StackFrameEnd:
+		if instr.FramePointer {
+			c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
+			c.code = x86.PopRegister(c.code, x86.R5)
+		}
+	case *Store:
+		scale := toX86Scale(instr.Scale, instr.Length)
+		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Source)
+	case *StoreNumber:
+		scale := toX86Scale(instr.Scale, instr.Length)
+		c.code = x86.StoreDynamicNumber(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Number)
 	case *Subtract:
 		if instr.Destination == instr.Operand {
 			panic("subtract destination register cannot be equal to the operand register")
@@ -328,24 +350,6 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *StackFrameStart:
-		if instr.FramePointer {
-			c.code = x86.PushRegister(c.code, x86.R5)
-			c.code = x86.MoveRegisterRegister(c.code, x86.R5, x86.SP)
-		}
-
-		if instr.ExternCalls {
-			c.code = x86.AndRegisterNumber(c.code, x86.SP, -16)
-		}
-	case *StackFrameEnd:
-		if instr.FramePointer {
-			c.code = x86.MoveRegisterRegister(c.code, x86.SP, x86.R5)
-			c.code = x86.PopRegister(c.code, x86.R5)
-		}
-	case *Store:
-		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, x86.Scale1, instr.Length, instr.Source)
-	case *StoreNumber:
-		c.code = x86.StoreDynamicNumber(c.code, instr.Base, instr.Index, x86.Scale1, instr.Length, instr.Number)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	case *Xor:
@@ -362,5 +366,25 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.XorRegisterNumber(c.code, instr.Destination, instr.Number)
 	default:
 		panic("unknown instruction")
+	}
+}
+
+// toX86Scale returns the scale factor for the memory instruction.
+func toX86Scale(enable bool, length byte) x86.Scale {
+	if !enable {
+		return x86.Scale1
+	}
+
+	switch length {
+	case 1:
+		return x86.Scale1
+	case 2:
+		return x86.Scale2
+	case 4:
+		return x86.Scale4
+	case 8:
+		return x86.Scale8
+	default:
+		panic("unsupported scale")
 	}
 }

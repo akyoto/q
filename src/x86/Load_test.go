@@ -14,7 +14,7 @@ func TestLoadRegister(t *testing.T) {
 		Base        cpu.Register
 		Offset      int8
 		Length      byte
-		Scale       x86.ScaleFactor
+		Scale       x86.Scale
 		Code        []byte
 	}{
 		// No offset

@@ -4,7 +4,6 @@ import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -39,17 +38,6 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return err
 	}
 
-	if pointer.To.Size() > 1 {
-		size := f.Append(&ssa.Int{Int: pointer.To.Size()})
-
-		indexValue = f.Append(&ssa.BinaryOp{
-			Op:     token.Mul,
-			Left:   indexValue,
-			Right:  size,
-			Source: index.Source(),
-		})
-	}
-
 	right := node.Expression.Children[1]
 	rightValue, err := f.evaluate(right)
 
@@ -65,6 +53,7 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		Address: addressValue,
 		Index:   indexValue,
 		Value:   rightValue,
+		Scale:   true,
 		Length:  uint8(pointer.To.Size()),
 		Source:  node.Expression.Source(),
 	})

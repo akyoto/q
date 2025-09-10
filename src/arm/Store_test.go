@@ -13,7 +13,7 @@ func TestStoreDynamicRegister(t *testing.T) {
 		Source cpu.Register
 		Base   cpu.Register
 		Offset cpu.Register
-		Scale  arm.ScaleFactor
+		Scale  arm.Scale
 		Length byte
 		Code   uint32
 	}{
@@ -21,6 +21,7 @@ func TestStoreDynamicRegister(t *testing.T) {
 		{arm.X0, arm.X1, arm.X2, arm.Scale1, 4, 0xB8226820},
 		{arm.X0, arm.X1, arm.X2, arm.Scale1, 2, 0x78226820},
 		{arm.X0, arm.X1, arm.X2, arm.Scale1, 1, 0x38226820},
+		{arm.X0, arm.X1, arm.X2, arm.ScaleLength, 8, 0xF8227820},
 	}
 
 	for _, pattern := range usagePatterns {

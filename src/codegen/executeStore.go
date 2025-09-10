@@ -15,6 +15,7 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			Base:   address.Register,
 			Index:  index.Register,
 			Number: source.Value.(*ssa.Int).Int,
+			Scale:  instr.Scale,
 			Length: instr.Length,
 		})
 	} else {
@@ -22,6 +23,7 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			Base:   address.Register,
 			Index:  index.Register,
 			Source: source.Register,
+			Scale:  instr.Scale,
 			Length: instr.Length,
 		})
 	}

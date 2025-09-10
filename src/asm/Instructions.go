@@ -33,6 +33,7 @@ type (
 		Base        cpu.Register
 		Index       cpu.Register
 		Destination cpu.Register
+		Scale       bool
 		Length      byte
 	}
 	Modulo    rrr
@@ -57,12 +58,14 @@ type (
 		Base   cpu.Register
 		Index  cpu.Register
 		Source cpu.Register
+		Scale  bool
 		Length byte
 	}
 	StoreNumber struct {
 		Base   cpu.Register
 		Index  cpu.Register
 		Number int
+		Scale  bool
 		Length byte
 	}
 	Subtract        rrr

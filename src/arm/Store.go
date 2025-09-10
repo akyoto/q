@@ -5,8 +5,8 @@ import (
 )
 
 // StoreDynamicRegister writes the contents of the register to a memory address with a dynamic offset.
-func StoreDynamicRegister(source cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) uint32 {
-	return size(length)<<30 | 0b111<<27 | 1<<21 | (LSL << 13) | uint32(scale)<<10 | reg3(source, base, offset)
+func StoreDynamicRegister(source cpu.Register, base cpu.Register, offset cpu.Register, scale Scale, length byte) uint32 {
+	return size(length)<<30 | 0b111<<27 | 1<<21 | (LSL << 13) | uint32(scale&1)<<12 | uint32(Offset)<<10 | reg3(source, base, offset)
 }
 
 // StoreRegister writes the contents of the register to a memory address.

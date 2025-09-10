@@ -3,7 +3,7 @@ package x86
 import "git.urbach.dev/cli/q/src/cpu"
 
 // memAccess encodes a memory access.
-func memAccess(code []byte, opCode8 byte, opCode32 byte, register cpu.Register, base cpu.Register, offset int8, scale ScaleFactor, length byte) []byte {
+func memAccess(code []byte, opCode8 byte, opCode32 byte, register cpu.Register, base cpu.Register, offset int8, scale Scale, length byte) []byte {
 	opCode := opCode32
 
 	if length == 1 {

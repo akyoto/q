@@ -18,6 +18,7 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 		Base:        address.Register,
 		Index:       index.Register,
 		Destination: step.Register,
+		Scale:       instr.Scale,
 		Length:      byte(elementSize),
 	})
 }

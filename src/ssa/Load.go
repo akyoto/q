@@ -11,6 +11,7 @@ type Load struct {
 	Typ     types.Type
 	Address Value
 	Index   Value
+	Scale   bool
 	Liveness
 	Source
 }
@@ -23,7 +24,11 @@ func (a *Load) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Address == b.Address && a.Index == b.Index
+	if a.Typ != b.Typ {
+		return false
+	}
+
+	return a.Address == b.Address && a.Index == b.Index && a.Scale == b.Scale
 }
 
 // IsConst returns false because a load is a memory access.
@@ -49,6 +54,10 @@ func (l *Load) Replace(old Value, new Value) {
 
 // String returns a human-readable representation of the load.
 func (l *Load) String() string {
+	if l.Scale {
+		return fmt.Sprintf("load(%db, %p + %p * %d)", l.Typ.Size(), l.Address, l.Index, l.Typ.Size())
+	}
+
 	return fmt.Sprintf("load(%db, %p + %p)", l.Typ.Size(), l.Address, l.Index)
 }
 

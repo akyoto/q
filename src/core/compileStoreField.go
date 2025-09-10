@@ -59,6 +59,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 			Address: addressValue,
 			Index:   offset,
 			Value:   rightValue,
+			Scale:   false,
 			Length:  uint8(field.Type.Size()),
 			Source:  node.Expression.Source(),
 		})

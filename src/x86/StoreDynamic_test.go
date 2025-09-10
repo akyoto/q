@@ -12,7 +12,7 @@ func TestStoreDynamicNumber(t *testing.T) {
 	usagePatterns := []struct {
 		RegisterTo cpu.Register
 		Offset     cpu.Register
-		Scale      x86.ScaleFactor
+		Scale      x86.Scale
 		Length     byte
 		Number     int
 		Code       []byte
@@ -94,7 +94,7 @@ func TestStoreDynamicRegister(t *testing.T) {
 	usagePatterns := []struct {
 		RegisterTo   cpu.Register
 		Offset       cpu.Register
-		Scale        x86.ScaleFactor
+		Scale        x86.Scale
 		Length       byte
 		RegisterFrom cpu.Register
 		Code         []byte

@@ -89,6 +89,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			Typ:     field.Type,
 			Address: leftValue,
 			Index:   offset,
+			Scale:   false,
 		})
 
 		return load, nil

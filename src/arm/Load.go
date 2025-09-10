@@ -3,8 +3,8 @@ package arm
 import "git.urbach.dev/cli/q/src/cpu"
 
 // LoadDynamicRegister loads from memory into a register with a dynamic offset.
-func LoadDynamicRegister(destination cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) uint32 {
-	return size(length)<<30 | 0b111<<27 | 0b01<<22 | 1<<21 | (LSL << 13) | uint32(scale)<<10 | reg3(destination, base, offset)
+func LoadDynamicRegister(destination cpu.Register, base cpu.Register, offset cpu.Register, scale Scale, length byte) uint32 {
+	return size(length)<<30 | 0b111<<27 | 0b01<<22 | 1<<21 | (LSL << 13) | uint32(scale&1)<<12 | uint32(Offset)<<10 | reg3(destination, base, offset)
 }
 
 // LoadRegister loads from memory into a register.

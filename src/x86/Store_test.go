@@ -12,7 +12,7 @@ func TestStoreNumber(t *testing.T) {
 	usagePatterns := []struct {
 		Register cpu.Register
 		Offset   int8
-		Scale    x86.ScaleFactor
+		Scale    x86.Scale
 		Length   byte
 		Number   int
 		Code     []byte
@@ -161,7 +161,7 @@ func TestStoreRegister(t *testing.T) {
 	usagePatterns := []struct {
 		RegisterTo   cpu.Register
 		Offset       int8
-		Scale        x86.ScaleFactor
+		Scale        x86.Scale
 		Length       byte
 		RegisterFrom cpu.Register
 		Code         []byte

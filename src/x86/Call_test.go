@@ -47,7 +47,7 @@ func TestCallAtMemory(t *testing.T) {
 	usagePatterns := []struct {
 		Register cpu.Register
 		Offset   int8
-		Scale    x86.ScaleFactor
+		Scale    x86.Scale
 		Code     []byte
 	}{
 		{x86.R0, 0, x86.Scale1, []byte{0xFF, 0x10}},

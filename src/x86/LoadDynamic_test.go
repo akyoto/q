@@ -14,7 +14,7 @@ func TestLoadDynamicRegister(t *testing.T) {
 		Length         byte
 		Base           cpu.Register
 		OffsetRegister cpu.Register
-		Scale          x86.ScaleFactor
+		Scale          x86.Scale
 		Code           []byte
 	}{
 		{x86.R15, 8, x86.R0, x86.R15, x86.Scale1, []byte{0x4E, 0x8B, 0x3C, 0x38}},
@@ -96,7 +96,7 @@ func TestLoadDynamicRegisterZeroExtend(t *testing.T) {
 		Length         byte
 		Base           cpu.Register
 		OffsetRegister cpu.Register
-		Scale          x86.ScaleFactor
+		Scale          x86.Scale
 		Code           []byte
 	}{
 

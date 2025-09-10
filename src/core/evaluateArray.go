@@ -43,6 +43,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 				Typ:     field.Type,
 				Address: addressValue,
 				Index:   f.Append(&ssa.Int{Int: int(field.Offset)}),
+				Scale:   false,
 				Source:  expr.Source(),
 			})
 
@@ -67,17 +68,6 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 				return nil, err
 			}
 		}
-
-		if pointer.To.Size() > 1 {
-			size := f.Append(&ssa.Int{Int: pointer.To.Size()})
-
-			indexValue = f.Append(&ssa.BinaryOp{
-				Op:     token.Mul,
-				Left:   indexValue,
-				Right:  size,
-				Source: index.Source(),
-			})
-		}
 	} else {
 		indexValue = f.Append(&ssa.Int{Int: 0})
 	}
@@ -86,6 +76,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		Typ:     pointer.To,
 		Address: addressValue,
 		Index:   indexValue,
+		Scale:   true,
 		Source:  expr.Source(),
 	})
 

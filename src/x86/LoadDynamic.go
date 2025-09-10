@@ -3,12 +3,12 @@ package x86
 import "git.urbach.dev/cli/q/src/cpu"
 
 // LoadDynamicRegister loads from memory with a register offset into a register.
-func LoadDynamicRegister(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) []byte {
+func LoadDynamicRegister(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale Scale, length byte) []byte {
 	return memAccessDynamic(code, 0x8A, 0x8B, destination, base, offset, scale, length)
 }
 
 // LoadDynamicRegisterZeroExtend loads from memory with a register offset into a register and zero-extends it.
-func LoadDynamicRegisterZeroExtend(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) []byte {
+func LoadDynamicRegisterZeroExtend(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale Scale, length byte) []byte {
 	var (
 		w      = byte(1)
 		r      = byte(0)
