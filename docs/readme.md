@@ -105,8 +105,8 @@ The following is a cheat sheet documenting the syntax.
 | Define input and output types        | `f(a int) -> (b int) {}`     | ✔️ Stable       |
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
-| Instantiate a struct on the heap     | `new(Point)`                 | 🚧 Experimental |
-| Delete a struct from the heap        | `delete(p)`                  | 🚧 Experimental |
+| Instantiate a type on the heap       | `new(Point)`                 | 🚧 Experimental |
+| Delete a type from the heap          | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
 | Index a pointer                      | `ptr[0]`                     | ✔️ Stable       |
@@ -125,7 +125,7 @@ The following is a cheat sheet documenting the syntax.
 | Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
 | Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |
 | Output an integer                    | `io.write(42)`               | ✔️ Stable       |
-| Cast a type                          | `x as uint`                  | 🚧 Experimental |
+| Cast a type                          | `x as byte`                  | 🚧 Experimental |
 | Mark a type as a resource            | `!`                          | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
 
