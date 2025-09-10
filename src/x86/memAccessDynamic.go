@@ -3,7 +3,7 @@ package x86
 import "git.urbach.dev/cli/q/src/cpu"
 
 // memAccessDynamic encodes a memory access using the value of a register as an offset.
-func memAccessDynamic(code []byte, opCode8 byte, opCode32 byte, register cpu.Register, base cpu.Register, offset cpu.Register, length byte) []byte {
+func memAccessDynamic(code []byte, opCode8 byte, opCode32 byte, register cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) []byte {
 	var (
 		w      = byte(0)
 		r      = byte(0)
@@ -51,7 +51,7 @@ func memAccessDynamic(code []byte, opCode8 byte, opCode32 byte, register cpu.Reg
 	code = append(code, REX(w, r, x, b))
 	code = append(code, opCode)
 	code = append(code, ModRM(mod, byte(register), 0b100))
-	code = append(code, SIB(Scale1, byte(offset), byte(base)))
+	code = append(code, SIB(scale, byte(offset), byte(base)))
 
 	if mod == AddressMemoryOffset8 {
 		code = append(code, 0x00)

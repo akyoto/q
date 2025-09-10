@@ -7,8 +7,8 @@ import (
 )
 
 // StoreDynamicNumber writes a number to a memory address with a register offset.
-func StoreDynamicNumber(code []byte, base cpu.Register, offset cpu.Register, length byte, number int) []byte {
-	code = memAccessDynamic(code, 0xC6, 0xC7, 0b000, base, offset, length)
+func StoreDynamicNumber(code []byte, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte, number int) []byte {
+	code = memAccessDynamic(code, 0xC6, 0xC7, 0b000, base, offset, scale, length)
 
 	switch length {
 	case 8, 4:
@@ -22,6 +22,6 @@ func StoreDynamicNumber(code []byte, base cpu.Register, offset cpu.Register, len
 }
 
 // StoreDynamicRegister writes the contents of a register to a memory address with a register offset.
-func StoreDynamicRegister(code []byte, base cpu.Register, offset cpu.Register, length byte, source cpu.Register) []byte {
-	return memAccessDynamic(code, 0x88, 0x89, source, base, offset, length)
+func StoreDynamicRegister(code []byte, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte, source cpu.Register) []byte {
+	return memAccessDynamic(code, 0x88, 0x89, source, base, offset, scale, length)
 }

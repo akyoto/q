@@ -3,12 +3,12 @@ package x86
 import "git.urbach.dev/cli/q/src/cpu"
 
 // LoadDynamicRegister loads from memory with a register offset into a register.
-func LoadDynamicRegister(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, length byte) []byte {
-	return memAccessDynamic(code, 0x8A, 0x8B, destination, base, offset, length)
+func LoadDynamicRegister(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) []byte {
+	return memAccessDynamic(code, 0x8A, 0x8B, destination, base, offset, scale, length)
 }
 
 // LoadDynamicRegisterZeroExtend loads from memory with a register offset into a register and zero-extends it.
-func LoadDynamicRegisterZeroExtend(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, length byte) []byte {
+func LoadDynamicRegisterZeroExtend(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale ScaleFactor, length byte) []byte {
 	var (
 		w      = byte(1)
 		r      = byte(0)
@@ -49,7 +49,7 @@ func LoadDynamicRegisterZeroExtend(code []byte, destination cpu.Register, base c
 	code = append(code, 0x0F)
 	code = append(code, opCode)
 	code = append(code, ModRM(mod, byte(destination), 0b100))
-	code = append(code, SIB(Scale1, byte(offset), byte(base)))
+	code = append(code, SIB(scale, byte(offset), byte(base)))
 
 	if mod == AddressMemoryOffset8 {
 		code = append(code, 0x00)

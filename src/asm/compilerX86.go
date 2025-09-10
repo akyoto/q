@@ -188,9 +188,9 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.labels[instr.Name] = len(c.code)
 	case *Load:
 		if instr.Length <= 2 {
-			c.code = x86.LoadDynamicRegisterZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
+			c.code = x86.LoadDynamicRegisterZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, x86.Scale1, instr.Length)
 		} else {
-			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, instr.Length)
+			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, x86.Scale1, instr.Length)
 		}
 	case *Modulo:
 		if instr.Operand == x86.R0 {
@@ -343,9 +343,9 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.PopRegister(c.code, x86.R5)
 		}
 	case *Store:
-		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, instr.Length, instr.Source)
+		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, x86.Scale1, instr.Length, instr.Source)
 	case *StoreNumber:
-		c.code = x86.StoreDynamicNumber(c.code, instr.Base, instr.Index, instr.Length, instr.Number)
+		c.code = x86.StoreDynamicNumber(c.code, instr.Base, instr.Index, x86.Scale1, instr.Length, instr.Number)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
 	case *Xor:
