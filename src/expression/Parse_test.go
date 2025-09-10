@@ -138,6 +138,10 @@ func TestParse(t *testing.T) {
 		{"Slices 2", "a[b..]", "(@ a (.. b))"},
 		{"Slices 3", "a[..c]", "(@ a (..  c))"},
 		{"Slices 4", "a[b..c]", "(@ a (.. b c))"},
+
+		{"Type cast", "a as b", "(as a b)"},
+		{"Type cast 2", "a as *b", "(as a *b)"},
+		{"Type cast 3", "(a as b).c", "(. (as a b) c)"},
 	}
 
 	for _, test := range tests {

@@ -101,6 +101,11 @@ func (k Kind) IsKeyword() bool {
 	return k > ___KEYWORDS___ && k < ___END_KEYWORDS___
 }
 
+// IsLiteral returns true if the token is a literal.
+func (k Kind) IsLiteral() bool {
+	return k == Identifier || k == Number || k == String || k == Rune
+}
+
 // IsNumeric returns true if the token is a number or rune.
 func (k Kind) IsNumeric() bool {
 	return k == Number || k == Rune
