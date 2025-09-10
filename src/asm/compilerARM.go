@@ -207,6 +207,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 
 		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, instr.Index, scale, instr.Length))
+	case *StoreNumber:
+		panic("arm64 does not support memory stores of immediates")
 	case *Subtract:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *SubtractNumber:
