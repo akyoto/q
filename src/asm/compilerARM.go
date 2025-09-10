@@ -125,7 +125,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *Label:
 		c.labels[instr.Name] = len(c.code)
 	case *Load:
-		c.append(arm.LoadDynamicRegister(instr.Destination, instr.Base, arm.Offset, instr.Index, instr.Length))
+		c.append(arm.LoadDynamicRegister(instr.Destination, instr.Base, instr.Index, arm.Scale1, instr.Length))
 	case *Modulo:
 		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
 			panic("modulo destination register cannot be equal to the source or operand register")
@@ -194,7 +194,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *ShiftRightSignedNumber:
 		c.append(arm.ShiftRightSignedNumber(instr.Destination, instr.Source, instr.Number))
 	case *Store:
-		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, arm.Offset, instr.Index, instr.Length))
+		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, instr.Index, arm.Scale1, instr.Length))
 	case *Subtract:
 		c.append(arm.SubRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *SubtractNumber:
