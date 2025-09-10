@@ -108,23 +108,13 @@ func Parse(tokens token.List) *Expression {
 		}
 
 		if cursor != nil && cursor.Token.Kind == token.Cast {
-			start := t.Position
-			end := token.Position(tokens[len(tokens)-1].End())
-
-			virtualToken := token.Token{
-				Position: start,
-				Length:   token.Length(end - start),
-				Kind:     token.Identifier,
-			}
-
-			node := &CastExpression{Tokens: tokens[i:], Expression: Expression{Token: virtualToken}}
-			cursor.AddChild(&node.Expression)
+			cursor.AddChild(&newTypeExpression(tokens[i:]).Expression)
 			return root
 		}
 
 		if t.Kind == token.Identifier || t.Kind == token.Number || t.Kind == token.String || t.Kind == token.Rune {
 			if cursor != nil {
-				node := NewLeaf(t)
+				node := newLeaf(t)
 
 				if cursor.Token.Kind == token.Range && len(cursor.Children) == 0 {
 					cursor.AddChild(New())
@@ -132,7 +122,7 @@ func Parse(tokens token.List) *Expression {
 
 				cursor.AddChild(node)
 			} else {
-				cursor = NewLeaf(t)
+				cursor = newLeaf(t)
 				root = cursor
 			}
 
@@ -144,13 +134,13 @@ func Parse(tokens token.List) *Expression {
 		}
 
 		if cursor == nil {
-			cursor = NewLeaf(t)
+			cursor = newLeaf(t)
 			cursor.precedence = precedence(t.Kind)
 			root = cursor
 			continue
 		}
 
-		node := NewLeaf(t)
+		node := newLeaf(t)
 		node.precedence = precedence(t.Kind)
 
 		if cursor.Token.Kind.IsOperator() {
