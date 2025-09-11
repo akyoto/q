@@ -18,7 +18,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		switch identifier.Token.Kind {
 		case token.New:
 			right := (*expression.TypeExpression)(unsafe.Pointer(expr.Children[1]))
-			typ, err := TypeFromTokens(right.Tokens, f.File, f.Env)
+			typ, err := f.Env.TypeFromTokens(right.Tokens, f.File)
 
 			if err != nil {
 				return nil, err

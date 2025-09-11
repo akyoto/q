@@ -10,7 +10,7 @@ import (
 
 // evaluateStruct converts a struct expression to an SSA value.
 func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error) {
-	typ, err := TypeFromTokens(token.List{expr.Children[0].Token}, f.File, f.Env)
+	typ, err := f.Env.TypeFromTokens(token.List{expr.Children[0].Token}, f.File)
 
 	if err != nil {
 		return nil, err

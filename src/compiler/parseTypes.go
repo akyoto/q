@@ -19,7 +19,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 
 		for i, input := range f.Input {
 			input.Name = input.Tokens[0].String(f.File.Bytes)
-			typ, err := core.TypeFromTokens(input.Tokens[1:], f.File, env)
+			typ, err := env.TypeFromTokens(input.Tokens[1:], f.File)
 
 			if err != nil {
 				return err
@@ -38,7 +38,7 @@ func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error
 				typeTokens = typeTokens[1:]
 			}
 
-			typ, err := core.TypeFromTokens(typeTokens, f.File, env)
+			typ, err := env.TypeFromTokens(typeTokens, f.File)
 
 			if err != nil {
 				return err

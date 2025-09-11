@@ -8,7 +8,7 @@ import (
 )
 
 // TypeFromTokens returns the type with the given tokens or `nil` if it doesn't exist.
-func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.Type, error) {
+func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.Type, error) {
 	var union *types.Union
 
 	for i, t := range tokens {
@@ -22,7 +22,7 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 			}
 		}
 
-		typ, err := TypeFromTokens(tokens[:i], file, env)
+		typ, err := env.TypeFromTokens(tokens[:i], file)
 
 		if err != nil {
 			return nil, err
@@ -33,7 +33,7 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 	}
 
 	if union != nil {
-		typ, err := TypeFromTokens(tokens, file, env)
+		typ, err := env.TypeFromTokens(tokens, file)
 
 		if err != nil {
 			return nil, err
@@ -44,7 +44,7 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 	}
 
 	if tokens[0].Kind == token.Not {
-		typ, err := TypeFromTokens(tokens[1:], file, env)
+		typ, err := env.TypeFromTokens(tokens[1:], file)
 
 		if err != nil {
 			return nil, err
@@ -54,7 +54,7 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 	}
 
 	if tokens[0].Kind == token.Mul {
-		typ, err := TypeFromTokens(tokens[1:], file, env)
+		typ, err := env.TypeFromTokens(tokens[1:], file)
 
 		if err != nil {
 			return nil, err
@@ -62,6 +62,10 @@ func TypeFromTokens(tokens token.List, file *fs.File, env *Environment) (types.T
 
 		if typ == types.Any {
 			return types.AnyPointer, nil
+		}
+
+		if typ == types.Byte {
+			return types.CString, nil
 		}
 
 		return &types.Pointer{To: typ}, nil

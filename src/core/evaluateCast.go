@@ -18,7 +18,7 @@ func (f *Function) evaluateCast(expr *expression.Expression) (ssa.Value, error) 
 	}
 
 	right := (*expression.TypeExpression)(unsafe.Pointer(expr.Children[1]))
-	typ, err := TypeFromTokens(right.Tokens, f.File, f.Env)
+	typ, err := f.Env.TypeFromTokens(right.Tokens, f.File)
 
 	if err != nil {
 		return nil, err

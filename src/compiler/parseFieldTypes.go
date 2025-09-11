@@ -15,7 +15,7 @@ func parseFieldTypes(structs iter.Seq[*types.Struct], env *core.Environment) err
 
 		for i, field := range structure.Fields {
 			file := structure.File.(*fs.File)
-			typ, err := core.TypeFromTokens(field.Tokens[1:], file, env)
+			typ, err := env.TypeFromTokens(field.Tokens[1:], file)
 
 			if err != nil {
 				return err
