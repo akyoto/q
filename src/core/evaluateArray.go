@@ -40,11 +40,13 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 
 		for _, field := range structure.Fields {
 			fieldValue := f.Append(&ssa.Load{
-				Typ:     field.Type,
-				Address: addressValue,
-				Index:   f.Append(&ssa.Int{Int: int(field.Offset)}),
-				Scale:   false,
-				Source:  expr.Source(),
+				Memory: ssa.Memory{
+					Address: addressValue,
+					Index:   f.Append(&ssa.Int{Int: int(field.Offset)}),
+					Scale:   false,
+					Typ:     field.Type,
+				},
+				Source: expr.Source(),
 			})
 
 			fields = append(fields, fieldValue)
@@ -73,11 +75,13 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 	}
 
 	v := f.Append(&ssa.Load{
-		Typ:     pointer.To,
-		Address: addressValue,
-		Index:   indexValue,
-		Scale:   true,
-		Source:  expr.Source(),
+		Memory: ssa.Memory{
+			Address: addressValue,
+			Index:   indexValue,
+			Scale:   true,
+			Typ:     pointer.To,
+		},
+		Source: expr.Source(),
 	})
 
 	return v, nil

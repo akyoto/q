@@ -57,12 +57,14 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 	}
 
 	f.Append(&ssa.Store{
-		Address: addressValue,
-		Index:   indexValue,
-		Value:   rightValue,
-		Scale:   true,
-		Length:  uint8(pointer.To.Size()),
-		Source:  node.Expression.Source(),
+		Memory: ssa.Memory{
+			Address: addressValue,
+			Index:   indexValue,
+			Scale:   true,
+			Typ:     pointer.To,
+		},
+		Value:  rightValue,
+		Source: node.Expression.Source(),
 	})
 
 	return nil

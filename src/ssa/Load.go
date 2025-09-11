@@ -8,10 +8,7 @@ import (
 
 // Load stores a value at a given index relative to the address.
 type Load struct {
-	Typ     types.Type
-	Address Value
-	Index   Value
-	Scale   bool
+	Memory
 	Liveness
 	Source
 }
@@ -24,11 +21,7 @@ func (a *Load) Equals(v Value) bool {
 		return false
 	}
 
-	if a.Typ != b.Typ {
-		return false
-	}
-
-	return a.Address == b.Address && a.Index == b.Index && a.Scale == b.Scale
+	return a.Memory == b.Memory
 }
 
 // IsPure returns false because loads read from memory

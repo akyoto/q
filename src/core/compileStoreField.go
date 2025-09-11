@@ -56,12 +56,14 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 
 		f.Append(&ssa.Store{
-			Address: addressValue,
-			Index:   offset,
-			Value:   rightValue,
-			Scale:   false,
-			Length:  uint8(field.Type.Size()),
-			Source:  node.Expression.Source(),
+			Memory: ssa.Memory{
+				Address: addressValue,
+				Index:   offset,
+				Scale:   false,
+				Typ:     field.Type,
+			},
+			Value:  rightValue,
+			Source: node.Expression.Source(),
 		})
 
 	case *types.Struct:

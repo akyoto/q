@@ -9,9 +9,9 @@ import (
 // FromTuple is a value inside of a struct or tuple.
 type FromTuple struct {
 	Tuple     Value
-	Index     int
 	Structure *Struct
 	Liveness
+	Index int
 	Source
 }
 

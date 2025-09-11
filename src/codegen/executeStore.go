@@ -16,7 +16,7 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			Index:  index.Register,
 			Number: source.Value.(*ssa.Int).Int,
 			Scale:  instr.Scale,
-			Length: instr.Length,
+			Length: byte(instr.Typ.Size()),
 		})
 	} else {
 		f.Assembler.Append(&asm.Store{
@@ -24,7 +24,7 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			Index:  index.Register,
 			Source: source.Register,
 			Scale:  instr.Scale,
-			Length: instr.Length,
+			Length: byte(instr.Typ.Size()),
 		})
 	}
 }
