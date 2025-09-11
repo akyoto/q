@@ -37,8 +37,8 @@ type (
 		Body AST
 	}
 	Return struct {
-		Token  token.Token
 		Values []*expression.Expression
+		Token  token.Token
 	}
 	Switch struct {
 		Cases []Case

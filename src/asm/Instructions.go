@@ -58,15 +58,15 @@ type (
 		Base   cpu.Register
 		Index  cpu.Register
 		Source cpu.Register
-		Scale  bool
 		Length byte
+		Scale  bool
 	}
 	StoreNumber struct {
+		Number int
 		Base   cpu.Register
 		Index  cpu.Register
-		Number int
-		Scale  bool
 		Length byte
+		Scale  bool
 	}
 	Subtract        rrr
 	SubtractNumber  rrn

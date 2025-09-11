@@ -10,15 +10,15 @@ import (
 
 // Function contains the state that is required to produce assembly code.
 type Function struct {
-	FullName          string
-	Assembler         asm.Assembler
-	Steps             []*Step
 	ValueToStep       map[ssa.Value]*Step
 	BlockToRegion     map[*ssa.Block]region
 	CPU               *cpu.CPU
+	build             *config.Build
+	FullName          string
+	Assembler         asm.Assembler
+	Steps             []*Step
 	Preserved         set.Ordered[cpu.Register]
 	Count             count
-	build             *config.Build
 	isInit            bool
 	isExit            bool
 	needsFramePointer bool

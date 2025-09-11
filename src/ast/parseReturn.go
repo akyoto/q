@@ -12,5 +12,5 @@ func parseReturn(tokens token.List, file *fs.File) (Node, error) {
 	}
 
 	values := expression.NewList(tokens[1:])
-	return &Return{Token: tokens[0], Values: values}, nil
+	return &Return{Values: values, Token: tokens[0]}, nil
 }
