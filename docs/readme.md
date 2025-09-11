@@ -276,7 +276,7 @@ The typical flow for a build command is the following:
 1. [core.Compile](../src/core/Compile.go)
 1. [linker.Write](../src/linker/Write.go)
 
-There is also an [interactive view](https://graph-q.urbach.dev/) powered by gopkgview.
+There is also a [dependency graph](https://deps-q.urbach.dev/) (gopkgview) and a [flame graph](https://prof-q.urbach.dev/ui/flamegraph) (pprof).
 
 ## FAQ
 
