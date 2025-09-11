@@ -9,7 +9,7 @@ import (
 func (f *Function) removeDeadCode(folded map[ssa.Value]struct{}) error {
 	for _, block := range f.Blocks {
 		for i, value := range block.Instructions {
-			if !value.IsConst() {
+			if !value.IsPure() {
 				continue
 			}
 

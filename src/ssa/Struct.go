@@ -25,8 +25,8 @@ func (a *Struct) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
-// IsConst returns true because two instances using the same values are interchangeable.
-func (s *Struct) IsConst() bool { return true }
+// IsPure returns true because two instances using the same values are interchangeable.
+func (s *Struct) IsPure() bool { return true }
 
 // String returns a human-readable representation of the struct.
 func (s *Struct) String() string {

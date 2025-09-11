@@ -36,9 +36,9 @@ func (op *BinaryOp) Inputs() []Value {
 	return []Value{op.Left, op.Right}
 }
 
-// IsConst returns true if both operands are constant.
-func (op *BinaryOp) IsConst() bool {
-	return op.Left.IsConst() && op.Right.IsConst()
+// IsPure returns true if both operands are constant.
+func (op *BinaryOp) IsPure() bool {
+	return op.Left.IsPure() && op.Right.IsPure()
 }
 
 // Replace replaces the left or right operand if it matches.

@@ -26,8 +26,8 @@ func (a *Function) Equals(v Value) bool {
 // Inputs returns nil because a function reference has no inputs.
 func (f *Function) Inputs() []Value { return nil }
 
-// IsConst returns true because a function reference is always constant.
-func (f *Function) IsConst() bool { return true }
+// IsPure returns true because a function reference is always constant.
+func (f *Function) IsPure() bool { return true }
 
 // Replace does nothing because a function reference has no inputs.
 func (f *Function) Replace(Value, Value) {}

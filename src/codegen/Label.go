@@ -21,7 +21,7 @@ func (a *Label) Equals(v ssa.Value) bool {
 }
 
 func (v *Label) Inputs() []ssa.Value          { return nil }
-func (v *Label) IsConst() bool                { return false }
+func (v *Label) IsPure() bool                 { return false }
 func (v *Label) Replace(ssa.Value, ssa.Value) {}
 func (v *Label) String() string               { return ssa.CleanLabel(v.Name) }
 func (v *Label) Type() types.Type             { return types.Void }

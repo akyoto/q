@@ -158,12 +158,12 @@ func (b *Block) Contains(value Value) bool {
 
 // FindExisting returns an equal instruction that's already appended or `nil` if none could be found.
 func (b *Block) FindExisting(instr Value) Value {
-	if !instr.IsConst() {
+	if !instr.IsPure() {
 		return nil
 	}
 
 	for _, existing := range slices.Backward(b.Instructions) {
-		if existing.IsConst() && instr.Equals(existing) {
+		if existing.IsPure() && instr.Equals(existing) {
 			return existing
 		}
 

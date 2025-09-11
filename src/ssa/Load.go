@@ -31,8 +31,9 @@ func (a *Load) Equals(v Value) bool {
 	return a.Address == b.Address && a.Index == b.Index && a.Scale == b.Scale
 }
 
-// IsConst returns false because a load is a memory access.
-func (l *Load) IsConst() bool {
+// IsPure returns false because loads read from memory
+// and two equal loads may yield different values.
+func (l *Load) IsPure() bool {
 	return false
 }
 

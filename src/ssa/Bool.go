@@ -28,8 +28,8 @@ func (a *Bool) Equals(v Value) bool {
 // Inputs returns nil because a boolean value has no inputs.
 func (b *Bool) Inputs() []Value { return nil }
 
-// IsConst returns true because a boolean value is always constant.
-func (b *Bool) IsConst() bool { return true }
+// IsPure returns true because a boolean value is always constant.
+func (b *Bool) IsPure() bool { return true }
 
 // Replace does nothing because a boolean value has no inputs.
 func (b *Bool) Replace(Value, Value) {}

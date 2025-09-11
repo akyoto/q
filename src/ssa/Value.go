@@ -12,8 +12,8 @@ type Value interface {
 	// Inputs returns all values that are needed for this value to be calculated.
 	Inputs() []Value
 
-	// IsConst returns true if the calculation of the value has no side effects.
-	IsConst() bool
+	// IsPure returns true if the calculation of the value has no side effects.
+	IsPure() bool
 
 	// RemoveUser removes an existing user of this value.
 	RemoveUser(Value)

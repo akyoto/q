@@ -30,8 +30,8 @@ func (c *Copy) Inputs() []Value {
 	return []Value{c.Value}
 }
 
-// IsConst returns true.
-func (c *Copy) IsConst() bool {
+// IsPure returns true.
+func (c *Copy) IsPure() bool {
 	return true
 }
 

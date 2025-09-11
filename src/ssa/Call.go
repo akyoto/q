@@ -30,8 +30,8 @@ func (c *Call) Inputs() []Value {
 	return append(c.Arguments, c.Func)
 }
 
-// IsConst returns false because a function call can have side effects.
-func (c *Call) IsConst() bool { return false }
+// IsPure returns false because a function call can have side effects.
+func (c *Call) IsPure() bool { return false }
 
 // String returns a human-readable representation of the call.
 func (c *Call) String() string {

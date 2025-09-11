@@ -28,8 +28,8 @@ func (a *Int) Equals(v Value) bool {
 // Inputs returns nil because an integer has no inputs.
 func (i *Int) Inputs() []Value { return nil }
 
-// IsConst returns true because an integer is always constant.
-func (i *Int) IsConst() bool { return true }
+// IsPure returns true because an integer is always constant.
+func (i *Int) IsPure() bool { return true }
 
 // Replace does nothing because an integer has no inputs.
 func (i *Int) Replace(Value, Value) {}

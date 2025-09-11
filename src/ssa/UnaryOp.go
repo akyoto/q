@@ -33,8 +33,8 @@ func (a *UnaryOp) Equals(v Value) bool {
 // Inputs returns the operand.
 func (u *UnaryOp) Inputs() []Value { return []Value{u.Operand} }
 
-// IsConst returns true if the operand is constant.
-func (u *UnaryOp) IsConst() bool { return u.Operand.IsConst() }
+// IsPure returns true if the operand is constant.
+func (u *UnaryOp) IsPure() bool { return u.Operand.IsPure() }
 
 // Replace replaces the operand if it matches.
 func (u *UnaryOp) Replace(old Value, new Value) {

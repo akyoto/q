@@ -29,8 +29,8 @@ func (a *Bytes) Equals(v Value) bool {
 // Inputs returns nil because a byte slice has no inputs.
 func (b *Bytes) Inputs() []Value { return nil }
 
-// IsConst returns true because a byte slice is always constant.
-func (b *Bytes) IsConst() bool { return true }
+// IsPure returns true because a byte slice is always constant.
+func (b *Bytes) IsPure() bool { return true }
 
 // Replace does nothing because a byte slice has no inputs.
 func (b *Bytes) Replace(Value, Value) {}

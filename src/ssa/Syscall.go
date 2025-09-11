@@ -24,8 +24,8 @@ func (a *Syscall) Equals(v Value) bool {
 	return a.Arguments.Equals(b.Arguments)
 }
 
-// IsConst returns false because a syscall can have side effects.
-func (s *Syscall) IsConst() bool { return false }
+// IsPure returns false because a syscall can have side effects.
+func (s *Syscall) IsPure() bool { return false }
 
 // String returns a human-readable representation of the syscall.
 func (s *Syscall) String() string { return fmt.Sprintf("syscall(%s)", s.Arguments.String()) }

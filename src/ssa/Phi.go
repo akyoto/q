@@ -48,8 +48,8 @@ func (p *Phi) FirstDefined() Value {
 	panic("phi composed of only undefined values must not exist")
 }
 
-// IsConst returns true because two equal phi nodes produce the same value.
-func (p *Phi) IsConst() bool {
+// IsPure returns true because two equal phi nodes produce the same value.
+func (p *Phi) IsPure() bool {
 	return true
 }
 

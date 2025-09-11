@@ -29,8 +29,8 @@ func (a *FromTuple) Equals(v Value) bool {
 // Inputs returns the tuple.
 func (f *FromTuple) Inputs() []Value { return []Value{f.Tuple} }
 
-// IsConst returns true because accessing the same element will always have the same value.
-func (f *FromTuple) IsConst() bool { return true }
+// IsPure returns true because accessing the same element will always have the same value.
+func (f *FromTuple) IsPure() bool { return true }
 
 // Replace replaces the tuple if it matches.
 func (f *FromTuple) Replace(old Value, new Value) {
