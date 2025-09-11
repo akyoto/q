@@ -1,6 +1,8 @@
 package core
 
 import (
+	"unsafe"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -15,7 +17,8 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	if identifier.Token.Kind.IsBuiltin() {
 		switch identifier.Token.Kind {
 		case token.New:
-			typ, err := TypeFromTokens([]token.Token{expr.Children[1].Token}, f.File, f.Env)
+			right := (*expression.TypeExpression)(unsafe.Pointer(expr.Children[1]))
+			typ, err := TypeFromTokens(right.Tokens, f.File, f.Env)
 
 			if err != nil {
 				return nil, err

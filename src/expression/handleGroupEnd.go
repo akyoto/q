@@ -9,9 +9,7 @@ import (
 // handleGroupEnd handles anything that uses a group like a function call or an array access.
 func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, groupPosition int, i int, t token.Token) (*Expression, *Expression) {
 	if isComplete(cursor) {
-		parameters := NewList(tokens[groupPosition:i])
 		node := New()
-		node.Token.Position = tokens[groupPosition].Position
 
 		switch t.Kind {
 		case token.GroupEnd:
@@ -23,19 +21,25 @@ func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, gro
 		}
 
 		node.precedence = precedence(node.Token.Kind)
+		node.Token.Position = tokens[groupPosition].Position
+		identifier := cursor
 
 		if cursor.Token.Kind.IsOperator() && node.precedence > cursor.precedence {
-			cursor.LastChild().InsertAbove(node)
-		} else {
-			if cursor == root {
-				root = node
-			}
-
-			cursor.InsertAbove(node)
+			identifier = cursor.LastChild()
+		} else if cursor == root {
+			root = node
 		}
 
-		for _, param := range parameters {
-			node.AddChild(param)
+		identifier.InsertAbove(node)
+
+		if identifier.Token.Kind == token.New {
+			node.AddChild(&newTypeExpression(tokens[groupPosition:i]).Expression)
+		} else {
+			parameters := NewList(tokens[groupPosition:i])
+
+			for _, param := range parameters {
+				node.AddChild(param)
+			}
 		}
 
 		cursor = node
