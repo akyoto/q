@@ -99,6 +99,7 @@ var tests = []run{
 	{"function-pointer", "", "", 0},
 	{"type-cast", "", "", 0},
 	{"int-array", "", "", 0},
+	{"pointer-to-pointer", "", "", 0},
 }
 
 func TestTests(t *testing.T) {

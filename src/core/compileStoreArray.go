@@ -11,7 +11,7 @@ import (
 func (f *Function) compileStoreArray(node *ast.Assign) error {
 	left := node.Expression.Children[0]
 	address := left.Children[0]
-	index := left.Children[1]
+
 	addressValue, err := f.evaluate(address)
 
 	if err != nil {
@@ -32,12 +32,6 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source().StartPos)
 	}
 
-	indexValue, err := f.evaluate(index)
-
-	if err != nil {
-		return err
-	}
-
 	right := node.Expression.Children[1]
 	rightValue, err := f.evaluate(right)
 
@@ -47,6 +41,19 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 
 	if !types.Is(rightValue.Type(), pointer.To) {
 		return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: pointer.To.Name()}, f.File, right.Source().StartPos)
+	}
+
+	var indexValue ssa.Value
+
+	if len(left.Children) > 1 {
+		index := left.Children[1]
+		indexValue, err = f.evaluate(index)
+
+		if err != nil {
+			return err
+		}
+	} else {
+		indexValue = f.Append(&ssa.Int{Int: 0})
 	}
 
 	f.Append(&ssa.Store{

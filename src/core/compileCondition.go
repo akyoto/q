@@ -100,6 +100,10 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		return f.compileCondition(condition.Children[0], elseBlock, thenBlock)
 
 	default:
+		if condition.Token.Kind.IsAssignment() {
+			return errors.New(InvalidCondition, f.File, condition.Token.Position)
+		}
+
 		value, err := f.evaluate(condition)
 
 		if err != nil {
