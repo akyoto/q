@@ -8,18 +8,14 @@ func isComplete(expr *Expression) bool {
 		return false
 	}
 
-	switch expr.Token.Kind {
-	case token.Identifier, token.Number, token.String:
-		// These aren't operators but they always count as complete expressions.
-		return true
-	case token.Call, token.Struct:
+	if expr.Token.Kind == token.Call || expr.Token.Kind == token.Struct {
 		// Even though token.Call is an operator and could be handled by the upcoming branch,
 		// the number of operands is variable.
 		// Therefore we consider every single call expression as complete.
 		return true
 	}
 
-	if expr.Token.Kind.IsBuiltin() {
+	if expr.Token.Kind.IsLiteral() {
 		return true
 	}
 
