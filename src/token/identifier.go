@@ -19,6 +19,8 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 		kind = Assert
 	case "const":
 		kind = Const
+	case "delete":
+		kind = Delete
 	case "if":
 		kind = If
 	case "else":
@@ -29,8 +31,12 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 		kind = Import
 	case "loop":
 		kind = Loop
+	case "new":
+		kind = New
 	case "return":
 		kind = Return
+	case "syscall":
+		kind = Syscall
 	case "switch":
 		kind = Switch
 	}

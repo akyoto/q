@@ -25,9 +25,10 @@ func TestFunction(t *testing.T) {
 }
 
 func TestKeyword(t *testing.T) {
-	tokens := token.Tokenize([]byte("assert const else extern if import loop return switch"))
+	tokens := token.Tokenize([]byte("as assert const else extern if import loop return switch"))
 
 	expected := []token.Kind{
+		token.Cast,
 		token.Assert,
 		token.Const,
 		token.Else,
@@ -37,6 +38,21 @@ func TestKeyword(t *testing.T) {
 		token.Loop,
 		token.Return,
 		token.Switch,
+		token.EOF,
+	}
+
+	for i, kind := range expected {
+		assert.Equal(t, tokens[i].Kind, kind)
+	}
+}
+
+func TestBuiltin(t *testing.T) {
+	tokens := token.Tokenize([]byte("delete new syscall"))
+
+	expected := []token.Kind{
+		token.Delete,
+		token.New,
+		token.Syscall,
 		token.EOF,
 	}
 

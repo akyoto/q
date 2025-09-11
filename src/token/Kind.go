@@ -79,11 +79,21 @@ const (
 	Return                            // return
 	Switch                            // switch
 	___END_KEYWORDS___                // </keywords>
+	___BUILTINS___                    // <builtins>
+	Delete                            // delete
+	New                               // new
+	Syscall                           // syscall
+	___END_BUILTINS___                // </builtins>
 )
 
 // IsAssignment returns true if the token is an assignment operator.
 func (k Kind) IsAssignment() bool {
 	return k > ___ASSIGNMENTS___ && k < ___END_ASSIGNMENTS___
+}
+
+// IsBuiltin returns true if the token is a builtin function.
+func (k Kind) IsBuiltin() bool {
+	return k > ___BUILTINS___ && k < ___END_BUILTINS___
 }
 
 // IsComparison returns true if the token is a comparison operator.
@@ -103,7 +113,7 @@ func (k Kind) IsKeyword() bool {
 
 // IsLiteral returns true if the token is a literal.
 func (k Kind) IsLiteral() bool {
-	return k == Identifier || k == Number || k == String || k == Rune
+	return k == Identifier || k == Number || k == String || k == Rune || k.IsBuiltin()
 }
 
 // IsNumeric returns true if the token is a number or rune.

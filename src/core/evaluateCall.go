@@ -12,9 +12,9 @@ import (
 func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) {
 	identifier := expr.Children[0]
 
-	if identifier.Token.Kind == token.Identifier {
-		switch identifier.String(f.File.Bytes) {
-		case "new":
+	if identifier.Token.Kind.IsBuiltin() {
+		switch identifier.Token.Kind {
+		case token.New:
 			typ, err := TypeFromTokens([]token.Token{expr.Children[1].Token}, f.File, f.Env)
 
 			if err != nil {
@@ -42,7 +42,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 			f.Dependencies.Add(malloc)
 			return call, nil
 
-		case "delete":
+		case token.Delete:
 			value, err := f.evaluate(expr.Children[1])
 
 			if err != nil {
@@ -76,7 +76,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 				return nil, errors.New(&TypeMismatch{Encountered: valueType.Name(), Expected: types.AnyPointer.Name()}, f.File, expr.Children[1].Source().StartPos)
 			}
 
-		case "syscall":
+		case token.Syscall:
 			args, err := f.decompose(expr.Children[1:], nil, false)
 
 			if err != nil {
