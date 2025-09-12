@@ -1,3 +1,3 @@
 const {
-	_exit = 60
+	_exit = 231
 }

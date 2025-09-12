@@ -23,6 +23,7 @@ var examples = []run{
 	{"raylib", "", "", -1},
 	{"server", "", "", -1},
 	{"shell", "", "", -1},
+	{"thread", "", "", -1},
 }
 
 func TestExamples(t *testing.T) {
