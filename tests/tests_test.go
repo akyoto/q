@@ -98,6 +98,7 @@ var tests = []run{
 	{"resource", "", "", 0},
 	{"function-pointer", "", "", 0},
 	{"type-cast", "", "", 0},
+	{"sleep", "", "", 0},
 	{"int-array", "", "", 0},
 	{"pointer-to-pointer", "", "", 0},
 }
