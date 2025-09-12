@@ -1,4 +1,4 @@
 Argv {
 	path *byte
-	_ *any
+	_ nil
 }

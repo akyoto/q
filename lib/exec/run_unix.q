@@ -19,6 +19,7 @@ run(path string) -> error {
 	result := wait4(pid, status, 0, 0)
 
 	if result < 0 {
+		delete(status)
 		return result
 	}
 
