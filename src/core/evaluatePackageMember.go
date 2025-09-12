@@ -36,7 +36,7 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 		return nil, errors.New(&UnknownIdentifier{Name: rightText}, f.File, expr.Source().StartPos)
 	}
 
-	if expr.Parent.Token.Kind == token.Call {
+	if expr.Parent.Token.Kind == token.Call && expr.Parent.Children[0] == expr {
 		inputExpressions := expr.Parent.Children[1:]
 		fn, err := f.selectFunction(variants, inputExpressions, expr)
 
