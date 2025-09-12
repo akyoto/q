@@ -3,4 +3,6 @@ main() {
 	[x] = new(int)
 	[[x]] = 42
 	assert [[x]] == 42
+	delete([x])
+	delete(x)
 }
