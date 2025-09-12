@@ -16,6 +16,7 @@ main() {
 
 	loop {
 		if raylib.WindowShouldClose() {
+			raylib.CloseWindow()
 			return
 		}
 
@@ -30,6 +31,7 @@ extern {
 	raylib {
 		BeginDrawing()
 		ClearBackground(color Color)
+		CloseWindow()
 		DrawFPS(x int, y int)
 		EndDrawing()
 		InitWindow(width int, height int, title *byte)
