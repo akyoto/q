@@ -19,8 +19,4 @@ Compiler for the q programming language.
         --ssa            # static single assigment form
         --verbose        # all stages
 
-    Show commit date and hash:
-
-        q version
-
 EOF
