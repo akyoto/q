@@ -7,4 +7,3 @@ extern {
 		CreateThread(attributes int, stackSize int, address any, parameter int) -> int
 	}
 }
-
