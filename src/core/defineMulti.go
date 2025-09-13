@@ -37,26 +37,10 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 			continue
 		}
 
-		leftValue, exists := f.Block().FindIdentifier(name)
+		_, err := f.validateLeft(identifier, right, name, fn.Typ.Output[i], isAssign)
 
-		if !isAssign && exists {
-			return errors.New(&VariableAlreadyExists{Name: name}, f.File, identifier.Source().StartPos)
-		}
-
-		if isAssign {
-			if !exists {
-				return errors.New(&UnknownIdentifier{Name: name}, f.File, identifier.Source().StartPos)
-			}
-
-			phi, isPhi := leftValue.(*ssa.Phi)
-
-			if isPhi && phi.IsPartiallyUndefined() {
-				return errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, identifier.Source().StartPos)
-			}
-
-			if !types.Is(fn.Typ.Output[i], leftValue.Type()) {
-				return errors.New(&TypeMismatch{Encountered: fn.Typ.Output[i].Name(), Expected: leftValue.Type().Name()}, f.File, right.Source().StartPos)
-			}
+		if err != nil {
+			return err
 		}
 
 		structure, isStructType := types.Unwrap(fn.Typ.Output[i]).(*types.Struct)

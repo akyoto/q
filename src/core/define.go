@@ -22,32 +22,16 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		return nil
 	}
 
+	leftValue, err := f.validateLeft(left, right, name, rightValue.Type(), isAssign)
+
+	if err != nil {
+		return err
+	}
+
 	call, isCall := rightValue.(*ssa.Call)
 
 	if isCall && len(call.Func.Typ.Output) != 1 {
 		return errors.New(&DefinitionCountMismatch{Function: call.Func.String(), Count: 1, ExpectedCount: len(call.Func.Typ.Output)}, f.File, left.Source().StartPos)
-	}
-
-	leftValue, exists := f.Block().FindIdentifier(name)
-
-	if !isAssign && exists {
-		return errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source().StartPos)
-	}
-
-	if isAssign {
-		if !exists {
-			return errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
-		}
-
-		phi, isPhi := leftValue.(*ssa.Phi)
-
-		if isPhi && phi.IsPartiallyUndefined() {
-			return errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
-		}
-
-		if !types.Is(rightValue.Type(), leftValue.Type()) {
-			return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: leftValue.Type().Name()}, f.File, right.Source().StartPos)
-		}
 	}
 
 	// If the value we got was a value that is stored in a variable,
