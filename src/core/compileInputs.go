@@ -36,6 +36,7 @@ func (f *Function) compileInputs() {
 				}
 
 				f.Append(param)
+				f.Block().Identify(param.Name, param)
 				structure.Arguments = append(structure.Arguments, param)
 				offset++
 			}
