@@ -315,7 +315,7 @@ The table below shows latency numbers on a 2015 Macbook:
 
 |                 | x86-64                  |
 | --------------- | ----------------------- |
-| q               |   **81.0 ms** ±  1.0 ms |
+| q               |   **78.6 ms** ±  2.3 ms |
 | go @1.25        |  **364.5 ms** ±  3.3 ms |
 | clang @17.0.0   |  **395.9 ms** ±  3.3 ms |
 | rustc @1.89.0   |  **639.9 ms** ±  3.1 ms |
@@ -329,7 +329,7 @@ Advanced benchmarks for throughput have not been conducted yet, but the followin
 
 |                 | x86-64                  |
 | --------------- | ----------------------- |
-| q               |   **96.0 ms** ±  1.5 ms |
+| q               |   **89.5 ms** ±  2.4 ms |
 | go @1.25        |  **372.2 ms** ±  5.3 ms |
 | clang @17.0.0   |  **550.8 ms** ±  3.8 ms |
 | rustc @1.89.0   | **1101.0 ms** ±  4.0 ms |
