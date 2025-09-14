@@ -19,6 +19,9 @@ func (f *Function) compileASTNode(node ast.Node) error {
 	case *ast.Define:
 		return f.compileDefinition(node)
 
+	case *ast.Go:
+		return f.compileGo(node)
+
 	case *ast.If:
 		return f.compileIf(node)
 

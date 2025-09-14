@@ -1,8 +1,11 @@
 package scanner
 
 import (
+	"path/filepath"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
+	"git.urbach.dev/cli/q/src/global"
 	"git.urbach.dev/cli/q/src/token"
 )
 
@@ -45,6 +48,14 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 
 			i++
 			continue
+		}
+
+		if tokens[i].Kind == token.Go {
+			s.queueDirectory(filepath.Join(global.Library, "thread"), "thread")
+		}
+
+		if tokens[i].Kind == token.New {
+			s.queueDirectory(filepath.Join(global.Library, "mem"), "mem")
 		}
 
 		if tokens[i].Kind == token.Invalid {

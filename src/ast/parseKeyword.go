@@ -12,10 +12,12 @@ func parseKeyword(tokens token.List, file *fs.File, nodes AST) (Node, error) {
 	switch tokens[0].Kind {
 	case token.Assert:
 		return parseAssert(tokens, file)
-	case token.If:
-		return parseIf(tokens, file)
 	case token.Else:
 		return parseElse(tokens, file, nodes)
+	case token.Go:
+		return parseGo(tokens, file)
+	case token.If:
+		return parseIf(tokens, file)
 	case token.Loop:
 		return parseLoop(tokens, file)
 	case token.Return:

@@ -27,6 +27,9 @@ type (
 	Define struct {
 		Expression *expression.Expression
 	}
+	Go struct {
+		Call *expression.Expression
+	}
 	If struct {
 		Condition *expression.Expression
 		Body      AST

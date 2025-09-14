@@ -1,10 +1,9 @@
 import io
-import thread
 import time
 
 main() {
 	loop 0..4 {
-		thread.create(work)
+		go work()
 	}
 
 	time.sleep(time.second)
