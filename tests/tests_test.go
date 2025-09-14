@@ -76,6 +76,7 @@ var tests = []run{
 	{"struct-return-value", "", "", 0},
 	{"struct-copy", "", "", 0},
 	{"struct-pointer-deref", "", "", 0},
+	{"struct-modify-branch", "", "", 0},
 	{"string-by-value", "", "Hello\n", 0},
 	{"return-2", "", "", 0},
 	{"return-3", "", "", 0},

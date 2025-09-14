@@ -4,6 +4,8 @@ import (
 	"iter"
 	"maps"
 	"slices"
+
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // Block is a list of instructions that can be targeted in branches.
@@ -59,6 +61,8 @@ func (b *Block) AddSuccessor(successor *Block) {
 		keys[name] = struct{}{}
 	}
 
+	var modifiedStructs []string
+
 	for name := range keys {
 		oldValue, oldExists := successor.Identifiers[name]
 		newValue, newExists := b.Identifiers[name]
@@ -66,6 +70,13 @@ func (b *Block) AddSuccessor(successor *Block) {
 		switch {
 		case oldExists:
 			if oldValue == newValue {
+				continue
+			}
+
+			_, isStruct := oldValue.(*Struct)
+
+			if isStruct {
+				modifiedStructs = append(modifiedStructs, name)
 				continue
 			}
 
@@ -117,6 +128,20 @@ func (b *Block) AddSuccessor(successor *Block) {
 			successor.Identifiers[name] = phi
 			phi.Arguments = append(phi.Arguments, newValue)
 		}
+	}
+
+	// Structs that were modified in branches need to be recreated
+	// to use the new Phi values as their arguments.
+	for _, name := range modifiedStructs {
+		structure := successor.Identifiers[name].(*Struct)
+		structType := structure.Typ.(*types.Struct)
+		newStruct := &Struct{Typ: structType, Arguments: make(Arguments, len(structure.Arguments))}
+
+		for i, field := range structType.Fields {
+			newStruct.Arguments[i] = successor.Identifiers[name+"."+field.Name]
+		}
+
+		successor.Identifiers[name] = newStruct
 	}
 }
 
