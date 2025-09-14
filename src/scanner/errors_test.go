@@ -20,7 +20,7 @@ var errs = []struct {
 	{"InvalidCharacter.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter2.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidCharacter3.q", &scanner.InvalidCharacter{Character: "@"}},
-	{"InvalidCharacter4.q", &scanner.InvalidCharacter{Character: "+++"}},
+	{"InvalidCharacter4.q", &scanner.InvalidCharacter{Character: "@"}},
 	{"InvalidExpression.q", scanner.InvalidExpression},
 	{"InvalidFunctionDefinition.q", scanner.InvalidFunctionDefinition},
 	{"InvalidFunctionDefinition2.q", scanner.InvalidFunctionDefinition},
