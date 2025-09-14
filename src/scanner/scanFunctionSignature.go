@@ -7,8 +7,8 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// scanSignature scans only the function signature without the body.
-func scanSignature(file *fs.File, pkg string, tokens token.List, i int, delimiter token.Kind) (*core.Function, int, error) {
+// scanFunctionSignature scans only the function signature without the body.
+func scanFunctionSignature(file *fs.File, pkg string, tokens token.List, i int, delimiter token.Kind) (*core.Function, int, error) {
 	var (
 		groupLevel  = 0
 		nameStart   = i

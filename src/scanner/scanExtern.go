@@ -48,7 +48,7 @@ func (s *scanner) scanExternLibrary(file *fs.File, tokens token.List, i int) (in
 	for i < len(tokens) {
 		switch tokens[i].Kind {
 		case token.Identifier:
-			function, j, err := scanSignature(file, dllName, tokens, i, token.NewLine)
+			function, j, err := scanFunctionSignature(file, dllName, tokens, i, token.NewLine)
 
 			if err != nil {
 				return j, err
