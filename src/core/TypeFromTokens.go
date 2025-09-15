@@ -72,7 +72,17 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 	}
 
 	if len(tokens) >= 2 && tokens[0].Kind == token.ArrayStart && tokens[1].Kind == token.ArrayEnd {
-		return nil, errors.New(&NotImplemented{Subject: "array types"}, file, tokens[0].Position)
+		typ, err := env.TypeFromTokens(tokens[2:], file)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if typ == types.Byte {
+			return types.String, nil
+		}
+
+		return types.Slice(typ, "[]"+typ.Name()), nil
 	}
 
 	if tokens[0].Kind != token.Identifier {

@@ -29,13 +29,5 @@ var (
 
 var (
 	CString = &Pointer{To: Byte}
-	String  = &Struct{
-		Package:    "",
-		UniqueName: "string",
-		name:       "string",
-		Fields: []*Field{
-			{Name: "ptr", Type: CString, Index: 0, Offset: 0},
-			{Name: "len", Type: UInt, Index: 1, Offset: 8},
-		},
-	}
+	String  = Slice(Byte, "string")
 )
