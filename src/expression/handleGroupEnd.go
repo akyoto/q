@@ -7,7 +7,7 @@ import (
 )
 
 // handleGroupEnd handles anything that uses a group like a function call or an array access.
-func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, groupPosition int, i int, t token.Token) (*Expression, *Expression) {
+func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, groupPosition uint, i uint, t token.Token) (*Expression, *Expression) {
 	if isComplete(cursor) {
 		node := New()
 

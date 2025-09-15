@@ -7,70 +7,74 @@ import (
 // Parse generates an expression tree from tokens.
 func Parse(tokens token.List) *Expression {
 	var (
-		cursor        *Expression
-		root          *Expression
-		groupLevel    = 0
-		groupPosition = 0
+		cursor *Expression
+		root   *Expression
+		i      uint
 	)
 
-	for i, t := range tokens {
-		if t.Kind == token.GroupStart || t.Kind == token.ArrayStart || t.Kind == token.BlockStart {
-			groupLevel++
+loop:
+	for i < uint(len(tokens)) {
+		t := tokens[i]
 
-			if groupLevel == 1 {
-				groupPosition = i + 1
+		switch t.Kind {
+		case token.GroupStart, token.ArrayStart, token.BlockStart:
+			i++
+			groupLevel := 1
+			groupPosition := i
+
+			for i < uint(len(tokens)) {
+				t = tokens[i]
+
+				switch t.Kind {
+				case token.GroupStart, token.ArrayStart, token.BlockStart:
+					groupLevel++
+				case token.GroupEnd, token.ArrayEnd, token.BlockEnd:
+					groupLevel--
+
+					if groupLevel == 0 {
+						root, cursor = handleGroupEnd(tokens, root, cursor, groupPosition, i, t)
+						i++
+						continue loop
+					}
+				}
+
+				i++
 			}
 
-			continue
+			break loop
 		}
 
-		if t.Kind == token.GroupEnd || t.Kind == token.ArrayEnd || t.Kind == token.BlockEnd {
-			groupLevel--
-
-			if groupLevel != 0 {
-				continue
-			}
-
-			root, cursor = handleGroupEnd(tokens, root, cursor, groupPosition, i, t)
-			continue
-		}
-
-		if groupLevel > 0 {
-			continue
-		}
-
-		if cursor != nil && cursor.Token.Kind == token.Cast && len(cursor.Children) < 2 {
+		switch {
+		case cursor != nil && cursor.Token.Kind == token.Cast && len(cursor.Children) < 2:
 			cursor.AddChild(&newTypeExpression(tokens[i:]).Expression)
 			return root
-		}
 
-		if t.Kind.IsLiteral() {
+		case t.Kind.IsLiteral():
 			root, cursor = handleLiteral(root, cursor, t)
-			continue
-		}
 
-		if !t.Kind.IsOperator() {
-			continue
-		}
+		case !t.Kind.IsOperator():
+			// do nothing
 
-		if cursor == nil {
+		case cursor == nil:
 			cursor = newLeaf(t)
 			cursor.precedence = precedence(t.Kind)
 			root = cursor
-			continue
+
+		default:
+			node := newLeaf(t)
+			node.precedence = precedence(t.Kind)
+
+			if cursor.Token.Kind.IsOperator() {
+				root = handleOperator(root, cursor, node)
+			} else {
+				node.AddChild(cursor)
+				root = node
+			}
+
+			cursor = node
 		}
 
-		node := newLeaf(t)
-		node.precedence = precedence(t.Kind)
-
-		if cursor.Token.Kind.IsOperator() {
-			root = handleOperator(root, cursor, node)
-		} else {
-			node.AddChild(cursor)
-			root = node
-		}
-
-		cursor = node
+		i++
 	}
 
 	if root == nil {
