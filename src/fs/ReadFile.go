@@ -24,15 +24,14 @@ func ReadFile(path string) ([]byte, error) {
 
 	for {
 		n, err := f.Read(contents[pos:])
-
-		if err != nil {
-			return nil, err
-		}
-
 		pos += n
 
 		if pos >= len(contents) {
 			return contents, nil
+		}
+
+		if err != nil {
+			return nil, err
 		}
 	}
 }
