@@ -1,4 +1,4 @@
-accept(fd int) -> (int, error) {
+accept(fd int) -> (conn int, err error) {
 	conn := ws2_32.accept(fd, 0, 0)
 
 	if conn < 0 {
@@ -9,31 +9,53 @@ accept(fd int) -> (int, error) {
 }
 
 close(fd int) -> error {
-	ws2_32.shutdown(fd, 1)
-	ws2_32.recv(fd, 0, 0, 0)
-	return ws2_32.closesocket(fd)
+	if ws2_32.shutdown(fd, 1) == -1 {
+		return ws2_32.WSAGetLastError()
+	}
+
+	if ws2_32.recv(fd, 0, 0, 0) == -1 {
+		return ws2_32.WSAGetLastError()
+	}
+
+	if ws2_32.closesocket(fd) == -1 {
+		return ws2_32.WSAGetLastError()
+	}
+
+	return 0
 }
 
 listen(fd int, backlog int) -> error {
 	return ws2_32.listen(fd, backlog)
 }
 
-recv(fd int, buffer string) -> int {
-	return ws2_32.recv(fd, buffer.ptr, buffer.len as int, 0)
+recv(fd int, buffer string) -> (read int, err error) {
+	n := ws2_32.recv(fd, buffer.ptr, buffer.len as int, 0)
+
+	if n == -1 {
+		return 0, ws2_32.WSAGetLastError()
+	}
+
+	return n, 0
 }
 
 socket(family int, type int, protocol int) -> (int, error) {
 	s := ws2_32.socket(family, type, protocol)
 
-	if s < 0 {
-		return 0, s
+	if s == -1 {
+		return 0, ws2_32.WSAGetLastError()
 	}
 
 	return s, 0
 }
 
-send(fd int, buffer string) -> int {
-	return ws2_32.send(fd, buffer.ptr, buffer.len as int, 0)
+send(fd int, buffer string) -> (written int, err error) {
+	n := ws2_32.send(fd, buffer.ptr, buffer.len as int, 0)
+
+	if n == -1 {
+		return 0, ws2_32.WSAGetLastError()
+	}
+
+	return n, 0
 }
 
 extern {
@@ -46,5 +68,6 @@ extern {
 		socket(family int, type int, protocol int) -> int
 		send(fd int, address *byte, length int, flags int) -> int
 		shutdown(fd int, how int) -> int
+		WSAGetLastError() -> int
 	}
 }

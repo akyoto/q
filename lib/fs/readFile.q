@@ -18,17 +18,28 @@ readFile(path string) -> (!string, error) {
 		return "", err
 	}
 
+	if fileSize == 0 {
+		close(fd)
+		return "", -1
+	}
+
 	buffer := mem.alloc(fileSize)
 	pos := 0
 
 	loop {
-		n := io.readFrom(fd, buffer[pos..])
+		n, err := io.readFrom(fd, buffer[pos..])
 
-		if n <= 0 {
+		if err != 0 {
+			mem.free(buffer)
 			close(fd)
-			return buffer, 0
+			return "", err
 		}
 
 		pos += n
+
+		if pos >= buffer.len {
+			close(fd)
+			return buffer, 0
+		}
 	}
 }

@@ -7,12 +7,17 @@ read(buffer string) -> (read int) {
 	return count as int
 }
 
-readFrom(fd int, buffer string) -> (read int) {
+readFrom(fd int, buffer string) -> (read int, err error) {
 	ptr := new(uint32)
-	kernel32.ReadFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
+	success := kernel32.ReadFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
+
+	if !success {
+		return 0, -1
+	}
+
 	count := [ptr]
 	delete(ptr)
-	return count as int
+	return count as int, 0
 }
 
 write(buffer string) -> (written int) {
@@ -24,12 +29,17 @@ write(buffer string) -> (written int) {
 	return count as int
 }
 
-writeTo(fd int, buffer string) -> (written int) {
+writeTo(fd int, buffer string) -> (written int, err error) {
 	ptr := new(uint32)
-	kernel32.WriteFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
+	success := kernel32.WriteFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
+
+	if !success {
+		return 0, -1
+	}
+
 	count := [ptr]
 	delete(ptr)
-	return count as int
+	return count as int, 0
 }
 
 extern {
