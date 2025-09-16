@@ -7,7 +7,7 @@ import (
 
 // Parse generates an AST from a list of tokens.
 func Parse(tokens token.List, file *fs.File) (AST, error) {
-	nodes := make(AST, 0, len(tokens)/64)
+	nodes := make(AST, 0, 1+len(tokens)/16)
 
 	for tokens := range tokens.Instructions {
 		node, err := parseInstruction(tokens, file, nodes)
