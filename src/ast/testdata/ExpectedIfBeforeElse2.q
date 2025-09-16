@@ -1,0 +1,4 @@
+main() {
+	loop {}
+	else {}
+}

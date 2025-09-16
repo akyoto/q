@@ -16,6 +16,8 @@ var errs = []struct {
 	ExpectedError error
 }{
 	{"EmptySwitch.q", ast.EmptySwitch},
+	{"ExpectedIfBeforeElse.q", ast.ExpectedIfBeforeElse},
+	{"ExpectedIfBeforeElse2.q", ast.ExpectedIfBeforeElse},
 	{"InvalidInstruction.q", &ast.InvalidInstruction{Instruction: "()"}},
 	{"InvalidInstruction2.q", &ast.InvalidInstruction{Instruction: "42"}},
 	{"InvalidInstruction3.q", &ast.InvalidInstruction{Instruction: "2 + 3"}},
