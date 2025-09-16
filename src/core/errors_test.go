@@ -17,6 +17,7 @@ var errs = []struct {
 }{
 	{"DefinitionCountMismatch.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 1, ExpectedCount: 2}},
 	{"DefinitionCountMismatch2.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 3, ExpectedCount: 2}},
+	{"DefinitionCountMismatch3.q", &core.DefinitionCountMismatch{Function: "main.nothing", Count: 1, ExpectedCount: 0}},
 	{"ErrorNotChecked.q", &core.ErrorNotChecked{Identifier: "value"}},
 	{"InvalidCallExpression.q", core.InvalidCallExpression},
 	{"InvalidCondition.q", core.InvalidCondition},

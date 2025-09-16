@@ -29,6 +29,10 @@ type DefinitionCountMismatch struct {
 
 func (err *DefinitionCountMismatch) Error() string {
 	if err.Count > err.ExpectedCount {
+		if err.ExpectedCount == 0 {
+			return fmt.Sprintf("'%s' does not have a return value", err.Function)
+		}
+
 		return fmt.Sprintf("Too many variables for the return value of '%s'", err.Function)
 	}
 

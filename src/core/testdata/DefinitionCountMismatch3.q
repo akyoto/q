@@ -1,0 +1,5 @@
+main() {
+	a := nothing()
+}
+
+nothing() {}
