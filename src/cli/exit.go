@@ -32,7 +32,8 @@ func exit(err error) int {
 		color.Redirect(os.Stderr)
 		ansi.Reset.Printf("%s\n\n", fileError.Link())
 		ansi.Reset.Printf("    %s\n", line)
-		ansi.Red.Printf("%s    ┬\n%s    ╰─ ", indent, indent)
+		ansi.Red.Printf("%s    ┬\n", indent)
+		ansi.Red.Printf("%s    ╰─ ", indent)
 		ansi.Reset.Printf("%s\n\n", fileError.Error())
 		ansi.Dim.Println(fileError.Stack())
 	} else {
