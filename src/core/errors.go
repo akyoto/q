@@ -7,6 +7,8 @@ import (
 )
 
 var (
+	AlwaysFalse               = errors.String("Condition is always false")
+	AlwaysTrue                = errors.String("Condition is always true")
 	InvalidCallExpression     = errors.String("Invalid call expression")
 	InvalidCondition          = errors.String("Invalid condition")
 	InvalidExpression         = errors.String("Invalid expression")
