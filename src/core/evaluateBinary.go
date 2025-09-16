@@ -37,10 +37,12 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 		Source: expr.Source(),
 	}
 
-	err = f.lintBinaryOp(v)
+	if f.Env.Build.LintBinaryOps {
+		err = f.lintBinaryOp(v)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if v.Op.IsComparison() {

@@ -21,8 +21,7 @@ type run struct {
 }
 
 // Run compiles a debug and release version and tests both.
-func (test *run) Run(t *testing.T, path string) {
-	build := config.New(path)
+func (test *run) Run(t *testing.T, build *config.Build) {
 	build.Optimize(false)
 	test.RunBuild(t, test.Name+"/debug", build)
 	build.Optimize(true)

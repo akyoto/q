@@ -50,6 +50,16 @@ func (err *ErrorNotChecked) Error() string {
 	return fmt.Sprintf("Error must be checked before accessing '%s'", err.Identifier)
 }
 
+// IdenticalExpressions error is created when a binary operation uses identical expressions
+// with an operator that makes the entire operation pointless.
+type IdenticalExpressions struct {
+	Operator string
+}
+
+func (err *IdenticalExpressions) Error() string {
+	return fmt.Sprintf("Identical expressions to the left and right of the '%s' operator", err.Operator)
+}
+
 // NoMatchingFunction is created when a function is not defined for the given type.
 type NoMatchingFunction struct {
 	Function string

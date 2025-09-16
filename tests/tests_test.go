@@ -2,6 +2,8 @@ package tests_test
 
 import (
 	"testing"
+
+	"git.urbach.dev/cli/q/src/config"
 )
 
 var tests = []run{
@@ -105,6 +107,8 @@ var tests = []run{
 
 func TestTests(t *testing.T) {
 	for _, test := range tests {
-		test.Run(t, test.Name+".q")
+		build := config.New(test.Name + ".q")
+		build.Lint(false)
+		test.Run(t, build)
 	}
 }

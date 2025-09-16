@@ -28,7 +28,8 @@ var examples = []run{
 
 func TestExamples(t *testing.T) {
 	for _, test := range examples {
-		test.Run(t, filepath.Join("..", "examples", test.Name))
+		build := config.New(filepath.Join("..", "examples", test.Name))
+		test.Run(t, build)
 	}
 }
 

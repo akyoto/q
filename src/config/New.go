@@ -27,5 +27,6 @@ func New(files ...string) *Build {
 	}
 
 	b.Optimize(true)
+	b.Lint(true)
 	return b
 }

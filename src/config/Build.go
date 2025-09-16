@@ -8,6 +8,7 @@ type Build struct {
 	Filter        string
 	Dry           bool
 	FoldConstants bool
+	LintBinaryOps bool
 	RemoveCopies  bool
 	ShowASM       bool
 	ShowHeaders   bool
