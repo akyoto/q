@@ -18,6 +18,10 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			return nil, err
 		}
 
+		if !types.Is(from.Type(), types.AnyInt) {
+			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source().StartPos)
+		}
+
 		newPointer := f.Append(&ssa.BinaryOp{
 			Op:    token.Add,
 			Left:  addressValue,
@@ -40,15 +44,19 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 
 	case 2:
 		if index.Children[0].Token.Kind == token.Invalid {
-			newLength, err := f.evaluate(index.Children[1])
+			to, err := f.evaluate(index.Children[1])
 
 			if err != nil {
 				return nil, err
 			}
 
+			if !types.Is(to.Type(), types.AnyInt) {
+				return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source().StartPos)
+			}
+
 			slice := &ssa.Struct{
 				Typ:       types.String,
-				Arguments: []ssa.Value{addressValue, newLength},
+				Arguments: []ssa.Value{addressValue, to},
 				Source:    expr.Source(),
 			}
 
@@ -61,10 +69,18 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			return nil, err
 		}
 
+		if !types.Is(from.Type(), types.AnyInt) {
+			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source().StartPos)
+		}
+
 		to, err := f.evaluate(index.Children[1])
 
 		if err != nil {
 			return nil, err
+		}
+
+		if !types.Is(to.Type(), types.AnyInt) {
+			return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source().StartPos)
 		}
 
 		newPointer := f.Append(&ssa.BinaryOp{

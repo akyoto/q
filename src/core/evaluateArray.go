@@ -69,6 +69,10 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 			if err != nil {
 				return nil, err
 			}
+
+			if !types.Is(indexValue.Type(), types.AnyInt) {
+				return nil, errors.New(&TypeMismatch{Encountered: indexValue.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Source().StartPos)
+			}
 		}
 	} else {
 		indexValue = f.Append(&ssa.Int{Int: 0})
