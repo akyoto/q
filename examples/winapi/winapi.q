@@ -6,6 +6,6 @@ main() {
 
 extern {
 	user32 {
-		MessageBoxA(window *any, text *byte, title *byte, flags uint) -> (button int)
+		MessageBoxA(window *any|nil, text *byte, title *byte, flags uint) -> (button int)
 	}
 }
