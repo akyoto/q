@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
@@ -55,11 +56,20 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 			})
 
 		case token.Shr:
-			f.Assembler.Append(&asm.ShiftRightSignedNumber{
-				Destination: step.Register,
-				Source:      left.Register,
-				Number:      number.Int,
-			})
+			switch left.Value.Type() {
+			case types.UInt64, types.UInt32, types.UInt16, types.UInt8:
+				f.Assembler.Append(&asm.ShiftRightNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+			default:
+				f.Assembler.Append(&asm.ShiftRightSignedNumber{
+					Destination: step.Register,
+					Source:      left.Register,
+					Number:      number.Int,
+				})
+			}
 
 		case token.Sub:
 			f.Assembler.Append(&asm.SubtractNumber{

@@ -58,6 +58,7 @@ func (f *Function) composeStruct(structure *ssa.Struct, structType *types.Struct
 			var shifted ssa.Value
 
 			if size > 0 {
+				param.Typ = types.UInt
 				sizeValue := f.Append(&ssa.Int{Int: size * 8})
 				shifted = f.Append(&ssa.BinaryOp{Op: token.Shr, Left: param, Right: sizeValue})
 			} else {

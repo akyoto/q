@@ -38,6 +38,36 @@ func TestShiftLeft(t *testing.T) {
 	}
 }
 
+func TestShiftRight(t *testing.T) {
+	usagePatterns := []struct {
+		Register cpu.Register
+		Code     []byte
+	}{
+		{x86.R0, []byte{0x48, 0xD3, 0xE8}},
+		{x86.R1, []byte{0x48, 0xD3, 0xE9}},
+		{x86.R2, []byte{0x48, 0xD3, 0xEA}},
+		{x86.R3, []byte{0x48, 0xD3, 0xEB}},
+		{x86.SP, []byte{0x48, 0xD3, 0xEC}},
+		{x86.R5, []byte{0x48, 0xD3, 0xED}},
+		{x86.R6, []byte{0x48, 0xD3, 0xEE}},
+		{x86.R7, []byte{0x48, 0xD3, 0xEF}},
+		{x86.R8, []byte{0x49, 0xD3, 0xE8}},
+		{x86.R9, []byte{0x49, 0xD3, 0xE9}},
+		{x86.R10, []byte{0x49, 0xD3, 0xEA}},
+		{x86.R11, []byte{0x49, 0xD3, 0xEB}},
+		{x86.R12, []byte{0x49, 0xD3, 0xEC}},
+		{x86.R13, []byte{0x49, 0xD3, 0xED}},
+		{x86.R14, []byte{0x49, 0xD3, 0xEE}},
+		{x86.R15, []byte{0x49, 0xD3, 0xEF}},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("shr %s, cl", pattern.Register)
+		code := x86.ShiftRight(nil, pattern.Register)
+		assert.DeepEqual(t, code, pattern.Code)
+	}
+}
+
 func TestShiftRightSigned(t *testing.T) {
 	usagePatterns := []struct {
 		Register cpu.Register
@@ -95,6 +125,37 @@ func TestShiftLeftNumber(t *testing.T) {
 	for _, pattern := range usagePatterns {
 		t.Logf("shl %s, %x", pattern.Register, pattern.Number)
 		code := x86.ShiftLeftNumber(nil, pattern.Register, byte(pattern.Number))
+		assert.DeepEqual(t, code, pattern.Code)
+	}
+}
+
+func TestShiftRightNumber(t *testing.T) {
+	usagePatterns := []struct {
+		Register cpu.Register
+		Number   int
+		Code     []byte
+	}{
+		{x86.R0, 1, []byte{0x48, 0xC1, 0xE8, 0x01}},
+		{x86.R1, 1, []byte{0x48, 0xC1, 0xE9, 0x01}},
+		{x86.R2, 1, []byte{0x48, 0xC1, 0xEA, 0x01}},
+		{x86.R3, 1, []byte{0x48, 0xC1, 0xEB, 0x01}},
+		{x86.SP, 1, []byte{0x48, 0xC1, 0xEC, 0x01}},
+		{x86.R5, 1, []byte{0x48, 0xC1, 0xED, 0x01}},
+		{x86.R6, 1, []byte{0x48, 0xC1, 0xEE, 0x01}},
+		{x86.R7, 1, []byte{0x48, 0xC1, 0xEF, 0x01}},
+		{x86.R8, 1, []byte{0x49, 0xC1, 0xE8, 0x01}},
+		{x86.R9, 1, []byte{0x49, 0xC1, 0xE9, 0x01}},
+		{x86.R10, 1, []byte{0x49, 0xC1, 0xEA, 0x01}},
+		{x86.R11, 1, []byte{0x49, 0xC1, 0xEB, 0x01}},
+		{x86.R12, 1, []byte{0x49, 0xC1, 0xEC, 0x01}},
+		{x86.R13, 1, []byte{0x49, 0xC1, 0xED, 0x01}},
+		{x86.R14, 1, []byte{0x49, 0xC1, 0xEE, 0x01}},
+		{x86.R15, 1, []byte{0x49, 0xC1, 0xEF, 0x01}},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("shr %s, %x", pattern.Register, pattern.Number)
+		code := x86.ShiftRightNumber(nil, pattern.Register, byte(pattern.Number))
 		assert.DeepEqual(t, code, pattern.Code)
 	}
 }

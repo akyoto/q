@@ -290,6 +290,30 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 
 		c.code = x86.ShiftLeftNumber(c.code, instr.Destination, byte(instr.Number))
+	case *ShiftRight:
+		if instr.Destination == x86.R1 {
+			panic("shift destination cannot be R1")
+		}
+
+		if instr.Destination == instr.Operand {
+			panic("shift destination register cannot be equal to the operand register")
+		}
+
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		if instr.Operand != x86.R1 {
+			c.code = x86.MoveRegisterRegister(c.code, x86.R1, instr.Operand)
+		}
+
+		c.code = x86.ShiftRight(c.code, instr.Destination)
+	case *ShiftRightNumber:
+		if instr.Destination != instr.Source {
+			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
+		}
+
+		c.code = x86.ShiftRightNumber(c.code, instr.Destination, byte(instr.Number))
 	case *ShiftRightSigned:
 		if instr.Destination == x86.R1 {
 			panic("shift destination cannot be R1")

@@ -193,15 +193,29 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Source)
 			other.Print(", ")
 			imm.Print(instr.Number)
-		case *asm.ShiftRightSigned:
+		case *asm.ShiftRight:
 			mnemonic.Print("  shift >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
-		case *asm.ShiftRightSignedNumber:
+		case *asm.ShiftRightNumber:
 			mnemonic.Print("  shift >> ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			imm.Print(instr.Number)
+		case *asm.ShiftRightSigned:
+			mnemonic.Print("  signshift >> ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			register.Print(instr.Operand)
+		case *asm.ShiftRightSignedNumber:
+			mnemonic.Print("  signshift >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)

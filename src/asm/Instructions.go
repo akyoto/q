@@ -52,6 +52,8 @@ type (
 	Return                 struct{}
 	ShiftLeft              rrr
 	ShiftLeftNumber        rrn
+	ShiftRight             rrr
+	ShiftRightNumber       rrn
 	ShiftRightSigned       rrr
 	ShiftRightSignedNumber rrn
 	Store                  struct {

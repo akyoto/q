@@ -25,6 +25,23 @@ func TestShiftLeft(t *testing.T) {
 	}
 }
 
+func TestShiftRight(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Source      cpu.Register
+		Operand     cpu.Register
+		Code        uint32
+	}{
+		{arm.X0, arm.X1, arm.X2, 0x9AC22420},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("lsr %s, %s, %s", pattern.Destination, pattern.Source, pattern.Operand)
+		code := arm.ShiftRight(pattern.Destination, pattern.Source, pattern.Operand)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
 func TestShiftRightSigned(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register
@@ -60,6 +77,27 @@ func TestShiftLeftNumber(t *testing.T) {
 		t.Logf("%b", pattern.Code)
 		t.Logf("lsl %s, %s, %x", pattern.Destination, pattern.Source, pattern.Bits)
 		code := arm.ShiftLeftNumber(pattern.Destination, pattern.Source, pattern.Bits)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
+func TestShiftRightNumber(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Source      cpu.Register
+		Bits        int
+		Code        uint32
+	}{
+		{arm.X0, arm.X0, 0, 0xD340FC00},
+		{arm.X0, arm.X0, 1, 0xD341FC00},
+		{arm.X0, arm.X0, 8, 0xD348FC00},
+		{arm.X0, arm.X0, 16, 0xD350FC00},
+		{arm.X0, arm.X0, 63, 0xD37FFC00},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("lsr %s, %s, %x", pattern.Destination, pattern.Source, pattern.Bits)
+		code := arm.ShiftRightNumber(pattern.Destination, pattern.Source, pattern.Bits)
 		assert.Equal(t, code, pattern.Code)
 	}
 }

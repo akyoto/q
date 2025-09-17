@@ -195,6 +195,10 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.ShiftLeft(instr.Destination, instr.Source, instr.Operand))
 	case *ShiftLeftNumber:
 		c.append(arm.ShiftLeftNumber(instr.Destination, instr.Source, instr.Number))
+	case *ShiftRight:
+		c.append(arm.ShiftRight(instr.Destination, instr.Source, instr.Operand))
+	case *ShiftRightNumber:
+		c.append(arm.ShiftRightNumber(instr.Destination, instr.Source, instr.Number))
 	case *ShiftRightSigned:
 		c.append(arm.ShiftRightSigned(instr.Destination, instr.Source, instr.Operand))
 	case *ShiftRightSignedNumber:
