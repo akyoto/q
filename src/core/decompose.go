@@ -4,7 +4,6 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -24,7 +23,6 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 		if typeCheck != nil && !isSyscall {
 			valueType := value.Type()
 			expectedType := typeCheck[i].Typ
-
 			_, valueIsResource := valueType.(*types.Resource)
 			expectedResource, expectedIsResource := expectedType.(*types.Resource)
 
@@ -35,61 +33,21 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 			if isReturn && expectedIsResource && types.Is(valueType, expectedResource.Of) {
 				// pass type check.
 			} else if !types.Is(valueType, expectedType) {
-				return nil, errors.New(&TypeMismatch{
+				typeMismatch := &TypeMismatch{
 					Encountered:   value.Type().Name(),
 					Expected:      typeCheck[i].Typ.Name(),
 					ParameterName: typeCheck[i].Name,
 					IsReturn:      isReturn,
-				}, f.File, node.Source().StartPos)
+				}
+
+				return nil, errors.New(typeMismatch, f.File, node.Source().StartPos)
 			}
-
-			// NOTE: The following code is disabled because it only applies to tagged unions.
-			// union, isUnion := expectedType.(*types.Union)
-
-			// if isUnion {
-			// 	index := union.Index(valueType)
-			// 	tag := f.Append(&ssa.Int{Int: index})
-			// 	args = append(args, tag)
-			// }
 		}
 
 		structure, isStruct := value.(*ssa.Struct)
 
 		if isStruct {
-			switch {
-			case structure.Typ.Size() <= 16:
-				// Packed integer: Use the first argument,
-				// then bitwise OR with the shifted field values.
-				cursor := structure.Arguments[0]
-				typ := types.Unwrap(structure.Typ).(*types.Struct)
-				size := typ.Fields[0].Type.Size()
-
-				for i, field := range structure.Arguments[1:] {
-					fieldSize := typ.Fields[i+1].Type.Size()
-
-					if size+fieldSize > 8 {
-						// The field doesn't fit into the register anymore.
-						// We need to use this field as the starting value
-						// for the next argument.
-						args = append(args, cursor)
-						cursor = field
-						size = fieldSize
-						continue
-					}
-
-					sizeValue := f.Append(&ssa.Int{Int: size * 8})
-					shifted := f.Append(&ssa.BinaryOp{Op: token.Shl, Left: field, Right: sizeValue})
-					cursor = f.Append(&ssa.BinaryOp{Op: token.Or, Left: cursor, Right: shifted})
-					size += fieldSize
-				}
-
-				args = append(args, cursor)
-			default:
-				for _, field := range structure.Arguments {
-					args = append(args, field)
-				}
-			}
-
+			args = f.decomposeStruct(args, structure)
 			continue
 		}
 
