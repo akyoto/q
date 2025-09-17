@@ -7,7 +7,7 @@ import (
 // Compile translates tokens to SSA form.
 func (f *Function) Compile() {
 	f.compileInputs()
-	tree, err := ast.Parse(f.Body, f.File)
+	tree, err := ast.Parse(f.Body(), f.File)
 
 	if err != nil {
 		f.Err = err

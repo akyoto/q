@@ -13,16 +13,17 @@ import (
 type Function struct {
 	File         *fs.File
 	Type         *types.Function
-	Err          error
 	Env          *Environment
 	Input        []*ssa.Parameter
 	Output       []*ssa.Parameter
-	Body         token.List
 	Dependencies set.Ordered[*Function]
 	Previous     *Function
 	Next         *Function
+	Err          error
 	name         string
 	pkg          string
+	bodyStart    token.Position
+	bodyEnd      token.Position
 	ssa.IR
 	codegen.Function
 }
@@ -49,9 +50,14 @@ func (f *Function) AddSuffix(suffix string) {
 	f.FullName += suffix
 }
 
+// Body returns the function body.
+func (f *Function) Body() token.List {
+	return f.File.Tokens[f.bodyStart:f.bodyEnd]
+}
+
 // IsExtern returns true if the function has no body.
 func (f *Function) IsExtern() bool {
-	return f.Body == nil
+	return f.bodyEnd == 0
 }
 
 // IsLeaf returns true if the function doesn't call other functions.
@@ -67,6 +73,12 @@ func (f *Function) Name() string {
 // Package returns the package name.
 func (f *Function) Package() string {
 	return f.pkg
+}
+
+// SetBody sets the token range for the function body.
+func (f *Function) SetBody(start int, end int) {
+	f.bodyStart = token.Position(start)
+	f.bodyEnd = token.Position(end)
 }
 
 // String returns the unique name.
