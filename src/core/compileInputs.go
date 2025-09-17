@@ -25,23 +25,7 @@ func (f *Function) compileInputs() {
 				Source: input.Source,
 			}
 
-			for _, field := range structType.Fields {
-				param := &ssa.Parameter{
-					Index:     uint8(offset + i),
-					Name:      input.Name + "." + field.Name,
-					Typ:       field.Type,
-					Tokens:    input.Tokens,
-					Structure: structure,
-					Source:    input.Source,
-				}
-
-				f.Append(param)
-				f.Block().Identify(param.Name, param)
-				structure.Arguments = append(structure.Arguments, param)
-				offset++
-			}
-
-			offset--
+			offset = f.composeStruct(structure, structType, input, i, offset)
 			f.Block().Identify(input.Name, structure)
 			continue
 		}
