@@ -1,6 +1,6 @@
-import exec
 import io
 import mem
+import process
 import strings
 
 main() {
@@ -26,7 +26,7 @@ execute(path string) {
 		return
 	}
 
-	err := exec.run(path)
+	err := process.run(path)
 
 	if err != 0 {
 		io.write("error executing: ")
