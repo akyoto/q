@@ -1,5 +1,4 @@
 init() {
-	utf8 := 65001
 	kernel32.SetConsoleCP(utf8)
 	kernel32.SetConsoleOutputCP(utf8)
 }
@@ -9,4 +8,8 @@ extern {
 		SetConsoleCP(cp uint)
 		SetConsoleOutputCP(cp uint)
 	}
+}
+
+const {
+	utf8 = 65001
 }
