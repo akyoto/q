@@ -33,7 +33,14 @@ func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, gro
 		identifier.InsertAbove(node)
 
 		if identifier.Token.Kind == token.New {
-			node.AddChild(&newTypeExpression(tokens[groupPosition:i]).Expression)
+			separator := tokens[groupPosition:i].IndexKind(token.Separator)
+
+			if separator != -1 {
+				node.AddChild(&newTypeExpression(tokens[groupPosition : groupPosition+uint(separator)]).Expression)
+				node.AddChild(Parse(tokens[groupPosition+uint(separator)+1 : i]))
+			} else {
+				node.AddChild(&newTypeExpression(tokens[groupPosition:i]).Expression)
+			}
 		} else {
 			parameters := NewList(tokens[groupPosition:i])
 

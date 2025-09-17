@@ -105,7 +105,8 @@ The following is a cheat sheet documenting the syntax.
 | Define input and output types        | `f(a int) -> (b int) {}`     | ✔️ Stable       |
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
-| Instantiate a type on the heap       | `new(Point)`                 | 🚧 Experimental |
+| Allocate a type on the heap          | `new(int)`                   | 🚧 Experimental |
+| Allocate multiple elements           | `new(int, 4)`                | 🚧 Experimental |
 | Delete a type from the heap          | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |

@@ -21,25 +21,56 @@ func (f *Function) evaluateBuiltin(expr *expression.Expression) (ssa.Value, erro
 			return nil, err
 		}
 
-		malloc := f.Env.Function("mem", "alloc")
-		returnType := &types.Pointer{To: typ}
+		var (
+			isSlice     = len(expr.Children) == 3
+			numElements ssa.Value
+			size        ssa.Value
+			sliceType   types.Type
+		)
 
-		size := f.Append(&ssa.Int{
-			Int: typ.Size(),
-		})
+		if isSlice {
+			numElements, err = f.evaluate(expr.Children[2])
+
+			if err != nil {
+				return nil, err
+			}
+
+			sliceType = types.Slice(typ, "[]"+typ.Name())
+			elementSize := f.Append(&ssa.Int{Int: typ.Size()})
+
+			size = f.Append(&ssa.BinaryOp{
+				Op:    token.Mul,
+				Left:  elementSize,
+				Right: numElements,
+			})
+		} else {
+			size = f.Append(&ssa.Int{Int: typ.Size()})
+		}
+
+		malloc := f.Env.Function("mem", "alloc")
+		f.Dependencies.Add(malloc)
 
 		call := f.Append(&ssa.Call{
 			Func: &ssa.Function{
 				FunctionRef: malloc,
 				Typ: &types.Function{
-					Output: []types.Type{returnType},
+					Output: []types.Type{&types.Pointer{To: typ}},
 				},
 			},
 			Arguments: []ssa.Value{size},
 			Source:    expr.Source(),
 		})
 
-		f.Dependencies.Add(malloc)
+		if isSlice {
+			structure := &ssa.Struct{
+				Typ:       sliceType,
+				Arguments: ssa.Arguments{call, numElements},
+				Source:    expr.Source(),
+			}
+
+			return structure, nil
+		}
+
 		return call, nil
 
 	case token.Delete:
