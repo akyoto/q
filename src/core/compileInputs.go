@@ -14,23 +14,18 @@ func (f *Function) compileInputs() {
 	for i, input := range f.Input {
 		structType, isStructType := types.Unwrap(input.Typ).(*types.Struct)
 
-		if isStructType {
-			if strings.HasPrefix(input.Name, "_") {
+		if strings.HasPrefix(input.Name, "_") {
+			if isStructType {
 				offset += len(structType.Fields) - 1
-				continue
 			}
 
-			structure := &ssa.Struct{
-				Typ:    structType,
-				Source: input.Source,
-			}
-
-			offset = f.composeStruct(structure, structType, input, i, offset)
-			f.Block().Identify(input.Name, structure)
 			continue
 		}
 
-		if strings.HasPrefix(input.Name, "_") {
+		if isStructType {
+			structure := &ssa.Struct{Typ: structType, Source: input.Source}
+			offset = f.composeStruct(structure, structType, input, i, offset)
+			f.Block().Identify(input.Name, structure)
 			continue
 		}
 
