@@ -56,14 +56,13 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 			})
 
 		case token.Shr:
-			switch left.Value.Type() {
-			case types.UInt64, types.UInt32, types.UInt16, types.UInt8:
+			if types.IsUnsigned(left.Value.Type()) {
 				f.Assembler.Append(&asm.ShiftRightNumber{
 					Destination: step.Register,
 					Source:      left.Register,
 					Number:      number.Int,
 				})
-			default:
+			} else {
 				f.Assembler.Append(&asm.ShiftRightSignedNumber{
 					Destination: step.Register,
 					Source:      left.Register,

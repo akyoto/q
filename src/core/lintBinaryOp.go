@@ -20,8 +20,7 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 		return nil
 	}
 
-	switch binOp.Left.Type() {
-	case types.UInt64, types.UInt32, types.UInt16, types.UInt8:
+	if types.IsUnsigned(binOp.Left.Type()) {
 		rightInt, rightIsInt := binOp.Right.(*ssa.Int)
 
 		if rightIsInt && rightInt.Int < 0 {
@@ -34,8 +33,7 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 		}
 	}
 
-	switch binOp.Right.Type() {
-	case types.UInt64, types.UInt32, types.UInt16, types.UInt8:
+	if types.IsUnsigned(binOp.Right.Type()) {
 		leftInt, leftIsInt := binOp.Left.(*ssa.Int)
 
 		if leftIsInt && leftInt.Int < 0 {
