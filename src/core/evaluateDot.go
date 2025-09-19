@@ -67,7 +67,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 
 		return value, nil
 
-	default:
+	case *ssa.Call:
 		leftUnwrapped := types.Unwrap(leftValue.Type())
 		structure, isStruct := leftUnwrapped.(*types.Struct)
 
@@ -82,31 +82,32 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 
 			return value, nil
 		}
-
-		pointer, isPointer := leftUnwrapped.(*types.Pointer)
-
-		if !isPointer {
-			return nil, errors.New(&NotDataStruct{TypeName: leftValue.Type().Name()}, f.File, left.Source().StartPos)
-		}
-
-		structure, isStructPointer := pointer.To.(*types.Struct)
-
-		if !isStructPointer {
-			return nil, errors.New(&NotDataStruct{TypeName: pointer.To.Name()}, f.File, left.Source().StartPos)
-		}
-
-		field := structure.FieldByName(rightText)
-		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
-
-		load := f.Append(&ssa.Load{
-			Memory: ssa.Memory{
-				Address: leftValue,
-				Index:   offset,
-				Scale:   false,
-				Typ:     field.Type,
-			},
-		})
-
-		return load, nil
 	}
+
+	leftUnwrapped := types.Unwrap(leftValue.Type())
+	pointer, isPointer := leftUnwrapped.(*types.Pointer)
+
+	if !isPointer {
+		return nil, errors.New(&NotDataStruct{TypeName: leftValue.Type().Name()}, f.File, left.Source().StartPos)
+	}
+
+	structure, isStructPointer := pointer.To.(*types.Struct)
+
+	if !isStructPointer {
+		return nil, errors.New(&NotDataStruct{TypeName: pointer.To.Name()}, f.File, left.Source().StartPos)
+	}
+
+	field := structure.FieldByName(rightText)
+	offset := f.Append(&ssa.Int{Int: int(field.Offset)})
+
+	load := f.Append(&ssa.Load{
+		Memory: ssa.Memory{
+			Address: leftValue,
+			Index:   offset,
+			Scale:   false,
+			Typ:     field.Type,
+		},
+	})
+
+	return load, nil
 }
