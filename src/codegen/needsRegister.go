@@ -47,6 +47,8 @@ func (f *Function) needsRegister(s *Step) bool {
 			// requiring an extra register and a move.
 			return !f.canEncodeNumber(users[0], instr)
 		}
+	case *ssa.Memory:
+		return false
 	}
 
 	return true

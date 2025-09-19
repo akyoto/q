@@ -56,13 +56,15 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		indexValue = f.Append(&ssa.Int{Int: 0})
 	}
 
+	memory := f.Append(&ssa.Memory{
+		Address: addressValue,
+		Index:   indexValue,
+		Scale:   true,
+		Typ:     pointer.To,
+	})
+
 	f.Append(&ssa.Store{
-		Memory: ssa.Memory{
-			Address: addressValue,
-			Index:   indexValue,
-			Scale:   true,
-			Typ:     pointer.To,
-		},
+		Memory: memory,
 		Value:  rightValue,
 		Source: node.Expression.Source(),
 	})

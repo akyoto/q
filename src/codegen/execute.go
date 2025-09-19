@@ -33,6 +33,8 @@ func (f *Function) execute(step *Step) {
 		f.executeLabel(instr)
 	case *ssa.Load:
 		f.executeLoad(step, instr)
+	case *ssa.Memory:
+		f.executeMemory(step, instr)
 	case *ssa.Parameter:
 		f.executeParameter(step, instr)
 	case *ssa.Phi:

@@ -7,8 +7,8 @@ import (
 // Store stores a value at a given index relative to the address.
 type Store struct {
 	Void
-	Value Value
-	Memory
+	Value  Value
+	Memory Value
 	Source
 }
 
@@ -20,22 +20,18 @@ func (a *Store) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Memory == b.Memory
+	return a.Memory == b.Memory && a.Value == b.Value
 }
 
-// Inputs returns the address, index, and value of the store.
+// Inputs returns the memory address and value of the store.
 func (s *Store) Inputs() []Value {
-	return []Value{s.Address, s.Index, s.Value}
+	return []Value{s.Memory, s.Value}
 }
 
 // Replace replaces the address, index, or value if it matches.
 func (s *Store) Replace(old Value, new Value) {
-	if s.Address == old {
-		s.Address = new
-	}
-
-	if s.Index == old {
-		s.Index = new
+	if s.Memory == old {
+		s.Memory = new
 	}
 
 	if s.Value == old {
@@ -45,9 +41,5 @@ func (s *Store) Replace(old Value, new Value) {
 
 // String returns a human-readable representation of the store.
 func (s *Store) String() string {
-	if s.Scale {
-		return fmt.Sprintf("store(%db, %p + %p * %d, %p)", s.Typ.Size(), s.Address, s.Index, s.Typ.Size(), s.Value)
-	}
-
-	return fmt.Sprintf("store(%db, %p + %p, %p)", s.Typ.Size(), s.Address, s.Index, s.Value)
+	return fmt.Sprintf("store(%p, %p)", s.Memory, s.Value)
 }

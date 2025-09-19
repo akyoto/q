@@ -10,15 +10,16 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 		return
 	}
 
-	address := f.ValueToStep[instr.Address]
-	index := f.ValueToStep[instr.Index]
+	memory := instr.Memory.(*ssa.Memory)
+	address := f.ValueToStep[memory.Address]
+	index := f.ValueToStep[memory.Index]
 	elementSize := step.Value.Type().Size()
 
 	f.Assembler.Append(&asm.Load{
 		Base:        address.Register,
 		Index:       index.Register,
 		Destination: step.Register,
-		Scale:       instr.Scale,
+		Scale:       memory.Scale,
 		Length:      byte(elementSize),
 	})
 }
