@@ -11,7 +11,7 @@ import (
 // evaluateArray converts a array indexing expression to an SSA value.
 func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error) {
 	address := expr.Children[0]
-	addressValue, err := f.evaluate(address)
+	addressValue, err := f.evaluateRight(address)
 
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		if index.Token.Kind == token.Range {
 			return f.evaluateSlice(expr, index, addressValue, length)
 		} else {
-			indexValue, err = f.evaluate(index)
+			indexValue, err = f.evaluateRight(index)
 
 			if err != nil {
 				return nil, err
@@ -90,12 +90,8 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		Index:   indexValue,
 		Scale:   true,
 		Typ:     pointer.To,
+		Source:  expr.Source(),
 	})
 
-	v := f.Append(&ssa.Load{
-		Memory: memory,
-		Source: expr.Source(),
-	})
-
-	return v, nil
+	return memory, nil
 }

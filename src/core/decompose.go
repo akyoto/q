@@ -12,7 +12,7 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 	args := make([]ssa.Value, 0, len(nodes))
 
 	for i, node := range nodes {
-		value, err := f.evaluate(node)
+		value, err := f.evaluateRight(node)
 
 		if err != nil {
 			return nil, err

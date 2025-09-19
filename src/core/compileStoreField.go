@@ -10,17 +10,17 @@ import (
 
 // compileStoreField compiles an assignment to a struct field.
 func (f *Function) compileStoreField(node *ast.Assign) error {
-	left := node.Expression.Children[0]
-	address := left.Children[0]
-	fieldName := left.Children[1].String(f.File.Bytes)
-	addressValue, err := f.evaluate(address)
+	right := node.Expression.Children[1]
+	rightValue, err := f.evaluateRight(right)
 
 	if err != nil {
 		return err
 	}
 
-	right := node.Expression.Children[1]
-	rightValue, err := f.evaluate(right)
+	left := node.Expression.Children[0]
+	address := left.Children[0]
+	fieldName := left.Children[1].String(f.File.Bytes)
+	addressValue, err := f.evaluate(address)
 
 	if err != nil {
 		return err

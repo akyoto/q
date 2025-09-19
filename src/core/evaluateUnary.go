@@ -14,7 +14,7 @@ func (f *Function) evaluateUnary(expr *expression.Expression) (ssa.Value, error)
 	}
 
 	left := expr.Children[0]
-	leftValue, err := f.evaluate(left)
+	leftValue, err := f.evaluateRight(left)
 
 	if err != nil {
 		return nil, err

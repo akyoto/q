@@ -10,7 +10,7 @@ import (
 
 // define gives a value an identifier.
 func (f *Function) define(left *expression.Expression, right *expression.Expression, isAssign bool) error {
-	rightValue, err := f.evaluate(right)
+	rightValue, err := f.evaluateRight(right)
 
 	if err != nil {
 		return err

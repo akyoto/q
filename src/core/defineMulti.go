@@ -9,7 +9,7 @@ import (
 
 // defineMulti creates SSA values from expressions and composes structs from their individual fields.
 func (f *Function) defineMulti(left *expression.Expression, right *expression.Expression, isAssign bool) error {
-	rightValue, err := f.evaluate(right)
+	rightValue, err := f.evaluateRight(right)
 
 	if err != nil {
 		return err

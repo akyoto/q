@@ -29,7 +29,7 @@ func (f *Function) evaluateBuiltin(expr *expression.Expression) (ssa.Value, erro
 		)
 
 		if isSlice {
-			numElements, err = f.evaluate(expr.Children[2])
+			numElements, err = f.evaluateRight(expr.Children[2])
 
 			if err != nil {
 				return nil, err
@@ -74,7 +74,7 @@ func (f *Function) evaluateBuiltin(expr *expression.Expression) (ssa.Value, erro
 		return call, nil
 
 	case token.Delete:
-		value, err := f.evaluate(expr.Children[1])
+		value, err := f.evaluateRight(expr.Children[1])
 
 		if err != nil {
 			return nil, err
