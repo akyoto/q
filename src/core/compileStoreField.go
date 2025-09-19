@@ -27,7 +27,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 	}
 
 	if node.Expression.Token.Kind != token.Assign {
-		leftValue, err := f.evaluate(left)
+		leftValue, err := f.evaluateRight(left)
 
 		if err != nil {
 			return err
