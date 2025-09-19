@@ -25,6 +25,7 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 	structure := &ssa.Struct{
 		Typ:       structType,
 		Arguments: make(ssa.Arguments, len(structType.Fields)),
+		Source:    expr.Source(),
 	}
 
 	for _, definition := range expr.Children[1:] {

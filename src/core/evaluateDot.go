@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -13,32 +14,44 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return nil, errors.New(InvalidExpression, f.File, expr.Source().StartPos)
 	}
 
-	left := expr.Children[0]
 	right := expr.Children[1]
-	leftText := left.String(f.File.Bytes)
-	rightText := right.String(f.File.Bytes)
+	left := expr.Children[0]
 	leftValue, err := f.evaluate(left)
 
 	if err != nil {
 		return nil, err
 	}
 
-	switch leftValue := leftValue.(type) {
-	case *ssa.Package:
-		pkg := f.Env.Packages[leftText]
+	pkgValue, isPackage := leftValue.(*ssa.Package)
+
+	if isPackage {
+		pkg := f.Env.Packages[pkgValue.Name]
 
 		if !pkg.IsExtern && f != f.Env.Init {
-			imp, exists := f.File.Imports[leftText]
+			imp, exists := f.File.Imports[pkgValue.Name]
 
 			if !exists {
-				return nil, errors.New(&UnknownIdentifier{Name: leftText}, f.File, left.Token.Position)
+				return nil, errors.New(&UnknownIdentifier{Name: pkgValue.Name}, f.File, left.Token.Position)
 			}
 
 			imp.Used.Add(1)
 		}
 
-		return f.evaluatePackageMember(pkg, rightText, expr)
+		if right.Token.Kind != token.Identifier {
+			return nil, errors.New(ExpectedPackageMember, f.File, right.Source().StartPos)
+		}
 
+		rightText := right.Token.String(f.File.Bytes)
+		return f.evaluatePackageMember(pkg, rightText, expr)
+	}
+
+	if right.Token.Kind != token.Identifier {
+		return nil, errors.New(ExpectedStructField, f.File, right.Source().StartPos)
+	}
+
+	rightText := right.Token.String(f.File.Bytes)
+
+	switch leftValue := leftValue.(type) {
 	case *ssa.Struct:
 		field := types.Unwrap(leftValue.Typ).(*types.Struct).FieldByName(rightText)
 
@@ -49,7 +62,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		value := leftValue.Arguments[field.Index]
 
 		if value == nil {
-			return nil, errors.New(&UndefinedStructField{Identifier: leftText, FieldName: rightText}, f.File, right.Token.Position)
+			return nil, errors.New(&UndefinedStructField{Identifier: left.SourceString(f.File.Bytes), FieldName: rightText}, f.File, right.Token.Position)
 		}
 
 		return value, nil

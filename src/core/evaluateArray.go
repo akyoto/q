@@ -52,7 +52,12 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 			fields = append(fields, fieldValue)
 		}
 
-		value := &ssa.Struct{Typ: structure, Arguments: fields}
+		value := &ssa.Struct{
+			Typ:       structure,
+			Arguments: fields,
+			Source:    expr.Source(),
+		}
+
 		return value, nil
 	}
 

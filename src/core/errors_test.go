@@ -23,6 +23,8 @@ var errs = []struct {
 	{"DefinitionCountMismatch2.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 3, ExpectedCount: 2}},
 	{"DefinitionCountMismatch3.q", &core.DefinitionCountMismatch{Function: "main.nothing", Count: 1, ExpectedCount: 0}},
 	{"ErrorNotChecked.q", &core.ErrorNotChecked{Identifier: "value"}},
+	{"ExpectedPackageMember.q", core.ExpectedPackageMember},
+	{"ExpectedStructField.q", core.ExpectedStructField},
 	{"IdenticalExpressions.q", &core.IdenticalExpressions{Operator: "-"}},
 	{"IdenticalExpressions2.q", &core.IdenticalExpressions{Operator: "/"}},
 	{"IdenticalExpressions3.q", &core.IdenticalExpressions{Operator: "%"}},

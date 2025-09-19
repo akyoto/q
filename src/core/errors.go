@@ -9,6 +9,8 @@ import (
 var (
 	AlwaysFalse               = errors.String("Condition is always false")
 	AlwaysTrue                = errors.String("Condition is always true")
+	ExpectedPackageMember     = errors.String("Expected package member")
+	ExpectedStructField       = errors.String("Expected struct field")
 	InvalidCallExpression     = errors.String("Invalid call expression")
 	InvalidCondition          = errors.String("Invalid condition")
 	InvalidExpression         = errors.String("Invalid expression")
