@@ -33,36 +33,6 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source().StartPos)
 	}
 
-	structure, isPointerToStruct := pointer.To.(*types.Struct)
-
-	if isPointerToStruct {
-		fields := make([]ssa.Value, 0, len(structure.Fields))
-
-		for _, field := range structure.Fields {
-			memory := f.Append(&ssa.Memory{
-				Address: addressValue,
-				Index:   f.Append(&ssa.Int{Int: int(field.Offset)}),
-				Scale:   false,
-				Typ:     field.Type,
-			})
-
-			fieldValue := f.Append(&ssa.Load{
-				Memory: memory,
-				Source: expr.Source(),
-			})
-
-			fields = append(fields, fieldValue)
-		}
-
-		value := &ssa.Struct{
-			Typ:       structure,
-			Arguments: fields,
-			Source:    expr.Source(),
-		}
-
-		return value, nil
-	}
-
 	var indexValue ssa.Value
 
 	if len(expr.Children) > 1 {
