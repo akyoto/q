@@ -70,8 +70,36 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 	case *types.Struct:
 		field := pointer.FieldByName(fieldName)
-		addressValue.(*ssa.Struct).Arguments[field.Index] = rightValue
-		f.Block().Identify(address.String(f.File.Bytes)+"."+fieldName, rightValue)
+		structure, isStruct := addressValue.(*ssa.Struct)
+
+		if isStruct {
+			structure.Arguments[field.Index] = rightValue
+			f.Block().Identify(address.SourceString(f.File.Bytes)+"."+fieldName, rightValue)
+			return nil
+		}
+
+		memory, isMemory := addressValue.(*ssa.Memory)
+
+		if isMemory {
+			if memory.Scale {
+				memorySize := f.Append(&ssa.Int{Int: memory.Typ.Size()})
+				memory.Index = f.Append(&ssa.BinaryOp{Op: token.Mul, Left: memory.Index, Right: memorySize})
+				memory.Scale = false
+			}
+
+			if field.Offset != 0 {
+				offset := f.Append(&ssa.Int{Int: int(field.Offset)})
+				memory.Index = f.Append(&ssa.BinaryOp{Op: token.Add, Left: memory.Index, Right: offset})
+			}
+
+			memory.Typ = field.Type
+		}
+
+		f.Append(&ssa.Store{
+			Memory: memory,
+			Value:  rightValue,
+			Source: node.Expression.Source(),
+		})
 	}
 
 	return nil
