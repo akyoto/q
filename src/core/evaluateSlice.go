@@ -12,7 +12,7 @@ import (
 func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.Expression, addressValue ssa.Value, length ssa.Value) (ssa.Value, error) {
 	switch len(index.Children) {
 	case 1:
-		from, err := f.evaluate(index.Children[0])
+		from, err := f.evaluateRight(index.Children[0])
 
 		if err != nil {
 			return nil, err
@@ -44,7 +44,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 
 	case 2:
 		if index.Children[0].Token.Kind == token.Invalid {
-			to, err := f.evaluate(index.Children[1])
+			to, err := f.evaluateRight(index.Children[1])
 
 			if err != nil {
 				return nil, err
@@ -63,7 +63,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			return slice, nil
 		}
 
-		from, err := f.evaluate(index.Children[0])
+		from, err := f.evaluateRight(index.Children[0])
 
 		if err != nil {
 			return nil, err
@@ -73,7 +73,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source().StartPos)
 		}
 
-		to, err := f.evaluate(index.Children[1])
+		to, err := f.evaluateRight(index.Children[1])
 
 		if err != nil {
 			return nil, err

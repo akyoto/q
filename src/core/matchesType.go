@@ -9,7 +9,7 @@ import (
 // matchesType returns true if the nodes match the given parameter types.
 func (f *Function) matchesType(nodes []*expression.Expression, parameters []*ssa.Parameter) (bool, error) {
 	for i, node := range nodes {
-		value, err := f.evaluate(node)
+		value, err := f.evaluateRight(node)
 
 		if err != nil {
 			return false, err

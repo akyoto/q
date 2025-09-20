@@ -11,7 +11,7 @@ import (
 // evaluateCast converts a type cast to an SSA value.
 func (f *Function) evaluateCast(expr *expression.Expression) (ssa.Value, error) {
 	left := expr.Children[0]
-	leftValue, err := f.evaluate(left)
+	leftValue, err := f.evaluateRight(left)
 
 	if err != nil {
 		return nil, err

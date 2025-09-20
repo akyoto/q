@@ -51,7 +51,7 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 		}
 
 		right := definition.Children[1]
-		rightValue, err := f.evaluate(right)
+		rightValue, err := f.evaluateRight(right)
 
 		if err != nil {
 			return nil, err

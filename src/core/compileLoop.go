@@ -26,7 +26,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 			return errors.New(InvalidLoopHeader, f.File, loop.Head.Source().StartPos)
 		}
 
-		fromValue, err := f.evaluate(from)
+		fromValue, err := f.evaluateRight(from)
 
 		if err != nil {
 			return err
@@ -44,7 +44,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		// We check that the condition to jump to the loop body is true,
 		// otherwise we jump to the loop exit.
 		f.AddBlock(loopHead)
-		toValue, err := f.evaluate(to)
+		toValue, err := f.evaluateRight(to)
 
 		if err != nil {
 			return err

@@ -55,7 +55,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		return err
 
 	case token.Equal, token.NotEqual, token.Greater, token.Less, token.GreaterEqual, token.LessEqual:
-		conditionValue, err := f.evaluate(condition)
+		conditionValue, err := f.evaluateRight(condition)
 
 		if err != nil {
 			return err
@@ -104,7 +104,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			return errors.New(InvalidCondition, f.File, condition.Token.Position)
 		}
 
-		value, err := f.evaluate(condition)
+		value, err := f.evaluateRight(condition)
 
 		if err != nil {
 			return err
