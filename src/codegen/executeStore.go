@@ -6,7 +6,7 @@ import (
 )
 
 func (f *Function) executeStore(instr *ssa.Store) {
-	memory := instr.Memory.(*ssa.Memory)
+	memory := instr.Memory
 	address := f.ValueToStep[memory.Address]
 	index := f.ValueToStep[memory.Index]
 	source := f.ValueToStep[instr.Value]

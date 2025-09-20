@@ -10,7 +10,7 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 		return
 	}
 
-	memory := instr.Memory.(*ssa.Memory)
+	memory := instr.Memory
 	address := f.ValueToStep[memory.Address]
 	index := f.ValueToStep[memory.Index]
 	elementSize := step.Value.Type().Size()

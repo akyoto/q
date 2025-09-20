@@ -55,12 +55,12 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 
-		memory := f.Append(&ssa.Memory{
+		memory := &ssa.Memory{
 			Address: addressValue,
 			Index:   offset,
 			Scale:   false,
 			Typ:     field.Type,
-		})
+		}
 
 		f.Append(&ssa.Store{
 			Memory: memory,

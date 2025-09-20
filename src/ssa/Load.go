@@ -8,7 +8,7 @@ import (
 
 // Load stores a value at a given index relative to the address.
 type Load struct {
-	Memory Value
+	Memory *Memory
 	Liveness
 	Source
 }
@@ -32,22 +32,20 @@ func (l *Load) IsPure() bool {
 
 // Inputs returns the memory address of the load.
 func (l *Load) Inputs() []Value {
-	return []Value{l.Memory}
+	return []Value{l.Memory.Address, l.Memory.Index}
 }
 
 // Replace replaces the address or index if it matches.
 func (l *Load) Replace(old Value, new Value) {
-	if l.Memory == old {
-		l.Memory = new
-	}
+	l.Memory.Replace(old, new)
 }
 
 // String returns a human-readable representation of the load.
 func (l *Load) String() string {
-	return fmt.Sprintf("load(%p)", l.Memory)
+	return fmt.Sprintf("load(%s)", l.Memory)
 }
 
 // Type returns the type of the loaded value.
 func (l *Load) Type() types.Type {
-	return l.Memory.(*Memory).Typ
+	return l.Memory.Typ
 }

@@ -55,13 +55,13 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		indexValue = f.Append(&ssa.Int{Int: 0})
 	}
 
-	memory := f.Append(&ssa.Memory{
+	memory := &ssa.Memory{
 		Address: addressValue,
 		Index:   indexValue,
 		Scale:   true,
 		Typ:     pointer.To,
 		Source:  expr.Source(),
-	})
+	}
 
 	return memory, nil
 }

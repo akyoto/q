@@ -28,36 +28,36 @@ func (a *Memory) Equals(v Value) bool {
 }
 
 // Inputs returns the address and index of the memory.
-func (s *Memory) Inputs() []Value {
-	return []Value{s.Address, s.Index}
+func (m *Memory) Inputs() []Value {
+	return []Value{m.Address, m.Index}
 }
 
 // IsPure returns false because the inputs are not consumed.
-func (l *Memory) IsPure() bool {
+func (m *Memory) IsPure() bool {
 	return false
 }
 
 // Replace replaces the address, index, or value if it matches.
-func (s *Memory) Replace(old Value, new Value) {
-	if s.Address == old {
-		s.Address = new
+func (m *Memory) Replace(old Value, new Value) {
+	if m.Address == old {
+		m.Address = new
 	}
 
-	if s.Index == old {
-		s.Index = new
+	if m.Index == old {
+		m.Index = new
 	}
 }
 
 // String returns a human-readable representation of the memory.
-func (s *Memory) String() string {
-	if s.Scale {
-		return fmt.Sprintf("memory(%db, %p + %p * %d)", s.Typ.Size(), s.Address, s.Index, s.Typ.Size())
+func (m *Memory) String() string {
+	if m.Scale {
+		return fmt.Sprintf("memory(%db, %p + %p * %d)", m.Typ.Size(), m.Address, m.Index, m.Typ.Size())
 	}
 
-	return fmt.Sprintf("memory(%db, %p + %p)", s.Typ.Size(), s.Address, s.Index)
+	return fmt.Sprintf("memory(%db, %p + %p)", m.Typ.Size(), m.Address, m.Index)
 }
 
 // Type returns the type of the loaded value.
-func (s *Memory) Type() types.Type {
-	return s.Typ
+func (m *Memory) Type() types.Type {
+	return m.Typ
 }

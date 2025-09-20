@@ -100,12 +100,12 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	field := structure.FieldByName(rightText)
 	offset := f.Append(&ssa.Int{Int: int(field.Offset)})
 
-	memory := f.Append(&ssa.Memory{
+	memory := &ssa.Memory{
 		Address: leftValue,
 		Index:   offset,
 		Scale:   false,
 		Typ:     field.Type,
-	})
+	}
 
 	load := f.Append(&ssa.Load{Memory: memory})
 	return load, nil
