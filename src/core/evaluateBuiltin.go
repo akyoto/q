@@ -35,7 +35,7 @@ func (f *Function) evaluateBuiltin(expr *expression.Expression) (ssa.Value, erro
 				return nil, err
 			}
 
-			sliceType = types.Slice(typ, "[]"+typ.Name())
+			sliceType = f.Env.Slice(typ)
 			elementSize := f.Append(&ssa.Int{Int: typ.Size()})
 
 			size = f.Append(&ssa.BinaryOp{

@@ -107,6 +107,7 @@ var tests = []run{
 	{"type-cast", "", "", 0},
 	{"int-array", "", "", 0},
 	{"int-array-custom", "", "", 0},
+	{"int-array-parameter", "", "", 0},
 	{"pointer-to-pointer", "", "", 0},
 }
 

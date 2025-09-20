@@ -13,12 +13,15 @@ import (
 // We'll also pass this to the linker because it contains everything
 // that's needed to generate an executable file.
 type Environment struct {
-	Build        *config.Build
-	Init         *Function
-	Main         *Function
-	Packages     map[string]*Package
-	Files        []*fs.File
-	NumFunctions int
+	Build         *config.Build
+	Init          *Function
+	Main          *Function
+	Packages      map[string]*Package
+	PointerTypes  map[types.Type]types.Type
+	ResourceTypes map[types.Type]types.Type
+	SliceTypes    map[types.Type]types.Type
+	Files         []*fs.File
+	NumFunctions  int
 }
 
 // AddPackage returns an existing package with the giving name or creates a new one.
@@ -86,6 +89,42 @@ func (env *Environment) LiveFunctions() iter.Seq[*Function] {
 			running = yield(f)
 		})
 	}
+}
+
+// Pointer returns the type that points to the given type.
+func (env *Environment) Pointer(typ types.Type) types.Type {
+	existing, exists := env.PointerTypes[typ]
+
+	if !exists {
+		existing = &types.Pointer{To: typ}
+		env.PointerTypes[typ] = existing
+	}
+
+	return existing
+}
+
+// Resource returns the type that is a resource of the given type.
+func (env *Environment) Resource(typ types.Type) types.Type {
+	existing, exists := env.ResourceTypes[typ]
+
+	if !exists {
+		existing = &types.Resource{Of: typ}
+		env.ResourceTypes[typ] = existing
+	}
+
+	return existing
+}
+
+// Slice returns the type that is a slice of the given type.
+func (env *Environment) Slice(typ types.Type) types.Type {
+	existing, exists := env.SliceTypes[typ]
+
+	if !exists {
+		existing = types.Slice(typ, "[]"+typ.Name())
+		env.SliceTypes[typ] = existing
+	}
+
+	return existing
 }
 
 // Structs returns an iterator over all structs.

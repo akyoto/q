@@ -50,7 +50,7 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 			return nil, err
 		}
 
-		return &types.Resource{Of: typ}, nil
+		return env.Resource(typ), nil
 	}
 
 	if tokens[0].Kind == token.Mul {
@@ -60,15 +60,7 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 			return nil, err
 		}
 
-		if typ == types.Any {
-			return types.AnyPointer, nil
-		}
-
-		if typ == types.Byte {
-			return types.CString, nil
-		}
-
-		return &types.Pointer{To: typ}, nil
+		return env.Pointer(typ), nil
 	}
 
 	if len(tokens) >= 2 && tokens[0].Kind == token.ArrayStart && tokens[1].Kind == token.ArrayEnd {
@@ -78,11 +70,7 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 			return nil, err
 		}
 
-		if typ == types.Byte {
-			return types.String, nil
-		}
-
-		return types.Slice(typ, "[]"+typ.Name()), nil
+		return env.Slice(typ), nil
 	}
 
 	if tokens[0].Kind != token.Identifier {
