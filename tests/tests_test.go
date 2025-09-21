@@ -109,6 +109,7 @@ var tests = []run{
 	{"array-int-custom", "", "", 0},
 	{"array-int-parameter", "", "", 0},
 	{"array-struct", "", "", 0},
+	{"array-struct-copy", "", "", 0},
 	{"pointer-to-pointer", "", "", 0},
 }
 

@@ -11,6 +11,9 @@ func (f *Function) structField(leftValue ssa.Value, field *types.Field) *ssa.Mem
 	memory, isMemory := leftValue.(*ssa.Memory)
 
 	if isMemory {
+		copy := *memory
+		memory = &copy
+
 		if memory.Scale {
 			memorySize := f.Append(&ssa.Int{Int: memory.Typ.Size()})
 			memory.Index = f.Append(&ssa.BinaryOp{Op: token.Mul, Left: memory.Index, Right: memorySize})

@@ -33,6 +33,22 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: memory.Typ.Name()}, f.File, right.Source().StartPos)
 	}
 
+	structure, isStruct := rightValue.(*ssa.Struct)
+
+	if isStruct {
+		structType := structure.Typ.(*types.Struct)
+
+		for i, field := range structType.Fields {
+			f.Append(&ssa.Store{
+				Memory: f.structField(memory, field),
+				Value:  structure.Arguments[i],
+				Source: node.Expression.Source(),
+			})
+		}
+
+		return nil
+	}
+
 	f.Append(&ssa.Store{
 		Memory: memory,
 		Value:  rightValue,

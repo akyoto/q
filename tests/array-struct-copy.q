@@ -1,9 +1,7 @@
 main() {
 	p := new(Point, 2)
-	p[0].x = 1
-	p[0].y = 2
-	p[1].x = 3
-	p[1].y = 4
+	p[0] = Point{x: 1, y: 2}
+	p[1] = Point{x: 3, y: 4}
 	assert p[0].x == 1
 	assert p[0].y == 2
 	assert p[1].x == 3
