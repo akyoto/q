@@ -105,9 +105,10 @@ var tests = []run{
 	{"resource", "", "", 0},
 	{"function-pointer", "", "", 0},
 	{"type-cast", "", "", 0},
-	{"int-array", "", "", 0},
-	{"int-array-custom", "", "", 0},
-	{"int-array-parameter", "", "", 0},
+	{"array-int", "", "", 0},
+	{"array-int-custom", "", "", 0},
+	{"array-int-parameter", "", "", 0},
+	{"array-struct", "", "", 0},
 	{"pointer-to-pointer", "", "", 0},
 }
 

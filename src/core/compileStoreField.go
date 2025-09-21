@@ -78,22 +78,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 			return nil
 		}
 
-		memory, isMemory := addressValue.(*ssa.Memory)
-
-		if isMemory {
-			if memory.Scale {
-				memorySize := f.Append(&ssa.Int{Int: memory.Typ.Size()})
-				memory.Index = f.Append(&ssa.BinaryOp{Op: token.Mul, Left: memory.Index, Right: memorySize})
-				memory.Scale = false
-			}
-
-			if field.Offset != 0 {
-				offset := f.Append(&ssa.Int{Int: int(field.Offset)})
-				memory.Index = f.Append(&ssa.BinaryOp{Op: token.Add, Left: memory.Index, Right: offset})
-			}
-
-			memory.Typ = field.Type
-		}
+		memory := f.structField(addressValue, field)
 
 		f.Append(&ssa.Store{
 			Memory: memory,
