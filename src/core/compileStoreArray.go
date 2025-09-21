@@ -33,15 +33,27 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: memory.Typ.Name()}, f.File, right.Source().StartPos)
 	}
 
-	structure, isStruct := rightValue.(*ssa.Struct)
+	structure, isStructType := types.Unwrap(rightValue.Type()).(*types.Struct)
+
+	if !isStructType {
+		f.Append(&ssa.Store{
+			Memory: memory,
+			Value:  rightValue,
+			Source: node.Expression.Source(),
+		})
+
+		return nil
+	}
+
+	composite, isStruct := rightValue.(*ssa.Struct)
 
 	if isStruct {
-		structType := structure.Typ.(*types.Struct)
+		for i, field := range structure.Fields {
+			fieldValue := composite.Arguments[i]
 
-		for i, field := range structType.Fields {
 			f.Append(&ssa.Store{
 				Memory: f.structField(memory, field),
-				Value:  structure.Arguments[i],
+				Value:  fieldValue,
 				Source: node.Expression.Source(),
 			})
 		}
@@ -49,11 +61,27 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 		return nil
 	}
 
-	f.Append(&ssa.Store{
-		Memory: memory,
-		Value:  rightValue,
-		Source: node.Expression.Source(),
-	})
+	fieldValues := make([]ssa.Value, len(structure.Fields))
+
+	for i := range structure.Fields {
+		fieldValue := &ssa.FromTuple{
+			Tuple:     rightValue,
+			Index:     i,
+			Structure: composite,
+			Source:    left.Source(),
+		}
+
+		f.Block().Append(fieldValue)
+		fieldValues[i] = fieldValue
+	}
+
+	for i, field := range structure.Fields {
+		f.Append(&ssa.Store{
+			Memory: f.structField(memory, field),
+			Value:  fieldValues[i],
+			Source: node.Expression.Source(),
+		})
+	}
 
 	return nil
 }
