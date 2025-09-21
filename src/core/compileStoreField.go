@@ -62,11 +62,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 			Typ:     field.Type,
 		}
 
-		f.Append(&ssa.Store{
-			Memory: memory,
-			Value:  rightValue,
-			Source: node.Expression.Source(),
-		})
+		return f.store(memory, rightValue)
 
 	case *types.Struct:
 		field := pointer.FieldByName(fieldName)
@@ -79,13 +75,9 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		}
 
 		memory := f.structField(addressValue, field)
+		return f.store(memory, rightValue)
 
-		f.Append(&ssa.Store{
-			Memory: memory,
-			Value:  rightValue,
-			Source: node.Expression.Source(),
-		})
+	default:
+		panic("unknown memory store")
 	}
-
-	return nil
 }

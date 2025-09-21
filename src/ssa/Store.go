@@ -9,7 +9,6 @@ type Store struct {
 	Void
 	Value  Value
 	Memory *Memory
-	Source
 }
 
 // Equals returns true if the stores are equal.
