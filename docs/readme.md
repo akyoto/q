@@ -12,6 +12,7 @@
 - Static analysis (no need for external linters)
 - Pointer safety (pointers cannot be nil)
 - Resource safety (use-after-free is a compile error)
+- General purpose (apps, servers, games, kernels, and more)
 - Multiple platforms (Linux, Mac and Windows)
 - Zero dependencies (no llvm, no libc)
 
@@ -60,6 +61,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-09-22**: Array allocations.
 - **2025-09-09**: Type casts.
 - **2025-09-08**: Function pointers.
 - **2025-09-07**: Pointer safety.
@@ -106,7 +108,7 @@ The following is a cheat sheet documenting the syntax.
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
 | Allocate a type on the heap          | `new(int)`                   | 🚧 Experimental |
-| Allocate multiple elements           | `new(int, 4)`                | 🚧 Experimental |
+| Allocate multiple elements           | `new(int, 10)`               | 🚧 Experimental |
 | Delete a type from the heap          | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
