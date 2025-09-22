@@ -27,6 +27,12 @@ func (f *Function) validateLeft(left *expression.Expression, right *expression.E
 		if !types.Is(rightType, leftValue.Type()) {
 			return nil, errors.New(&TypeMismatch{Encountered: rightType.Name(), Expected: leftValue.Type().Name()}, f.File, right.Source().StartPos)
 		}
+
+		resource, leftIsResource := leftValue.Type().(*types.Resource)
+
+		if leftIsResource {
+			return nil, errors.New(&ResourceNotConsumed{TypeName: resource.Name()}, f.File, left.Source().StartPos)
+		}
 	} else if exists {
 		return nil, errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source().StartPos)
 	}

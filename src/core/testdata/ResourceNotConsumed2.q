@@ -1,9 +1,7 @@
 main() {
 	x := acquire()
-	y := acquire()
-	y = x
+	x = acquire()
 	free(x)
-	free(y)
 }
 
 acquire() -> !int { return 1 }
