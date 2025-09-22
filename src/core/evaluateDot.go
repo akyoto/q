@@ -99,6 +99,11 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 
 	field := structure.FieldByName(rightText)
 	memory := f.structField(leftValue, field)
-	load := f.Append(&ssa.Load{Memory: memory})
+
+	load := f.Append(&ssa.Load{
+		Memory: memory,
+		Source: expr.Source(),
+	})
+
 	return load, nil
 }
