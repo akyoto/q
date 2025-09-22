@@ -26,12 +26,7 @@ func (f *Function) evaluateRight(expr *expression.Expression) (ssa.Value, error)
 		fields := make([]ssa.Value, 0, len(typ.Fields))
 
 		for _, field := range typ.Fields {
-			fieldMemory := &ssa.Memory{
-				Address: memory.Address,
-				Index:   f.Append(&ssa.Int{Int: int(field.Offset)}),
-				Scale:   false,
-				Typ:     field.Type,
-			}
+			fieldMemory := f.structField(memory, field)
 
 			fieldValue := f.Append(&ssa.Load{
 				Memory: fieldMemory,

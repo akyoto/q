@@ -111,6 +111,7 @@ var tests = []run{
 	{"array-struct", "", "", 0},
 	{"array-struct-copy", "", "", 0},
 	{"array-struct-copy-call", "", "", 0},
+	{"array-string", "", "HelloWorld", 0},
 	{"pointer-to-pointer", "", "", 0},
 }
 
