@@ -71,6 +71,12 @@ func newBuild(args []string) (*config.Build, error) {
 
 			build.Filter = args[i]
 
+		case "--no-lint":
+			build.Lint(false)
+
+		case "--no-optimize":
+			build.Optimize(false)
+
 		case "--ssa":
 			build.ShowSSA = true
 

@@ -17,6 +17,8 @@ func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--os", "windows", "--arch", "arm"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--os", "windows", "--arch", "x86"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--asm"}), 0)
+	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--no-lint"}), 0)
+	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--no-optimize"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--ssa"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "--dry", "--verbose"}), 0)
 	assert.Equal(t, cli.Exec([]string{"help"}), 0)
