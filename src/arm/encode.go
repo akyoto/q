@@ -26,7 +26,7 @@ func regImmHw(d cpu.Register, hw int, imm16 uint16) uint32 {
 }
 
 // reg2Imm encodes an instruction with 2 registers and an immediate.
-func reg2Imm(d cpu.Register, n cpu.Register, imm12 int) uint32 {
+func reg2Imm(d cpu.Register, n cpu.Register, imm12 uint) uint32 {
 	return uint32(imm12&mask12)<<10 | uint32(n)<<5 | uint32(d)
 }
 

@@ -4,7 +4,11 @@ import "git.urbach.dev/cli/q/src/cpu"
 
 // AddRegisterNumber adds a number to a register.
 func AddRegisterNumber(destination cpu.Register, source cpu.Register, number int) (code uint32, encodable bool) {
-	return addRegisterNumber(destination, source, number, 0)
+	if number < 0 {
+		return subRegisterNumber(destination, source, uint(-number), 0)
+	}
+
+	return addRegisterNumber(destination, source, uint(number), 0)
 }
 
 // AddRegisterRegister adds a register to a register.
@@ -13,7 +17,7 @@ func AddRegisterRegister(destination cpu.Register, source cpu.Register, operand 
 }
 
 // addRegisterNumber adds the register and optionally updates the condition flags based on the result.
-func addRegisterNumber(destination cpu.Register, source cpu.Register, number int, flags uint32) (code uint32, encodable bool) {
+func addRegisterNumber(destination cpu.Register, source cpu.Register, number uint, flags uint32) (code uint32, encodable bool) {
 	shift := uint32(0)
 
 	if number > mask12 {

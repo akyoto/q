@@ -4,7 +4,11 @@ import "git.urbach.dev/cli/q/src/cpu"
 
 // SubRegisterNumber subtracts a number from the given register.
 func SubRegisterNumber(destination cpu.Register, source cpu.Register, number int) (code uint32, encodable bool) {
-	return subRegisterNumber(destination, source, number, 0)
+	if number < 0 {
+		return addRegisterNumber(destination, source, uint(-number), 0)
+	}
+
+	return subRegisterNumber(destination, source, uint(number), 0)
 }
 
 // SubRegisterRegister subtracts a register from a register.
@@ -13,7 +17,7 @@ func SubRegisterRegister(destination cpu.Register, source cpu.Register, operand 
 }
 
 // subRegisterNumber subtracts the register and optionally updates the condition flags based on the result.
-func subRegisterNumber(destination cpu.Register, source cpu.Register, number int, flags uint32) (code uint32, encodable bool) {
+func subRegisterNumber(destination cpu.Register, source cpu.Register, number uint, flags uint32) (code uint32, encodable bool) {
 	shift := uint32(0)
 
 	if number > mask12 {
