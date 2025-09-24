@@ -267,22 +267,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *Return:
 		c.code = x86.Return(c.code)
 	case *ShiftLeft:
-		if instr.Destination == x86.R1 {
-			panic("shift destination cannot be R1")
-		}
-
-		if instr.Destination == instr.Operand {
-			panic("shift destination register cannot be equal to the operand register")
-		}
-
-		if instr.Destination != instr.Source {
-			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-		}
-
-		if instr.Operand != x86.R1 {
-			c.code = x86.MoveRegisterRegister(c.code, x86.R1, instr.Operand)
-		}
-
+		c.code = prepareShiftX86(c.code, instr.Destination, instr.Source, instr.Operand)
 		c.code = x86.ShiftLeft(c.code, instr.Destination)
 	case *ShiftLeftNumber:
 		if instr.Destination != instr.Source {
@@ -291,22 +276,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		c.code = x86.ShiftLeftNumber(c.code, instr.Destination, byte(instr.Number))
 	case *ShiftRight:
-		if instr.Destination == x86.R1 {
-			panic("shift destination cannot be R1")
-		}
-
-		if instr.Destination == instr.Operand {
-			panic("shift destination register cannot be equal to the operand register")
-		}
-
-		if instr.Destination != instr.Source {
-			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-		}
-
-		if instr.Operand != x86.R1 {
-			c.code = x86.MoveRegisterRegister(c.code, x86.R1, instr.Operand)
-		}
-
+		c.code = prepareShiftX86(c.code, instr.Destination, instr.Source, instr.Operand)
 		c.code = x86.ShiftRight(c.code, instr.Destination)
 	case *ShiftRightNumber:
 		if instr.Destination != instr.Source {
@@ -315,22 +285,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		c.code = x86.ShiftRightNumber(c.code, instr.Destination, byte(instr.Number))
 	case *ShiftRightSigned:
-		if instr.Destination == x86.R1 {
-			panic("shift destination cannot be R1")
-		}
-
-		if instr.Destination == instr.Operand {
-			panic("shift destination register cannot be equal to the operand register")
-		}
-
-		if instr.Destination != instr.Source {
-			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
-		}
-
-		if instr.Operand != x86.R1 {
-			c.code = x86.MoveRegisterRegister(c.code, x86.R1, instr.Operand)
-		}
-
+		c.code = prepareShiftX86(c.code, instr.Destination, instr.Source, instr.Operand)
 		c.code = x86.ShiftRightSigned(c.code, instr.Destination)
 	case *ShiftRightSignedNumber:
 		if instr.Destination != instr.Source {
@@ -391,6 +346,28 @@ func (c *compilerX86) Compile(instr Instruction) {
 	default:
 		panic("unknown instruction")
 	}
+}
+
+// prepareShiftX86 checks that the registers are correct for the shift instruction
+// and also moves source to destination and the operand to R1 if needed.
+func prepareShiftX86(code []byte, destination cpu.Register, source cpu.Register, operand cpu.Register) []byte {
+	if destination == x86.R1 {
+		panic("shift destination cannot be R1")
+	}
+
+	if destination == operand {
+		panic("shift destination register cannot be equal to the operand register")
+	}
+
+	if destination != source {
+		code = x86.MoveRegisterRegister(code, destination, source)
+	}
+
+	if operand != x86.R1 {
+		code = x86.MoveRegisterRegister(code, x86.R1, operand)
+	}
+
+	return code
 }
 
 // toX86Scale returns the scale factor for the memory instruction.
