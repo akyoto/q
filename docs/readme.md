@@ -7,14 +7,15 @@
 ## Features
 
 - High performance (comparable to C and Go)
-- Fast compilation (5-10x faster than most)
-- Tiny executables ("Hello World" is 0.6 KiB)
+- Fast compilation (5-10x faster than most compilers)
+- Lightweight executables (often ≈1 KiB)
 - Static analysis (no need for external linters)
 - Pointer safety (pointers cannot be nil)
 - Resource safety (use-after-free is a compile error)
-- General purpose (apps, servers, games, kernels, and more)
+- Simple syntax (control flow is easily understood)
+- General purpose (apps, servers, games, kernels, etc.)
 - Multiple platforms (Linux, Mac and Windows)
-- Zero dependencies (no llvm, no libc)
+- Zero dependencies (no llvm, no libc, no external tools)
 
 ## Installation
 
@@ -23,7 +24,7 @@
 >
 > Please read the [comment on the status](https://lobste.rs/s/t7osqo/q_programming_language) of the project.
 >
-> Feel free to [contact me](https://urbach.dev/contact) if you are interested in helping out.
+> Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
 Build from source:
 
@@ -80,7 +81,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## Examples
 
-The syntax is still highly unstable because I'm focusing my work on the correct machine code generation for all platforms and architectures. However, you can take a look at the [examples](../examples) and the [tests](../tests) to get a perspective on the current status.
+The syntax is still evolving because the focus is currently on correct machine code generation for all platforms and architectures. However, you can take a look at the [examples](../examples) and the [tests](../tests) to get a perspective on the current status.
 
 A few selected examples:
 
@@ -234,7 +235,17 @@ if err != 0 {
 // err is no longer defined
 ```
 
-The `error` type is currently defined to be an integer. This will most likely change in a future version.
+The `error` type is currently defined to be an integer (this will change in a future version).
+
+Algebraic data types for error handling will be considered at a later point but as of now there are no final decisions on the matter.
+
+## Syntax
+
+Q encourages code editors to implement multiple syntaxes for editing. A view of the code should be seen as a substantially different format than the underlying model that is saved to disk.
+
+Although a binary on-disk format was considered, I figured this would be too disruptive for existing workflows and doesn't offer any significant benefits over a text based format. Text based formats also stand the test of time because of their simplicity. But even if the on-disk format for your code is very similar to what your editor shows you, it's important to conceptually realize that one is just a temporary view for editing and the other is just a form of persistent data storage.
+
+It is absolutely possible that an editor could offer editing in a Python-like whitespace-significant view while saving the file in the standard format using curly braces `{}` to denote the start and end of code blocks, should the programmer wish to do so.
 
 ## Source
 
@@ -457,7 +468,7 @@ In alphabetical order:
 - [Max van IJsselmuiden](https://github.com/maxvij) | feedback and Mac debugging
 - [Nikita Proskourine](https://github.com/Deobfuscator) | first monthly supporter on GitHub
 - [Tibor Halter](https://github.com/zupa-hu) | detailed feedback and bug reporting
-- my wife :) | providing syntax feedback as a non-programmer
+- my wife | providing syntax feedback as a non-programmer
 
 ## License
 
