@@ -1,3 +1,5 @@
+import math
+
 sockaddr_in_bsd {
 	sin_len int8
 	sin_family int8
@@ -9,7 +11,7 @@ sockaddr_in_bsd {
 bind(socket int, address int64, port uint16) -> error {
 	addr := new(sockaddr_in_bsd)
 	addr.sin_family = 2
-	addr.sin_port = htons(port)
+	addr.sin_port = math.reverseBytes(port)
 	addr.sin_addr = address
 	err := syscall(_bind, socket, addr, 16)
 	delete(addr)

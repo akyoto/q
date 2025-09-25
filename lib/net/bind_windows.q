@@ -1,3 +1,5 @@
+import math
+
 sockaddr_in {
 	sin_family int16
 	sin_port uint16
@@ -8,7 +10,7 @@ sockaddr_in {
 bind(socket int, address int64, port uint16) -> error {
 	addr := new(sockaddr_in)
 	addr.sin_family = 2
-	addr.sin_port = htons(port)
+	addr.sin_port = math.reverseBytes(port)
 	addr.sin_addr = address
 	err := ws2_32.bind(socket, addr, 16)
 	delete(addr)
