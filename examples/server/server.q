@@ -3,14 +3,15 @@ import net
 import tcp
 
 main() {
-	socket, err := tcp.listen("", 8080)
+	socket, err := tcp.listen(8080)
 
 	if err != 0 {
 		io.write("listen error\n")
+		io.write(err)
 		return
 	}
 
-	io.write("http://127.0.0.1:8080\n")
+	io.write("http://[::1]:8080\n")
 	io.write("listening...\n")
 
 	loop {

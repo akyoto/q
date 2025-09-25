@@ -1,11 +1,10 @@
 import math
 
-bind(socket int, address int64, port uint16) -> error {
-	addr := new(AddressIPv4)
-	addr.family = 2
+bind(socket int, port uint16) -> error {
+	addr := new(AddressIPv6)
+	addr.family = v6
 	addr.port = math.reverseBytes(port)
-	addr.addr = address
-	err := syscall(_bind, socket, addr, 16)
+	err := syscall(_bind, socket, addr, 28)
 	delete(addr)
 	return err
 }
