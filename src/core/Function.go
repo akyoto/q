@@ -22,8 +22,7 @@ type Function struct {
 	Err          error
 	name         string
 	pkg          string
-	bodyStart    token.Position
-	bodyEnd      token.Position
+	body         token.Source
 	ssa.IR
 	codegen.Function
 }
@@ -52,12 +51,12 @@ func (f *Function) AddSuffix(suffix string) {
 
 // Body returns the function body.
 func (f *Function) Body() token.List {
-	return f.File.Tokens[f.bodyStart:f.bodyEnd]
+	return f.File.Tokens[f.body.StartPos:f.body.EndPos]
 }
 
 // IsExtern returns true if the function has no body.
 func (f *Function) IsExtern() bool {
-	return f.bodyEnd == 0
+	return f.body.EndPos == 0
 }
 
 // IsLeaf returns true if the function doesn't call other functions.
@@ -77,8 +76,8 @@ func (f *Function) Package() string {
 
 // SetBody sets the token range for the function body.
 func (f *Function) SetBody(start int, end int) {
-	f.bodyStart = token.Position(start)
-	f.bodyEnd = token.Position(end)
+	f.body.StartPos = token.Position(start)
+	f.body.EndPos = token.Position(end)
 }
 
 // String returns the unique name.
