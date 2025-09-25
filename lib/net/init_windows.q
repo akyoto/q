@@ -14,11 +14,3 @@ extern {
 		WSACleanup()
 	}
 }
-
-WsaData {
-	version uint16
-	highVersion uint16
-	maxSockets uint16
-	maxUdpDg uint16
-	vendorInfo *byte
-}

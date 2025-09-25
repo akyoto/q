@@ -5,7 +5,7 @@ bind(socket int, address int64, port uint16) -> error {
 	addr.family = 2
 	addr.port = math.reverseBytes(port)
 	addr.addr = address
-	err := ws2_32.bind(socket, addr, 16)
+	err := syscall(_bind, socket, addr, 16)
 	delete(addr)
 	return err
 }
