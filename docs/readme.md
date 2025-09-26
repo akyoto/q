@@ -31,7 +31,7 @@
 
 ## Motivation
 
-Q is a programming language under development that aims to bridge the gap between C and Go while building upon the safety mechanisms that languages like Austral and Rust have demonstrated. Go's garbage collector prevents an efficient foreign function interface but the language itself is well-designed for readability. I want to combine the simplicity and readability of Go with a more low-level approach to memory safety.
+Q is a programming language under development that aims to bridge the gap between C and Go while building upon the safety mechanisms that languages like Austral and Rust have demonstrated. Go's implementation details like the garbage collector make it difficult to be used in latency sensitive environments like kernel or game development and also complicate an efficient foreign function interface. However, the language itself is extremely well-designed when it comes to readability. Programs are written only once but they must be read many more times by developers around the globe and future generations trying to deciper the backbones of our software landscape. I want to combine the simplicity and readability of Go with a more low-level approach to memory safety so that we have a systems programming language that is both safe and efficient but also easy to understand for future readers.
 
 Q is also a code generation framework that aims to produce raw machine code for multiple architectures, similar to LLVM. Since it is still a very young project compared to LLVM's 22 years of development, it will take time to reach a similar level of runtime performance for the generated executables. However, when looking at the compiler efficiency, the benchmarks show that many of the common compilers used in the industry are inefficient and that there is a lot of room for improvement. The Q compiler is currently the fastest optimizing compiler. While there are a lot of optimization passes that still need to be implemented I am confident that we can keep the performance impact of future passes at a minimum. This project aims to raise the bar for compiler efficiency and demonstrate the possible improvements.
 
@@ -487,10 +487,10 @@ In alphabetical order:
 - [Andrew Binstock](https://github.com/platypusguy) | offer to help testing and documenting
 - [Anto "xplshn"](https://github.com/xplshn) | feedback on public compiler interfaces
 - [Bjorn De Meyer](https://github.com/bjorndm) | feedback on language features
-- [Furkan](https://github.com/mfbulut) | first one to buy me a coffee
 - [James Mills](https://github.com/prologic) | first one to contact me about the project
 - [Laurent Demailly](https://github.com/ldemailly) | indispensable help with Mac debugging
 - [Max van IJsselmuiden](https://github.com/maxvij) | feedback and Mac debugging
+- [Mustafa F. Bulut](https://github.com/mfbulut) | first one to buy me a coffee
 - [Nikita Proskourine](https://github.com/Deobfuscator) | first monthly supporter on GitHub
 - [Tibor Halter](https://github.com/zupa-hu) | detailed feedback and bug reporting
 
