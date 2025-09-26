@@ -1,6 +1,15 @@
 <div align="center">
 	<img src="logo.svg" width="90" alt="q logo">
 	<h1>The Q Programming Language</h1>
+	<p>
+		<a href="#features">Features</a> |
+		<a href="#motivation">Motivation</a> |
+		<a href="#news">News</a> |
+		<a href="#examples">Examples</a> |
+		<a href="#reference">Reference</a> |
+		<a href="#source">Source</a> |
+		<a href="#faq">FAQ</a>
+	</p>
 	<p>Q is a minimal, dependency-free programming language and compiler targeting x86-64 and arm64 with ultra-fast builds and tiny binaries.</p>
 </div>
 
@@ -8,23 +17,32 @@
 
 - High performance (comparable to C and Go)
 - Fast compilation (5-10x faster than most compilers)
-- Lightweight executables (often ≈1 KiB)
-- Static analysis (no need for external linters)
+- Lightweight executables (1 KB for simple programs)
+- Static analysis (integrated linter catches common mistakes)
 - Pointer safety (pointers cannot be nil)
 - Resource safety (use-after-free is a compile error)
 - Simple syntax (control flow is easily understood)
+- Friendly errors (clear and concise compiler messages)
 - General purpose (apps, servers, games, kernels, etc.)
+- Multiple architectures (x86-64 and arm64)
 - Multiple platforms (Linux, Mac and Windows)
-- Zero dependencies (no llvm, no libc, no external tools)
+- Readable source (less than 1% of LLVM's code size)
+- Zero dependencies (no external tools or libraries)
 
-## Installation
+## Motivation
+
+Q is a programming language under development that aims to bridge the gap between C and Go while building upon the safety mechanisms that languages like Austral and Rust have demonstrated. Go's garbage collector prevents an efficient foreign function interface but the language itself is well-designed for readability. I want to combine the simplicity and readability of Go with a more low-level approach to memory safety.
+
+Q is also a code generation framework that aims to produce raw machine code for multiple architectures, similar to LLVM. Since it is still a very young project compared to LLVM's 22 years of development, it will take time to reach a similar level of runtime performance for the generated executables. However, when looking at the compiler efficiency, the benchmarks show that many of the common compilers used in the industry are inefficient and that there is a lot of room for improvement. The Q compiler is currently the fastest optimizing compiler. While there are a lot of optimization passes that still need to be implemented I am confident that we can keep the performance impact of future passes at a minimum. This project aims to raise the bar for compiler efficiency and demonstrate the possible improvements.
+
+## Status
 
 > [!WARNING]
-> Q is [still in development](https://git.urbach.dev/cli/q/issues/1) and not ready for production yet.
->
-> Please read the [comment on the status](https://lobste.rs/s/t7osqo/q_programming_language) of the project.
+> Q is [still in development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
+
+## Installation
 
 Build from source:
 
@@ -90,10 +108,12 @@ A few selected examples:
 - [fibonacci](../examples/fibonacci/fibonacci.q)
 - [fizzbuzz](../examples/fizzbuzz/fizzbuzz.q)
 
-Advanced examples using unstable APIs:
+Advanced examples using experimental APIs:
 
 - [raylib](../examples/raylib/raylib.q)
 - [server](../examples/server/server.q)
+- [shell](../examples/shell/shell.q)
+- [thread](../examples/thread/thread.q)
 
 ## Reference
 
@@ -212,7 +232,10 @@ The standard library currently makes use of this feature in two packages:
 
 ## Errors
 
-Any function can define an `error` type return value at the end:
+> [!NOTE]
+> Algebraic data types for error handling will be considered at a later point but as of now there are no final decisions on the matter.
+
+Any function can currently define an `error` type return value at the end:
 
 ```
 a, b, err := canFail()
@@ -225,19 +248,18 @@ Additionally, error variables like `err` are invalidated after the branch that c
 ```
 a, b, err := canFail()
 
-// a and b are inaccessible
+// ❌ a and b are inaccessible
+// ✅ err is accessible
 
 if err != 0 {
 	return
 }
 
-// a and b are accessible
-// err is no longer defined
+// ✅ a and b are accessible
+// ❌ err is no longer accessible
 ```
 
-The `error` type is currently defined to be an integer (this will change in a future version).
-
-Algebraic data types for error handling will be considered at a later point but as of now there are no final decisions on the matter.
+The `error` type is currently defined to be an integer, though this is expected to change in a future version.
 
 ## Syntax
 
@@ -246,6 +268,8 @@ Q encourages code editors to implement multiple syntaxes for editing. A view of 
 Although a binary on-disk format was considered, I figured this would be too disruptive for existing workflows and doesn't offer any significant benefits over a text based format. Text based formats also stand the test of time because of their simplicity. But even if the on-disk format for your code is very similar to what your editor shows you, it's important to conceptually realize that one is just a temporary view for editing and the other is just a form of persistent data storage.
 
 It is absolutely possible that an editor could offer editing in a Python-like whitespace-significant view while saving the file in the standard format using curly braces `{}` to denote the start and end of code blocks, should the programmer wish to do so.
+
+It is also possible to offer visual editing with a node-based system similar to Scratch or Unreal Engine blueprints while saving the code in the standard text based format.
 
 ## Source
 
@@ -460,15 +484,15 @@ If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](
 
 In alphabetical order:
 
+- [Andrew Binstock](https://github.com/platypusguy) | offer to help testing and documenting
 - [Anto "xplshn"](https://github.com/xplshn) | feedback on public compiler interfaces
-- [Bjorn De Meyer](https://github.com/bjorndm) | feedback on PL design
+- [Bjorn De Meyer](https://github.com/bjorndm) | feedback on language features
 - [Furkan](https://github.com/mfbulut) | first one to buy me a coffee
 - [James Mills](https://github.com/prologic) | first one to contact me about the project
 - [Laurent Demailly](https://github.com/ldemailly) | indispensable help with Mac debugging
 - [Max van IJsselmuiden](https://github.com/maxvij) | feedback and Mac debugging
 - [Nikita Proskourine](https://github.com/Deobfuscator) | first monthly supporter on GitHub
 - [Tibor Halter](https://github.com/zupa-hu) | detailed feedback and bug reporting
-- my wife | providing syntax feedback as a non-programmer
 
 ## License
 
