@@ -6,7 +6,6 @@ main() {
 	socket, err := tcp.listen(8080)
 
 	if err != 0 {
-		io.write("listen error\n")
 		io.write(err)
 		return
 	}
@@ -21,7 +20,7 @@ main() {
 			net.send(conn, "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\nHello\n")
 			net.close(conn)
 		} else {
-			io.write("accept error\n")
+			io.write(err)
 		}
 	}
 }
