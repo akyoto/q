@@ -40,6 +40,8 @@ Q is also a code generation framework that aims to produce raw machine code for 
 > [!WARNING]
 > Q is [still in development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
+> The compiler currently passes a total of [750 tests](#how-do-i-run-the-tests).
+>
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
 ## Installation
