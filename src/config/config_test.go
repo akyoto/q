@@ -56,5 +56,7 @@ func TestFields(t *testing.T) {
 		if b.OS == config.Linux {
 			assert.True(t, b.Congruent())
 		}
+
+		assert.NotNil(t, b.CPU())
 	})
 }

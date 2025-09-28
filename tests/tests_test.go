@@ -114,6 +114,7 @@ var tests = []run{
 	{"array-struct-copy-call", "", "", 0},
 	{"array-string", "", "HelloWorld", 0},
 	{"pointer-to-pointer", "", "", 0},
+	{"stack-pointer", "", "", 0},
 }
 
 func TestTests(t *testing.T) {

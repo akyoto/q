@@ -39,6 +39,8 @@ func (f *Function) execute(step *Step) {
 		f.executeParameter(step, instr)
 	case *ssa.Phi:
 		f.executePhi(instr)
+	case *ssa.Register:
+		f.executeRegister(step, instr)
 	case *ssa.Return:
 		f.executeReturn(instr)
 	case *ssa.Store:

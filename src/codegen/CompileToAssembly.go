@@ -13,7 +13,6 @@ func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFra
 	f.hasStackFrame = hasStackFrame
 	f.hasExternCalls = hasExternCalls
 	f.build = build
-	f.CPU = selectCPU(build)
 
 	// Transform SSA graph to a flat slice of steps we can execute one by one.
 	f.createSteps(ir)

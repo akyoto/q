@@ -16,6 +16,11 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 
 	right := expr.Children[1]
 	left := expr.Children[0]
+
+	if left.Token.Kind == token.Identifier && left.Token.String(f.File.Bytes) == "asm" {
+		return f.evaluateAsm(right)
+	}
+
 	leftValue, err := f.evaluate(left)
 
 	if err != nil {
