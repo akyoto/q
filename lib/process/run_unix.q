@@ -1,12 +1,12 @@
+import c
 import mem
 import run
-import strings
 
 run(path string) -> error {
 	pid := fork()
 
 	if pid == 0 {
-		cpath := strings.c(path)
+		cpath := c.string(path)
 		argv := new(Argv)
 		argv.path = cpath.ptr
 		err := execve(cpath.ptr, argv, 0)

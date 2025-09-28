@@ -32,7 +32,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	if isPackage {
 		pkg := f.Env.Packages[pkgValue.Name]
 
-		if !pkg.IsExtern && f != f.Env.Init {
+		if !pkg.IsExtern && pkg.Name != "main" {
 			imp, exists := f.File.Imports[pkgValue.Name]
 
 			if !exists {

@@ -1,9 +1,9 @@
+import c
 import io
 import mem
-import strings
 
 readFile(path string) -> (!string, error) {
-	cpath := strings.c(path)
+	cpath := c.string(path)
 	fd, err := open(cpath.ptr, 0, 0)
 	mem.free(cpath)
 
