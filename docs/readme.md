@@ -409,7 +409,7 @@ No, the current implementation is only temporary and it needs to be replaced wit
 |      | Read | Execute | Write |
 | ---- | ---- | ------- | ----- |
 | Code | ✔️   | ✔️      | ❌    |
-| Data | ✔️   | ❌      | ❌    |
+| Data | ✔️   | ❌      | ✔️    |
 
 ### Any editor extensions?
 

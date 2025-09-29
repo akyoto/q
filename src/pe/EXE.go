@@ -115,12 +115,12 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 				Characteristics: IMAGE_SCN_CNT_CODE | IMAGE_SCN_MEM_EXECUTE | IMAGE_SCN_MEM_READ,
 			},
 			{
-				Name:            [8]byte{'.', 'r', 'd', 'a', 't', 'a'},
+				Name:            [8]byte{'.', 'd', 'a', 't', 'a'},
 				VirtualSize:     uint32(len(data.Bytes)),
 				VirtualAddress:  uint32(data.MemoryOffset),
 				RawSize:         uint32(len(data.Bytes)),
 				RawAddress:      uint32(data.FileOffset),
-				Characteristics: IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ,
+				Characteristics: IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE,
 			},
 			{
 				Name:            [8]byte{'.', 'i', 'd', 'a', 't', 'a'},

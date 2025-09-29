@@ -94,9 +94,9 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Offset:       uint64(data.FileOffset),
 			SizeInFile:   uint64(len(data.Bytes) + int(codeSignature.size())),
 			NumSections:  0,
-			Flag:         SegmentReadOnly,
-			MaxProt:      ProtReadable,
-			InitProt:     ProtReadable,
+			Flag:         0,
+			MaxProt:      ProtReadable | ProtWritable,
+			InitProt:     ProtReadable | ProtWritable,
 		},
 		Uuid: Uuid{
 			LoadCommand: LcUuid,

@@ -55,7 +55,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 		},
 		DataHeader: ProgramHeader{
 			Type:           ProgramTypeLOAD,
-			Flags:          ProgramFlagsReadable,
+			Flags:          ProgramFlagsReadable | ProgramFlagsWritable,
 			Offset:         int64(data.FileOffset),
 			VirtualAddress: int64(data.MemoryOffset),
 			SizeInFile:     int64(len(data.Bytes)),
