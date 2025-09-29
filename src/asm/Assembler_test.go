@@ -57,7 +57,7 @@ func TestAssembler(t *testing.T) {
 
 	d := &asm.Assembler{}
 	d.Append(&asm.Label{Name: "d"})
-	d.SetData("message", []byte("Hello"))
+	d.Data.SetImmutable("message", []byte("Hello"))
 	d.Append(&asm.MoveLabel{Destination: 0, Label: "a"})
 	d.Append(&asm.MoveLabel{Destination: 0, Label: "b"})
 	d.Append(&asm.MoveLabel{Destination: 0, Label: "c"})

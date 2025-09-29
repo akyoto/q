@@ -9,8 +9,8 @@ import (
 
 func TestInterning(t *testing.T) {
 	d := data.Data{}
-	d.Insert("label1", []byte("Hello"))
-	d.Insert("label2", []byte("ello"))
+	d.SetImmutable("label1", []byte("Hello"))
+	d.SetImmutable("label2", []byte("ello"))
 	raw, positions := d.Finalize()
 	assert.DeepEqual(t, raw, []byte("Hello"))
 	assert.Equal(t, positions["label1"], 0)
@@ -19,8 +19,8 @@ func TestInterning(t *testing.T) {
 
 func TestInterningReverse(t *testing.T) {
 	d := data.Data{}
-	d.Insert("label1", []byte("ello"))
-	d.Insert("label2", []byte("Hello"))
+	d.SetImmutable("label1", []byte("ello"))
+	d.SetImmutable("label2", []byte("Hello"))
 	raw, positions := d.Finalize()
 	assert.DeepEqual(t, raw, []byte("Hello"))
 	assert.Equal(t, positions["label1"], 1)

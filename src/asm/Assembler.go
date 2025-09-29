@@ -79,10 +79,16 @@ func (a *Assembler) Merge(b *Assembler) {
 
 	a.Instructions = append(a.Instructions, b.Instructions[skip:]...)
 
-	if a.Data == nil {
-		a.Data = b.Data
+	if a.Data.Immutable == nil {
+		a.Data.Immutable = b.Data.Immutable
 	} else {
-		maps.Copy(a.Data, b.Data)
+		maps.Copy(a.Data.Immutable, b.Data.Immutable)
+	}
+
+	if a.Data.Mutable == nil {
+		a.Data.Mutable = b.Data.Mutable
+	} else {
+		maps.Copy(a.Data.Mutable, b.Data.Mutable)
 	}
 
 	for library := range b.Libraries.All() {
@@ -90,15 +96,6 @@ func (a *Assembler) Merge(b *Assembler) {
 			a.Libraries.Append(library.Name, fn)
 		}
 	}
-}
-
-// SetData sets the data for the given label.
-func (a *Assembler) SetData(label string, bytes []byte) {
-	if a.Data == nil {
-		a.Data = data.Data{}
-	}
-
-	a.Data.Insert(label, bytes)
 }
 
 // SetLast sets the last instruction.

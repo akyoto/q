@@ -16,7 +16,10 @@ import (
 func Write(writer io.WriteSeeker, env *core.Environment) {
 	program := asm.Assembler{
 		Instructions: make([]asm.Instruction, 0, 256),
-		Data:         make(data.Data, 16),
+		Data: data.Data{
+			Immutable: make(map[string][]byte, 16),
+			Mutable:   make(map[string][]byte, 16),
+		},
 	}
 
 	// This will place the init function immediately after the entry point
