@@ -16,7 +16,8 @@ func (f *Function) validateLeft(left *expression.Expression, right *expression.E
 	if isAssign {
 		if !exists {
 			name := left.Token.String(f.File.Bytes)
-			global, isGlobal := f.Env.Packages[f.File.Package].Globals[name]
+			pkg := f.Env.Packages[f.File.Package]
+			global, isGlobal := pkg.Globals[name]
 
 			if isGlobal {
 				v := f.Append(&ssa.Data{

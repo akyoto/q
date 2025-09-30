@@ -36,7 +36,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 
 	env := core.NewEnvironment(build)
 
-	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.errors != nil {
+	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.globals != nil || s.errors != nil {
 		select {
 		case f, ok := <-s.functions:
 			if !ok {
