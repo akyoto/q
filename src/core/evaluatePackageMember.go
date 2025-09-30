@@ -29,6 +29,18 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 	variants, exists := pkg.Functions[rightText]
 
 	if !exists {
+		global, exists := pkg.Globals[rightText]
+
+		if exists {
+			v := f.Append(&ssa.Data{
+				Label:  pkg.Name + "." + global.Name,
+				Typ:    f.Env.Pointer(global.Typ),
+				Source: expr.Source(),
+			})
+
+			return v, nil
+		}
+
 		if pkg.Name != f.File.Package {
 			rightText = pkg.Name + "." + rightText
 		}

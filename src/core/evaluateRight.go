@@ -15,6 +15,23 @@ func (f *Function) evaluateRight(expr *expression.Expression) (ssa.Value, error)
 		return nil, err
 	}
 
+	data, isData := value.(*ssa.Data)
+
+	if isData {
+		zero := f.Append(&ssa.Int{Int: 0})
+
+		load := f.Append(&ssa.Load{
+			Memory: &ssa.Memory{
+				Address: data,
+				Index:   zero,
+				Typ:     data.Typ.(*types.Pointer).To,
+			},
+			Source: data.Source,
+		})
+
+		return load, nil
+	}
+
 	memory, isMemory := value.(*ssa.Memory)
 
 	if !isMemory {

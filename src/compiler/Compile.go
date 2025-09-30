@@ -43,6 +43,13 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		return nil, err
 	}
 
+	// Parse global variable types.
+	err = parseGlobalTypes(env.Globals(), env)
+
+	if err != nil {
+		return nil, err
+	}
+
 	// Parse input and output types so we have type information
 	// ready for all functions before parallel compilation starts.
 	// This ensures that the function compilers have access to

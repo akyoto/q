@@ -3,6 +3,8 @@ package data
 import (
 	"slices"
 	"sort"
+
+	"git.urbach.dev/cli/q/src/exe"
 )
 
 func (data *Data) appendMutable(final []byte, positions map[string]int) []byte {
@@ -24,8 +26,15 @@ func (data *Data) appendMutable(final []byte, positions map[string]int) []byte {
 	})
 
 	for _, key := range keys {
+		content := data.Mutable[key]
+		_, padding := exe.AlignPad(len(final), len(content))
+
+		for range padding {
+			final = append(final, 0)
+		}
+
 		positions[key] = len(final)
-		final = append(final, data.Mutable[key]...)
+		final = append(final, content...)
 	}
 
 	return final

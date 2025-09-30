@@ -1,6 +1,7 @@
 package linker
 
 import (
+	"bytes"
 	"io"
 
 	"git.urbach.dev/cli/q/src/asm"
@@ -26,6 +27,13 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 	// and also add everything the init function calls recursively.
 	for f := range env.LiveFunctions() {
 		program.Merge(&f.Assembler)
+	}
+
+	// Initialize the data for global variables.
+	for global := range env.Globals() {
+		label := global.File.Package + "." + global.Name
+		data := bytes.Repeat([]byte{0}, global.Typ.Size())
+		program.Data.SetMutable(label, data)
 	}
 
 	build := env.Build

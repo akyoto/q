@@ -115,6 +115,7 @@ var tests = []run{
 	{"array-string", "", "HelloWorld", 0},
 	{"pointer-to-pointer", "", "", 0},
 	{"stack-pointer", "", "", 0},
+	{"global", "", "", 0},
 }
 
 func TestTests(t *testing.T) {

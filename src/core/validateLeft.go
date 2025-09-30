@@ -15,6 +15,19 @@ func (f *Function) validateLeft(left *expression.Expression, right *expression.E
 
 	if isAssign {
 		if !exists {
+			name := left.Token.String(f.File.Bytes)
+			global, isGlobal := f.Env.Packages[f.File.Package].Globals[name]
+
+			if isGlobal {
+				v := f.Append(&ssa.Data{
+					Label:  f.File.Package + "." + global.Name,
+					Typ:    f.Env.Pointer(global.Typ),
+					Source: left.Source(),
+				})
+
+				return v, nil
+			}
+
 			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source().StartPos)
 		}
 

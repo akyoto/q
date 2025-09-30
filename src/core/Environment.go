@@ -34,6 +34,7 @@ func (env *Environment) AddPackage(name string, isExtern bool) *Package {
 			Constants: make(map[string]*Constant),
 			Functions: make(map[string]*Function, 8),
 			Structs:   make(map[string]*types.Struct),
+			Globals:   make(map[string]*Global),
 			IsExtern:  isExtern,
 		}
 
@@ -69,6 +70,19 @@ func (env *Environment) Functions() iter.Seq[*Function] {
 					if !yield(variant) {
 						return
 					}
+				}
+			}
+		}
+	}
+}
+
+// Globals returns an iterator over all globals.
+func (env *Environment) Globals() iter.Seq[*Global] {
+	return func(yield func(*Global) bool) {
+		for _, pkg := range env.Packages {
+			for _, global := range pkg.Globals {
+				if !yield(global) {
+					return
 				}
 			}
 		}

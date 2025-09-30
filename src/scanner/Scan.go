@@ -17,6 +17,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		functions: make(chan *core.Function, 8),
 		files:     make(chan *fs.File, 8),
 		structs:   make(chan *types.Struct, 8),
+		globals:   make(chan *core.Global, 1),
 		errors:    make(chan error),
 		build:     build,
 	}
@@ -29,6 +30,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		close(s.functions)
 		close(s.files)
 		close(s.structs)
+		close(s.globals)
 		close(s.errors)
 	}()
 
@@ -85,6 +87,15 @@ func Scan(build *config.Build) (*core.Environment, error) {
 
 			pkg := env.AddPackage(constant.File.Package, false)
 			pkg.Constants[constant.Name] = constant
+
+		case global, ok := <-s.globals:
+			if !ok {
+				s.globals = nil
+				continue
+			}
+
+			pkg := env.AddPackage(global.File.Package, false)
+			pkg.Globals[global.Name] = global
 
 		case err, ok := <-s.errors:
 			if !ok {

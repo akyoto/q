@@ -1,16 +1,14 @@
 package scanner
 
 import (
+	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
-	"git.urbach.dev/cli/q/src/types"
 )
 
-// scanStruct scans a struct.
-func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, error) {
-	structName := tokens[i].String(file.Bytes)
-	structure := types.NewStruct(file, file.Package, structName)
+// scanGlobal scans a global.
+func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, error) {
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
@@ -29,16 +27,16 @@ func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, erro
 
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
-				name := tokens[start].String(file.Bytes)
-
-				structure.AddField(&types.Field{
-					Name:   name,
+				global := &core.Global{
+					Name:   tokens[start].String(file.Bytes),
 					Tokens: tokens[start:i],
-				})
+					File:   file,
+				}
+
+				s.globals <- global
 			}
 
 			if tokens[i].Kind == token.BlockEnd {
-				s.structs <- structure
 				return i, nil
 			}
 

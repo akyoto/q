@@ -25,7 +25,7 @@ func TestFunction(t *testing.T) {
 }
 
 func TestKeyword(t *testing.T) {
-	tokens := token.Tokenize([]byte("as assert const else extern if import loop return switch"))
+	tokens := token.Tokenize([]byte("as assert const else extern global go if import loop return switch"))
 
 	expected := []token.Kind{
 		token.Cast,
@@ -33,6 +33,8 @@ func TestKeyword(t *testing.T) {
 		token.Const,
 		token.Else,
 		token.Extern,
+		token.Global,
+		token.Go,
 		token.If,
 		token.Import,
 		token.Loop,

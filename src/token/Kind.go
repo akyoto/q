@@ -73,6 +73,7 @@ const (
 	Const                             // const
 	Else                              // else
 	Extern                            // extern
+	Global                            // global
 	Go                                // go
 	If                                // if
 	Import                            // import

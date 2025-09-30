@@ -57,6 +57,8 @@ func (s *scanner) scanFile(path string, pkg string) error {
 			i, err = s.scanExtern(file, tokens, i)
 		case token.Import:
 			i, err = s.scanImport(file, tokens, i)
+		case token.Global:
+			i, err = s.scanGlobal(file, tokens, i)
 		case token.EOF:
 			return nil
 		case token.Invalid:

@@ -28,6 +28,24 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		return err
 	}
 
+	data, isData := leftValue.(*ssa.Data)
+
+	if isData {
+		zero := f.Append(&ssa.Int{Int: 0})
+
+		f.Append(&ssa.Store{
+			Memory: &ssa.Memory{
+				Typ:     data.Typ.(*types.Pointer).To,
+				Address: data,
+				Index:   zero,
+				Source:  data.Source,
+			},
+			Value: rightValue,
+		})
+
+		return nil
+	}
+
 	call, isCall := rightValue.(*ssa.Call)
 
 	if isCall && len(call.Func.Typ.Output) != 1 {

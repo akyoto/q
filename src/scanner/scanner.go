@@ -15,6 +15,7 @@ type scanner struct {
 	functions chan *core.Function
 	files     chan *fs.File
 	structs   chan *types.Struct
+	globals   chan *core.Global
 	errors    chan error
 	build     *config.Build
 	queued    sync.Map
