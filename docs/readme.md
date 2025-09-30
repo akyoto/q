@@ -4,6 +4,7 @@
 	<p>
 		<a href="#features">Features</a> |
 		<a href="#motivation">Motivation</a> |
+		<a href="#installation">Installation</a> |
 		<a href="#news">News</a> |
 		<a href="#examples">Examples</a> |
 		<a href="#reference">Reference</a> |
@@ -31,9 +32,9 @@
 
 ## Motivation
 
-Q is a programming language under development that aims to fill the gap between C and Go while building upon the safety mechanisms that languages like Austral and Rust have demonstrated. Go's implementation details like the garbage collector make it difficult to be used in latency sensitive environments like kernel or game development and also complicate an efficient foreign function interface. However, the language itself is extremely well-designed when it comes to readability. Programs are written only once but they must be read many more times by developers around the globe and future generations trying to deciper the backbones of our software landscape. I want to combine the simplicity and readability of Go with a more low-level approach to memory safety so that we have a systems programming language that is both safe and efficient but also easy to understand for future readers.
+Q is a programming language under development that aims to fill the gap between C and Go while building upon the safety mechanisms that languages like Austral and Rust have demonstrated. Go's implementation details like the garbage collector make it difficult to be used in latency sensitive environments like kernel or game development and also complicate an efficient foreign function interface. However, the language itself is extremely well-designed when it comes to readability. Programs are written only once but they must be read many more times by developers around the globe and future generations trying to decipher the backbones of our software landscape. I want to combine the simplicity and readability of Go with a more low-level approach to memory safety so that we have a systems programming language that is both safe and efficient but also easy to understand for future readers.
 
-Q is also a code generation framework that aims to produce raw machine code for multiple architectures, similar to LLVM. Since it is still a very young project compared to LLVM's 22 years of development, it will take time to reach a similar level of runtime performance for the generated executables. However, when looking at the compiler efficiency, the benchmarks show that many of the common compilers used in the industry are inefficient and that there is a lot of room for improvement. The Q compiler is currently the fastest optimizing compiler. While there are a lot of optimization passes that still need to be implemented I am confident that we can keep the performance impact of future passes at a minimum. This project aims to raise the bar for compiler efficiency and demonstrate the possible improvements.
+Q is also a code generation framework that aims to produce raw machine code for multiple architectures, similar to LLVM. Since it is still a very young project compared to LLVM's 22 years of development, it will take time to reach a similar level of runtime performance for the generated executables. However, when looking at the compiler efficiency, the benchmarks show that many of the common compilers used in the industry are inefficient and that there is a lot of room for improvement. The Q compiler is currently the fastest optimizing compiler. While there are many optimization passes that still need to be implemented, I am confident that the performance impact of future passes can be reduced to a minimum. This project aims to raise the bar for compiler efficiency and demonstrate the possible improvements.
 
 ## Status
 
@@ -263,6 +264,19 @@ if err != 0 {
 
 The `error` type is currently defined to be an integer, though this is expected to change in a future version.
 
+## Security
+
+Software security is critical, especially as supply chain attacks continue to grow in frequency and impact.
+Q mitigates these risks by enforcing a strict permissions model, ensuring that external dependencies operate with the least privilege necessary.
+Access to sensitive resources such as the network or the file system must be explicitly declared in a module's definition,
+preventing unexpected or hidden behaviors.
+Any change in a module's permissions automatically requires review during updates, making it harder for malicious code to slip through unnoticed.
+
+Q also hardens executables at the binary level:
+
+- All executables are built as position-independent executables (PIE) with dynamic base addresses so that an attacker can't use precalculated addresses.
+- The W^X (write xor execute) policy is enforced for all memory pages: memory can be writable or executable, but never both.
+
 ## Syntax
 
 Q encourages code editors to implement multiple syntaxes for editing. A view of the code should be seen as a substantially different format than the underlying model that is saved to disk.
@@ -399,17 +413,6 @@ You need to create a file with the contents above and add execution permissions 
 ### Does it have a fast memory allocator?
 
 No, the current implementation is only temporary and it needs to be replaced with a faster one once the required language features have been implemented.
-
-### Any security features?
-
-**PIE**: All executables are built as position independent executables supporting a dynamic base address.
-
-**W^X**: All memory pages are loaded with either execute or write permissions but never with both. Constant data is read-only.
-
-|      | Read | Execute | Write |
-| ---- | ---- | ------- | ----- |
-| Code | ✔️   | ✔️      | ❌    |
-| Data | ✔️   | ❌      | ✔️    |
 
 ### Any editor extensions?
 
