@@ -40,6 +40,9 @@ func TestStoreRegister(t *testing.T) {
 		Length byte
 		Code   uint32
 	}{
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 8, 0xF8000001},
+		{arm.X0, arm.X1, arm.UnscaledImmediate, 0, 8, 0xF8000020},
+
 		{arm.X0, arm.X1, arm.UnscaledImmediate, -8, 1, 0x381F8020},
 		{arm.X1, arm.X0, arm.UnscaledImmediate, -8, 1, 0x381F8001},
 		{arm.X0, arm.X1, arm.UnscaledImmediate, -8, 2, 0x781F8020},
