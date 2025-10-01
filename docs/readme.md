@@ -267,8 +267,8 @@ The `error` type is currently defined to be an integer, though this is expected 
 
 ## Security
 
-Software security is critical, especially as supply chain attacks continue to grow in frequency and impact.
-Q mitigates these risks by enforcing a strict permissions model, ensuring that external dependencies operate with the least privilege necessary.
+Recent events such as the `xz` backdoor and several attacks on `npm` have shown that supply chain attacks continue to grow in frequency and impact.
+Q reduces these risks by enforcing a strict permissions model, ensuring that external dependencies operate with the least privilege necessary.
 Access to sensitive resources such as the network or the file system must be explicitly declared in a module's definition,
 preventing unexpected or hidden behaviors.
 Any change in a module's permissions automatically requires review during updates, making it harder for malicious code to slip through unnoticed.

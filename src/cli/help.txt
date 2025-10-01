@@ -1,4 +1,4 @@
-Compiler for the q programming language.
+Compiler for the Q programming language.
 
     Run a source file:
 
