@@ -46,6 +46,10 @@ func (f *Function) hintABI(step *Step) {
 				f.ValueToStep[user].hint(step.Register)
 			}
 		}
+	case *ssa.Register:
+		if step.Register == -1 {
+			step.Register = instr.Register
+		}
 	case *ssa.Return:
 		for r, param := range instr.Arguments {
 			f.ValueToStep[param].hint(f.CPU.Call.Out[r])
