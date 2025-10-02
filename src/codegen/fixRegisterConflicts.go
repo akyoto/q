@@ -3,6 +3,8 @@ package codegen
 import (
 	"slices"
 
+	"git.urbach.dev/cli/q/src/arm"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -44,6 +46,10 @@ func (f *Function) fixRegisterConflicts() {
 			clobbered = f.CPU.Call.Clobbered
 		case *ssa.CallExtern:
 			clobbered = f.CPU.ExternCall.Clobbered
+		case *ssa.Register:
+			if f.build.Arch == config.ARM && step.Register == arm.SP {
+				f.assignFreeRegister(step)
+			}
 		case *ssa.Syscall:
 			clobbered = f.CPU.Syscall.Clobbered
 		}
