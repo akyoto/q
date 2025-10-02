@@ -1,13 +1,17 @@
 import c
 
 args() -> []string {
-	count := stack[0]
-	args := new(string, count)
+	args := new(string, argc)
 
-	loop i := 0..count {
-		ptr := stack[1+i] as *byte
+	loop i := 0..argc {
+		ptr := argv[i]
 		args[i] = string{ptr: ptr, len: c.length(ptr)}
 	}
 
 	return args
+}
+
+global {
+	argc uint
+	argv **byte
 }

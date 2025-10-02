@@ -11,6 +11,14 @@ func (f *Function) evaluateAsm(expr *expression.Expression) (ssa.Value, error) {
 	name := expr.Token.String(f.File.Bytes)
 
 	switch name {
+	case "r0":
+		return f.Append(&ssa.Register{Register: 0}), nil
+	case "r1":
+		return f.Append(&ssa.Register{Register: 1}), nil
+	case "r6":
+		return f.Append(&ssa.Register{Register: 6}), nil
+	case "r7":
+		return f.Append(&ssa.Register{Register: 7}), nil
 	case "sp":
 		return f.Append(&ssa.Register{Register: f.CPU.StackPointer}), nil
 	}
