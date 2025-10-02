@@ -348,7 +348,7 @@ There is also an interactive [dependency graph](https://deps-q.urbach.dev/) and 
 |            | arm64    | x86-64  |
 | ---------- | -------- | ------- |
 | 🐧 Linux   |  0.6 KiB | 0.6 KiB |
-| 🍏 Mac     | 16.3 KiB | 4.2 KiB |
+| 🍏 Mac     | 32.3 KiB | 8.2 KiB |
 | 🪟 Windows |  1.7 KiB | 1.7 KiB |
 
 ### Are there any runtime benchmarks?

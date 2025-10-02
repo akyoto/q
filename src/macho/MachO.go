@@ -17,6 +17,7 @@ type MachO struct {
 	CodeSegment   Segment64
 	CodeSection   Section64
 	DataSegment   Segment64
+	LinkedSegment Segment64
 	Uuid          Uuid
 	Main          Main
 	BuildVersion  BuildVersion
@@ -28,14 +29,12 @@ type MachO struct {
 
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
-	linkeditOffset, padding := exe.AlignPad(len(dataBytes), 16)
-	dataBytes = append(dataBytes, bytes.Repeat([]byte{0}, padding)...)
-	dataBytes = append(dataBytes, createLinkeditSegment()...)
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true, codeBytes, dataBytes)
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true, codeBytes, dataBytes, createLinkeditSegment())
 	code := x.Sections[0]
 	data := x.Sections[1]
+	linked := x.Sections[2]
 	arch, microArch := Arch(build.Arch)
-	rawFileSize := data.FileOffset + len(data.Bytes)
+	rawFileSize := linked.FileOffset + len(linked.Bytes)
 	identifier := []byte("\000")
 	codeSignature := NewCodeSignature(rawFileSize, identifier, code)
 
@@ -88,15 +87,28 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 		DataSegment: Segment64{
 			LoadCommand:  LcSegment64,
 			Length:       Segment64Size,
-			Name:         [16]byte{'_', '_', 'L', 'I', 'N', 'K', 'E', 'D', 'I', 'T'},
+			Name:         [16]byte{'_', '_', 'D', 'A', 'T', 'A'},
 			Address:      uint64(BaseAddress + data.MemoryOffset),
-			SizeInMemory: uint64(len(data.Bytes) + int(codeSignature.size())),
+			SizeInMemory: uint64(len(data.Bytes)),
 			Offset:       uint64(data.FileOffset),
-			SizeInFile:   uint64(len(data.Bytes) + int(codeSignature.size())),
+			SizeInFile:   uint64(len(data.Bytes)),
 			NumSections:  0,
 			Flag:         0,
 			MaxProt:      ProtReadable | ProtWritable,
 			InitProt:     ProtReadable | ProtWritable,
+		},
+		LinkedSegment: Segment64{
+			LoadCommand:  LcSegment64,
+			Length:       Segment64Size,
+			Name:         [16]byte{'_', '_', 'L', 'I', 'N', 'K', 'E', 'D', 'I', 'T'},
+			Address:      uint64(BaseAddress + linked.MemoryOffset),
+			SizeInMemory: uint64(len(linked.Bytes) + int(codeSignature.size())),
+			Offset:       uint64(linked.FileOffset),
+			SizeInFile:   uint64(len(linked.Bytes) + int(codeSignature.size())),
+			NumSections:  0,
+			Flag:         SegmentReadOnly,
+			MaxProt:      ProtReadable,
+			InitProt:     ProtReadable,
 		},
 		Uuid: Uuid{
 			LoadCommand: LcUuid,
@@ -130,13 +142,13 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 		ChainedFixups: LinkeditDataCommand{
 			LoadCommand: LcDyldChainedFixups,
 			Length:      LinkeditDataCommandSize,
-			DataOffset:  uint32(data.FileOffset + linkeditOffset),
+			DataOffset:  uint32(linked.FileOffset),
 			DataSize:    uint32(chainedFixupsSize),
 		},
 		CodeSignature: LinkeditDataCommand{
 			LoadCommand: LcCodeSignature,
 			Length:      LinkeditDataCommandSize,
-			DataOffset:  uint32(data.FileOffset + linkeditOffset + chainedFixupsSize),
+			DataOffset:  uint32(linked.FileOffset + chainedFixupsSize),
 			DataSize:    codeSignature.size(),
 		},
 	}
@@ -155,6 +167,7 @@ func (m *MachO) WriteRaw(writer io.Writer, seek bool) {
 	binary.Write(writer, binary.LittleEndian, &m.CodeSegment)
 	binary.Write(writer, binary.LittleEndian, &m.CodeSection)
 	binary.Write(writer, binary.LittleEndian, &m.DataSegment)
+	binary.Write(writer, binary.LittleEndian, &m.LinkedSegment)
 	binary.Write(writer, binary.LittleEndian, &m.Uuid)
 	binary.Write(writer, binary.LittleEndian, &m.Main)
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)

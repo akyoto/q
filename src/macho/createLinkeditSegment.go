@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	codeSignaturePadding = 0
+	codeSignaturePadding = 12
 	chainedFixupsSize    = ChainedFixupsHeaderSize + ChainedStartsInImageSize + codeSignaturePadding
 )
 
