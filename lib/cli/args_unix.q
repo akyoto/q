@@ -1,10 +1,12 @@
 import c
 
 args() -> []string {
-	args := new(string, argc)
+	count := argc
+	pointers := argv
+	args := new(string, count)
 
-	loop i := 0..argc {
-		ptr := argv[i]
+	loop i := 0..count {
+		ptr := pointers[i]
 		args[i] = string{ptr: ptr, len: c.length(ptr)}
 	}
 
