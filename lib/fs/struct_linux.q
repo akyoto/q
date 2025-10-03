@@ -1,0 +1,22 @@
+FileStat {
+	device uint64
+	inode uint64
+	numHardLinks uint64
+	mode uint32
+	uid uint32
+	gid uint32
+	_ uint32
+	rDevice uint64
+	size int64
+	blockSize int64
+	numBlocks int64
+	atime int64
+	atimeNsec int64
+	mtime int64
+	mtimeNsec int64
+	ctime int64
+	ctimeNsec int64
+	_ int64
+	_ int64
+	_ int64
+}
