@@ -93,6 +93,7 @@ var tests = []run{
 	{"ignore-error", "", "", 0},
 	{"ignore-unused-field", "", "", 0},
 	{"slice", "", "Hello World", 0},
+	{"file-read", "", "", 0},
 	{"strings-equal", "", "", 0},
 	{"strings-index", "", "", 0},
 	{"strings-cut", "", "", 0},
