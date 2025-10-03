@@ -9,7 +9,7 @@ open(path *byte, flags int, mode int) -> (!int, error) {
 }
 
 size(fd int) -> (uint, error) {
-	stats := new(stat)
+	stats := new(FileStat)
 	err := syscall(_fstat64, fd, stats)
 
 	if err != 0 {
@@ -17,7 +17,7 @@ size(fd int) -> (uint, error) {
 		return 0, err
 	}
 
-	size := stats.st_size as uint
+	size := stats.size as uint
 	delete(stats)
 	return size, 0
 }
