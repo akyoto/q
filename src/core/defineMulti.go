@@ -4,11 +4,16 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // defineMulti creates SSA values from expressions and composes structs from their individual fields.
 func (f *Function) defineMulti(left *expression.Expression, right *expression.Expression, isAssign bool) error {
+	if left.Token.Kind != token.Separator {
+		return errors.New(InvalidLeftExpression, f.File, left.Source().StartPos)
+	}
+
 	rightValue, err := f.evaluateRight(right)
 
 	if err != nil {

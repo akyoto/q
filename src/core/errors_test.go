@@ -50,6 +50,7 @@ var errs = []struct {
 	{"InvalidExpression8.q", core.InvalidExpression},
 	{"InvalidFieldInit.q", core.InvalidFieldInit},
 	{"InvalidFieldInit2.q", core.InvalidFieldInit},
+	{"InvalidLeftExpression.q", core.InvalidLeftExpression},
 	{"InvalidLoopHeader.q", core.InvalidLoopHeader},
 	{"InvalidStructOperation.q", core.InvalidStructOperation},
 	{"InvalidStructOperation2.q", core.InvalidStructOperation},

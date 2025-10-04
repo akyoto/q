@@ -15,6 +15,7 @@ var (
 	InvalidCondition          = errors.String("Invalid condition")
 	InvalidExpression         = errors.String("Invalid expression")
 	InvalidFieldInit          = errors.String("Invalid field initialization (expected 'field: value')")
+	InvalidLeftExpression     = errors.String("Invalid left expression in assignment")
 	InvalidLoopHeader         = errors.String("Invalid loop header")
 	InvalidNumber             = errors.String("Invalid number")
 	InvalidRune               = errors.String("Invalid rune")
