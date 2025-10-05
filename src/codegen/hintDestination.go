@@ -19,6 +19,8 @@ func (f *Function) hintDestination(step *Step) {
 		// For x86-64 it is advantageous to use the destination register
 		// as the register for the left operand.
 		f.ValueToStep[instr.Left].hint(step.Register)
+	case *ssa.Copy:
+		f.ValueToStep[instr.Value].hint(step.Register)
 	case *ssa.Phi:
 		for variant := range instr.DefinedArguments {
 			variant := f.ValueToStep[variant]
