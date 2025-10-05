@@ -81,6 +81,8 @@ var tests = []run{
 	{"struct-pointer-deref", "", "", 0},
 	{"struct-modify-branch", "", "", 0},
 	{"string-by-value", "", "Hello\n", 0},
+	{"circle", "", "", 0},
+	{"circle-by-reference", "", "", 0},
 	{"color-8", "", "", 0},
 	{"color-16", "", "", 0},
 	{"color-32", "", "", 0},

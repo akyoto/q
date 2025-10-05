@@ -37,14 +37,14 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// We couldn't do that during the scan phase because it's possible
 	// that a field references a type that will only be known after the
 	// full scan is finished.
-	err = parseFieldTypes(env.Structs(), env)
+	err = parseStructs(env.Structs(), env)
 
 	if err != nil {
 		return nil, err
 	}
 
 	// Parse global variable types.
-	err = parseGlobalTypes(env.Globals(), env)
+	err = parseGlobals(env.Globals(), env)
 
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// ready for all functions before parallel compilation starts.
 	// This ensures that the function compilers have access to
 	// type checking for all function calls.
-	err = parseTypes(env.Functions(), env)
+	err = parseFunctions(env.Functions(), env)
 
 	if err != nil {
 		return nil, err

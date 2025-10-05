@@ -83,6 +83,7 @@ q build examples/hello --os [linux|mac|windows] --arch [x86|arm]
 
 ## News
 
+- **2025-10-05**: Struct types in fields.
 - **2025-09-30**: Static allocations.
 - **2025-09-22**: Array allocations.
 - **2025-09-09**: Type casts.

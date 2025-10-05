@@ -9,8 +9,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// parseTypes parses the tokens of the input and output types.
-func parseTypes(functions iter.Seq[*core.Function], env *core.Environment) error {
+// parseFunctions parses the tokens of the input and output types.
+func parseFunctions(functions iter.Seq[*core.Function], env *core.Environment) error {
 	for f := range functions {
 		f.Type = &types.Function{
 			Input:  make([]types.Type, len(f.Input)),
