@@ -8,7 +8,7 @@ import (
 	"git.urbach.dev/go/assert"
 )
 
-func TestLoadDynamicRegister(t *testing.T) {
+func TestLoad(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register
 		Base        cpu.Register
@@ -26,12 +26,12 @@ func TestLoadDynamicRegister(t *testing.T) {
 
 	for _, pattern := range usagePatterns {
 		t.Logf("ldr %s, [%s, #%s] %db", pattern.Destination, pattern.Base, pattern.Offset, pattern.Length)
-		code := arm.LoadDynamicRegister(pattern.Destination, pattern.Base, pattern.Offset, pattern.Scale, pattern.Length)
+		code := arm.Load(pattern.Destination, pattern.Base, pattern.Offset, pattern.Scale, pattern.Length)
 		assert.Equal(t, code, pattern.Code)
 	}
 }
 
-func TestLoadRegister(t *testing.T) {
+func TestLoadFixedOffset(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register
 		Base        cpu.Register
@@ -61,7 +61,7 @@ func TestLoadRegister(t *testing.T) {
 
 	for _, pattern := range usagePatterns {
 		t.Logf("ldur %s, [%s, %d] %db", pattern.Destination, pattern.Base, pattern.Offset, pattern.Length)
-		code := arm.LoadRegister(pattern.Destination, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
+		code := arm.LoadFixedOffset(pattern.Destination, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
 		assert.Equal(t, code, pattern.Code)
 	}
 }

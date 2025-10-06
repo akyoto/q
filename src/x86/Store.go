@@ -6,9 +6,9 @@ import (
 	"git.urbach.dev/cli/q/src/cpu"
 )
 
-// StoreNumber writes a number to a memory address.
-func StoreNumber(code []byte, base cpu.Register, offset int8, scale Scale, length byte, number int) []byte {
-	code = memAccess(code, 0xC6, 0xC7, 0b000, base, offset, scale, length)
+// StoreNumber writes a number to a memory address with a register offset.
+func StoreNumber(code []byte, base cpu.Register, offset cpu.Register, scale Scale, length byte, number int) []byte {
+	code = memAccessDynamic(code, 0xC6, 0xC7, 0b000, base, offset, scale, length)
 
 	switch length {
 	case 8, 4:
@@ -21,7 +21,7 @@ func StoreNumber(code []byte, base cpu.Register, offset int8, scale Scale, lengt
 	return append(code, byte(number))
 }
 
-// StoreRegister writes the contents of the register to a memory address.
-func StoreRegister(code []byte, base cpu.Register, offset int8, scale Scale, length byte, register cpu.Register) []byte {
-	return memAccess(code, 0x88, 0x89, register, base, offset, scale, length)
+// StoreRegister writes the contents of a register to a memory address with a register offset.
+func StoreRegister(code []byte, base cpu.Register, offset cpu.Register, scale Scale, length byte, source cpu.Register) []byte {
+	return memAccessDynamic(code, 0x88, 0x89, source, base, offset, scale, length)
 }

@@ -47,7 +47,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *CallExtern:
 		c.append(arm.LoadAddress(arm.X16, 0))
 		patch := c.PatchLast4Bytes()
-		c.append(arm.LoadRegister(arm.X16, arm.X16, arm.UnscaledImmediate, 0, 8))
+		c.append(arm.LoadFixedOffset(arm.X16, arm.X16, arm.UnscaledImmediate, 0, 8))
 		c.append(arm.CallRegister(arm.X16))
 
 		patch.apply = func(code []byte) []byte {
@@ -131,7 +131,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 			scale = arm.ScaleLength
 		}
 
-		c.append(arm.LoadDynamicRegister(instr.Destination, instr.Base, instr.Index, scale, instr.Length))
+		c.append(arm.Load(instr.Destination, instr.Base, instr.Index, scale, instr.Length))
 	case *Modulo:
 		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
 			panic("modulo destination register cannot be equal to the source or operand register")
@@ -173,7 +173,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 
 		if count&1 != 0 {
 			count--
-			c.append(arm.LoadRegister(registers[count], arm.SP, arm.PostIndex, 16, 8))
+			c.append(arm.LoadFixedOffset(registers[count], arm.SP, arm.PostIndex, 16, 8))
 		}
 
 		for i := count - 2; i >= 0; i -= 2 {
@@ -186,7 +186,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 			if i+1 < len(registers) {
 				c.append(arm.StorePair(registers[i], registers[i+1], arm.SP, -16))
 			} else {
-				c.append(arm.StoreRegister(registers[i], arm.SP, arm.PreIndex, -16, 8))
+				c.append(arm.StoreFixedOffsetRegister(registers[i], arm.SP, arm.PreIndex, -16, 8))
 			}
 		}
 	case *Return:
@@ -210,7 +210,7 @@ func (c *compilerARM) Compile(instr Instruction) {
 			scale = arm.ScaleLength
 		}
 
-		c.append(arm.StoreDynamicRegister(instr.Source, instr.Base, instr.Index, scale, instr.Length))
+		c.append(arm.StoreRegister(instr.Source, instr.Base, instr.Index, scale, instr.Length))
 	case *StoreNumber:
 		panic("arm64 does not support memory stores of immediates")
 	case *Subtract:
@@ -219,9 +219,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		code, _ := arm.SubRegisterNumber(instr.Destination, instr.Source, instr.Number)
 		c.append(code)
 	case *StackFrameStart:
-		c.append(arm.StoreRegister(arm.LR, arm.SP, arm.PreIndex, -16, 8))
+		c.append(arm.StoreFixedOffsetRegister(arm.LR, arm.SP, arm.PreIndex, -16, 8))
 	case *StackFrameEnd:
-		c.append(arm.LoadRegister(arm.LR, arm.SP, arm.PostIndex, 16, 8))
+		c.append(arm.LoadFixedOffset(arm.LR, arm.SP, arm.PostIndex, 16, 8))
 	case *Syscall:
 		switch c.build.OS {
 		case config.Mac:

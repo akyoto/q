@@ -190,9 +190,9 @@ func (c *compilerX86) Compile(instr Instruction) {
 		scale := toX86Scale(instr.Scale, instr.Length)
 
 		if instr.Length <= 2 {
-			c.code = x86.LoadDynamicRegisterZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			c.code = x86.LoadZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
 		} else {
-			c.code = x86.LoadDynamicRegister(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			c.code = x86.Load(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
 		}
 	case *Modulo:
 		if instr.Operand == x86.R0 {
@@ -309,10 +309,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Store:
 		scale := toX86Scale(instr.Scale, instr.Length)
-		c.code = x86.StoreDynamicRegister(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Source)
+		c.code = x86.StoreRegister(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Source)
 	case *StoreNumber:
 		scale := toX86Scale(instr.Scale, instr.Length)
-		c.code = x86.StoreDynamicNumber(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Number)
+		c.code = x86.StoreNumber(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Number)
 	case *Subtract:
 		if instr.Destination == instr.Operand {
 			panic("subtract destination register cannot be equal to the operand register")
