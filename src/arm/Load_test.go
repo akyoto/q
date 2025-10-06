@@ -65,3 +65,24 @@ func TestLoadFixedOffset(t *testing.T) {
 		assert.Equal(t, code, pattern.Code)
 	}
 }
+
+func TestLoadFixedOffsetScaled(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Base        cpu.Register
+		Mode        arm.AddressMode
+		Offset      uint
+		Length      byte
+		Code        uint32
+	}{
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 8, 0xF9400001},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 1, 8, 0xF9400401},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 4095, 8, 0xF97FFC01},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("ldr %s, [%s, %d] %db", pattern.Destination, pattern.Base, pattern.Offset*uint(pattern.Length), pattern.Length)
+		code := arm.LoadFixedOffsetScaled(pattern.Destination, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
+		assert.Equal(t, code, pattern.Code)
+	}
+}

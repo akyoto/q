@@ -11,3 +11,8 @@ func Load(destination cpu.Register, base cpu.Register, offset cpu.Register, scal
 func LoadFixedOffset(destination cpu.Register, base cpu.Register, mode AddressMode, offset int, length byte) uint32 {
 	return 1<<22 | StoreFixedOffsetRegister(destination, base, mode, offset, length)
 }
+
+// LoadFixedOffsetScaled loads from memory with a scaled unsigned offset from 0 to 4095 into a register.
+func LoadFixedOffsetScaled(destination cpu.Register, base cpu.Register, mode AddressMode, offset uint, length byte) uint32 {
+	return 1<<22 | StoreFixedOffsetRegisterScaled(destination, base, mode, offset, length)
+}

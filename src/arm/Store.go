@@ -13,3 +13,8 @@ func StoreRegister(source cpu.Register, base cpu.Register, offset cpu.Register, 
 func StoreFixedOffsetRegister(source cpu.Register, base cpu.Register, mode AddressMode, offset int, length byte) uint32 {
 	return size(length)<<30 | 0b111<<27 | memory(source, base, mode, offset)
 }
+
+// StoreFixedOffsetRegisterScaled writes the contents of the register to a memory address with a scaled unsigned offset from 0 to 4095.
+func StoreFixedOffsetRegisterScaled(source cpu.Register, base cpu.Register, mode AddressMode, offset uint, length byte) uint32 {
+	return size(length)<<30 | 0b111<<27 | 1<<24 | reg2Imm(source, base, offset)
+}

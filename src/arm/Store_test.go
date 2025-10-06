@@ -63,3 +63,24 @@ func TestStoreFixedOffsetRegister(t *testing.T) {
 		assert.Equal(t, code, pattern.Code)
 	}
 }
+
+func TestStoreFixedOffsetRegisterScaled(t *testing.T) {
+	usagePatterns := []struct {
+		Source cpu.Register
+		Base   cpu.Register
+		Mode   arm.AddressMode
+		Offset uint
+		Length byte
+		Code   uint32
+	}{
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 8, 0xF9000001},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 1, 8, 0xF9000401},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 4095, 8, 0xF93FFC01},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("str %s, [%s, #%d] %db", pattern.Source, pattern.Base, pattern.Offset*uint(pattern.Length), pattern.Length)
+		code := arm.StoreFixedOffsetRegisterScaled(pattern.Source, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
+		assert.Equal(t, code, pattern.Code)
+	}
+}

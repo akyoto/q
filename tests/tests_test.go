@@ -112,6 +112,7 @@ var tests = []run{
 	{"array-int", "", "", 0},
 	{"array-int-custom", "", "", 0},
 	{"array-int-parameter", "", "", 0},
+	{"array-int-fixed-offset", "", "127\n128\n4095\n4096\n", 0},
 	{"array-struct", "", "", 0},
 	{"array-struct-copy", "", "", 0},
 	{"array-struct-copy-call", "", "", 0},

@@ -36,6 +36,13 @@ type (
 		Scale       bool
 		Length      byte
 	}
+	LoadFixedOffset struct {
+		Base        cpu.Register
+		Index       int
+		Destination cpu.Register
+		Scale       bool
+		Length      byte
+	}
 	Modulo    rrr
 	Move      rr
 	MoveLabel struct {

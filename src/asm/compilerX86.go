@@ -194,6 +194,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 		} else {
 			c.code = x86.Load(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
 		}
+	case *LoadFixedOffset:
+		if instr.Scale {
+			panic("not implemented")
+		}
+
+		c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
 	case *Modulo:
 		if instr.Operand == x86.R0 {
 			panic("modulo operand register cannot be R0")

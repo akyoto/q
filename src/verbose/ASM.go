@@ -123,6 +123,14 @@ func printAssembly(f *core.Function) {
 			other.Print(" + ")
 			register.Print(instr.Index)
 			other.Print("]")
+		case *asm.LoadFixedOffset:
+			mnemonic.Printf("  load %db ", instr.Length)
+			register.Print(instr.Destination)
+			other.Print(", [")
+			register.Print(instr.Base)
+			other.Print(" + ")
+			imm.Print(instr.Index)
+			other.Print("]")
 		case *asm.Modulo:
 			mnemonic.Print("  mod ")
 			register.Print(instr.Destination)

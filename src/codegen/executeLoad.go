@@ -15,11 +15,21 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 	index := f.ValueToStep[memory.Index]
 	elementSize := step.Value.Type().Size()
 
-	f.Assembler.Append(&asm.Load{
-		Base:        address.Register,
-		Index:       index.Register,
-		Destination: step.Register,
-		Scale:       memory.Scale,
-		Length:      byte(elementSize),
-	})
+	if index.Register == -1 {
+		f.Assembler.Append(&asm.LoadFixedOffset{
+			Base:        address.Register,
+			Index:       index.Value.(*ssa.Int).Int,
+			Destination: step.Register,
+			Scale:       memory.Scale,
+			Length:      byte(elementSize),
+		})
+	} else {
+		f.Assembler.Append(&asm.Load{
+			Base:        address.Register,
+			Index:       index.Register,
+			Destination: step.Register,
+			Scale:       memory.Scale,
+			Length:      byte(elementSize),
+		})
+	}
 }

@@ -132,6 +132,12 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 
 		c.append(arm.Load(instr.Destination, instr.Base, instr.Index, scale, instr.Length))
+	case *LoadFixedOffset:
+		if instr.Scale {
+			c.append(arm.LoadFixedOffsetScaled(instr.Destination, instr.Base, arm.UnscaledImmediate, uint(instr.Index), instr.Length))
+		} else {
+			c.append(arm.LoadFixedOffset(instr.Destination, instr.Base, arm.UnscaledImmediate, instr.Index, instr.Length))
+		}
 	case *Modulo:
 		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
 			panic("modulo destination register cannot be equal to the source or operand register")
