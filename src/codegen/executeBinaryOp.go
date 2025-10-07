@@ -100,11 +100,19 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 		})
 
 	case token.Div:
-		f.Assembler.Append(&asm.Divide{
-			Destination: step.Register,
-			Source:      left.Register,
-			Operand:     right.Register,
-		})
+		if types.IsUnsigned(left.Value.Type()) {
+			f.Assembler.Append(&asm.Divide{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		} else {
+			f.Assembler.Append(&asm.DivideSigned{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		}
 
 	case token.Mul:
 		f.Assembler.Append(&asm.Multiply{
@@ -121,11 +129,19 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 		})
 
 	case token.Mod:
-		f.Assembler.Append(&asm.Modulo{
-			Destination: step.Register,
-			Source:      left.Register,
-			Operand:     right.Register,
-		})
+		if types.IsUnsigned(left.Value.Type()) {
+			f.Assembler.Append(&asm.Modulo{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		} else {
+			f.Assembler.Append(&asm.ModuloSigned{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		}
 
 	case token.And:
 		f.Assembler.Append(&asm.And{

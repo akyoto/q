@@ -72,7 +72,9 @@ func (c *compilerARM) Compile(instr Instruction) {
 		code, _ := arm.CompareRegisterNumber(instr.Destination, instr.Number)
 		c.append(code)
 	case *Divide:
-		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+		c.append(arm.DivUnsignedRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+	case *DivideSigned:
+		c.append(arm.DivSignedRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Jump:
 		c.append(arm.Jump(0))
 		patch := c.PatchLast4Bytes()
@@ -143,7 +145,14 @@ func (c *compilerARM) Compile(instr Instruction) {
 			panic("modulo destination register cannot be equal to the source or operand register")
 		}
 
-		c.append(arm.DivRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+		c.append(arm.DivUnsignedRegisterRegister(instr.Destination, instr.Source, instr.Operand))
+		c.append(arm.MultiplySubtract(instr.Destination, instr.Destination, instr.Operand, instr.Source))
+	case *ModuloSigned:
+		if instr.Destination == instr.Source || instr.Destination == instr.Operand {
+			panic("modulo destination register cannot be equal to the source or operand register")
+		}
+
+		c.append(arm.DivSignedRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 		c.append(arm.MultiplySubtract(instr.Destination, instr.Destination, instr.Operand, instr.Source))
 	case *MoveLabel:
 		c.append(arm.LoadAddress(instr.Destination, 0))

@@ -84,6 +84,13 @@ func printAssembly(f *core.Function) {
 			other.Print(", ")
 			imm.Print(instr.Number)
 		case *asm.Divide:
+			mnemonic.Print("  udiv ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			register.Print(instr.Operand)
+		case *asm.DivideSigned:
 			mnemonic.Print("  div ")
 			register.Print(instr.Destination)
 			other.Print(", ")
@@ -140,6 +147,13 @@ func printAssembly(f *core.Function) {
 			}
 			other.Print("]")
 		case *asm.Modulo:
+			mnemonic.Print("  umod ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.Source)
+			other.Print(", ")
+			register.Print(instr.Operand)
+		case *asm.ModuloSigned:
 			mnemonic.Print("  mod ")
 			register.Print(instr.Destination)
 			other.Print(", ")
@@ -210,28 +224,28 @@ func printAssembly(f *core.Function) {
 			other.Print(", ")
 			imm.Print(instr.Number)
 		case *asm.ShiftRight:
-			mnemonic.Print("  shift >> ")
+			mnemonic.Print("  ushift >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
 		case *asm.ShiftRightNumber:
-			mnemonic.Print("  shift >> ")
+			mnemonic.Print("  ushift >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			imm.Print(instr.Number)
 		case *asm.ShiftRightSigned:
-			mnemonic.Print("  signshift >> ")
+			mnemonic.Print("  shift >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
 		case *asm.ShiftRightSignedNumber:
-			mnemonic.Print("  signshift >> ")
+			mnemonic.Print("  shift >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)

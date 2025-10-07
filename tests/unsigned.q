@@ -1,0 +1,6 @@
+main() {
+	x := 0xFFFF as uint16
+	assert x / 0x100 == 0xFF
+	assert x % 0x100 == 0xFF
+	assert x >> 8 == 0xFF
+}

@@ -21,6 +21,7 @@ type (
 	Compare         rr
 	CompareNumber   rn
 	Divide          rrr
+	DivideSigned    rrr
 	Jump            struct {
 		Label     string
 		Condition token.Kind
@@ -43,9 +44,10 @@ type (
 		Scale       bool
 		Length      byte
 	}
-	Modulo    rrr
-	Move      rr
-	MoveLabel struct {
+	Modulo       rrr
+	ModuloSigned rrr
+	Move         rr
+	MoveLabel    struct {
 		Label       string
 		Destination cpu.Register
 	}
