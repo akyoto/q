@@ -130,6 +130,25 @@ func (a *Assembler) Skip(instr Instruction) bool {
 			return true
 		}
 
+	case *Move:
+		// A move following a move with inverted operands is unnecessary
+		i := len(a.Instructions) - 1
+
+		for i >= 0 {
+			previous := a.Instructions[i]
+			move, isMove := previous.(*Move)
+
+			if !isMove {
+				break
+			}
+
+			if move.Destination == instr.Source && move.Source == instr.Destination {
+				return true
+			}
+
+			i--
+		}
+
 	case *Return:
 		// Call + Return can be replaced by a single Jump
 		call, isCall := a.Last().(*Call)
