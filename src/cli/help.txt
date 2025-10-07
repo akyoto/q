@@ -10,13 +10,13 @@ Compiler for the Q programming language.
 
     Build for another system:
 
-        q build [file] --os [linux|mac|windows] --arch [x86|arm]
+        q build [file] -os [linux|mac|windows] -arch [x86|arm]
 
-    Show output from various stages:
+    Debug compiler stages:
 
-        --asm            # assembly code
-        --func [name]    # filter by function name
-        --ssa            # static single assigment form
-        --verbose        # all stages
+        -asm            # assembly code
+        -func [name]    # filter by function name
+        -ssa            # static single assigment form
+        -verbose        # all stages
 
 EOF

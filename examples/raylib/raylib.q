@@ -5,7 +5,7 @@
 //
 // Linux users can use WINE after adding raylib.dll:
 //
-//     q build examples/raylib --os windows
+//     q build examples/raylib -os windows
 //     wine examples/raylib/raylib.exe
 //
 // NOTE:

@@ -40,7 +40,7 @@ func newBuild(args []string) (*config.Build, error) {
 
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
-		case "--arch":
+		case "-arch":
 			i++
 
 			if i >= len(args) {
@@ -56,13 +56,13 @@ func newBuild(args []string) (*config.Build, error) {
 				return nil, &InvalidValue{Value: args[i], Parameter: "arch"}
 			}
 
-		case "--asm":
+		case "-asm":
 			build.ShowASM = true
 
-		case "--dry":
+		case "-dry":
 			build.Dry = true
 
-		case "--func":
+		case "-func":
 			i++
 
 			if i >= len(args) {
@@ -71,16 +71,13 @@ func newBuild(args []string) (*config.Build, error) {
 
 			build.Filter = args[i]
 
-		case "--no-lint":
+		case "-no-lint":
 			build.Lint(false)
 
-		case "--no-optimize":
+		case "-no-optimize":
 			build.Optimize(false)
 
-		case "--ssa":
-			build.ShowSSA = true
-
-		case "--os":
+		case "-os":
 			i++
 
 			if i >= len(args) {
@@ -98,7 +95,10 @@ func newBuild(args []string) (*config.Build, error) {
 				return nil, &InvalidValue{Value: args[i], Parameter: "os"}
 			}
 
-		case "-v", "--verbose":
+		case "-ssa":
+			build.ShowSSA = true
+
+		case "-verbose":
 			build.SetVerbose(true)
 
 		default:
