@@ -139,11 +139,15 @@ func (a *Assembler) Skip(instr Instruction) bool {
 			move, isMove := previous.(*Move)
 
 			if !isMove {
-				break
+				return false
 			}
 
-			if move.Destination == instr.Source && move.Source == instr.Destination {
-				return true
+			if instr.Destination == move.Source {
+				if instr.Source == move.Destination {
+					return true
+				} else {
+					return false
+				}
 			}
 
 			i--
