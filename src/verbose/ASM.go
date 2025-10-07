@@ -122,6 +122,10 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Base)
 			other.Print(" + ")
 			register.Print(instr.Index)
+			if instr.Scale {
+				other.Print(" * ")
+				imm.Print(instr.Length)
+			}
 			other.Print("]")
 		case *asm.LoadFixedOffset:
 			mnemonic.Printf("  load %db ", instr.Length)
@@ -130,6 +134,10 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Base)
 			other.Print(" + ")
 			imm.Print(instr.Index)
+			if instr.Scale {
+				other.Print(" * ")
+				imm.Print(instr.Length)
+			}
 			other.Print("]")
 		case *asm.Modulo:
 			mnemonic.Print("  mod ")
@@ -235,6 +243,10 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Base)
 			other.Print(" + ")
 			register.Print(instr.Index)
+			if instr.Scale {
+				other.Print(" * ")
+				imm.Print(instr.Length)
+			}
 			other.Print("], ")
 			register.Print(instr.Source)
 		case *asm.StoreNumber:
@@ -243,6 +255,10 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Base)
 			other.Print(" + ")
 			register.Print(instr.Index)
+			if instr.Scale {
+				other.Print(" * ")
+				imm.Print(instr.Length)
+			}
 			other.Print("], ")
 			imm.Print(instr.Number)
 		case *asm.Subtract:
