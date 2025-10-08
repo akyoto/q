@@ -58,7 +58,7 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// Check for unused imports in all files
 	for _, file := range env.Files {
 		for _, imp := range file.Imports {
-			if imp.Used.Load() == 0 {
+			if !imp.IsUsed() {
 				return nil, errors.New(&UnusedImport{Package: imp.Package}, file, imp.Position)
 			}
 		}

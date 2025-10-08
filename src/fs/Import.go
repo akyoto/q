@@ -12,3 +12,8 @@ type Import struct {
 	Position token.Position
 	Used     atomic.Uint64
 }
+
+// IsUsed returns true if the import was used.
+func (imp *Import) IsUsed() bool {
+	return imp.Used.Load() > 0
+}
