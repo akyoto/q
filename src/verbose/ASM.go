@@ -84,14 +84,14 @@ func printAssembly(f *core.Function) {
 			other.Print(", ")
 			imm.Print(instr.Number)
 		case *asm.Divide:
-			mnemonic.Print("  udiv ")
+			mnemonic.Print("  div.u ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
 		case *asm.DivideSigned:
-			mnemonic.Print("  div ")
+			mnemonic.Print("  div.s ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
@@ -147,14 +147,14 @@ func printAssembly(f *core.Function) {
 			}
 			other.Print("]")
 		case *asm.Modulo:
-			mnemonic.Print("  umod ")
+			mnemonic.Print("  mod.u ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
 		case *asm.ModuloSigned:
-			mnemonic.Print("  mod ")
+			mnemonic.Print("  mod.s ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
@@ -203,10 +203,20 @@ func printAssembly(f *core.Function) {
 			imm.Print(instr.Number)
 		case *asm.Pop:
 			mnemonic.Print("  pop ")
-			register.Print(instr.Registers)
+			for i, reg := range instr.Registers {
+				if i != 0 {
+					other.Print(", ")
+				}
+				register.Print(reg)
+			}
 		case *asm.Push:
 			mnemonic.Print("  push ")
-			register.Print(instr.Registers)
+			for i, reg := range instr.Registers {
+				if i != 0 {
+					other.Print(", ")
+				}
+				register.Print(reg)
+			}
 		case *asm.Return:
 			mnemonic.Print("  return")
 		case *asm.ShiftLeft:
@@ -224,28 +234,28 @@ func printAssembly(f *core.Function) {
 			other.Print(", ")
 			imm.Print(instr.Number)
 		case *asm.ShiftRight:
-			mnemonic.Print("  ushift >> ")
+			mnemonic.Print("  shift.u >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
 		case *asm.ShiftRightNumber:
-			mnemonic.Print("  ushift >> ")
+			mnemonic.Print("  shift.u >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			imm.Print(instr.Number)
 		case *asm.ShiftRightSigned:
-			mnemonic.Print("  shift >> ")
+			mnemonic.Print("  shift.s >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
 			other.Print(", ")
 			register.Print(instr.Operand)
 		case *asm.ShiftRightSignedNumber:
-			mnemonic.Print("  shift >> ")
+			mnemonic.Print("  shift.s >> ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
