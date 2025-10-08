@@ -1,9 +1,8 @@
-package compiler
+package core
 
 import (
 	"iter"
 
-	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/types"
@@ -18,11 +17,11 @@ const (
 )
 
 // parseStructs parses the tokens of the struct field types.
-func parseStructs(structs iter.Seq[*types.Struct], env *core.Environment) error {
+func (env *Environment) parseStructs(structs iter.Seq[*types.Struct]) error {
 	processed := map[*types.Struct]state{}
 
 	for structure := range structs {
-		err := parseStruct(structure, env, processed)
+		err := env.parseStruct(structure, processed)
 
 		if err != nil {
 			return err
@@ -33,7 +32,7 @@ func parseStructs(structs iter.Seq[*types.Struct], env *core.Environment) error 
 }
 
 // parseStruct parses the field tokens of a single struct.
-func parseStruct(structure *types.Struct, env *core.Environment, processed map[*types.Struct]state) error {
+func (env *Environment) parseStruct(structure *types.Struct, processed map[*types.Struct]state) error {
 	if processed[structure] == Finished {
 		return nil
 	}
@@ -54,7 +53,7 @@ func parseStruct(structure *types.Struct, env *core.Environment, processed map[*
 		if isStruct {
 			switch processed[dependency] {
 			case NotStarted:
-				err := parseStruct(dependency, env, processed)
+				err := env.parseStruct(dependency, processed)
 
 				if err != nil {
 					return err

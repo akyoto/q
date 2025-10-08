@@ -1,16 +1,15 @@
-package compiler
+package core
 
 import (
 	"iter"
 	"strings"
 
-	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// parseFunctions parses the tokens of the input and output types.
-func parseFunctions(functions iter.Seq[*core.Function], env *core.Environment) error {
+// parseParameters parses the tokens of the input and output types.
+func (env *Environment) parseParameters(functions iter.Seq[*Function]) error {
 	for f := range functions {
 		f.Type = &types.Function{
 			Input:  make([]types.Type, len(f.Input)),

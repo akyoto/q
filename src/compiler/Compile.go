@@ -33,28 +33,9 @@ func Compile(build *config.Build) (*core.Environment, error) {
 
 	env.Main = main
 
-	// Parse struct field types and calculate the size of all structs.
-	// We couldn't do that during the scan phase because it's possible
-	// that a field references a type that will only be known after the
-	// full scan is finished.
-	err = parseStructs(env.Structs(), env)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse global variable types.
-	err = parseGlobals(env.Globals(), env)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse input and output types so we have type information
-	// ready for all functions before parallel compilation starts.
-	// This ensures that the function compilers have access to
-	// type checking for all function calls.
-	err = parseFunctions(env.Functions(), env)
+	// Resolve all types so that we have type information ready
+	// for all functions before parallel compilation starts.
+	err = env.ResolveTypes()
 
 	if err != nil {
 		return nil, err
@@ -63,7 +44,9 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	// Start parallel compilation of all functions.
 	// We compile every function for syntax checks even if
 	// they are thrown away later during dead code elimination.
-	parallel(env.Functions(), func(f *core.Function) { f.Compile() })
+	parallel(env.Functions(), func(f *core.Function) {
+		f.Compile()
+	})
 
 	// Report errors if any occurred
 	for f := range env.Functions() {
@@ -83,7 +66,9 @@ func Compile(build *config.Build) (*core.Environment, error) {
 
 	// Now that we know which functions are alive, start parallel
 	// assembly code generation only for the live functions.
-	parallel(env.LiveFunctions(), func(f *core.Function) { f.Assemble() })
+	parallel(env.LiveFunctions(), func(f *core.Function) {
+		f.Assemble()
+	})
 
 	return env, nil
 }

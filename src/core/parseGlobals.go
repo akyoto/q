@@ -1,13 +1,11 @@
-package compiler
+package core
 
 import (
 	"iter"
-
-	"git.urbach.dev/cli/q/src/core"
 )
 
 // parseGlobals parses the tokens of global variables.
-func parseGlobals(globals iter.Seq[*core.Global], env *core.Environment) error {
+func (env *Environment) parseGlobals(globals iter.Seq[*Global]) error {
 	for global := range globals {
 		typ, err := env.TypeFromTokens(global.Tokens[1:], global.File)
 

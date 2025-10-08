@@ -25,6 +25,16 @@ var (
 	UnnecessaryCast           = errors.String("Unnecessary type cast")
 )
 
+// CycleDetected error is created when an invalid dependency cycle was detected.
+type CycleDetected struct {
+	A string
+	B string
+}
+
+func (err *CycleDetected) Error() string {
+	return fmt.Sprintf("Cycle detected: '%s' depends on '%s' which depends on '%s'", err.A, err.B, err.A)
+}
+
 // DefinitionCountMismatch error is created when the number of provided definitions doesn't match the return type.
 type DefinitionCountMismatch struct {
 	Function      string
