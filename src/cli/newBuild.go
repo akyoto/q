@@ -1,0 +1,99 @@
+package cli
+
+import (
+	"runtime"
+	"strings"
+
+	"git.urbach.dev/cli/q/src/config"
+)
+
+// newBuild creates a new build with the given arguments.
+func newBuild(args []string) (*config.Build, error) {
+	build := config.New()
+
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "-arch":
+			i++
+
+			if i >= len(args) {
+				return nil, &ExpectedParameter{Parameter: "arch"}
+			}
+
+			switch args[i] {
+			case "arm":
+				build.Arch = config.ARM
+			case "x86":
+				build.Arch = config.X86
+			default:
+				return nil, &InvalidValue{Value: args[i], Parameter: "arch"}
+			}
+
+		case "-asm":
+			build.ShowASM = true
+
+		case "-dry":
+			build.Dry = true
+
+		case "-func":
+			i++
+
+			if i >= len(args) {
+				return nil, &ExpectedParameter{Parameter: "func"}
+			}
+
+			build.Filter = args[i]
+
+		case "-no-lint":
+			build.Lint(false)
+
+		case "-no-optimize":
+			build.Optimize(false)
+
+		case "-os":
+			i++
+
+			if i >= len(args) {
+				return nil, &ExpectedParameter{Parameter: "os"}
+			}
+
+			switch args[i] {
+			case "linux":
+				build.OS = config.Linux
+			case "mac":
+				build.OS = config.Mac
+			case "windows":
+				build.OS = config.Windows
+			default:
+				return nil, &InvalidValue{Value: args[i], Parameter: "os"}
+			}
+
+		case "-ssa":
+			build.ShowSSA = true
+
+		case "-verbose":
+			build.SetVerbose(true)
+
+		default:
+			if strings.HasPrefix(args[i], "-") {
+				return nil, &UnknownParameter{Parameter: args[i]}
+			}
+
+			build.Files = append(build.Files, args[i])
+		}
+	}
+
+	if build.OS == config.UnknownOS {
+		return nil, &InvalidValue{Value: runtime.GOOS, Parameter: "os"}
+	}
+
+	if build.Arch == config.UnknownArch {
+		return nil, &InvalidValue{Value: runtime.GOARCH, Parameter: "arch"}
+	}
+
+	if len(build.Files) == 0 {
+		build.Files = append(build.Files, ".")
+	}
+
+	return build, nil
+}
