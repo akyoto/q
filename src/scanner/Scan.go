@@ -44,23 +44,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			f.Env = env
-			pkg := env.AddPackage(f.Package(), f.IsExtern())
-			env.NumFunctions++
-
-			existing := pkg.Functions[f.Name()]
-
-			if existing == nil {
-				pkg.Functions[f.Name()] = f
-				continue
-			}
-
-			for existing.Next != nil {
-				existing = existing.Next
-			}
-
-			existing.Next = f
-			f.Previous = existing
+			env.ReceiveFunction(f)
 
 		case file, ok := <-s.files:
 			if !ok {
@@ -68,7 +52,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			env.Files = append(env.Files, file)
+			env.ReceiveFile(file)
 
 		case structure, ok := <-s.structs:
 			if !ok {
@@ -76,8 +60,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			pkg := env.AddPackage(structure.Package, false)
-			pkg.Structs[structure.Name()] = structure
+			env.ReceiveStruct(structure)
 
 		case constant, ok := <-s.constants:
 			if !ok {
@@ -85,8 +68,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			pkg := env.AddPackage(constant.File.Package, false)
-			pkg.Constants[constant.Name] = constant
+			env.ReceiveConstant(constant)
 
 		case global, ok := <-s.globals:
 			if !ok {
@@ -94,8 +76,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 				continue
 			}
 
-			pkg := env.AddPackage(global.File.Package, false)
-			pkg.Globals[global.Name] = global
+			env.ReceiveGlobal(global)
 
 		case err, ok := <-s.errors:
 			if !ok {
