@@ -16,6 +16,7 @@ func TestSubRegisterNumber(t *testing.T) {
 		Code        uint32
 	}{
 		{arm.X0, arm.X0, 1, 0xD1000400},
+		{arm.X0, arm.X0, -1, 0x91000400},
 		{arm.X0, arm.X0, 0x1000, 0xD1400400},
 		{arm.SP, arm.SP, 16, 0xD10043FF},
 	}

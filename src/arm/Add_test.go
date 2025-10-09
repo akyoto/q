@@ -16,6 +16,7 @@ func TestAddRegisterNumber(t *testing.T) {
 		Code        uint32
 	}{
 		{arm.X0, arm.X0, 1, 0x91000400},
+		{arm.X0, arm.X0, -1, 0xD1000400},
 		{arm.X0, arm.X0, 0x1000, 0x91400400},
 	}
 
