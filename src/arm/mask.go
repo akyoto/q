@@ -1,6 +1,7 @@
 package arm
 
 const (
+	mask2  = 0b11
 	mask6  = 0b111111
 	mask7  = 0b1111111
 	mask9  = 0b1_11111111

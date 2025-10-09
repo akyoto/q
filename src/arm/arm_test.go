@@ -33,4 +33,8 @@ func TestNotEncodable(t *testing.T) {
 	assert.False(t, encodable)
 	_, encodable = arm.SubRegisterNumber(arm.X0, arm.X0, 0xF0000000)
 	assert.False(t, encodable)
+	_, encodable = arm.LoadAddress(arm.X0, -1048577)
+	assert.False(t, encodable)
+	_, encodable = arm.LoadAddress(arm.X0, 1048576)
+	assert.False(t, encodable)
 }
