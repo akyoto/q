@@ -4,5 +4,6 @@ main() {
 	assert 0o7 == 7
 	assert 0o10 == 8
 	assert 0o100 == 64
+	assert 0o644 == 420
 	assert 0o755 == 493
 }
