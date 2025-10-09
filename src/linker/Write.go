@@ -23,13 +23,10 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 		},
 	}
 
-	// This will place the init function immediately after the entry point
-	// and also add everything the init function calls recursively.
 	for f := range env.LiveFunctions() {
 		program.Merge(&f.Assembler)
 	}
 
-	// Initialize the data for global variables.
 	for global := range env.Globals() {
 		label := global.File.Package + "." + global.Name
 		data := bytes.Repeat([]byte{0}, global.Typ.Size())

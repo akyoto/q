@@ -87,7 +87,8 @@ func (env *Environment) Globals() iter.Seq[*Global] {
 	}
 }
 
-// LiveFunctions returns an iterator over functions that are alive.
+// LiveFunctions returns an iterator over functions that are alive,
+// starting with `run.init` and all of its dependencies.
 func (env *Environment) LiveFunctions() iter.Seq[*Function] {
 	return func(yield func(*Function) bool) {
 		running := true
