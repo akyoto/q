@@ -20,7 +20,8 @@ func TestCall(t *testing.T) {
 
 	for _, pattern := range usagePatterns {
 		t.Logf("bl %d", pattern.Offset)
-		code := arm.Call(pattern.Offset)
+		code, encodable := arm.Call(pattern.Offset)
+		assert.True(t, encodable)
 		assert.Equal(t, code, pattern.Code)
 	}
 }

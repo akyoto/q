@@ -37,4 +37,8 @@ func TestNotEncodable(t *testing.T) {
 	assert.False(t, encodable)
 	_, encodable = arm.LoadAddress(arm.X0, 1048576)
 	assert.False(t, encodable)
+	_, encodable = arm.Call(-33554433)
+	assert.False(t, encodable)
+	_, encodable = arm.Call(33554432)
+	assert.False(t, encodable)
 }

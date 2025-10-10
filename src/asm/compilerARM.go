@@ -30,7 +30,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		code, _ := arm.AndRegisterNumber(instr.Destination, instr.Source, instr.Number)
 		c.append(code)
 	case *Call:
-		c.append(arm.Call(0))
+		call, _ := arm.Call(0)
+		c.append(call)
 		patch := c.PatchLast4Bytes()
 
 		patch.apply = func(code []byte) []byte {
@@ -40,13 +41,24 @@ func (c *compilerARM) Compile(instr Instruction) {
 				panic("unknown label: " + instr.Label)
 			}
 
-			offset := (address - patch.start) / 4
-			binary.LittleEndian.PutUint32(code, arm.Call(offset))
+			offset := address - patch.start
+
+			if offset%4 != 0 {
+				panic("call offset is not a multiple of 4")
+			}
+
+			encoding, encodable := arm.Call(offset / 4)
+
+			if !encodable {
+				panic("call offset outside of encodable range")
+			}
+
+			binary.LittleEndian.PutUint32(code, encoding)
 			return code
 		}
 	case *CallExtern:
-		encoding, _ := arm.LoadAddress(arm.X16, 0)
-		c.append(encoding)
+		call, _ := arm.LoadAddress(arm.X16, 0)
+		c.append(call)
 		patch := c.PatchLast4Bytes()
 		c.append(arm.LoadFixedOffset(arm.X16, arm.X16, arm.UnscaledImmediate, 0, 8))
 		c.append(arm.CallRegister(arm.X16))
@@ -60,13 +72,13 @@ func (c *compilerARM) Compile(instr Instruction) {
 
 			address := c.importsStart + index*8
 			offset := address - patch.start
-			encoding, encodable := arm.LoadAddress(arm.X16, offset)
+			loadAddress, encodable := arm.LoadAddress(arm.X16, offset)
 
 			if !encodable {
 				panic("label offset outside of encodable range")
 			}
 
-			binary.LittleEndian.PutUint32(code, encoding)
+			binary.LittleEndian.PutUint32(code, loadAddress)
 			return code
 		}
 	case *CallExternStart:
