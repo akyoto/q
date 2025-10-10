@@ -41,4 +41,12 @@ func TestNotEncodable(t *testing.T) {
 	assert.False(t, encodable)
 	_, encodable = arm.Call(33554432)
 	assert.False(t, encodable)
+	_, encodable = arm.Jump(-33554433)
+	assert.False(t, encodable)
+	_, encodable = arm.Jump(33554432)
+	assert.False(t, encodable)
+	_, encodable = arm.JumpIfEqual(-262145)
+	assert.False(t, encodable)
+	_, encodable = arm.JumpIfEqual(262144)
+	assert.False(t, encodable)
 }

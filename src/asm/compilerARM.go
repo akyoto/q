@@ -47,13 +47,13 @@ func (c *compilerARM) Compile(instr Instruction) {
 				panic("call offset is not a multiple of 4")
 			}
 
-			encoding, encodable := arm.Call(offset / 4)
+			call, encodable := arm.Call(offset / 4)
 
 			if !encodable {
 				panic("call offset outside of encodable range")
 			}
 
-			binary.LittleEndian.PutUint32(code, encoding)
+			binary.LittleEndian.PutUint32(code, call)
 			return code
 		}
 	case *CallExtern:
@@ -95,7 +95,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *DivideSigned:
 		c.append(arm.DivSignedRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *Jump:
-		c.append(arm.Jump(0))
+		jump, _ := arm.Jump(0)
+		c.append(jump)
 		patch := c.PatchLast4Bytes()
 
 		patch.apply = func(code []byte) []byte {
@@ -105,42 +106,41 @@ func (c *compilerARM) Compile(instr Instruction) {
 				panic("unknown label: " + instr.Label)
 			}
 
-			offset := (address - patch.start) / 4
+			offset := address - patch.start
+
+			if offset%4 != 0 {
+				panic("jump offset is not a multiple of 4")
+			}
+
+			offset /= 4
 
 			var (
-				minOffset int
-				maxOffset int
+				jump      uint32
+				encodable bool
 			)
-
-			if instr.Condition == token.Invalid {
-				minOffset = -(1 << 25)
-				maxOffset = (1 << 25) - 1
-			} else {
-				minOffset = -(1 << 18)
-				maxOffset = (1 << 18) - 1
-			}
-
-			if offset < minOffset || offset > maxOffset {
-				panic("not implemented: long jumps")
-			}
 
 			switch instr.Condition {
 			case token.Equal:
-				binary.LittleEndian.PutUint32(code, arm.JumpIfEqual(offset))
+				jump, encodable = arm.JumpIfEqual(offset)
 			case token.NotEqual:
-				binary.LittleEndian.PutUint32(code, arm.JumpIfNotEqual(offset))
+				jump, encodable = arm.JumpIfNotEqual(offset)
 			case token.Greater:
-				binary.LittleEndian.PutUint32(code, arm.JumpIfGreater(offset))
+				jump, encodable = arm.JumpIfGreater(offset)
 			case token.GreaterEqual:
-				binary.LittleEndian.PutUint32(code, arm.JumpIfGreaterOrEqual(offset))
+				jump, encodable = arm.JumpIfGreaterOrEqual(offset)
 			case token.Less:
-				binary.LittleEndian.PutUint32(code, arm.JumpIfLess(offset))
+				jump, encodable = arm.JumpIfLess(offset)
 			case token.LessEqual:
-				binary.LittleEndian.PutUint32(code, arm.JumpIfLessOrEqual(offset))
+				jump, encodable = arm.JumpIfLessOrEqual(offset)
 			default:
-				binary.LittleEndian.PutUint32(code, arm.Jump(offset))
+				jump, encodable = arm.Jump(offset)
 			}
 
+			if !encodable {
+				panic("jump offset outside of encodable range")
+			}
+
+			binary.LittleEndian.PutUint32(code, jump)
 			return code
 		}
 	case *Label:

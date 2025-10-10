@@ -44,25 +44,30 @@ func TestJump(t *testing.T) {
 
 	for _, pattern := range usagePatterns {
 		t.Logf("b %d", pattern.Offset)
-		var code uint32
+
+		var (
+			code      uint32
+			encodable bool
+		)
 
 		switch pattern.Type {
 		case 0:
-			code = arm.Jump(pattern.Offset)
+			code, encodable = arm.Jump(pattern.Offset)
 		case 1:
-			code = arm.JumpIfEqual(pattern.Offset)
+			code, encodable = arm.JumpIfEqual(pattern.Offset)
 		case 2:
-			code = arm.JumpIfNotEqual(pattern.Offset)
+			code, encodable = arm.JumpIfNotEqual(pattern.Offset)
 		case 3:
-			code = arm.JumpIfGreater(pattern.Offset)
+			code, encodable = arm.JumpIfGreater(pattern.Offset)
 		case 4:
-			code = arm.JumpIfGreaterOrEqual(pattern.Offset)
+			code, encodable = arm.JumpIfGreaterOrEqual(pattern.Offset)
 		case 5:
-			code = arm.JumpIfLess(pattern.Offset)
+			code, encodable = arm.JumpIfLess(pattern.Offset)
 		case 6:
-			code = arm.JumpIfLessOrEqual(pattern.Offset)
+			code, encodable = arm.JumpIfLessOrEqual(pattern.Offset)
 		}
 
 		assert.Equal(t, code, pattern.Code)
+		assert.True(t, encodable)
 	}
 }
