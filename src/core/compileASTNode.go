@@ -28,6 +28,9 @@ func (f *Function) compileASTNode(node ast.Node) error {
 	case *ast.Loop:
 		return f.compileLoop(node)
 
+	case *ast.LoopControl:
+		return f.compileLoopControl(node)
+
 	case *ast.Return:
 		return f.compileReturn(node)
 

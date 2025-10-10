@@ -23,6 +23,7 @@ type Function struct {
 	name         string
 	pkg          string
 	body         token.Source
+	loopStack
 	ssa.IR
 	codegen.Function
 }

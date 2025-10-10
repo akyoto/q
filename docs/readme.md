@@ -83,6 +83,7 @@ q build examples/hello -os [linux|mac|windows] -arch [x86|arm]
 
 ## News
 
+- **2025-10-10**: Loop control flow.
 - **2025-10-05**: Struct types in fields.
 - **2025-09-30**: Static allocations.
 - **2025-09-22**: Array allocations.
@@ -146,6 +147,7 @@ The following is a cheat sheet documenting the syntax.
 | Loop                                 | `loop {}`                    | ✔️ Stable       |
 | Loop 10 times                        | `loop 0..10 {}`              | ✔️ Stable       |
 | Loop 10 times with a variable        | `loop i := 0..10 {}`         | ✔️ Stable       |
+| Jump to the next iteration           | `loop.next()`                | 🚧 Experimental |
 | Branch                               | `if {} else {}`              | ✔️ Stable       |
 | Branch multiple times                | `switch { cond {} _ {} }`    | ✔️ Stable       |
 | Define a constant                    | `const { x = 42 }`           | ✔️ Stable       |

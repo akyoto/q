@@ -39,6 +39,9 @@ type (
 		Head *expression.Expression
 		Body AST
 	}
+	LoopControl struct {
+		Expression *expression.Expression
+	}
 	Return struct {
 		Values []*expression.Expression
 		Token  token.Token

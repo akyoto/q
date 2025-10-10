@@ -8,7 +8,7 @@ import (
 )
 
 // compileLoop compiles an endless loop.
-func (f *Function) compileLoop(loop *ast.Loop) error {
+func (f *Function) compileLoop(node *ast.Loop) error {
 	f.Count.Loop++
 	headLabel := f.CreateLabel("loop.head", f.Count.Loop)
 	exitLabel := f.CreateLabel("loop.exit", f.Count.Loop)
@@ -17,15 +17,21 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 	loopExit := ssa.NewBlock(exitLabel)
 	loopBlockIndex := len(f.Blocks)
 
-	if loop.Head != nil {
+	loop := &Loop{
+		Head: loopHead,
+		Exit: loopExit,
+	}
+
+	if node.Head != nil {
 		// Before the loop starts, we evaluate the lower limit
 		// and identify it as the loop counter.
-		name, from, to := f.parseLoopHeader(loop.Head)
+		name, from, to := f.parseLoopHeader(node.Head)
 
 		if from == nil {
-			return errors.New(InvalidLoopHeader, f.File, loop.Head.Source().StartPos)
+			return errors.New(InvalidLoopHeader, f.File, node.Head.Source().StartPos)
 		}
 
+		loop.IteratorName = name
 		fromValue, err := f.evaluateRight(from)
 
 		if err != nil {
@@ -36,6 +42,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 			fromValue = f.copy(fromValue, from.Source())
 		}
 
+		loop.FromValue = fromValue
 		beforeLoop.Identify(name, fromValue)
 		f.jump(loopHead)
 
@@ -70,36 +77,32 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		// Loop condition is true from now on so we'll
 		// execute the code inside the loop body.
 		f.AddBlock(bodyBlock)
-		err = f.compileAST(loop.Body)
+		f.loopStack.Push(loop)
+		err = f.compileAST(node.Body)
 
 		if err != nil {
 			return err
 		}
 
-		one := f.Append(&ssa.Int{Int: 1})
-
-		nextIteration := f.Append(&ssa.BinaryOp{
-			Op:    token.Add,
-			Left:  fromValue,
-			Right: one,
-		})
-
-		f.Block().Identify(name, nextIteration)
+		f.loopStack.Pop()
 	} else {
 		f.jump(loopHead)
 		f.AddBlock(loopHead)
 
 		// For infinite loops, there are no conditions to check,
 		// we can simply process the loop body.
-		err := f.compileAST(loop.Body)
+		f.loopStack.Push(loop)
+		err := f.compileAST(node.Body)
 
 		if err != nil {
 			return err
 		}
+
+		f.loopStack.Pop()
 	}
 
 	// Jump back to the loop head.
-	f.jump(loopHead)
+	f.loopNext(loop)
 
 	// The initial compilation of the loop body does not know
 	// that the code is repeated in a loop. Therefore, we need
@@ -134,7 +137,7 @@ func (f *Function) compileLoop(loop *ast.Loop) error {
 		}
 	}
 
-	if loop.Head != nil {
+	if node.Head != nil {
 		loopHead.AddSuccessor(loopExit)
 	}
 
