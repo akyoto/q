@@ -5,15 +5,10 @@ Point {
 	y int
 }
 
-Point(x int, y int) -> *Point {
-	p := new(Point)
-	p.x = x
-	p.y = y
-	return p
-}
-
 main() {
-	p := Point(1, 2)
+	p := new(Point)
+	p.x = 1
+	p.y = 2
 	write(p)
 	delete(p)
 }
