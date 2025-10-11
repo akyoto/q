@@ -172,11 +172,19 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 		})
 
 	case token.Shr:
-		f.Assembler.Append(&asm.ShiftRightSigned{
-			Destination: step.Register,
-			Source:      left.Register,
-			Operand:     right.Register,
-		})
+		if types.IsUnsigned(left.Value.Type()) {
+			f.Assembler.Append(&asm.ShiftRight{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		} else {
+			f.Assembler.Append(&asm.ShiftRightSigned{
+				Destination: step.Register,
+				Source:      left.Register,
+				Operand:     right.Register,
+			})
+		}
 
 	default:
 		panic("not implemented: " + instr.String())

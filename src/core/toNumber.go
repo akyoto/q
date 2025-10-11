@@ -15,27 +15,43 @@ func toNumber(t token.Token, file *fs.File) (int, error) {
 	switch t.Kind {
 	case token.Number:
 		var (
-			digits = t.String(file.Bytes)
-			number int64
-			err    error
+			digits   = t.String(file.Bytes)
+			signed   int64
+			unsigned uint64
+			err      error
 		)
 
 		switch {
 		case strings.HasPrefix(digits, "0x"):
-			number, err = strconv.ParseInt(digits[2:], 16, 64)
+			signed, err = strconv.ParseInt(digits[2:], 16, 64)
 		case strings.HasPrefix(digits, "0o"):
-			number, err = strconv.ParseInt(digits[2:], 8, 64)
+			signed, err = strconv.ParseInt(digits[2:], 8, 64)
 		case strings.HasPrefix(digits, "0b"):
-			number, err = strconv.ParseInt(digits[2:], 2, 64)
+			signed, err = strconv.ParseInt(digits[2:], 2, 64)
 		default:
-			number, err = strconv.ParseInt(digits, 10, 64)
+			signed, err = strconv.ParseInt(digits, 10, 64)
 		}
 
 		if err != nil {
-			return 0, errors.New(InvalidNumber, file, t.Position)
+			switch {
+			case strings.HasPrefix(digits, "0x"):
+				unsigned, err = strconv.ParseUint(digits[2:], 16, 64)
+			case strings.HasPrefix(digits, "0o"):
+				unsigned, err = strconv.ParseUint(digits[2:], 8, 64)
+			case strings.HasPrefix(digits, "0b"):
+				unsigned, err = strconv.ParseUint(digits[2:], 2, 64)
+			default:
+				unsigned, err = strconv.ParseUint(digits, 10, 64)
+			}
+
+			if err != nil {
+				return 0, errors.New(InvalidNumber, file, t.Position)
+			}
+
+			return int(unsigned), nil
 		}
 
-		return int(number), nil
+		return int(signed), nil
 
 	case token.Rune:
 		r := t.Bytes(file.Bytes)
