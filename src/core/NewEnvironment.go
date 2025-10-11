@@ -13,12 +13,12 @@ func NewEnvironment(build *config.Build) *Environment {
 		Files:    make([]*fs.File, 0, 16),
 		Packages: make(map[string]*Package, 8),
 		TypeCache: TypeCache{
-			PointerTypes: map[types.Type]types.Type{
+			pointerTypes: map[types.Type]types.Type{
 				types.Any:  types.AnyPointer,
 				types.Byte: types.CString,
 			},
-			ResourceTypes: map[types.Type]types.Type{},
-			SliceTypes: map[types.Type]types.Type{
+			resourceTypes: map[types.Type]types.Type{},
+			sliceTypes: map[types.Type]types.Type{
 				types.Byte: types.String,
 			},
 		},
