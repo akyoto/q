@@ -15,6 +15,7 @@ import (
 
 type run struct {
 	Name     string
+	Args     []string
 	Input    string
 	Output   string
 	ExitCode int
@@ -51,7 +52,7 @@ func (test *run) RunBuild(t *testing.T, name string, build *config.Build) {
 		assert.Nil(t, err)
 		assert.True(t, stat.Size() > 0)
 
-		cmd := exec.Command(executable)
+		cmd := exec.Command(executable, test.Args...)
 		cmd.Stdin = strings.NewReader(test.Input)
 		output, err := cmd.Output()
 		exitCode := 0
