@@ -15,7 +15,7 @@ func toNumber(t token.Token, file *fs.File) (int, error) {
 	switch t.Kind {
 	case token.Number:
 		var (
-			digits   = t.String(file.Bytes)
+			digits   = t.StringFrom(file.Bytes)
 			signed   int64
 			unsigned uint64
 			err      error
@@ -45,7 +45,7 @@ func toNumber(t token.Token, file *fs.File) (int, error) {
 			}
 
 			if err != nil {
-				return 0, errors.New(InvalidNumber, file, t.Position)
+				return 0, errors.New(InvalidNumber, file, t)
 			}
 
 			return int(unsigned), nil
@@ -58,17 +58,17 @@ func toNumber(t token.Token, file *fs.File) (int, error) {
 		r = unescape(r)
 
 		if len(r) == 0 {
-			return 0, errors.New(InvalidRune, file, t.Position+1)
+			return 0, errors.New(InvalidRune, file, t)
 		}
 
 		number, size := utf8.DecodeRune(r)
 
 		if len(r) > size {
-			return 0, errors.New(InvalidRune, file, t.Position+1)
+			return 0, errors.New(InvalidRune, file, t)
 		}
 
 		return int(number), nil
 	}
 
-	return 0, errors.New(InvalidNumber, file, t.Position)
+	return 0, errors.New(InvalidNumber, file, t)
 }

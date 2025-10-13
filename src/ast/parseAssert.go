@@ -9,7 +9,7 @@ import (
 
 func parseAssert(tokens token.List, file *fs.File) (Node, error) {
 	if len(tokens) == 1 {
-		return nil, errors.New(MissingExpression, file, tokens[0].End())
+		return nil, errors.NewAt(MissingExpression, file, tokens[0].End())
 	}
 
 	condition := expression.Parse(tokens[1:])

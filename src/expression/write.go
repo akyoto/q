@@ -9,7 +9,7 @@ import (
 // write generates a textual representation of the expression.
 func (expr *Expression) write(builder *strings.Builder, source []byte) {
 	if expr.IsLeaf() {
-		builder.WriteString(expr.Token.String(source))
+		builder.WriteString(expr.Token.StringFrom(source))
 		return
 	}
 
@@ -23,7 +23,7 @@ func (expr *Expression) write(builder *strings.Builder, source []byte) {
 	case token.Struct:
 		builder.WriteString(token.Struct.String())
 	default:
-		builder.WriteString(expr.Token.String(source))
+		builder.WriteString(expr.Token.StringFrom(source))
 	}
 
 	for _, child := range expr.Children {

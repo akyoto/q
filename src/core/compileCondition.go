@@ -101,7 +101,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 
 	default:
 		if condition.Token.Kind.IsAssignment() {
-			return errors.New(InvalidCondition, f.File, condition.Token.Position)
+			return errors.New(InvalidCondition, f.File, condition.Token)
 		}
 
 		value, err := f.evaluateRight(condition)
@@ -111,7 +111,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		}
 
 		if !types.Is(value.Type(), types.Bool) {
-			return errors.New(InvalidCondition, f.File, condition.Source().StartPos)
+			return errors.New(InvalidCondition, f.File, condition.Source())
 		}
 
 		branch := &ssa.Branch{

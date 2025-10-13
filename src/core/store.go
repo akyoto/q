@@ -3,13 +3,14 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // store stores a value at the given memory address.
 func (f *Function) store(memory *ssa.Memory, value ssa.Value) error {
 	if !types.Is(value.Type(), memory.Typ) {
-		return errors.New(&TypeMismatch{Encountered: value.Type().Name(), Expected: memory.Typ.Name()}, f.File, value.(ssa.HasSource).Start())
+		return errors.New(&TypeMismatch{Encountered: value.Type().Name(), Expected: memory.Typ.Name()}, f.File, value.(errors.Source))
 	}
 
 	structure, isStructType := types.Unwrap(value.Type()).(*types.Struct)
@@ -44,7 +45,7 @@ func (f *Function) store(memory *ssa.Memory, value ssa.Value) error {
 		fieldValue := &ssa.FromTuple{
 			Tuple:  value,
 			Index:  i,
-			Source: ssa.Source{StartPos: value.(ssa.HasSource).Start(), EndPos: value.(ssa.HasSource).End()},
+			Source: token.NewSource(value.(errors.Source).Start(), value.(errors.Source).End()),
 		}
 
 		f.Block().Append(fieldValue)

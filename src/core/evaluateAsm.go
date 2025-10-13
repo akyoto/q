@@ -8,7 +8,7 @@ import (
 
 // evaluateAsm converts an assembly instruction to an SSA value.
 func (f *Function) evaluateAsm(expr *expression.Expression) (ssa.Value, error) {
-	name := expr.Token.String(f.File.Bytes)
+	name := expr.Token.StringFrom(f.File.Bytes)
 
 	switch name {
 	case "r0":
@@ -23,5 +23,5 @@ func (f *Function) evaluateAsm(expr *expression.Expression) (ssa.Value, error) {
 		return f.Append(&ssa.Register{Register: f.CPU.StackPointer}), nil
 	}
 
-	return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Source().StartPos)
+	return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, expr.Source())
 }

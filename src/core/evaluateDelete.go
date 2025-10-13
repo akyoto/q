@@ -39,6 +39,6 @@ func (f *Function) evaluateDelete(expr *expression.Expression) (ssa.Value, error
 		return call, nil
 
 	default:
-		return nil, errors.New(&TypeMismatch{Encountered: valueType.Name(), Expected: types.AnyPointer.Name()}, f.File, expr.Children[1].Source().StartPos)
+		return nil, errors.New(&TypeMismatch{Encountered: valueType.Name(), Expected: types.AnyPointer.Name()}, f.File, expr.Children[1].Source())
 	}
 }

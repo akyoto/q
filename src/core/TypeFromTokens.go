@@ -74,15 +74,15 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 	}
 
 	if tokens[0].Kind != token.Identifier {
-		return nil, errors.New(&UnknownType{Name: tokens.String(file.Bytes)}, file, tokens[0].Position)
+		return nil, errors.New(&UnknownType{Name: tokens.StringFrom(file.Bytes)}, file, tokens[0])
 	}
 
-	name := tokens[0].String(file.Bytes)
+	name := tokens[0].StringFrom(file.Bytes)
 	typ := TypeByName(name, env)
 
 	if typ != nil {
 		return typ, nil
 	}
 
-	return nil, errors.New(&UnknownType{Name: tokens.String(file.Bytes)}, file, tokens[0].Position)
+	return nil, errors.New(&UnknownType{Name: tokens.StringFrom(file.Bytes)}, file, tokens[0])
 }

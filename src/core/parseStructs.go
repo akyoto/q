@@ -59,7 +59,7 @@ func (env *Environment) parseStruct(structure *types.Struct, processed map[*type
 					return err
 				}
 			case Started:
-				return errors.New(&CycleDetected{A: structure.Name(), B: dependency.Name()}, file, field.Tokens[0].Position)
+				return errors.New(&CycleDetected{A: structure.Name(), B: dependency.Name()}, file, field.Tokens[1:])
 			case Finished:
 			}
 		}

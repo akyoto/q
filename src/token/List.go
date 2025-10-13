@@ -67,13 +67,21 @@ func (list List) Split(yield func(Position, List) bool) {
 	yield(list[len(list)-1].End(), list[start:])
 }
 
-// String returns the concatenated token strings.
-func (list List) String(source []byte) string {
+func (list List) Start() Position {
+	return list[0].Position
+}
+
+func (list List) End() Position {
+	return list[len(list)-1].End()
+}
+
+// StringFrom returns the source string from the first to the last token.
+func (list List) StringFrom(source []byte) string {
 	if len(list) == 0 {
 		return ""
 	}
 
-	start := list[0].Position
-	end := list[len(list)-1].End()
+	start := list.Start()
+	end := list.End()
 	return unsafe.String(unsafe.SliceData(source[start:end]), end-start)
 }

@@ -29,10 +29,10 @@ func (f *Function) verifyDeallocation() error {
 			phi, isPhi := value.(*ssa.Phi)
 
 			if isPhi && phi.IsPartiallyUndefined() {
-				return errors.New(&ResourcePartiallyConsumed{TypeName: resource.Name()}, f.File, phi.FirstDefined().(ssa.HasSource).Start())
+				return errors.NewAt(&ResourcePartiallyConsumed{TypeName: resource.Name()}, f.File, phi.FirstDefined().(errors.Source).Start())
 			}
 
-			return errors.New(&ResourceNotConsumed{TypeName: resource.Name()}, f.File, value.(ssa.HasSource).Start())
+			return errors.NewAt(&ResourceNotConsumed{TypeName: resource.Name()}, f.File, value.(errors.Source).Start())
 		}
 	}
 

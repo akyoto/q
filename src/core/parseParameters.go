@@ -17,7 +17,7 @@ func (env *Environment) parseParameters(functions iter.Seq[*Function]) error {
 		}
 
 		for i, input := range f.Input {
-			input.Name = input.Tokens[0].String(f.File.Bytes)
+			input.Name = input.Tokens[0].StringFrom(f.File.Bytes)
 			typ, err := env.TypeFromTokens(input.Tokens[1:], f.File)
 
 			if err != nil {
@@ -32,8 +32,8 @@ func (env *Environment) parseParameters(functions iter.Seq[*Function]) error {
 			typeTokens := output.Tokens
 
 			if len(output.Tokens) > 1 && output.Tokens[0].Kind == token.Identifier && output.Tokens[1].Kind != token.Or {
-				output.Name = output.Tokens[0].String(f.File.Bytes)
-				output.Source.EndPos = output.Tokens[0].End()
+				output.Name = output.Tokens[0].StringFrom(f.File.Bytes)
+				output.SetEnd(output.Tokens[0].End())
 				typeTokens = typeTokens[1:]
 			}
 

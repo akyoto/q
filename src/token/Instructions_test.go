@@ -13,7 +13,7 @@ func TestInstructionsBasic(t *testing.T) {
 	nodes := []string{}
 
 	for param := range tokens.Instructions {
-		nodes = append(nodes, param.String(src))
+		nodes = append(nodes, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, nodes, []string{"a := 1", "b := 2"})
@@ -25,7 +25,7 @@ func TestInstructionsBlock(t *testing.T) {
 	nodes := []string{}
 
 	for param := range tokens.Instructions {
-		nodes = append(nodes, param.String(src))
+		nodes = append(nodes, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, nodes, []string{"a := 1", "if x > 0 {\nx = 0\n}", "b := 2"})
@@ -37,7 +37,7 @@ func TestInstructionsGroup(t *testing.T) {
 	nodes := []string{}
 
 	for param := range tokens.Instructions {
-		nodes = append(nodes, param.String(src))
+		nodes = append(nodes, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, nodes, []string{"a := 1", "call(\nx,\ny\n)", "b := 2"})

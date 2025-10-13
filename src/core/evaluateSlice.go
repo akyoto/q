@@ -19,7 +19,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 		}
 
 		if !types.Is(from.Type(), types.AnyInt) {
-			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source().StartPos)
+			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source())
 		}
 
 		newPointer := f.Append(&ssa.BinaryOp{
@@ -51,7 +51,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			}
 
 			if !types.Is(to.Type(), types.AnyInt) {
-				return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source().StartPos)
+				return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source())
 			}
 
 			slice := &ssa.Struct{
@@ -70,7 +70,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 		}
 
 		if !types.Is(from.Type(), types.AnyInt) {
-			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source().StartPos)
+			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source())
 		}
 
 		to, err := f.evaluateRight(index.Children[1])
@@ -80,7 +80,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 		}
 
 		if !types.Is(to.Type(), types.AnyInt) {
-			return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source().StartPos)
+			return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source())
 		}
 
 		newPointer := f.Append(&ssa.BinaryOp{
@@ -104,5 +104,5 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 		return slice, nil
 	}
 
-	return nil, errors.New(InvalidExpression, f.File, expr.Source().StartPos)
+	return nil, errors.New(InvalidExpression, f.File, expr.Source())
 }

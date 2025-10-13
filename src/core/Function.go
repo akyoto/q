@@ -52,12 +52,12 @@ func (f *Function) AddSuffix(suffix string) {
 
 // Body returns the function body.
 func (f *Function) Body() token.List {
-	return f.File.Tokens[f.body.StartPos:f.body.EndPos]
+	return f.File.Tokens[f.body.Start():f.body.End()]
 }
 
 // IsExtern returns true if the function has no body.
 func (f *Function) IsExtern() bool {
-	return f.body.EndPos == 0
+	return f.body.End() == 0
 }
 
 // IsLeaf returns true if the function doesn't call other functions.
@@ -77,8 +77,7 @@ func (f *Function) Package() string {
 
 // SetBody sets the token range for the function body.
 func (f *Function) SetBody(start int, end int) {
-	f.body.StartPos = token.Position(start)
-	f.body.EndPos = token.Position(end)
+	f.body = token.NewSource(token.Position(start), token.Position(end))
 }
 
 // String returns the unique name.

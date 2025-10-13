@@ -11,13 +11,13 @@ import (
 // evaluateDot converts a dot expression to an SSA value.
 func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	if len(expr.Children) != 2 {
-		return nil, errors.New(InvalidExpression, f.File, expr.Source().StartPos)
+		return nil, errors.New(InvalidExpression, f.File, expr.Source())
 	}
 
 	right := expr.Children[1]
 	left := expr.Children[0]
 
-	if left.Token.Kind == token.Identifier && left.Token.String(f.File.Bytes) == "asm" {
+	if left.Token.Kind == token.Identifier && left.Token.StringFrom(f.File.Bytes) == "asm" {
 		return f.evaluateAsm(right)
 	}
 
@@ -36,38 +36,38 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			imp, exists := f.File.Imports[pkgValue.Name]
 
 			if !exists {
-				return nil, errors.New(&UnknownIdentifier{Name: pkgValue.Name}, f.File, left.Token.Position)
+				return nil, errors.New(&UnknownIdentifier{Name: pkgValue.Name}, f.File, left.Source())
 			}
 
 			imp.Used.Add(1)
 		}
 
 		if right.Token.Kind != token.Identifier {
-			return nil, errors.New(ExpectedPackageMember, f.File, right.Source().StartPos)
+			return nil, errors.New(ExpectedPackageMember, f.File, right.Source())
 		}
 
-		rightText := right.Token.String(f.File.Bytes)
+		rightText := right.Token.StringFrom(f.File.Bytes)
 		return f.evaluatePackageMember(pkg, rightText, expr)
 	}
 
 	if right.Token.Kind != token.Identifier {
-		return nil, errors.New(ExpectedStructField, f.File, right.Source().StartPos)
+		return nil, errors.New(ExpectedStructField, f.File, right.Source())
 	}
 
-	rightText := right.Token.String(f.File.Bytes)
+	rightText := right.Token.StringFrom(f.File.Bytes)
 
 	switch leftValue := leftValue.(type) {
 	case *ssa.Struct:
 		field := types.Unwrap(leftValue.Typ).(*types.Struct).FieldByName(rightText)
 
 		if field == nil {
-			return nil, errors.New(&UnknownStructField{StructName: leftValue.Typ.Name(), FieldName: rightText}, f.File, right.Token.Position)
+			return nil, errors.New(&UnknownStructField{StructName: leftValue.Typ.Name(), FieldName: rightText}, f.File, right.Source())
 		}
 
 		value := leftValue.Arguments[field.Index]
 
 		if value == nil {
-			return nil, errors.New(&UndefinedStructField{Identifier: left.SourceString(f.File.Bytes), FieldName: rightText}, f.File, right.Token.Position)
+			return nil, errors.New(&UndefinedStructField{Identifier: left.SourceString(f.File.Bytes), FieldName: rightText}, f.File, right.Source())
 		}
 
 		return value, nil
@@ -99,7 +99,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	structure, isStructPointer := leftUnwrapped.(*types.Struct)
 
 	if !isStructPointer {
-		return nil, errors.New(&NotDataStruct{TypeName: leftUnwrapped.Name()}, f.File, left.Source().StartPos)
+		return nil, errors.New(&NotDataStruct{TypeName: leftUnwrapped.Name()}, f.File, left.Source())
 	}
 
 	field := structure.FieldByName(rightText)

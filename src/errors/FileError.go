@@ -12,10 +12,10 @@ import (
 
 // FileError is an error inside a file at a given line and column.
 type FileError struct {
-	err      error
-	file     *fs.File
-	stack    string
-	position token.Position
+	err    error
+	file   *fs.File
+	stack  string
+	source Source
 }
 
 // Error implements the error interface.
@@ -31,7 +31,7 @@ func (e *FileError) File() *fs.File {
 // Line returns the line contents and the offset from the position.
 func (e *FileError) Line() (string, int) {
 	contents := e.file.Bytes
-	start := bytes.LastIndexByte(contents[:e.position], '\n')
+	start := bytes.LastIndexByte(contents[:e.source.Start()], '\n')
 
 	if start == -1 {
 		start = 0
@@ -39,12 +39,12 @@ func (e *FileError) Line() (string, int) {
 		start++
 	}
 
-	end := bytes.IndexByte(contents[e.position:], '\n')
+	end := bytes.IndexByte(contents[e.source.Start():], '\n')
 
 	if end == -1 {
 		end = len(contents)
 	} else {
-		end += int(e.position)
+		end += int(e.source.Start())
 	}
 
 	asciiSpace := [256]uint8{'\t': 1, '\n': 1, '\v': 1, '\f': 1, '\r': 1, ' ': 1}
@@ -53,7 +53,7 @@ func (e *FileError) Line() (string, int) {
 		start++
 	}
 
-	return string(contents[start:end]), int(e.position) - start
+	return string(contents[start:end]), int(e.source.Start()) - start
 }
 
 // LineColumn returns the line and column of the error.
@@ -63,8 +63,8 @@ func (e *FileError) LineColumn() (int, int) {
 	lineStart := -1
 
 	for _, t := range e.file.Tokens {
-		if t.Position >= e.position {
-			column = int(e.position) - lineStart
+		if t.Position >= e.source.Start() {
+			column = int(e.source.Start()) - lineStart
 			break
 		}
 
@@ -101,9 +101,9 @@ func (e *FileError) Path() string {
 	return filepath.ToSlash(relative)
 }
 
-// Position returns the byte offset inside the file.
-func (e *FileError) Position() token.Position {
-	return e.position
+// Source returns the byte offsets inside the file.
+func (e *FileError) Source() Source {
+	return e.source
 }
 
 // Stack returns the call stack at the time the error was created.

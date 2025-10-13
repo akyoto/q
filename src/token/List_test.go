@@ -23,7 +23,7 @@ func TestSplit(t *testing.T) {
 	parameters := []string{}
 
 	for _, param := range tokens.Split {
-		parameters = append(parameters, param.String(src))
+		parameters = append(parameters, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, parameters, []string{"1+2", "3*4", "5*6", "7+8"})
@@ -52,7 +52,7 @@ func TestSplitGroups(t *testing.T) {
 	parameters := []string{}
 
 	for _, param := range tokens.Split {
-		parameters = append(parameters, param.String(src))
+		parameters = append(parameters, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, parameters, []string{"f(1,2)", "g(3,4)"})
@@ -65,7 +65,7 @@ func TestSplitGroupsTrail(t *testing.T) {
 	parameters := []string{}
 
 	for _, param := range tokens.Split {
-		parameters = append(parameters, param.String(src))
+		parameters = append(parameters, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, parameters, []string{"f(1,2)", ""})
@@ -77,7 +77,7 @@ func TestSplitSingle(t *testing.T) {
 	parameters := []string{}
 
 	for _, param := range tokens.Split {
-		parameters = append(parameters, param.String(src))
+		parameters = append(parameters, param.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, parameters, []string{"123"})

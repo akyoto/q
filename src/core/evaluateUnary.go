@@ -10,7 +10,7 @@ import (
 // evaluateUnary converts a unary expression to an SSA value.
 func (f *Function) evaluateUnary(expr *expression.Expression) (ssa.Value, error) {
 	if !expr.Token.Kind.IsUnaryOperator() {
-		return nil, errors.New(MissingOperand, f.File, expr.Token.End())
+		return nil, errors.NewAt(MissingOperand, f.File, expr.Token.End())
 	}
 
 	left := expr.Children[0]
@@ -23,7 +23,7 @@ func (f *Function) evaluateUnary(expr *expression.Expression) (ssa.Value, error)
 	_, isStruct := leftValue.Type().(*types.Struct)
 
 	if isStruct {
-		return nil, errors.New(InvalidStructOperation, f.File, expr.Token.Position)
+		return nil, errors.New(InvalidStructOperation, f.File, expr.Token)
 	}
 
 	v := f.Append(&ssa.UnaryOp{

@@ -10,7 +10,7 @@ import (
 
 // evaluateIdentifier converts an identifier to an SSA value.
 func (f *Function) evaluateIdentifier(expr *expression.Expression) (ssa.Value, error) {
-	name := expr.Token.String(f.File.Bytes)
+	name := expr.Token.StringFrom(f.File.Bytes)
 
 	switch name {
 	case "false":
@@ -35,7 +35,7 @@ func (f *Function) evaluateIdentifier(expr *expression.Expression) (ssa.Value, e
 	if exists {
 		for _, p := range f.Block().Protected {
 			if slices.Contains(p, value) {
-				return nil, errors.New(&ErrorNotChecked{Identifier: name}, f.File, expr.Token.Position)
+				return nil, errors.New(&ErrorNotChecked{Identifier: name}, f.File, expr.Source())
 			}
 		}
 

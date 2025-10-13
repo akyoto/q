@@ -30,7 +30,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 	pointer, isPointer := addressType.(*types.Pointer)
 
 	if !isPointer {
-		return nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source().StartPos)
+		return nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source())
 	}
 
 	var indexValue ssa.Value
@@ -48,7 +48,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 			}
 
 			if !types.Is(indexValue.Type(), types.AnyInt) {
-				return nil, errors.New(&TypeMismatch{Encountered: indexValue.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Source().StartPos)
+				return nil, errors.New(&TypeMismatch{Encountered: indexValue.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Source())
 			}
 		}
 	} else {

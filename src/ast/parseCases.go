@@ -20,7 +20,7 @@ func parseCases(tokens token.List, file *fs.File) ([]Case, error) {
 		conditionTokens := caseTokens[:blockStart]
 		var condition *expression.Expression
 
-		if len(conditionTokens) == 1 && conditionTokens[0].Kind == token.Identifier && conditionTokens[0].String(file.Bytes) == "_" {
+		if len(conditionTokens) == 1 && conditionTokens[0].Kind == token.Identifier && conditionTokens[0].StringFrom(file.Bytes) == "_" {
 			condition = nil
 		} else {
 			condition = expression.Parse(conditionTokens)

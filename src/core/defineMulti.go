@@ -11,7 +11,7 @@ import (
 // defineMulti creates SSA values from expressions and composes structs from their individual fields.
 func (f *Function) defineMulti(left *expression.Expression, right *expression.Expression, isAssign bool) error {
 	if left.Token.Kind != token.Separator {
-		return errors.New(InvalidLeftExpression, f.File, left.Source().StartPos)
+		return errors.New(InvalidLeftExpression, f.File, left.Source())
 	}
 
 	rightValue, err := f.evaluateRight(right)
@@ -28,7 +28,7 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 	}
 
 	if len(leaves) != len(fn.Typ.Output) {
-		return errors.New(&DefinitionCountMismatch{Function: fn.String(), Count: len(leaves), ExpectedCount: len(fn.Typ.Output)}, f.File, left.Source().StartPos)
+		return errors.New(&DefinitionCountMismatch{Function: fn.String(), Count: len(leaves), ExpectedCount: len(fn.Typ.Output)}, f.File, left.Source())
 	}
 
 	protected := make([]ssa.Value, 0, len(leaves))

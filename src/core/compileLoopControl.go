@@ -11,16 +11,16 @@ func (f *Function) compileLoopControl(control *ast.LoopControl) error {
 	call := control.Expression
 
 	if call.Token.Kind != token.Call {
-		return errors.New(InvalidExpression, f.File, control.Expression.Source().StartPos)
+		return errors.New(InvalidExpression, f.File, control.Expression.Source())
 	}
 
 	if len(call.Children) != 1 {
-		return errors.New(InvalidExpression, f.File, control.Expression.Source().StartPos)
+		return errors.New(InvalidExpression, f.File, control.Expression.Source())
 	}
 
 	loop := f.loopStack.Current()
 
-	switch call.Children[0].Token.String(f.File.Bytes) {
+	switch call.Children[0].Token.StringFrom(f.File.Bytes) {
 	case "next":
 		f.loopNext(loop)
 	case "restart":

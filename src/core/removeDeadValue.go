@@ -3,6 +3,7 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 )
 
 // removeDeadValue checks if the value is dead and removes it.
@@ -51,6 +52,6 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 		}
 	}
 
-	source := value.(ssa.HasSource)
-	return errors.New(&UnusedValue{Value: source.StringFrom(f.File.Bytes)}, f.File, source.Start())
+	source := value.(errors.Source)
+	return errors.New(&UnusedValue{Value: source.StringFrom(f.File.Bytes)}, f.File, token.NewSource(source.Start(), source.End()))
 }

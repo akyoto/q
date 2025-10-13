@@ -24,6 +24,11 @@ func (t Token) Bytes(buffer []byte) []byte {
 	return buffer[t.Position : t.Position+Position(t.Length)]
 }
 
+// Start returns the start position.
+func (t Token) Start() Position {
+	return t.Position
+}
+
 // End returns the position after the token.
 func (t Token) End() Position {
 	return t.Position + Position(t.Length)
@@ -36,7 +41,7 @@ func (t *Token) Reset() {
 	t.Kind = Invalid
 }
 
-// String returns the token string.
-func (t Token) String(buffer []byte) string {
+// StringFrom returns the token string.
+func (t Token) StringFrom(buffer []byte) string {
 	return unsafe.String(unsafe.SliceData(t.Bytes(buffer)), t.Length)
 }

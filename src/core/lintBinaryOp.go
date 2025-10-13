@@ -12,7 +12,7 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 	switch binOp.Op {
 	case token.Sub, token.Div, token.Mod, token.And, token.Or, token.Xor, token.Equal, token.NotEqual, token.Less, token.LessEqual, token.Greater, token.GreaterEqual:
 		if binOp.Left == binOp.Right {
-			return errors.New(&IdenticalExpressions{Operator: binOp.Op.String()}, f.File, binOp.Source.Start())
+			return errors.New(&IdenticalExpressions{Operator: binOp.Op.String()}, f.File, binOp.Source)
 		}
 	}
 
@@ -26,9 +26,9 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 		if rightIsInt && rightInt.Int < 0 {
 			switch binOp.Op {
 			case token.Equal, token.LessEqual, token.Less:
-				return errors.New(AlwaysFalse, f.File, binOp.Source.Start())
+				return errors.New(AlwaysFalse, f.File, binOp.Source)
 			case token.NotEqual, token.GreaterEqual, token.Greater:
-				return errors.New(AlwaysTrue, f.File, binOp.Source.Start())
+				return errors.New(AlwaysTrue, f.File, binOp.Source)
 			}
 		}
 	}
@@ -39,9 +39,9 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 		if leftIsInt && leftInt.Int < 0 {
 			switch binOp.Op {
 			case token.Equal, token.GreaterEqual, token.Greater:
-				return errors.New(AlwaysFalse, f.File, binOp.Source.Start())
+				return errors.New(AlwaysFalse, f.File, binOp.Source)
 			case token.NotEqual, token.LessEqual, token.Less:
-				return errors.New(AlwaysTrue, f.File, binOp.Source.Start())
+				return errors.New(AlwaysTrue, f.File, binOp.Source)
 			}
 		}
 	}

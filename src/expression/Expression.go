@@ -116,7 +116,7 @@ func (expr *Expression) Source() token.Source {
 		}
 	}
 
-	return token.Source{StartPos: start, EndPos: end}
+	return token.NewSource(start, end)
 }
 
 // SourceString returns the string that was parsed in this expression.
@@ -126,7 +126,7 @@ func (expr *Expression) SourceString(source []byte) string {
 	left := token.Position(0)
 	right := token.Position(0)
 
-	for i := region.StartPos; i < region.EndPos; i++ {
+	for i := region.Start(); i < region.End(); i++ {
 		switch source[i] {
 		case '(':
 			open++
@@ -136,7 +136,7 @@ func (expr *Expression) SourceString(source []byte) string {
 			} else {
 				left++
 
-				for source[region.StartPos-left] != '(' {
+				for source[region.Start()-left] != '(' {
 					left++
 				}
 			}
@@ -144,7 +144,7 @@ func (expr *Expression) SourceString(source []byte) string {
 	}
 
 	for open > 0 {
-		for source[region.EndPos+right] != ')' {
+		for source[region.End()+right] != ')' {
 			right++
 		}
 
@@ -152,7 +152,7 @@ func (expr *Expression) SourceString(source []byte) string {
 		open--
 	}
 
-	return string(source[region.StartPos-left : region.EndPos+right])
+	return string(source[region.Start()-left : region.End()+right])
 }
 
 // String generates a textual representation of the expression.

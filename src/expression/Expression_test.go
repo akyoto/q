@@ -15,7 +15,7 @@ func TestLeaves(t *testing.T) {
 	leaves := []string{}
 
 	for leaf := range expr.Leaves() {
-		leaves = append(leaves, leaf.Token.String(src))
+		leaves = append(leaves, leaf.Token.StringFrom(src))
 	}
 
 	assert.DeepEqual(t, leaves, []string{"1", "2", "3", "4", "5", "6", "7", "8"})

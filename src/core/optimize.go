@@ -18,7 +18,7 @@ func (f *Function) optimize() error {
 	// statement, an implicit return is inserted.
 	if f.needsReturn() {
 		if len(f.Output) > 0 {
-			return errors.New(&ReturnCountMismatch{Count: 0, ExpectedCount: len(f.Output)}, f.File, f.Output[0].StartPos)
+			return errors.New(&ReturnCountMismatch{Count: 0, ExpectedCount: len(f.Output)}, f.File, f.Output[0].Source)
 		}
 
 		f.Block().Append(&ssa.Return{})

@@ -25,6 +25,6 @@ func parseKeyword(tokens token.List, file *fs.File, nodes AST) (Node, error) {
 	case token.Switch:
 		return parseSwitch(tokens, file)
 	default:
-		panic(fmt.Sprintf("keyword not implemented: %s", tokens[0].String(file.Bytes)))
+		panic(fmt.Sprintf("keyword not implemented: %s", tokens[0].StringFrom(file.Bytes)))
 	}
 }

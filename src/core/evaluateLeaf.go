@@ -20,5 +20,5 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 		return f.evaluateString(expr)
 	}
 
-	return nil, errors.New(InvalidExpression, f.File, expr.Token.Position)
+	return nil, errors.New(InvalidExpression, f.File, expr.Source())
 }

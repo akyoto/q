@@ -45,7 +45,7 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 			rightText = pkg.Name + "." + rightText
 		}
 
-		return nil, errors.New(&UnknownIdentifier{Name: rightText}, f.File, expr.Source().StartPos)
+		return nil, errors.New(&UnknownIdentifier{Name: rightText}, f.File, expr.Source())
 	}
 
 	if expr.Parent.Token.Kind == token.Call && expr.Parent.Children[0] == expr {
@@ -57,7 +57,7 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 		}
 
 		if fn == nil {
-			return nil, errors.New(&NoMatchingFunction{Function: pkg.Name + "." + rightText}, f.File, expr.Source().StartPos)
+			return nil, errors.New(&NoMatchingFunction{Function: pkg.Name + "." + rightText}, f.File, expr.Source())
 		}
 
 		if fn.IsExtern() {

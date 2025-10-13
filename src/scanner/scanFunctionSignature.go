@@ -37,7 +37,7 @@ func scanFunctionSignature(file *fs.File, pkg string, tokens token.List, i int, 
 			groupLevel--
 
 			if groupLevel < 0 {
-				return nil, i, errors.New(MissingGroupStart, file, tokens[i].Position)
+				return nil, i, errors.NewAt(MissingGroupStart, file, tokens[i].Position)
 			}
 
 			if groupLevel == 0 {
@@ -51,15 +51,15 @@ func scanFunctionSignature(file *fs.File, pkg string, tokens token.List, i int, 
 		}
 
 		if tokens[i].Kind == token.Invalid {
-			return nil, i, errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return nil, i, errors.NewAt(&InvalidCharacter{Character: tokens[i].StringFrom(file.Bytes)}, file, tokens[i].Position)
 		}
 
 		if tokens[i].Kind == token.EOF {
 			if groupLevel > 0 {
-				return nil, i, errors.New(MissingGroupEnd, file, tokens[i].Position)
+				return nil, i, errors.NewAt(MissingGroupEnd, file, tokens[i].Position)
 			}
 
-			return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
+			return nil, i, errors.NewAt(InvalidFunctionDefinition, file, tokens[i].Position)
 		}
 
 		if groupLevel > 0 {
@@ -67,7 +67,7 @@ func scanFunctionSignature(file *fs.File, pkg string, tokens token.List, i int, 
 			continue
 		}
 
-		return nil, i, errors.New(InvalidFunctionDefinition, file, tokens[i].Position)
+		return nil, i, errors.NewAt(InvalidFunctionDefinition, file, tokens[i].Position)
 	}
 
 	// Return type
@@ -81,24 +81,24 @@ func scanFunctionSignature(file *fs.File, pkg string, tokens token.List, i int, 
 		outputEnd = i
 	}
 
-	name := tokens[nameStart].String(file.Bytes)
+	name := tokens[nameStart].StringFrom(file.Bytes)
 	function := core.NewFunction(name, pkg, file)
 	parameters := tokens[inputStart:inputEnd]
 
 	for position, param := range parameters.Split {
 		if len(param) == 0 {
-			return nil, i, errors.New(MissingParameter, file, position)
+			return nil, i, errors.NewAt(MissingParameter, file, position)
 		}
 
 		if len(param) == 1 {
-			return nil, i, errors.New(MissingParameterType, file, param[0].End())
+			return nil, i, errors.NewAt(MissingParameterType, file, param[0].End())
 		}
 
 		if param[0].Kind != token.Identifier {
-			return nil, i, errors.New(InvalidParameterName, file, position)
+			return nil, i, errors.New(InvalidParameterName, file, param[0])
 		}
 
-		function.AddInput(param, token.Source{StartPos: position, EndPos: param[0].End()})
+		function.AddInput(param, token.NewSource(position, param[0].End()))
 	}
 
 	if outputStart == -1 {
@@ -110,22 +110,22 @@ func scanFunctionSignature(file *fs.File, pkg string, tokens token.List, i int, 
 			outputStart++
 			outputEnd--
 		} else {
-			return nil, i, errors.New(MissingGroupEnd, file, tokens[outputEnd-1].Position)
+			return nil, i, errors.NewAt(MissingGroupEnd, file, tokens[outputEnd-1].Position)
 		}
 	}
 
 	outputTokens := tokens[outputStart:outputEnd]
 
 	if len(outputTokens) == 0 {
-		return nil, i, errors.New(MissingParameter, file, tokens[outputStart].Position)
+		return nil, i, errors.NewAt(MissingParameter, file, tokens[outputStart].Position)
 	}
 
 	for position, param := range outputTokens.Split {
 		if len(param) == 0 {
-			return nil, i, errors.New(MissingParameter, file, position)
+			return nil, i, errors.NewAt(MissingParameter, file, position)
 		}
 
-		function.AddOutput(param, token.Source{StartPos: position, EndPos: param[len(param)-1].End()})
+		function.AddOutput(param, token.NewSource(position, param[len(param)-1].End()))
 	}
 
 	return function, i, nil

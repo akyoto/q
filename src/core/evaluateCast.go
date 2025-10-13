@@ -25,7 +25,7 @@ func (f *Function) evaluateCast(expr *expression.Expression) (ssa.Value, error) 
 	}
 
 	if leftValue.Type() == typ {
-		return nil, errors.New(UnnecessaryCast, f.File, expr.Token.Position)
+		return nil, errors.New(UnnecessaryCast, f.File, expr.Token)
 	}
 
 	v := f.Append(&ssa.Copy{

@@ -9,12 +9,12 @@ import (
 
 // scanStruct scans a struct.
 func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, error) {
-	structName := tokens[i].String(file.Bytes)
+	structName := tokens[i].StringFrom(file.Bytes)
 	structure := types.NewStruct(file, file.Package, structName)
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
-		return i, errors.New(MissingBlockStart, file, tokens[i].Position)
+		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 	}
 
 	i++
@@ -29,7 +29,7 @@ func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, erro
 
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
-				name := tokens[start].String(file.Bytes)
+				name := tokens[start].StringFrom(file.Bytes)
 
 				structure.AddField(&types.Field{
 					Name:   name,
@@ -48,5 +48,5 @@ func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, erro
 		i++
 	}
 
-	return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
 }

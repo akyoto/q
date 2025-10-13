@@ -45,7 +45,7 @@ func test(t *testing.T, path string) *errors.FileError {
 	}
 
 	main := token.Position(bytes.Index(contents, []byte("main()")))
-	err := errors.New(io.EOF, file, main)
+	err := errors.NewAt(io.EOF, file, main)
 	assert.NotNil(t, err)
 
 	line, column := err.LineColumn()

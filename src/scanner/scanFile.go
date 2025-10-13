@@ -32,7 +32,7 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		case token.Comment:
 		case token.Identifier:
 			if i+1 >= len(tokens) {
-				return errors.New(InvalidFunctionDefinition, file, tokens[i].End())
+				return errors.NewAt(InvalidFunctionDefinition, file, tokens[i].End())
 			}
 
 			next := tokens[i+1]
@@ -43,13 +43,13 @@ func (s *scanner) scanFile(path string, pkg string) error {
 			case token.BlockStart:
 				i, err = s.scanStruct(file, tokens, i)
 			case token.GroupEnd:
-				return errors.New(MissingGroupStart, file, next.Position)
+				return errors.NewAt(MissingGroupStart, file, next.Position)
 			case token.BlockEnd:
-				return errors.New(MissingBlockStart, file, next.Position)
+				return errors.NewAt(MissingBlockStart, file, next.Position)
 			case token.Invalid:
-				return errors.New(&InvalidCharacter{Character: next.String(file.Bytes)}, file, next.Position)
+				return errors.New(&InvalidCharacter{Character: next.StringFrom(file.Bytes)}, file, next)
 			default:
-				return errors.New(InvalidFunctionDefinition, file, next.Position)
+				return errors.NewAt(InvalidFunctionDefinition, file, next.Position)
 			}
 		case token.Const:
 			i, err = s.scanConst(file, tokens, i)
@@ -62,10 +62,10 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		case token.EOF:
 			return nil
 		case token.Invalid:
-			return errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return errors.New(&InvalidCharacter{Character: tokens[i].StringFrom(file.Bytes)}, file, tokens[i])
 		case token.Script:
 		default:
-			return errors.New(&InvalidTopLevel{Instruction: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return errors.New(InvalidTopLevel, file, tokens[i])
 		}
 
 		if err != nil {

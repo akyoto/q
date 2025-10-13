@@ -40,7 +40,7 @@ func (f *Function) decompose(nodes []*expression.Expression, typeCheck []*ssa.Pa
 					IsReturn:      isReturn,
 				}
 
-				return nil, errors.New(typeMismatch, f.File, node.Source().StartPos)
+				return nil, errors.New(typeMismatch, f.File, node.Source())
 			}
 		}
 

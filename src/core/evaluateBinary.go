@@ -27,7 +27,7 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 	_, rightIsStruct := rightValue.Type().(*types.Struct)
 
 	if leftIsStruct || rightIsStruct {
-		return nil, errors.New(InvalidStructOperation, f.File, expr.Token.Position)
+		return nil, errors.New(InvalidStructOperation, f.File, expr.Token)
 	}
 
 	v := &ssa.BinaryOp{

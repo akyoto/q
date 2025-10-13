@@ -28,7 +28,7 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 		name, from, to := f.parseLoopHeader(node.Head)
 
 		if from == nil {
-			return errors.New(InvalidLoopHeader, f.File, node.Head.Source().StartPos)
+			return errors.New(InvalidLoopHeader, f.File, node.Head.Source())
 		}
 
 		loop.IteratorName = name

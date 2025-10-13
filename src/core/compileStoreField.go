@@ -46,11 +46,11 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		field := pointer.To.(*types.Struct).FieldByName(fieldName)
 
 		if field == nil {
-			return errors.New(&UnknownStructField{StructName: pointer.To.Name(), FieldName: fieldName}, f.File, left.Children[1].Source().StartPos)
+			return errors.New(&UnknownStructField{StructName: pointer.To.Name(), FieldName: fieldName}, f.File, left.Children[1].Source())
 		}
 
 		if !types.Is(rightValue.Type(), field.Type) {
-			return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: field.Type.Name()}, f.File, right.Source().StartPos)
+			return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: field.Type.Name()}, f.File, right.Source())
 		}
 
 		offset := f.Append(&ssa.Int{Int: int(field.Offset)})

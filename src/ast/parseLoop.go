@@ -9,7 +9,7 @@ import (
 
 func parseLoop(tokens token.List, file *fs.File) (Node, error) {
 	if len(tokens) < 3 {
-		return nil, errors.New(&InvalidInstruction{Instruction: tokens.String(file.Bytes)}, file, tokens[0].Position)
+		return nil, errors.New(InvalidInstruction, file, tokens)
 	}
 
 	if tokens[1].Kind == token.Dot {

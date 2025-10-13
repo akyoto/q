@@ -13,7 +13,7 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
-		return i, errors.New(MissingBlockStart, file, tokens[i].Position)
+		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 	}
 
 	i++
@@ -28,22 +28,22 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
-				name := tokens[start].String(file.Bytes)
+				name := tokens[start].StringFrom(file.Bytes)
 
 				if tokens[start+1].Kind != token.Assign {
-					return i, errors.New(MissingAssign, file, tokens[start+1].Position)
+					return i, errors.NewAt(MissingAssign, file, tokens[start+1].Position)
 				}
 
 				valueTokens := tokens[start+2 : i]
 
 				if len(valueTokens) == 0 {
-					return i, errors.New(MissingExpression, file, tokens[start].End())
+					return i, errors.NewAt(MissingExpression, file, tokens[start+1].End())
 				}
 
 				value := expression.Parse(valueTokens)
 
 				if value.Token.Kind == token.Invalid {
-					return i, errors.New(InvalidExpression, file, valueTokens[0].Position)
+					return i, errors.New(InvalidExpression, file, valueTokens)
 				}
 
 				s.constants <- &core.Constant{
@@ -63,5 +63,5 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 		i++
 	}
 
-	return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
 }

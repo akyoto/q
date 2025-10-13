@@ -12,11 +12,11 @@ func block(tokens token.List, file *fs.File) (int, int, AST, error) {
 	blockEnd := tokens.LastIndexKind(token.BlockEnd)
 
 	if blockStart == -1 {
-		return 0, 0, nil, errors.New(MissingBlockStart, file, tokens[0].End())
+		return 0, 0, nil, errors.NewAt(MissingBlockStart, file, tokens[0].End())
 	}
 
 	if blockEnd == -1 {
-		return 0, 0, nil, errors.New(MissingBlockEnd, file, tokens[len(tokens)-1].End())
+		return 0, 0, nil, errors.NewAt(MissingBlockEnd, file, tokens[len(tokens)-1].End())
 	}
 
 	body, err := Parse(tokens[blockStart+1:blockEnd], file)

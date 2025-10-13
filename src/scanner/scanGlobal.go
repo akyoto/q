@@ -12,7 +12,7 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
-		return i, errors.New(MissingBlockStart, file, tokens[i].Position)
+		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 	}
 
 	i++
@@ -28,7 +28,7 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
 				global := &core.Global{
-					Name:   tokens[start].String(file.Bytes),
+					Name:   tokens[start].StringFrom(file.Bytes),
 					Tokens: tokens[start:i],
 					File:   file,
 				}
@@ -46,5 +46,5 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 		i++
 	}
 
-	return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
 }

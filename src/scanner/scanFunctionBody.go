@@ -32,7 +32,7 @@ func (s *scanner) scanFunctionBody(file *fs.File, tokens token.List, i int) (int
 			blockLevel--
 
 			if blockLevel < 0 {
-				return bodyStart, i, errors.New(MissingBlockStart, file, tokens[i].Position)
+				return bodyStart, i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 			}
 
 			if blockLevel == 0 {
@@ -49,14 +49,14 @@ func (s *scanner) scanFunctionBody(file *fs.File, tokens token.List, i int) (int
 			s.queueDirectory(filepath.Join(global.Library, "mem"), "mem")
 
 		case token.Invalid:
-			return bodyStart, i, errors.New(&InvalidCharacter{Character: tokens[i].String(file.Bytes)}, file, tokens[i].Position)
+			return bodyStart, i, errors.New(&InvalidCharacter{Character: tokens[i].StringFrom(file.Bytes)}, file, tokens[i])
 
 		case token.EOF:
 			if blockLevel > 0 {
-				return bodyStart, i, errors.New(MissingBlockEnd, file, tokens[i].Position)
+				return bodyStart, i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
 			}
 
-			return bodyStart, i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
+			return bodyStart, i, errors.NewAt(ExpectedFunctionDefinition, file, tokens[i].Position)
 		}
 
 		if blockLevel > 0 {
@@ -64,7 +64,7 @@ func (s *scanner) scanFunctionBody(file *fs.File, tokens token.List, i int) (int
 			continue
 		}
 
-		return bodyStart, i, errors.New(ExpectedFunctionDefinition, file, tokens[i].Position)
+		return bodyStart, i, errors.NewAt(ExpectedFunctionDefinition, file, tokens[i].Position)
 	}
 
 	panic("no EOF token")

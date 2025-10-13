@@ -30,24 +30,24 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 
 	for _, definition := range expr.Children[1:] {
 		if len(definition.Children) != 2 {
-			return nil, errors.New(InvalidFieldInit, f.File, definition.Source().StartPos)
+			return nil, errors.New(InvalidFieldInit, f.File, definition.Source())
 		}
 
 		left := definition.Children[0]
 
 		if left.Token.Kind != token.Identifier {
 			if left.Token.Kind == token.FieldAssign {
-				return nil, errors.New(MissingCommaBetweenFields, f.File, left.Source().StartPos)
+				return nil, errors.New(MissingCommaBetweenFields, f.File, left.Source())
 			}
 
-			return nil, errors.New(InvalidFieldInit, f.File, left.Source().StartPos)
+			return nil, errors.New(InvalidFieldInit, f.File, left.Source())
 		}
 
 		fieldName := left.String(f.File.Bytes)
 		field := structType.FieldByName(fieldName)
 
 		if field == nil {
-			return nil, errors.New(&UnknownStructField{StructName: typ.Name(), FieldName: fieldName}, f.File, left.Source().StartPos)
+			return nil, errors.New(&UnknownStructField{StructName: typ.Name(), FieldName: fieldName}, f.File, left.Source())
 		}
 
 		right := definition.Children[1]

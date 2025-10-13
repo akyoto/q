@@ -15,7 +15,7 @@ func (f *Function) compileReturn(node *ast.Return) error {
 			position = node.Values[0].Token.Position
 		}
 
-		return errors.New(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, position)
+		return errors.NewAt(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, position)
 	}
 
 	if len(node.Values) == 0 {

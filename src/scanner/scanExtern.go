@@ -11,7 +11,7 @@ func (s *scanner) scanExtern(file *fs.File, tokens token.List, i int) (int, erro
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
-		return i, errors.New(MissingBlockStart, file, tokens[i].Position)
+		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 	}
 
 	for i < len(tokens) {
@@ -31,16 +31,16 @@ func (s *scanner) scanExtern(file *fs.File, tokens token.List, i int) (int, erro
 		i++
 	}
 
-	return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
 }
 
 // scanExternLibrary scans a block of external function declarations.
 func (s *scanner) scanExternLibrary(file *fs.File, tokens token.List, i int) (int, error) {
-	dllName := tokens[i].String(file.Bytes)
+	dllName := tokens[i].StringFrom(file.Bytes)
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
-		return i, errors.New(MissingBlockStart, file, tokens[i].Position)
+		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 	}
 
 	i++
@@ -64,5 +64,5 @@ func (s *scanner) scanExternLibrary(file *fs.File, tokens token.List, i int) (in
 		i++
 	}
 
-	return i, errors.New(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
 }

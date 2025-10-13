@@ -9,7 +9,7 @@ import (
 func (f *Function) selectFunction(fn *Function, inputExpressions []*expression.Expression, identifier *expression.Expression) (*Function, error) {
 	if fn.Next == nil {
 		if len(inputExpressions) != len(fn.Input) {
-			return nil, errors.New(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, identifier.Source().EndPos)
+			return nil, errors.NewAt(&ParameterCountMismatch{Function: fn.FullName, Count: len(inputExpressions), ExpectedCount: len(fn.Input)}, f.File, identifier.Source().End())
 		}
 
 		return fn, nil

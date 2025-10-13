@@ -12,6 +12,7 @@ var (
 	InvalidExpression          = errors.String("Invalid expression")
 	InvalidFunctionDefinition  = errors.String("Invalid function definition")
 	InvalidParameterName       = errors.String("Invalid parameter name")
+	InvalidTopLevel            = errors.String("Invalid top level instruction")
 	MissingAssign              = errors.String("Missing '='")
 	MissingBlockStart          = errors.String("Missing '{'")
 	MissingBlockEnd            = errors.String("Missing '}'")
@@ -39,15 +40,6 @@ type InvalidCharacter struct {
 
 func (err *InvalidCharacter) Error() string {
 	return fmt.Sprintf("Invalid character '%s'", err.Character)
-}
-
-// InvalidTopLevel error is created when a top-level instruction is not valid.
-type InvalidTopLevel struct {
-	Instruction string
-}
-
-func (err *InvalidTopLevel) Error() string {
-	return fmt.Sprintf("Invalid top level instruction '%s'", err.Instruction)
 }
 
 // IsNotDirectory error is created when a path is not a directory.
