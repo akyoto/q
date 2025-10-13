@@ -15,7 +15,7 @@ func (s *scanner) scanImport(file *fs.File, tokens token.List, i int) (int, erro
 	i++
 
 	if tokens[i].Kind != token.Identifier {
-		return i, errors.NewAt(ExpectedPackageName, file, tokens[i].Position)
+		return i, errors.New(ExpectedPackageName, file, tokens[i])
 	}
 
 	packageName := tokens[i].StringFrom(file.Bytes)
@@ -23,16 +23,16 @@ func (s *scanner) scanImport(file *fs.File, tokens token.List, i int) (int, erro
 	stat, err := os.Stat(fullPath)
 
 	if err != nil {
-		return i, errors.NewAt(&UnknownImport{Package: packageName}, file, tokens[i].Position)
+		return i, errors.New(&UnknownImport{Package: packageName}, file, tokens[i])
 	}
 
 	if !stat.IsDir() {
-		return i, errors.NewAt(&IsNotDirectory{Path: fullPath}, file, tokens[i].Position)
+		return i, errors.New(&IsNotDirectory{Path: fullPath}, file, tokens[i])
 	}
 
 	file.Imports[packageName] = &fs.Import{
-		Package:  packageName,
-		Position: tokens[i].Position,
+		Package: packageName,
+		Tokens:  tokens[i : i+1],
 	}
 
 	s.queueDirectory(fullPath, packageName)

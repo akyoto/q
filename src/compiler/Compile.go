@@ -59,7 +59,7 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	for _, file := range env.Files {
 		for _, imp := range file.Imports {
 			if !imp.IsUsed() {
-				return nil, errors.NewAt(&UnusedImport{Package: imp.Package}, file, imp.Position)
+				return nil, errors.New(&UnusedImport{Package: imp.Package}, file, imp.Tokens)
 			}
 		}
 	}

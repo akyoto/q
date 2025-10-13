@@ -8,9 +8,9 @@ import (
 
 // Import contains data about an import statement in a file.
 type Import struct {
-	Package  string
-	Position token.Position
-	Used     atomic.Uint64
+	Package string
+	Tokens  token.List
+	Used    atomic.Uint64
 }
 
 // IsUsed returns true if the import was used.
