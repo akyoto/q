@@ -30,7 +30,6 @@ execute(path string) {
 
 	if err != 0 {
 		io.write("error executing: ")
-		io.write(path)
-		io.write("\n")
+		io.writeLine(path)
 	}
 }

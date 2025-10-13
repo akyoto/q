@@ -2,20 +2,12 @@ import io
 import math
 
 main() {
-	io.write(math.maxInt8)
-	io.write("\n")
-	io.write(math.minInt8)
-	io.write("\n")
-	io.write(math.maxInt16)
-	io.write("\n")
-	io.write(math.minInt16)
-	io.write("\n")
-	io.write(math.maxInt32)
-	io.write("\n")
-	io.write(math.minInt32)
-	io.write("\n")
-	io.write(math.maxInt64)
-	io.write("\n")
-	io.write(math.minInt64)
-	io.write("\n")
+	io.writeLine(math.maxInt8)
+	io.writeLine(math.minInt8)
+	io.writeLine(math.maxInt16)
+	io.writeLine(math.minInt16)
+	io.writeLine(math.maxInt32)
+	io.writeLine(math.minInt32)
+	io.writeLine(math.maxInt64)
+	io.writeLine(math.minInt64)
 }

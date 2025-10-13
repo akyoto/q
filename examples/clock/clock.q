@@ -6,8 +6,7 @@ main() {
 
 	loop {
 		elapsed := time.since(start)
-		io.write(elapsed / time.second)
-		io.write("\n")
+		io.writeLine(elapsed / time.second)
 		time.sleep(time.second - elapsed % time.second)
 	}
 }

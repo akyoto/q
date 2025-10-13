@@ -3,12 +3,12 @@ write(n int) {
 		write("-")
 	}
 
-	writeInt(n, 10)
+	writeDigits(n, 10)
 }
 
-writeInt(n int, base int) {
+writeDigits(n int, base int) {
 	if n >= base || n <= -base {
-		writeInt(n / base, base)
+		writeDigits(n / base, base)
 	}
 
 	writeDigit(n % base)

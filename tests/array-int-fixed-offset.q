@@ -14,12 +14,8 @@ fill(x []int) {
 }
 
 show(x []int) {
-	io.write(x[127])
-	io.write("\n")
-	io.write(x[128])
-	io.write("\n")
-	io.write(x[4095])
-	io.write("\n")
-	io.write(x[4096])
-	io.write("\n")
+	io.writeLine(x[127])
+	io.writeLine(x[128])
+	io.writeLine(x[4095])
+	io.writeLine(x[4096])
 }

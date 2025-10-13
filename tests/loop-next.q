@@ -6,7 +6,6 @@ main() {
 			loop.next()
 		}
 
-		io.write(i)
-		io.write("\n")
+		io.writeLine(i)
 	}
 }
