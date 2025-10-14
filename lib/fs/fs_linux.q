@@ -1,5 +1,15 @@
-open(path *byte, flags int, mode int) -> (!int, error) {
-	fd := syscall(_openat, -100, path, flags, mode)
+openRead(path *byte) -> (!int, error) {
+	fd := syscall(_openat, -100, path, readOnly, 0)
+
+	if fd < 0 {
+		return 0, fd
+	}
+
+	return fd, 0
+}
+
+openWrite(path *byte) -> (!int, error) {
+	fd := syscall(_openat, -100, path, writeOnly | create | truncate, 0o644)
 
 	if fd < 0 {
 		return 0, fd

@@ -4,7 +4,7 @@ import mem
 
 readFile(path string) -> (!string, error) {
 	cpath := c.string(path)
-	fd, err := open(cpath.ptr, 0, 0)
+	fd, err := openRead(cpath.ptr)
 	mem.free(cpath)
 
 	if err != 0 {

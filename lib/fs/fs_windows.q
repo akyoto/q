@@ -1,5 +1,15 @@
-open(path *byte, _flags int, _mode int) -> (!int, error) {
+openRead(path *byte) -> (!int, error) {
 	fd := kernel32.CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+
+	if fd == -1 {
+		return 0, fd
+	}
+
+	return fd, 0
+}
+
+openWrite(path *byte) -> (!int, error) {
+	fd := kernel32.CreateFileA(path, GENERIC_WRITE, FILE_SHARE_WRITE, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0)
 
 	if fd == -1 {
 		return 0, fd

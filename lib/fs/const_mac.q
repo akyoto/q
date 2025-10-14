@@ -1,0 +1,6 @@
+const {
+	readOnly = 0x0
+	writeOnly = 0x1
+	create = 0x200
+	truncate = 0x400
+}
