@@ -2,7 +2,7 @@ import c
 import io
 import mem
 
-writeFile(path string, content string) -> error {
+writeFile(path string, buffer string) -> error {
 	cpath := c.string(path)
 	fd, err := openWrite(cpath.ptr)
 	mem.free(cpath)
@@ -11,7 +11,21 @@ writeFile(path string, content string) -> error {
 		return err
 	}
 
-	io.writeTo(fd, content)
-	close(fd)
-	return 0
+	pos := 0
+
+	loop {
+		n, err := io.writeTo(fd, buffer[pos..])
+
+		if err != 0 {
+			close(fd)
+			return err
+		}
+
+		pos += n
+
+		if pos >= buffer.len {
+			close(fd)
+			return 0
+		}
+	}
 }
