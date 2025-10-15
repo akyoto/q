@@ -7,25 +7,27 @@ import (
 )
 
 // composeStruct unpacks registers into struct fields.
-func (f *Function) composeStruct(structure *ssa.Struct, structType *types.Struct, input *ssa.Parameter, i int, offset int) int {
+func (f *Function) composeStruct(structType *types.Struct, input *ssa.Parameter, i int, offset int) (*ssa.Struct, int) {
+	fields := make([]ssa.Value, 0, len(structType.Fields))
+
 	if structType.Size() > 16 {
 		for _, field := range structType.Fields {
 			param := &ssa.Parameter{
-				Index:     uint8(offset + i),
-				Name:      input.Name + "." + field.Name,
-				Typ:       field.Type,
-				Tokens:    input.Tokens,
-				Structure: structure,
-				Source:    input.Source,
+				Index:  uint8(offset + i),
+				Name:   input.Name + "." + field.Name,
+				Typ:    field.Type,
+				Tokens: input.Tokens,
+				Source: input.Source,
 			}
 
 			f.Append(param)
 			f.Block().Identify(param.Name, param)
-			structure.Arguments = append(structure.Arguments, param)
+			fields = append(fields, param)
 			offset++
 		}
 
-		return offset - 1
+		structure := f.makeStruct(structType, input.Source, fields)
+		return structure, offset - 1
 	}
 
 	var (
@@ -38,11 +40,10 @@ func (f *Function) composeStruct(structure *ssa.Struct, structType *types.Struct
 
 		if size+fieldSize > 8 {
 			param = &ssa.Parameter{
-				Index:     uint8(offset + i),
-				Typ:       field.Type,
-				Tokens:    input.Tokens,
-				Structure: structure,
-				Source:    input.Source,
+				Index:  uint8(offset + i),
+				Typ:    field.Type,
+				Tokens: input.Tokens,
+				Source: input.Source,
 			}
 
 			f.Append(param)
@@ -66,13 +67,14 @@ func (f *Function) composeStruct(structure *ssa.Struct, structType *types.Struct
 			}
 
 			mask := f.Append(&ssa.Int{Int: (1 << (fieldSize * 8)) - 1})
-			fieldValue = f.Append(&ssa.BinaryOp{Op: token.And, Left: shifted, Right: mask, Source: param.Source, Structure: structure})
+			fieldValue = f.Append(&ssa.BinaryOp{Op: token.And, Left: shifted, Right: mask, Source: param.Source})
 		}
 
 		f.Block().Identify(input.Name+"."+field.Name, fieldValue)
-		structure.Arguments = append(structure.Arguments, fieldValue)
+		fields = append(fields, fieldValue)
 		size += fieldSize
 	}
 
-	return offset - 1
+	structure := f.makeStruct(structType, input.Source, fields)
+	return structure, offset - 1
 }

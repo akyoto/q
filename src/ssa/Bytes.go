@@ -9,8 +9,7 @@ import (
 
 // Bytes is a raw slice of bytes.
 type Bytes struct {
-	Bytes     []byte
-	Structure *Struct
+	Bytes []byte
 	Liveness
 	Source
 }
@@ -37,9 +36,6 @@ func (b *Bytes) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the byte slice.
 func (b *Bytes) String() string { return strconv.Quote(string(b.Bytes)) }
-
-// Struct returns the struct that this byte slice is a part of.
-func (b *Bytes) Struct() *Struct { return b.Structure }
 
 // Type returns the CString type.
 func (b *Bytes) Type() types.Type { return types.CString }

@@ -8,7 +8,6 @@ import (
 
 // Int is an integer value.
 type Int struct {
-	Structure *Struct
 	Liveness
 	Int int
 	Source
@@ -36,9 +35,6 @@ func (i *Int) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the integer.
 func (i *Int) String() string { return strconv.Itoa(i.Int) }
-
-// Struct returns the struct that this integer is a part of.
-func (i *Int) Struct() *Struct { return i.Structure }
 
 // Type returns the type of the integer.
 func (i *Int) Type() types.Type { return types.AnyInt }

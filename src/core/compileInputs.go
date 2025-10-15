@@ -23,8 +23,8 @@ func (f *Function) compileInputs() {
 		}
 
 		if isStructType {
-			structure := &ssa.Struct{Typ: structType, Source: input.Source}
-			offset = f.composeStruct(structure, structType, input, i, offset)
+			var structure *ssa.Struct
+			structure, offset = f.composeStruct(structType, input, i, offset)
 			f.Block().Identify(input.Name, structure)
 			continue
 		}

@@ -34,12 +34,12 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 		value = phi.FirstDefined()
 	}
 
-	structField, isFieldOfStruct := value.(ssa.StructField)
+	structure, isFieldOfStruct := f.valueToStruct[value]
 
-	if isFieldOfStruct && structField.Struct() != nil {
+	if isFieldOfStruct {
 		partiallyUnused := false
 
-		for _, field := range structField.Struct().Arguments {
+		for _, field := range structure.Arguments {
 			if len(field.Users()) > 0 {
 				partiallyUnused = true
 				break

@@ -8,8 +8,7 @@ import (
 
 // FromTuple is a value inside of a struct or tuple.
 type FromTuple struct {
-	Tuple     Value
-	Structure *Struct
+	Tuple Value
 	Liveness
 	Index int
 	Source
@@ -41,9 +40,6 @@ func (f *FromTuple) Replace(old Value, new Value) {
 
 // String returns a human-readable representation of the tuple access.
 func (f *FromTuple) String() string { return fmt.Sprintf("field(%p, %d)", f.Tuple, f.Index) }
-
-// Struct returns the struct that this tuple is a part of.
-func (f *FromTuple) Struct() *Struct { return f.Structure }
 
 // Type returns the type of the tuple element.
 func (f *FromTuple) Type() types.Type {

@@ -9,9 +9,8 @@ import (
 
 // BinaryOp is an operation with two operands.
 type BinaryOp struct {
-	Left      Value
-	Right     Value
-	Structure *Struct
+	Left  Value
+	Right Value
 	Liveness
 	Source
 	Op token.Kind
@@ -56,11 +55,6 @@ func (op *BinaryOp) Replace(old Value, new Value) {
 // String returns a human-readable representation of the binary operation.
 func (op *BinaryOp) String() string {
 	return fmt.Sprintf("%p %s %p", op.Left, op.Op, op.Right)
-}
-
-// Struct returns the structure this operation belongs to.
-func (op *BinaryOp) Struct() *Struct {
-	return op.Structure
 }
 
 // Type returns the type of the result of the binary operation.

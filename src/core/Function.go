@@ -11,18 +11,19 @@ import (
 
 // Function is the smallest unit of code.
 type Function struct {
-	File         *fs.File
-	Type         *types.Function
-	Env          *Environment
-	Input        []*ssa.Parameter
-	Output       []*ssa.Parameter
-	Dependencies set.Ordered[*Function]
-	Previous     *Function
-	Next         *Function
-	Err          error
-	name         string
-	pkg          string
-	body         token.Source
+	File          *fs.File
+	Type          *types.Function
+	Env           *Environment
+	Input         []*ssa.Parameter
+	Output        []*ssa.Parameter
+	Dependencies  set.Ordered[*Function]
+	Err           error
+	Previous      *Function
+	Next          *Function
+	name          string
+	pkg           string
+	body          token.Source
+	valueToStruct map[ssa.Value]*ssa.Struct
 	loopStack
 	ssa.IR
 	codegen.Function

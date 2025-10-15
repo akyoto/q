@@ -8,7 +8,6 @@ import (
 
 // Bool is a boolean value.
 type Bool struct {
-	Structure *Struct
 	Liveness
 	Bool bool
 	Source
@@ -36,9 +35,6 @@ func (b *Bool) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the boolean value.
 func (b *Bool) String() string { return fmt.Sprint(b.Bool) }
-
-// Struct returns the struct that this boolean value is a part of.
-func (b *Bool) Struct() *Struct { return b.Structure }
 
 // Type returns the boolean type.
 func (b *Bool) Type() types.Type { return types.Bool }

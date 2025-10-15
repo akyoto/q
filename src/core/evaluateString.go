@@ -11,23 +11,16 @@ func (f *Function) evaluateString(expr *expression.Expression) (ssa.Value, error
 	data := expr.Token.Bytes(f.File.Bytes)
 	data = unescape(data)
 
-	v := &ssa.Struct{
-		Typ:    types.String,
-		Source: expr.Source(),
-	}
-
 	length := f.Append(&ssa.Int{
-		Int:       len(data),
-		Structure: v,
-		Source:    expr.Source(),
+		Int:    len(data),
+		Source: expr.Source(),
 	})
 
 	pointer := f.Append(&ssa.Bytes{
-		Bytes:     data,
-		Structure: v,
-		Source:    expr.Source(),
+		Bytes:  data,
+		Source: expr.Source(),
 	})
 
-	v.Arguments = []ssa.Value{pointer, length}
+	v := f.makeStruct(types.String, expr.Source(), []ssa.Value{pointer, length})
 	return v, nil
 }

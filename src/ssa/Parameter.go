@@ -9,10 +9,9 @@ import (
 
 // Parameter is an input parameter for a function call.
 type Parameter struct {
-	Typ       types.Type
-	Name      string
-	Tokens    token.List
-	Structure *Struct
+	Typ    types.Type
+	Name   string
+	Tokens token.List
 	Liveness
 	Source
 	Index uint8
@@ -37,9 +36,6 @@ func (p *Parameter) IsPure() bool { return true }
 
 // Replace does nothing because a parameter has no inputs.
 func (p *Parameter) Replace(Value, Value) {}
-
-// Struct returns the struct that this parameter is a part of.
-func (p *Parameter) Struct() *Struct { return p.Structure }
 
 // String returns a human-readable representation of the parameter.
 func (p *Parameter) String() string { return fmt.Sprintf("args[%d]", p.Index) }
