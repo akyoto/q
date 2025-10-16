@@ -1,6 +1,6 @@
 package token
 
-// digit handles all tokens that qualify as a digit.
+// digit handles all tokens that qualify as a decimal digit.
 func digit(tokens List, buffer []byte, i Position) (List, Position) {
 	position := i
 	i++
@@ -21,18 +21,7 @@ func digit(tokens List, buffer []byte, i Position) (List, Position) {
 	return tokens, i
 }
 
+// isDigit returns true for decimal digits.
 func isDigit(c byte) bool {
 	return c >= '0' && c <= '9'
-}
-
-func isHexDigit(c byte) bool {
-	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')
-}
-
-func isBinaryDigit(c byte) bool {
-	return c == '0' || c == '1'
-}
-
-func isOctalDigit(c byte) bool {
-	return c >= '0' && c <= '7'
 }

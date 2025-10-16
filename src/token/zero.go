@@ -33,3 +33,18 @@ func zero(tokens List, buffer []byte, i Position) (List, Position) {
 	tokens = append(tokens, Token{Kind: Number, Position: position, Length: Length(i - position)})
 	return tokens, i
 }
+
+// isHexDigit returns true if the character represents a hexadecimal digit.
+func isHexDigit(c byte) bool {
+	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')
+}
+
+// isBinaryDigit returns true if the character represents a binary digit.
+func isBinaryDigit(c byte) bool {
+	return c == '0' || c == '1'
+}
+
+// isOctalDigit returns true if the character represents an octal digit.
+func isOctalDigit(c byte) bool {
+	return c >= '0' && c <= '7'
+}

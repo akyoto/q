@@ -26,3 +26,13 @@ func TestInterningReverse(t *testing.T) {
 	assert.Equal(t, positions["label1"], 1)
 	assert.Equal(t, positions["label2"], 0)
 }
+
+func TestNoInterning(t *testing.T) {
+	d := data.Data{}
+	d.SetMutable("label1", []byte{0xAB, 0xCD, 0xEF})
+	d.SetMutable("label2", []byte{0xCD, 0xEF})
+	raw, positions := d.Finalize()
+	assert.DeepEqual(t, raw, []byte{0xAB, 0xCD, 0xEF, 0x00, 0xCD, 0xEF})
+	assert.Equal(t, positions["label1"], 0)
+	assert.Equal(t, positions["label2"], 4)
+}

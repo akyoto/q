@@ -6,6 +6,7 @@ import (
 	"sort"
 )
 
+// appendImmutable adds data that is immutable and eligible for string interning.
 func (data *Data) appendImmutable(final []byte, positions map[string]int) []byte {
 	keys := make([]string, 0, len(data.Immutable))
 

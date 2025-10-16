@@ -49,14 +49,21 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 	return tokens, i
 }
 
+// isIdentifier returns true if the character is a letter,
+// a digit or an underscore.
 func isIdentifier(c byte) bool {
 	return isLetter(c) || isDigit(c) || c == '_'
 }
 
+// isIdentifierStart returns true if the character is the
+// start of an identifier which is either a letter or an
+// underscore.
 func isIdentifierStart(c byte) bool {
 	return isLetter(c) || c == '_'
 }
 
+// isLetter returns true if the character is a lowercase
+// or uppercase letter in the English alphabet.
 func isLetter(c byte) bool {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 }
