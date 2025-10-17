@@ -18,12 +18,7 @@ func MoveRegisterNumber(code []byte, destination cpu.Register, number int) []byt
 		return moveRegisterNumber32(code, destination, number)
 	}
 
-	b := byte(0)
-
-	if destination > 0b111 {
-		b = 1
-		destination &= 0b111
-	}
+	b, destination := split(destination)
 
 	if w != 0 || b != 0 {
 		code = append(code, REX(w, 0, 0, b))

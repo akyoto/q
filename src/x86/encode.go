@@ -13,15 +13,8 @@ func encode(code []byte, mod AddressMode, reg cpu.Register, rm cpu.Register, num
 		w = 1
 	}
 
-	if reg > 0b111 {
-		r = 1
-		reg &= 0b111
-	}
-
-	if rm > 0b111 {
-		b = 1
-		rm &= 0b111
-	}
+	r, reg = split(reg)
+	b, rm = split(rm)
 
 	if w != 0 || r != 0 || x != 0 || b != 0 || (numBytes == 1 && (reg == SP || reg == R5 || reg == R6 || reg == R7)) {
 		code = append(code, REX(w, r, x, b))

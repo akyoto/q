@@ -10,10 +10,6 @@ func Load(code []byte, destination cpu.Register, base cpu.Register, offset cpu.R
 // LoadZeroExtend loads from memory with a register offset into a register and zero-extends it.
 func LoadZeroExtend(code []byte, destination cpu.Register, base cpu.Register, offset cpu.Register, scale Scale, length byte) []byte {
 	var (
-		w      = byte(1)
-		r      = byte(0)
-		x      = byte(0)
-		b      = byte(0)
 		opCode = byte(0xB7)
 		mod    = AddressMemory
 	)
@@ -26,20 +22,10 @@ func LoadZeroExtend(code []byte, destination cpu.Register, base cpu.Register, of
 		offset, base = base, offset
 	}
 
-	if destination > 0b111 {
-		r = 1
-		destination &= 0b111
-	}
-
-	if offset > 0b111 {
-		x = 1
-		offset &= 0b111
-	}
-
-	if base > 0b111 {
-		b = 1
-		base &= 0b111
-	}
+	w := byte(1)
+	r, destination := split(destination)
+	x, offset := split(offset)
+	b, base := split(base)
 
 	if base == R5 || base == R13 {
 		mod = AddressMemoryOffset8
