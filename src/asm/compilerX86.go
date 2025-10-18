@@ -346,6 +346,12 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *Store:
 		scale := toX86Scale(instr.Scale, instr.Length)
 		c.code = x86.StoreRegister(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Source)
+	case *StoreFixedOffset:
+		scale := toX86Scale(instr.Scale, instr.Length)
+		c.code = x86.StoreFixedOffsetRegister(c.code, instr.Base, int8(instr.Index), scale, instr.Length, instr.Source)
+	case *StoreFixedOffsetNumber:
+		scale := toX86Scale(instr.Scale, instr.Length)
+		c.code = x86.StoreFixedOffsetNumber(c.code, instr.Base, int8(instr.Index), scale, instr.Length, instr.Number)
 	case *StoreNumber:
 		scale := toX86Scale(instr.Scale, instr.Length)
 		c.code = x86.StoreNumber(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Number)

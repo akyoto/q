@@ -85,9 +85,25 @@ func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 	case *ssa.Store:
 		switch f.build.Arch {
 		case config.ARM:
+			if instr.Memory.Index == number {
+				if instr.Memory.Scale {
+					return number.Int >= 0 && number.Int <= 4095
+				} else {
+					return number.Int >= -256 && number.Int <= 255
+				}
+			}
+
 			return false
 		case config.X86:
-			return instr.Value == number && cpu.SizeInt(number.Int) <= 4
+			if instr.Value == number && cpu.SizeInt(number.Int) <= 4 {
+				return true
+			}
+
+			if instr.Memory.Index == number && cpu.SizeInt(number.Int) <= 1 {
+				return true
+			}
+
+			return false
 		}
 	}
 

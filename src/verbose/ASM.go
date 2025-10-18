@@ -273,6 +273,30 @@ func printAssembly(f *core.Function) {
 			}
 			other.Print("], ")
 			register.Print(instr.Source)
+		case *asm.StoreFixedOffset:
+			mnemonic.Printf("  store %db ", instr.Length)
+			other.Print("[")
+			register.Print(instr.Base)
+			other.Print(" + ")
+			imm.Print(instr.Index)
+			if instr.Scale {
+				other.Print(" * ")
+				imm.Print(instr.Length)
+			}
+			other.Print("], ")
+			register.Print(instr.Source)
+		case *asm.StoreFixedOffsetNumber:
+			mnemonic.Printf("  store %db ", instr.Length)
+			other.Print("[")
+			register.Print(instr.Base)
+			other.Print(" + ")
+			imm.Print(instr.Index)
+			if instr.Scale {
+				other.Print(" * ")
+				imm.Print(instr.Length)
+			}
+			other.Print("], ")
+			imm.Print(instr.Number)
 		case *asm.StoreNumber:
 			mnemonic.Printf("  store %db ", instr.Length)
 			other.Print("[")

@@ -252,6 +252,14 @@ func (c *compilerARM) Compile(instr Instruction) {
 		}
 
 		c.append(arm.StoreRegister(instr.Source, instr.Base, instr.Index, scale, instr.Length))
+	case *StoreFixedOffset:
+		if instr.Scale {
+			c.append(arm.StoreFixedOffsetRegisterScaled(instr.Source, instr.Base, arm.UnscaledImmediate, uint(instr.Index), instr.Length))
+		} else {
+			c.append(arm.StoreFixedOffsetRegister(instr.Source, instr.Base, arm.UnscaledImmediate, instr.Index, instr.Length))
+		}
+	case *StoreFixedOffsetNumber:
+		panic("arm64 does not support memory stores of immediates")
 	case *StoreNumber:
 		panic("arm64 does not support memory stores of immediates")
 	case *Subtract:

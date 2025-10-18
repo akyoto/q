@@ -34,15 +34,15 @@ type (
 		Base        cpu.Register
 		Index       cpu.Register
 		Destination cpu.Register
-		Scale       bool
 		Length      byte
+		Scale       bool
 	}
 	LoadFixedOffset struct {
 		Base        cpu.Register
 		Index       int
 		Destination cpu.Register
-		Scale       bool
 		Length      byte
+		Scale       bool
 	}
 	Modulo       rrr
 	ModuloSigned rrr
@@ -69,6 +69,20 @@ type (
 		Base   cpu.Register
 		Index  cpu.Register
 		Source cpu.Register
+		Length byte
+		Scale  bool
+	}
+	StoreFixedOffset struct {
+		Base   cpu.Register
+		Index  int
+		Source cpu.Register
+		Length byte
+		Scale  bool
+	}
+	StoreFixedOffsetNumber struct {
+		Number int
+		Base   cpu.Register
+		Index  int
 		Length byte
 		Scale  bool
 	}
