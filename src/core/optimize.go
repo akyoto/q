@@ -32,6 +32,16 @@ func (f *Function) optimize() error {
 		f.removeCopies()
 	}
 
+	// Lint binary operations that can often be reduced to
+	// simpler expressions.
+	if f.Env.Build.LintBinaryOps {
+		err := f.lintBinaryOps()
+
+		if err != nil {
+			return err
+		}
+	}
+
 	// Binary operations with constant operands are evaluated
 	// at compile time. For example, 1 + 2 becomes 3, and the
 	// result is propagated to subsequent operations.

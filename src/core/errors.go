@@ -9,6 +9,7 @@ import (
 var (
 	AlwaysFalse               = errors.String("Condition is always false")
 	AlwaysTrue                = errors.String("Condition is always true")
+	DivisionByZero            = errors.String("Division by zero")
 	ExpectedPackageMember     = errors.String("Expected package member")
 	ExpectedStructField       = errors.String("Expected struct field")
 	InvalidCallExpression     = errors.String("Invalid call expression")
@@ -209,6 +210,15 @@ type UndefinedStructField struct {
 
 func (err *UndefinedStructField) Error() string {
 	return fmt.Sprintf("Struct field '%s' of '%s' has an undefined value", err.FieldName, err.Identifier)
+}
+
+// Simplify error is created when a value can be replaced with another one.
+type Simplify struct {
+	To string
+}
+
+func (err *Simplify) Error() string {
+	return fmt.Sprintf("Can be simplified to '%s'", err.To)
 }
 
 // UnknownStructField represents unknown struct fields.

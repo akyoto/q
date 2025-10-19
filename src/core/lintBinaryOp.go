@@ -7,12 +7,105 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// lintBinary checks for some common mistakes in binary expressions.
+// lintBinaryOp checks for some common mistakes in binary expressions.
 func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
-	switch binOp.Op {
-	case token.Sub, token.Div, token.Mod, token.And, token.Or, token.Xor, token.Equal, token.NotEqual, token.Less, token.LessEqual, token.Greater, token.GreaterEqual:
-		if binOp.Left == binOp.Right {
+	if binOp.Source.End() == 0 {
+		return nil
+	}
+
+	if binOp.Left == binOp.Right {
+		switch binOp.Op {
+		case token.Sub, token.Div, token.Mod, token.And, token.Or, token.Xor, token.Equal, token.NotEqual, token.Less, token.LessEqual, token.Greater, token.GreaterEqual:
 			return errors.New(&IdenticalExpressions{Operator: binOp.Op.String()}, f.File, binOp.Source)
+		}
+	}
+
+	left, leftIsInt := binOp.Left.(*ssa.Int)
+	right, rightIsInt := binOp.Right.(*ssa.Int)
+
+	switch binOp.Op {
+	case token.Add, token.Sub:
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Right.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+	case token.And:
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 0 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+	case token.Mul:
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 0 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+		if leftIsInt && left.Int == 1 {
+			return errors.New(&Simplify{To: binOp.Right.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 1 {
+			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+	case token.Div:
+		if rightIsInt && right.Int == 0 {
+			return errors.New(DivisionByZero, f.File, binOp.Source)
+		}
+
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 1 {
+			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+	case token.Mod:
+		if rightIsInt && right.Int == 0 {
+			return errors.New(DivisionByZero, f.File, binOp.Source)
+		}
+
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 1 {
+			return errors.New(&Simplify{To: "0"}, f.File, binOp.Source)
+		}
+
+	case token.Or:
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Right.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+	case token.Shl, token.Shr:
+		if rightIsInt && right.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+	case token.Xor:
+		if leftIsInt && left.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Right.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
+		}
+
+		if rightIsInt && right.Int == 0 {
+			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(f.File.Bytes)}, f.File, binOp.Source)
 		}
 	}
 
