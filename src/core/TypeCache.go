@@ -9,10 +9,10 @@ import (
 // TypeCache contains reusable type objects.
 type TypeCache struct {
 	pointerTypes  map[types.Type]types.Type
-	pointerMutex  sync.Mutex
 	resourceTypes map[types.Type]types.Type
-	resourceMutex sync.Mutex
 	sliceTypes    map[types.Type]types.Type
+	pointerMutex  sync.Mutex
+	resourceMutex sync.Mutex
 	sliceMutex    sync.Mutex
 }
 

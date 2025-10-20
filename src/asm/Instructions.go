@@ -31,15 +31,15 @@ type (
 		Align uint8
 	}
 	Load struct {
-		Base        cpu.Register
 		Index       cpu.Register
+		Base        cpu.Register
 		Destination cpu.Register
 		Length      byte
 		Scale       bool
 	}
 	LoadFixedOffset struct {
-		Base        cpu.Register
 		Index       int
+		Base        cpu.Register
 		Destination cpu.Register
 		Length      byte
 		Scale       bool
@@ -66,23 +66,23 @@ type (
 	ShiftRightSigned       rrr
 	ShiftRightSignedNumber rrn
 	Store                  struct {
-		Base   cpu.Register
 		Index  cpu.Register
+		Base   cpu.Register
 		Source cpu.Register
 		Length byte
 		Scale  bool
 	}
 	StoreFixedOffset struct {
-		Base   cpu.Register
 		Index  int
+		Base   cpu.Register
 		Source cpu.Register
 		Length byte
 		Scale  bool
 	}
 	StoreFixedOffsetNumber struct {
+		Index  int
 		Number int
 		Base   cpu.Register
-		Index  int
 		Length byte
 		Scale  bool
 	}
