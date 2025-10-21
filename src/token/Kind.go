@@ -70,16 +70,18 @@ const (
 	___END_OPERATORS___               // </operators>
 	___KEYWORDS___                    // <keywords>
 	Assert                            // assert
+	Go                                // go
+	Import                            // import
+	Return                            // return
+	___BLOCKS___                      // <blocks>
 	Const                             // const
 	Else                              // else
 	Extern                            // extern
 	Global                            // global
-	Go                                // go
 	If                                // if
-	Import                            // import
 	Loop                              // loop
-	Return                            // return
 	Switch                            // switch
+	___END_BLOCKS___                  // </blocks>
 	___END_KEYWORDS___                // </keywords>
 	___BUILTINS___                    // <builtins>
 	Delete                            // delete
@@ -91,6 +93,11 @@ const (
 // IsAssignment returns true if the token is an assignment operator.
 func (k Kind) IsAssignment() bool {
 	return k > ___ASSIGNMENTS___ && k < ___END_ASSIGNMENTS___
+}
+
+// IsBlock returns true if the token is a block.
+func (k Kind) IsBlock() bool {
+	return k > ___BLOCKS___ && k < ___END_BLOCKS___
 }
 
 // IsBuiltin returns true if the token is a builtin function.

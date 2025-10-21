@@ -40,9 +40,7 @@ func (list List) Instructions(yield func(List) bool) {
 				continue
 			}
 
-			switch list[start].Kind {
-			case Const, Else, Extern, If, Loop, Switch:
-			default:
+			if !list[start].Kind.IsBlock() {
 				continue
 			}
 
