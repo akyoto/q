@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
 )
@@ -13,14 +15,27 @@ func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFra
 	f.hasStackFrame = hasStackFrame
 	f.hasExternCalls = hasExternCalls
 	f.build = build
+	f.IR = createSteps(ir)
+	f.reorderPhis()
 
-	// Transform SSA graph to a flat slice of steps we can execute one by one.
-	f.createSteps(ir)
+	for _, step := range slices.Backward(f.Steps) {
+		f.hintABI(step)
+		f.createLiveRanges(step)
+	}
 
-	// Create the stack frame and preserve registers if needed.
+	for _, step := range slices.Backward(f.Steps) {
+		if step.Register == -1 && f.needsRegister(step) {
+			f.assignFreeRegister(step)
+		}
+
+		f.hintDestination(step)
+	}
+
+	f.reorderParameters()
+	f.fixRegisterConflicts()
+	f.addPreservedRegisters()
 	f.enter()
 
-	// Execute all steps to produce assembly code.
 	for _, step := range f.Steps {
 		f.execute(step)
 	}

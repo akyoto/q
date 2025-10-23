@@ -1,18 +1,14 @@
 package codegen
 
-import (
-	"slices"
-
-	"git.urbach.dev/cli/q/src/ssa"
-)
+import "git.urbach.dev/cli/q/src/ssa"
 
 // createSteps builds a series of instructions from the SSA values in the IR.
-func (f *Function) createSteps(ir ssa.IR) {
+func createSteps(ir ssa.IR) IR {
 	count := ir.CountValues() + len(ir.Blocks) - 1
 	storage := make([]Step, count)
-	f.Steps = make([]*Step, count)
-	f.ValueToStep = make(map[ssa.Value]*Step, count)
-	f.BlockToRegion = make(map[*ssa.Block]region, len(ir.Blocks))
+	steps := make([]*Step, count)
+	valueToStep := make(map[ssa.Value]*Step, count)
+	blockToRegion := make(map[*ssa.Block]region, len(ir.Blocks))
 	i := 0
 
 	for _, block := range ir.Blocks {
@@ -22,11 +18,11 @@ func (f *Function) createSteps(ir ssa.IR) {
 			step.Value = &Label{Name: block.Label}
 			step.Block = block
 			step.Register = -1
-			f.Steps[i] = step
+			steps[i] = step
 			i++
 		}
 
-		f.BlockToRegion[block] = region{
+		blockToRegion[block] = region{
 			Start: uint32(i),
 			End:   uint32(i + len(block.Instructions)),
 		}
@@ -38,28 +34,11 @@ func (f *Function) createSteps(ir ssa.IR) {
 			step.Block = block
 			step.Register = -1
 			step.Live = make([]*Step, 0, 4)
-			f.Steps[i] = step
-			f.ValueToStep[instr] = step
+			steps[i] = step
+			valueToStep[instr] = step
 			i++
 		}
 	}
 
-	f.reorderPhis()
-
-	for _, step := range slices.Backward(f.Steps) {
-		f.hintABI(step)
-		f.createLiveRanges(step)
-	}
-
-	for _, step := range slices.Backward(f.Steps) {
-		if step.Register == -1 && f.needsRegister(step) {
-			f.assignFreeRegister(step)
-		}
-
-		f.hintDestination(step)
-	}
-
-	f.reorderParameters()
-	f.fixRegisterConflicts()
-	f.addPreservedRegisters()
+	return IR{steps, valueToStep, blockToRegion}
 }
