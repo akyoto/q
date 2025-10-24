@@ -19,7 +19,7 @@ type Environment struct {
 	Packages     map[string]*Package
 	Files        []*fs.File
 	NumFunctions int
-	TypeCache
+	typeCache
 }
 
 // AddPackage returns an existing package with the giving name or creates a new one.

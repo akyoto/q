@@ -12,7 +12,7 @@ func NewEnvironment(build *config.Build) *Environment {
 		Build:    build,
 		Files:    make([]*fs.File, 0, 16),
 		Packages: make(map[string]*Package, 8),
-		TypeCache: TypeCache{
+		typeCache: typeCache{
 			pointerTypes: map[types.Type]types.Type{
 				types.Any:  types.AnyPointer,
 				types.Byte: types.CString,

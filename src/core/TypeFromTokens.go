@@ -78,7 +78,7 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 	}
 
 	name := tokens[0].StringFrom(file.Bytes)
-	typ := TypeByName(name, env)
+	typ := typeByName(name, env)
 
 	if typ != nil {
 		return typ, nil

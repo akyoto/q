@@ -4,8 +4,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// TypeByName returns the type with the given name or `nil` if it doesn't exist.
-func TypeByName(name string, env *Environment) types.Type {
+// typeByName returns the type with the given name or `nil` if it doesn't exist.
+func typeByName(name string, env *Environment) types.Type {
 	switch name {
 	case "string":
 		return types.String

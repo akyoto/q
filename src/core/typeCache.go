@@ -6,8 +6,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// TypeCache contains reusable type objects.
-type TypeCache struct {
+// typeCache contains reusable type objects.
+type typeCache struct {
 	pointerTypes  map[types.Type]types.Type
 	resourceTypes map[types.Type]types.Type
 	sliceTypes    map[types.Type]types.Type
@@ -17,7 +17,7 @@ type TypeCache struct {
 }
 
 // Pointer returns the type that points to the given type.
-func (c *TypeCache) Pointer(typ types.Type) types.Type {
+func (c *typeCache) Pointer(typ types.Type) types.Type {
 	c.pointerMutex.Lock()
 	defer c.pointerMutex.Unlock()
 	existing, exists := c.pointerTypes[typ]
@@ -31,7 +31,7 @@ func (c *TypeCache) Pointer(typ types.Type) types.Type {
 }
 
 // Resource returns the type that is a resource of the given type.
-func (c *TypeCache) Resource(typ types.Type) types.Type {
+func (c *typeCache) Resource(typ types.Type) types.Type {
 	c.resourceMutex.Lock()
 	defer c.resourceMutex.Unlock()
 	existing, exists := c.resourceTypes[typ]
@@ -45,7 +45,7 @@ func (c *TypeCache) Resource(typ types.Type) types.Type {
 }
 
 // Slice returns the type that is a slice of the given type.
-func (c *TypeCache) Slice(typ types.Type) types.Type {
+func (c *typeCache) Slice(typ types.Type) types.Type {
 	c.sliceMutex.Lock()
 	defer c.sliceMutex.Unlock()
 	existing, exists := c.sliceTypes[typ]

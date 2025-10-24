@@ -6,7 +6,7 @@ package core
 type recursionState byte
 
 const (
-	NotStarted recursionState = iota
-	Started
-	Finished
+	notStarted recursionState = iota
+	started
+	finished
 )

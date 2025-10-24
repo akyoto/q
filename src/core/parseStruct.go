@@ -8,11 +8,11 @@ import (
 
 // parseStruct parses the field tokens of a single struct.
 func (env *Environment) parseStruct(structure *types.Struct, processed map[*types.Struct]recursionState) error {
-	if processed[structure] == Finished {
+	if processed[structure] == finished {
 		return nil
 	}
 
-	processed[structure] = Started
+	processed[structure] = started
 	offset := 0
 
 	for i, field := range structure.Fields {
@@ -27,15 +27,15 @@ func (env *Environment) parseStruct(structure *types.Struct, processed map[*type
 
 		if isStruct {
 			switch processed[dependency] {
-			case NotStarted:
+			case notStarted:
 				err := env.parseStruct(dependency, processed)
 
 				if err != nil {
 					return err
 				}
-			case Started:
+			case started:
 				return errors.New(&CycleDetected{A: structure.Name(), B: dependency.Name()}, file, field.Tokens[1:])
-			case Finished:
+			case finished:
 			}
 		}
 
@@ -45,6 +45,6 @@ func (env *Environment) parseStruct(structure *types.Struct, processed map[*type
 		offset += field.Type.Size()
 	}
 
-	processed[structure] = Finished
+	processed[structure] = finished
 	return nil
 }
