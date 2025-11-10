@@ -2,5 +2,5 @@ git.urbach.dev/go/assert v0.0.0-20250606150337-559d3d3afcda h1:VN6ZQwtwLOm2xTms+
 git.urbach.dev/go/assert v0.0.0-20250606150337-559d3d3afcda/go.mod h1:PNI/NSBOqvoeU58/7eBsIR09Yoq2S/qtSRiTrctkiq0=
 git.urbach.dev/go/color v0.0.0-20250724092707-cb10458c2ffb h1:zRtG+SUC/gERJvyiVed7ht98nQVwEUzv9jKpwf67RAY=
 git.urbach.dev/go/color v0.0.0-20250724092707-cb10458c2ffb/go.mod h1:3WmHptxy9V/fNeu3YRNp9KtsoA6eMg5PA56RhqqctNE=
-golang.org/x/sys v0.37.0 h1:fdNQudmxPjkdUTPnLn5mdQv7Zwvbvpaxqs831goi9kQ=
-golang.org/x/sys v0.37.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
+golang.org/x/sys v0.38.0 h1:3yZWxaJjBmCWXqhN1qh02AkOnCQ1poK6oF+a7xWL6Gc=
+golang.org/x/sys v0.38.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
