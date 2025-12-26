@@ -3,6 +3,7 @@ package core
 // ReceiveFunction receives a function from the scanner.
 func (env *Environment) ReceiveFunction(f *Function) {
 	f.Env = env
+	f.CPU = env.Build.CPU()
 	pkg := env.AddPackage(f.Package(), f.IsExtern())
 	env.NumFunctions++
 

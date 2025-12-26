@@ -6,7 +6,6 @@ import (
 
 // Compile translates tokens to SSA form.
 func (f *Function) Compile() {
-	f.CPU = f.Env.Build.CPU()
 	f.compileInputs()
 
 	// From the body tokens we generate the AST which is
