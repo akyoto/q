@@ -9,7 +9,7 @@ func createSteps(ir ssa.IR) IR {
 	steps := make([]*Step, count)
 	valueToStep := make(map[ssa.Value]*Step, count)
 	blockToRegion := make(map[*ssa.Block]region, len(ir.Blocks))
-	i := 0
+	i := Index(0)
 
 	for _, block := range ir.Blocks {
 		if block != ir.Blocks[0] {
@@ -24,7 +24,7 @@ func createSteps(ir ssa.IR) IR {
 
 		blockToRegion[block] = region{
 			Start: uint32(i),
-			End:   uint32(i + len(block.Instructions)),
+			End:   uint32(i + Index(len(block.Instructions))),
 		}
 
 		for _, instr := range block.Instructions {

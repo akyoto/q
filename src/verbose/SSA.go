@@ -96,7 +96,7 @@ func SSA(root *core.Function) {
 				ansi.Dim.Printf("live: ")
 
 				slices.SortStableFunc(step.Live, func(a *codegen.Step, b *codegen.Step) int {
-					return a.Index - b.Index
+					return int(a.Index - b.Index)
 				})
 
 				for _, live := range step.Live {

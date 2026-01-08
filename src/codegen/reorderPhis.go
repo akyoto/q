@@ -15,7 +15,7 @@ func (f *Function) reorderPhis() {
 
 		switch {
 		case isPhi && start == -1:
-			start = step.Index
+			start = int(step.Index)
 		case !isPhi && start != -1:
 			end := step.Index
 			phis := f.Steps[start:end]
@@ -32,7 +32,7 @@ func (f *Function) reorderPhis() {
 					cmp := aIndex - bIndex
 
 					if cmp != 0 {
-						return cmp
+						return int(cmp)
 					}
 				}
 
@@ -40,7 +40,7 @@ func (f *Function) reorderPhis() {
 			})
 
 			for i, phi := range phis {
-				phi.Index = start + i
+				phi.Index = Index(start + i)
 			}
 
 			start = -1

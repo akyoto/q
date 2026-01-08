@@ -22,7 +22,7 @@ func (f *Function) reorderParameters() {
 			bringToFront(f.Steps[:i+1], i)
 
 			for h := range i + 1 {
-				f.Steps[h].Index = h
+				f.Steps[h].Index = Index(h)
 			}
 
 			if usedRegisters&(1<<step.Register) != 0 {

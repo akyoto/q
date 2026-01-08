@@ -13,7 +13,7 @@ type Step struct {
 	Phis     set.Ordered[*Step]
 	Live     []*Step
 	Hints    []cpu.Register
-	Index    int
+	Index    Index
 	Register cpu.Register
 }
 
