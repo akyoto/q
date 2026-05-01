@@ -70,6 +70,7 @@ var tests = []run{
 	{"loop-modify-struct", nil, "", "12345", 0},
 	{"loop-infinite-lifetime", nil, "", "", -1},
 	{"loop-next", nil, "", "0\n2\n4\n6\n8\n", 0},
+	{"loop-stop", nil, "", "01234\n5", 0},
 	{"factorial", nil, "", "", 0},
 	{"fibonacci", nil, "", "", 0},
 	{"memory", nil, "", "Hello\n", 0},
