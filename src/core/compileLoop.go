@@ -134,14 +134,23 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 
 				switch instr := instr.(type) {
 				case *ssa.Jump:
-					for name, identifier := range instr.To.Identifiers {
+					jumpBlock := instr.To
+
+					if jumpBlock.Loop == loopHead {
+						continue
+					}
+
+					for name, identifier := range jumpBlock.Identifiers {
 						if identifier == oldValue {
-							instr.To.Identifiers[name] = phi
+							jumpBlock.Identifiers[name] = phi
+						} else {
+							identifier.Replace(oldValue, phi)
 						}
 					}
-				}
 
-				instr.Replace(oldValue, phi)
+				default:
+					instr.Replace(oldValue, phi)
+				}
 			}
 		}
 	}

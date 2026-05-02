@@ -6,6 +6,11 @@ main() {
 			loop.stop()
 		}
 
+		if n == 6 {
+			n = 7
+			loop.stop()
+		}
+
 		assert n < 5
 		n += 1
 	}
