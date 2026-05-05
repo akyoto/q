@@ -148,6 +148,7 @@ The following is a cheat sheet documenting the syntax.
 | Loop 10 times                        | `loop 0..10 {}`              | ✔️ Stable       |
 | Loop 10 times with a variable        | `loop i := 0..10 {}`         | ✔️ Stable       |
 | Jump to the next iteration           | `loop.next()`                | 🚧 Experimental |
+| Jump to the end of the loop          | `loop.stop()`                | 🚧 Experimental |
 | Branch                               | `if {} else {}`              | ✔️ Stable       |
 | Branch multiple times                | `switch { cond {} _ {} }`    | ✔️ Stable       |
 | Define a constant                    | `const { x = 42 }`           | ✔️ Stable       |
