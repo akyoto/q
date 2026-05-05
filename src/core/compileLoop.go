@@ -114,11 +114,9 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 	loopBlocks := f.Blocks[loopBlockIndex:len(f.Blocks)]
 
 	for _, block := range loopBlocks {
-		if block.Loop != nil {
-			continue
+		if block.Loop == nil {
+			block.Loop = loopHead
 		}
-
-		block.Loop = loopHead
 
 		for phi := range loopHead.Phis {
 			oldValue := phi.Arguments[0]
@@ -136,7 +134,7 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 				case *ssa.Jump:
 					jumpBlock := instr.To
 
-					if jumpBlock.Loop == loopHead {
+					if jumpBlock.Loop != nil {
 						continue
 					}
 
