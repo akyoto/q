@@ -17,8 +17,12 @@ var errs = []struct {
 }{
 	{"AlwaysTrue.q", core.AlwaysTrue},
 	{"AlwaysTrue2.q", core.AlwaysTrue},
+	{"AlwaysTrue3.q", core.AlwaysTrue},
+	{"AlwaysTrue4.q", core.AlwaysTrue},
 	{"AlwaysFalse.q", core.AlwaysFalse},
 	{"AlwaysFalse2.q", core.AlwaysFalse},
+	{"AlwaysFalse3.q", core.AlwaysFalse},
+	{"AlwaysFalse4.q", core.AlwaysFalse},
 	{"DefinitionCountMismatch.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 1, ExpectedCount: 2}},
 	{"DefinitionCountMismatch2.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 3, ExpectedCount: 2}},
 	{"DefinitionCountMismatch3.q", &core.DefinitionCountMismatch{Function: "main.nothing", Count: 1, ExpectedCount: 0}},

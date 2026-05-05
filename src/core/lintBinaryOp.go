@@ -116,12 +116,23 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 	if types.IsUnsigned(binOp.Left.Type()) {
 		rightInt, rightIsInt := binOp.Right.(*ssa.Int)
 
-		if rightIsInt && rightInt.Int < 0 {
-			switch binOp.Op {
-			case token.Equal, token.LessEqual, token.Less:
-				return errors.New(AlwaysFalse, f.File, binOp.Source)
-			case token.NotEqual, token.GreaterEqual, token.Greater:
-				return errors.New(AlwaysTrue, f.File, binOp.Source)
+		if rightIsInt {
+			switch {
+			case rightInt.Int == 0:
+				switch binOp.Op {
+				case token.Less:
+					return errors.New(AlwaysFalse, f.File, binOp.Source)
+				case token.GreaterEqual:
+					return errors.New(AlwaysTrue, f.File, binOp.Source)
+				}
+
+			case rightInt.Int < 0:
+				switch binOp.Op {
+				case token.Equal, token.LessEqual, token.Less:
+					return errors.New(AlwaysFalse, f.File, binOp.Source)
+				case token.NotEqual, token.GreaterEqual, token.Greater:
+					return errors.New(AlwaysTrue, f.File, binOp.Source)
+				}
 			}
 		}
 	}
@@ -129,12 +140,23 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 	if types.IsUnsigned(binOp.Right.Type()) {
 		leftInt, leftIsInt := binOp.Left.(*ssa.Int)
 
-		if leftIsInt && leftInt.Int < 0 {
-			switch binOp.Op {
-			case token.Equal, token.GreaterEqual, token.Greater:
-				return errors.New(AlwaysFalse, f.File, binOp.Source)
-			case token.NotEqual, token.LessEqual, token.Less:
-				return errors.New(AlwaysTrue, f.File, binOp.Source)
+		if leftIsInt {
+			switch {
+			case leftInt.Int == 0:
+				switch binOp.Op {
+				case token.Greater:
+					return errors.New(AlwaysFalse, f.File, binOp.Source)
+				case token.LessEqual:
+					return errors.New(AlwaysTrue, f.File, binOp.Source)
+				}
+
+			case leftInt.Int < 0:
+				switch binOp.Op {
+				case token.Equal, token.GreaterEqual, token.Greater:
+					return errors.New(AlwaysFalse, f.File, binOp.Source)
+				case token.NotEqual, token.LessEqual, token.Less:
+					return errors.New(AlwaysTrue, f.File, binOp.Source)
+				}
 			}
 		}
 	}
