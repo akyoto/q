@@ -127,6 +127,10 @@ var tests = []run{
 	{"pointer-to-pointer", nil, "", "", 0},
 	{"stack-pointer", nil, "", "", 0},
 	{"global", nil, "", "", 0},
+	{"cli-args", nil, "", "", 0},
+	{"cli-args", []string{"Hello"}, "", "Hello\n", 0},
+	{"cli-args", []string{"Hello", "World"}, "", "Hello\nWorld\n", 0},
+	{"cli-args", []string{"Hello", "世界"}, "", "Hello\n世界\n", 0},
 }
 
 func TestTests(t *testing.T) {

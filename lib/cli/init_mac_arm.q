@@ -1,4 +1,4 @@
-init() {
-	argc = asm.r0
-	argv = asm.r1
+init(r0 uint, r1 **byte, _r2 **byte) {
+	argc = r0
+	argv = r1
 }
