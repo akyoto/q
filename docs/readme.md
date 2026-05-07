@@ -83,6 +83,8 @@ q build examples/hello -os [linux|mac|windows] -arch [x86|arm]
 
 ## News
 
+- **2026-05-07**: Struct initialization.
+- **2026-05-06**: Command line arguments.
 - **2025-10-10**: Loop control flow.
 - **2025-10-05**: Struct types in fields.
 - **2025-09-30**: Static allocations.
@@ -134,8 +136,10 @@ The following is a cheat sheet documenting the syntax.
 | Define input and output types        | `f(a int) -> (b int) {}`     | ✔️ Stable       |
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
-| Allocate a type on the heap          | `new(int)`                   | 🚧 Experimental |
-| Allocate multiple elements           | `new(int, 10)`               | 🚧 Experimental |
+| Allocate a type                      | `new(int)`                   | 🚧 Experimental |
+| Allocate an array                    | `new(int, 10)`               | 🚧 Experimental |
+| Allocate a struct                    | `new(Point)`                 | 🚧 Experimental |
+| Allocate and initialize a struct     | `new(Point){x: 1, y: 2}`     | 🚧 Experimental |
 | Delete a type from the heap          | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
