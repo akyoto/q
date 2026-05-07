@@ -23,15 +23,7 @@ func (f *Function) evaluateNewStruct(expr *expression.Expression) (ssa.Value, er
 			return nil, err
 		}
 
-		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
-
-		memory := &ssa.Memory{
-			Address: pointer,
-			Index:   offset,
-			Scale:   false,
-			Typ:     field.Type,
-		}
-
+		memory := f.structField(pointer, field)
 		err = f.store(memory, rightValue)
 
 		if err != nil {

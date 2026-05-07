@@ -53,15 +53,7 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 			return errors.New(&TypeMismatch{Encountered: rightValue.Type().Name(), Expected: field.Type.Name()}, f.File, right.Source())
 		}
 
-		offset := f.Append(&ssa.Int{Int: int(field.Offset)})
-
-		memory := &ssa.Memory{
-			Address: addressValue,
-			Index:   offset,
-			Scale:   false,
-			Typ:     field.Type,
-		}
-
+		memory := f.structField(addressValue, field)
 		return f.store(memory, rightValue)
 
 	case *types.Struct:
