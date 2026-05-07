@@ -1,7 +1,6 @@
 package core
 
 import (
-	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -10,6 +9,10 @@ import (
 
 // evaluateStruct converts a struct expression to an SSA value.
 func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error) {
+	if expr.Children[0].Token.Kind == token.Call && expr.Children[0].Children[0].Token.Kind == token.New {
+		return f.evaluateNewStruct(expr)
+	}
+
 	typ, err := f.Env.TypeFromTokens(token.List{expr.Children[0].Token}, f.File)
 
 	if err != nil {
@@ -29,29 +32,7 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 	}
 
 	for _, definition := range expr.Children[1:] {
-		if len(definition.Children) != 2 {
-			return nil, errors.New(InvalidFieldInit, f.File, definition.Source())
-		}
-
-		left := definition.Children[0]
-
-		if left.Token.Kind != token.Identifier {
-			if left.Token.Kind == token.FieldAssign {
-				return nil, errors.New(MissingCommaBetweenFields, f.File, left.Source())
-			}
-
-			return nil, errors.New(InvalidFieldInit, f.File, left.Source())
-		}
-
-		fieldName := left.String(f.File.Bytes)
-		field := structType.FieldByName(fieldName)
-
-		if field == nil {
-			return nil, errors.New(&UnknownStructField{StructName: typ.Name(), FieldName: fieldName}, f.File, left.Source())
-		}
-
-		right := definition.Children[1]
-		rightValue, err := f.evaluateRight(right)
+		field, rightValue, err := f.extractField(structType, definition)
 
 		if err != nil {
 			return nil, err

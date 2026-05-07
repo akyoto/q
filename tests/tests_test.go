@@ -81,6 +81,7 @@ var tests = []run{
 	{"index-static", nil, "", "", 0},
 	{"index-dynamic", nil, "", "", 0},
 	{"struct-by-reference", nil, "", "", 0},
+	{"struct-by-reference-init", nil, "", "", 0},
 	{"struct-by-value", nil, "", "", 0},
 	{"struct-return-reference", nil, "", "", 0},
 	{"struct-return-value", nil, "", "", 0},
