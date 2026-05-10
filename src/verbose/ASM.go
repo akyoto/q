@@ -1,7 +1,6 @@
 package verbose
 
 import (
-	_ "embed"
 	"fmt"
 	"reflect"
 

@@ -39,7 +39,6 @@ func show(text string) {
 
 		switch {
 		case strings.HasPrefix(line, "        "):
-
 			for {
 				start := strings.IndexByte(line, '[')
 
