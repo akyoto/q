@@ -12,6 +12,9 @@ func Exec(args []string) int {
 	case "build":
 		return build(args[1:])
 
+	case "files":
+		return files(args[1:])
+
 	case "help":
 		return help()
 

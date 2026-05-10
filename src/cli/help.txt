@@ -12,6 +12,10 @@ Compiler for the Q programming language.
 
         q build [file] -os [linux|mac|windows] -arch [x86|arm]
 
+    Show all imported files:
+
+        q files [file]
+
     Debug compiler stages:
 
         -asm            # assembly code
