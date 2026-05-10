@@ -10,7 +10,4 @@ type Build struct {
 	FoldConstants bool
 	LintBinaryOps bool
 	RemoveCopies  bool
-	ShowASM       bool
-	ShowHeaders   bool
-	ShowSSA       bool
 }

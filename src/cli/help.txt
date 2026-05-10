@@ -16,11 +16,8 @@ Compiler for the Q programming language.
 
         q files [file]
 
-    Debug compiler stages:
+    Show intermediate stages:
 
-        -asm            # assembly code
-        -func [name]    # filter by function name
-        -ssa            # static single assigment form
-        -verbose        # all stages
+        q [asm|ssa] [file] -func [name]
 
 EOF

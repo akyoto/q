@@ -13,9 +13,6 @@ import (
 	"git.urbach.dev/go/color/ansi"
 )
 
-//go:embed SSA.txt
-var HeaderSSA string
-
 // SSA shows the SSA IR.
 func SSA(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {

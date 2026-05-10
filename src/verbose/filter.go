@@ -9,8 +9,8 @@ func filter(fullName string, filter string) bool {
 	}
 
 	if strings.Contains(filter, ".") {
-		return fullName != filter
+		return !strings.HasPrefix(fullName, filter)
 	}
 
-	return !strings.Contains(fullName, filter)
+	return !strings.HasPrefix(fullName, "main."+filter)
 }

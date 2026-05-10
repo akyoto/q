@@ -29,9 +29,6 @@ func newBuild(args []string) (*config.Build, error) {
 				return nil, &InvalidValue{Value: args[i], Parameter: "arch"}
 			}
 
-		case "-asm":
-			build.ShowASM = true
-
 		case "-dry":
 			build.Dry = true
 
@@ -67,12 +64,6 @@ func newBuild(args []string) (*config.Build, error) {
 			default:
 				return nil, &InvalidValue{Value: args[i], Parameter: "os"}
 			}
-
-		case "-ssa":
-			build.ShowSSA = true
-
-		case "-verbose":
-			build.SetVerbose(true)
 
 		default:
 			if strings.HasPrefix(args[i], "-") {

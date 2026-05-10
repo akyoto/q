@@ -9,6 +9,9 @@ func Exec(args []string) int {
 	}
 
 	switch args[0] {
+	case "asm":
+		return asm(args[1:])
+
 	case "build":
 		return build(args[1:])
 
@@ -20,6 +23,9 @@ func Exec(args []string) int {
 
 	case "run":
 		return run(args[1:])
+
+	case "ssa":
+		return ssa(args[1:])
 
 	case "version":
 		return version()

@@ -39,5 +39,5 @@ func files(args []string) int {
 		fmt.Println(file.Path)
 	}
 
-	return exit(nil)
+	return 0
 }

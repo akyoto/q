@@ -11,8 +11,8 @@ import (
 
 func TestVerboseOutput(t *testing.T) {
 	b := config.New("../../examples/hello")
-	b.SetVerbose(true)
 	env, err := compiler.Compile(b)
 	assert.Nil(t, err)
-	verbose.Show(env)
+	verbose.ASM(env.Init)
+	verbose.SSA(env.Init)
 }

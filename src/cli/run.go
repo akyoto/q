@@ -4,7 +4,6 @@ import (
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/linker"
 	"git.urbach.dev/cli/q/src/memfile"
-	"git.urbach.dev/cli/q/src/verbose"
 )
 
 // run builds and runs the executable.
@@ -21,7 +20,6 @@ func run(args []string) int {
 		return exit(err)
 	}
 
-	verbose.Show(env)
 	file, err := memfile.New(b.Executable())
 
 	if err != nil {

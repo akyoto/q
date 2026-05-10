@@ -12,9 +12,6 @@ import (
 	"git.urbach.dev/go/color/ansi"
 )
 
-//go:embed ASM.txt
-var HeaderASM string
-
 // ASM shows the assembly code.
 func ASM(root *core.Function) {
 	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
