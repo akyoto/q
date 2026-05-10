@@ -1,7 +1,7 @@
 import io
 import mem
 
-args() -> []string {
+args() -> ![]string {
 	argcp := new(int32)
 	wargv := shell32.CommandLineToArgvW(kernel32.GetCommandLineW(), argcp)
 	argc := [argcp] as uint

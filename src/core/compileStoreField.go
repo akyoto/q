@@ -19,7 +19,8 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 	left := node.Expression.Children[0]
 	address := left.Children[0]
-	fieldName := left.Children[1].String(f.File.Bytes)
+	fieldExpr := left.Children[1]
+	fieldName := fieldExpr.String(f.File.Bytes)
 	addressValue, err := f.evaluate(address)
 
 	if err != nil {
@@ -41,12 +42,12 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		})
 	}
 
-	switch pointer := addressValue.Type().(type) {
+	switch pointer := types.Unwrap(addressValue.Type()).(type) {
 	case *types.Pointer:
 		field := pointer.To.(*types.Struct).FieldByName(fieldName)
 
 		if field == nil {
-			return errors.New(&UnknownStructField{StructName: pointer.To.Name(), FieldName: fieldName}, f.File, left.Children[1].Source())
+			return errors.New(&UnknownStructField{StructName: pointer.To.Name(), FieldName: fieldName}, f.File, fieldExpr.Source())
 		}
 
 		if !types.Is(rightValue.Type(), field.Type) {
@@ -58,6 +59,11 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 	case *types.Struct:
 		field := pointer.FieldByName(fieldName)
+
+		if field == nil {
+			return errors.New(&UnknownStructField{StructName: pointer.Name(), FieldName: fieldName}, f.File, fieldExpr.Source())
+		}
+
 		structure, isStruct := addressValue.(*ssa.Struct)
 
 		if isStruct {

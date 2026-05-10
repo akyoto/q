@@ -32,12 +32,14 @@ func TestBasics(t *testing.T) {
 	assert.True(t, types.Is(types.AnyInt, types.AnyInt))
 	assert.True(t, types.Is(types.AnyInt, types.Int))
 	assert.True(t, types.Is(types.AnyPointer, types.AnyPointer))
+	assert.True(t, types.Is(&types.Pointer{To: types.Int}, types.AnyPointer))
+	assert.True(t, types.Is(&types.Resource{Of: types.AnyPointer}, types.AnyPointer))
+	assert.True(t, types.Is(&types.Resource{Of: &types.Pointer{To: types.Int}}, types.AnyPointer))
 	assert.False(t, types.Is(types.Int, types.Float))
 	assert.False(t, types.Is(types.AnyPointer, types.AnyInt))
 	assert.False(t, types.Is(&types.Pointer{To: types.Int}, &types.Pointer{To: types.Float}))
 	assert.False(t, types.Is(types.Any, types.Int))
 	assert.False(t, types.Is(types.Any, types.Float))
-
 }
 
 func TestNil(t *testing.T) {

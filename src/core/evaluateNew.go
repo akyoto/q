@@ -21,8 +21,9 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 	var (
 		isSlice     = len(expr.Children) == 3
 		numElements ssa.Value
-		size        ssa.Value
+		sizeInBytes ssa.Value
 		sliceType   types.Type
+		mallocType  types.Type
 	)
 
 	if isSlice {
@@ -35,13 +36,16 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 		sliceType = f.Env.Slice(typ)
 		elementSize := f.Append(&ssa.Int{Int: typ.Size()})
 
-		size = f.Append(&ssa.BinaryOp{
+		sizeInBytes = f.Append(&ssa.BinaryOp{
 			Op:    token.Mul,
-			Left:  elementSize,
-			Right: numElements,
+			Left:  numElements,
+			Right: elementSize,
 		})
+
+		mallocType = &types.Pointer{To: typ}
 	} else {
-		size = f.Append(&ssa.Int{Int: typ.Size()})
+		sizeInBytes = f.Append(&ssa.Int{Int: typ.Size()})
+		mallocType = &types.Resource{Of: &types.Pointer{To: typ}}
 	}
 
 	malloc := f.Env.Function("mem", "alloc")
@@ -51,16 +55,16 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 		Func: &ssa.Function{
 			FunctionRef: malloc,
 			Typ: &types.Function{
-				Output: []types.Type{&types.Pointer{To: typ}},
+				Output: []types.Type{mallocType},
 			},
 		},
-		Arguments: []ssa.Value{size},
+		Arguments: []ssa.Value{sizeInBytes},
 		Source:    expr.Source(),
 	})
 
 	if isSlice {
 		structure := &ssa.Struct{
-			Typ:       sliceType,
+			Typ:       &types.Resource{Of: sliceType},
 			Arguments: ssa.Arguments{call, numElements},
 			Source:    expr.Source(),
 		}

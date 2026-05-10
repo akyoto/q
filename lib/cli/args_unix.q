@@ -1,6 +1,6 @@
 import c
 
-args() -> []string {
+args() -> ![]string {
 	count := argc
 	pointers := argv
 	args := new(string, count)

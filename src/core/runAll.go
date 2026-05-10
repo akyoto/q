@@ -33,8 +33,8 @@ func (f *Function) runAll(funcName string) {
 
 		f.Block().Append(&ssa.Call{
 			Func: &ssa.Function{
-				Typ:         fn.Type,
 				FunctionRef: fn,
+				Typ:         fn.Type,
 			},
 		})
 	}

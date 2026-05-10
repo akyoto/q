@@ -4,6 +4,7 @@ main() {
 	x := new(int, 8192)
 	fill(x)
 	show(x)
+	delete(x)
 }
 
 fill(x []int) {

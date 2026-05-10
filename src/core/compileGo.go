@@ -17,7 +17,7 @@ func (f *Function) compileGo(g *ast.Go) error {
 	createThread := f.Env.Function("thread", "create")
 
 	f.Append(&ssa.Call{
-		Func:      &ssa.Function{Typ: createThread.Type, FunctionRef: createThread},
+		Func:      &ssa.Function{FunctionRef: createThread, Typ: createThread.Type},
 		Arguments: []ssa.Value{threadFunc},
 	})
 

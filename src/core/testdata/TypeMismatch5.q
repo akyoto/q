@@ -1,6 +1,6 @@
 import mem
 
 main() {
-	buffer := mem.alloc(1)
-	delete(buffer)
+	x := new(int)
+	x = 0
 }

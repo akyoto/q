@@ -1,6 +1,7 @@
-import mem
-
 main() {
-	x := new(int)
-	x = 0
+	store(42)
+}
+
+store(p *byte) {
+	[p] = 'A'
 }

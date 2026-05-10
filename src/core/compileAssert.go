@@ -24,8 +24,8 @@ func (f *Function) compileAssert(assert *ast.Assert) error {
 	crash := f.Env.Function("run", "crash")
 
 	elseBlock.Append(&ssa.Call{Func: &ssa.Function{
-		Typ:         crash.Type,
 		FunctionRef: crash,
+		Typ:         crash.Type,
 	}})
 
 	f.Dependencies.Add(crash)

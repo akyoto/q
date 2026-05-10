@@ -3,7 +3,7 @@ Point {
 	y int
 }
 
-Point(x int, y int) -> *Point {
+Point(x int, y int) -> !*Point {
 	p := new(Point)
 	p.x = x
 	p.y = y

@@ -1,5 +1,5 @@
 main() {
-	data := Data{number: "Hello"}
+	data := new(Data){number: "Hello"}
 }
 
 Data {

@@ -21,14 +21,16 @@ func Is(a Type, b Type) bool {
 
 	aResource, aIsResource := a.(*Resource)
 
-	if aIsResource && Is(b, aResource.Of) {
-		return true
-	}
+	if aIsResource {
+		bResource, bIsResource := b.(*Resource)
 
-	bResource, bIsResource := b.(*Resource)
+		if bIsResource {
+			return Is(aResource.Of, bResource.Of)
+		}
 
-	if aIsResource && bIsResource {
-		return aResource.Of == bResource.Of
+		if Is(aResource.Of, b) {
+			return true
+		}
 	}
 
 	if a == AnyInt || a == Error {

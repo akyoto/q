@@ -1,3 +1,7 @@
 main() {
-	a := "Hello"[""..""]
+	data := Data{number: "Hello"}
+}
+
+Data {
+	number int
 }

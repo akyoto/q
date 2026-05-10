@@ -7,4 +7,6 @@ main() {
 	loop i := 1..args.len {
 		io.writeLine(args[i])
 	}
+
+	delete(args)
 }

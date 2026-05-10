@@ -6,4 +6,5 @@ main() {
 	s[1] = "World"
 	io.write(s[0])
 	io.write(s[1])
+	delete(s)
 }

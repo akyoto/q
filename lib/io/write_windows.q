@@ -11,6 +11,7 @@ writeTo(fd int, buffer string) -> (written int, err error) {
 	success := kernel32.WriteFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
 
 	if !success {
+		delete(ptr)
 		return 0, -1
 	}
 

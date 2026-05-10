@@ -9,4 +9,6 @@ main() {
 	loop i := 0..x.len {
 		assert x[i] == i * 1234567890
 	}
+
+	delete(x)
 }

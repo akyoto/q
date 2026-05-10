@@ -27,7 +27,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		addressType = addressValue.Type()
 	}
 
-	pointer, isPointer := addressType.(*types.Pointer)
+	pointer, isPointer := types.Unwrap(addressType).(*types.Pointer)
 
 	if !isPointer {
 		return nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, address.Source())

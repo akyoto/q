@@ -2,6 +2,7 @@ main() {
 	x := new(int, 10)
 	x[0] = 42
 	assert first(x) == 42
+	delete(x)
 }
 
 first(x []int) -> int {

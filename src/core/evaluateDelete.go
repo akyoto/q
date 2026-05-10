@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -19,7 +20,7 @@ func (f *Function) evaluateDelete(expr *expression.Expression) (ssa.Value, error
 	f.Dependencies.Add(free)
 	f.Block().Unidentify(value)
 
-	switch valueType := value.Type().(type) {
+	switch valueType := types.Unwrap(value.Type()).(type) {
 	case *types.Pointer:
 		typ := valueType.To
 
@@ -30,12 +31,38 @@ func (f *Function) evaluateDelete(expr *expression.Expression) (ssa.Value, error
 		call := f.Append(&ssa.Call{
 			Func: &ssa.Function{
 				FunctionRef: free,
-				Typ:         &types.Function{},
+				Typ:         free.Type,
 			},
 			Arguments: []ssa.Value{value, size},
 			Source:    expr.Source(),
 		})
 
+		return call, nil
+
+	case *types.Struct:
+		structure := value.(*ssa.Struct)
+		ptr := structure.Arguments[0]
+		length := structure.Arguments[1]
+		elementSize := f.Append(&ssa.Int{Int: types.Unwrap(ptr.Type()).(*types.Pointer).To.Size()})
+
+		sizeInBytes := f.Append(&ssa.BinaryOp{
+			Op:    token.Mul,
+			Left:  length,
+			Right: elementSize,
+		})
+
+		call := f.Append(&ssa.Call{
+			Func: &ssa.Function{
+				FunctionRef: free,
+				Typ:         free.Type,
+			},
+			Arguments: []ssa.Value{ptr, sizeInBytes},
+			Source:    expr.Source(),
+		})
+
+		block := f.Block()
+		block.Unidentify(ptr)
+		block.Unidentify(length)
 		return call, nil
 
 	default:
