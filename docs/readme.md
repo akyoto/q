@@ -483,7 +483,7 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 
 ### Any debugging tools?
 
-The compiler has verbose output showing how it understands the program code using `-ssa` and `-asm` flags.
+With the commands `ssa` and `asm` you can analyze the intermediate stages which reveal how the compiler understands your program code.
 If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables one instruction at a time.
 
 ### Is there an IRC channel?
