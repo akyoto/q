@@ -71,7 +71,9 @@ loop:
 				root = node
 			}
 
-			cursor = node
+			if !cursor.Token.Kind.IsUnaryOperator() || !node.Token.Kind.IsUnaryOperator() {
+				cursor = node
+			}
 		}
 
 		i++
