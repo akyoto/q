@@ -20,5 +20,5 @@ func files(args []string) int {
 	}
 
 	verbose.Files(env.Files)
-	return 0
+	return success
 }

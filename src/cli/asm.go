@@ -20,5 +20,5 @@ func asm(args []string) int {
 	}
 
 	verbose.ASM(env.Init)
-	return 0
+	return success
 }

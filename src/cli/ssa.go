@@ -20,5 +20,5 @@ func ssa(args []string) int {
 	}
 
 	verbose.SSA(env.Init)
-	return 0
+	return success
 }

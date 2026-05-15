@@ -12,10 +12,17 @@ import (
 	"git.urbach.dev/go/color/ansi"
 )
 
+// Exit codes.
+const (
+	success = iota
+	fail
+	invalidArgs
+)
+
 // exit returns the exit code depending on the error type.
 func exit(err error) int {
 	if err == nil {
-		return 0
+		return success
 	}
 
 	var (
@@ -55,8 +62,8 @@ func exit(err error) int {
 	}
 
 	if errors.As(err, &expectedParameter) || errors.As(err, &unknownParameter) || errors.As(err, &invalidValue) {
-		return 2
+		return invalidArgs
 	}
 
-	return 1
+	return fail
 }

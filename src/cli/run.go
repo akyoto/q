@@ -28,10 +28,5 @@ func run(args []string) int {
 
 	linker.Write(file, env)
 	err = memfile.Exec(file)
-
-	if err != nil {
-		return exit(err)
-	}
-
-	return 0
+	return exit(err)
 }

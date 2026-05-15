@@ -10,5 +10,5 @@ import (
 func invalid() int {
 	color.Redirect(os.Stderr)
 	help()
-	return 2
+	return invalidArgs
 }

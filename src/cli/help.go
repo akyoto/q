@@ -10,5 +10,5 @@ var helpText string
 // help shows the command line argument usage.
 func help() int {
 	show(helpText)
-	return 0
+	return success
 }

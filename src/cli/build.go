@@ -20,7 +20,7 @@ func build(args []string) int {
 	}
 
 	if b.Dry {
-		return 0
+		return success
 	}
 
 	err = linker.WriteFile(b.Executable(), env)
