@@ -24,7 +24,7 @@ const (
 var (
 	LinuxCPU = cpu.CPU{
 		General: []cpu.Register{
-			R1, R2, R6, R7, R8, R9, R10, R11, // Clobbered
+			R0, R1, R2, R6, R7, R8, R9, R10, R11, // Clobbered
 			R3, R12, R13, R14, R15, // Preserved
 		},
 		Call: cpu.ABI{
@@ -46,7 +46,7 @@ var (
 			Preserved: []cpu.Register{R2, R3, SP, R5, R6, R7, R8, R9, R10, R12, R13, R14, R15},
 		},
 		DivisionClobbered: []cpu.Register{R0, R2},
-		DivisorRestricted: []cpu.Register{R2},
+		DivisorRestricted: []cpu.Register{R0, R2},
 		ShiftClobbered:    []cpu.Register{R1},
 		ShiftRestricted:   []cpu.Register{R1},
 		StackPointer:      SP,

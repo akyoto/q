@@ -12,6 +12,8 @@ func (f *Function) executeReturn(instr *ssa.Return) {
 		return
 	}
 
+	start := len(f.Assembler.Instructions)
+
 	for i, arg := range instr.Arguments {
 		retVal := f.ValueToStep[arg]
 
@@ -24,4 +26,6 @@ func (f *Function) executeReturn(instr *ssa.Return) {
 			Source:      retVal.Register,
 		})
 	}
+
+	reorderMoves(f.Assembler.Instructions[start:])
 }

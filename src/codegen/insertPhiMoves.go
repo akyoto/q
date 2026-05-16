@@ -29,5 +29,5 @@ func (f *Function) insertPhiMoves(step *Step) {
 
 	end := len(f.Assembler.Instructions)
 	moves := f.Assembler.Instructions[start:end]
-	reorderPhiMoves(moves)
+	reorderMoves(moves)
 }

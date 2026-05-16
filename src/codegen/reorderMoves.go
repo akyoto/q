@@ -2,8 +2,8 @@ package codegen
 
 import "git.urbach.dev/cli/q/src/asm"
 
-// reorderPhiMoves reorders the move instructions for phi values.
-func reorderPhiMoves(moves []asm.Instruction) {
+// reorderMoves reorders the move instructions.
+func reorderMoves(moves []asm.Instruction) {
 	usedRegisters := 0
 	futureRegisters := 0
 
@@ -14,7 +14,7 @@ func reorderPhiMoves(moves []asm.Instruction) {
 			bringToFront(moves[:i+1], i)
 
 			if usedRegisters&(1<<move.Destination) != 0 {
-				panic("cycle detected during phi move insertion")
+				panic("cycle detected while reordering moves")
 			}
 		}
 
