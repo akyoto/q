@@ -11,9 +11,9 @@ import (
 func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFrame bool, hasExternCalls bool) {
 	f.isInit = f.FullName == "run.init"
 	f.isExit = f.FullName == "run.exit"
-	f.needsFramePointer = !f.isInit && !f.isExit
 	f.hasStackFrame = hasStackFrame
 	f.hasExternCalls = hasExternCalls
+	f.needsFramePointer = (hasStackFrame || hasExternCalls) && !f.isInit && !f.isExit
 	f.build = build
 	f.IR = createSteps(ir)
 	f.reorderPhis()

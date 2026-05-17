@@ -12,6 +12,11 @@ import (
 // findFreeRegister finds a free register for the given value.
 func (f *Function) findFreeRegister(step *Step) cpu.Register {
 	usedRegisters := 0
+
+	if f.needsFramePointer {
+		usedRegisters = 1 << f.CPU.FramePointer
+	}
+
 	binaryOp, isBinaryOp := step.Value.(*ssa.BinaryOp)
 
 	if isBinaryOp && !binaryOp.Op.IsComparison() {

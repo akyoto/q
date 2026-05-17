@@ -25,7 +25,7 @@ var (
 	LinuxCPU = cpu.CPU{
 		General: []cpu.Register{
 			R0, R1, R2, R6, R7, R8, R9, R10, R11, // Clobbered
-			R3, R12, R13, R14, R15, // Preserved
+			R3, R5, R12, R13, R14, R15, // Preserved
 		},
 		Call: cpu.ABI{
 			In:        []cpu.Register{R0, R7, R6, R2, R10, R8, R9},
@@ -50,6 +50,7 @@ var (
 		ShiftClobbered:    []cpu.Register{R1},
 		ShiftRestricted:   []cpu.Register{R1},
 		StackPointer:      SP,
+		FramePointer:      R5,
 	}
 
 	MacCPU = cpu.CPU{
@@ -67,12 +68,13 @@ var (
 		ShiftClobbered:    LinuxCPU.ShiftClobbered,
 		ShiftRestricted:   LinuxCPU.ShiftRestricted,
 		StackPointer:      SP,
+		FramePointer:      R5,
 	}
 
 	WindowsCPU = cpu.CPU{
 		General: []cpu.Register{
-			R1, R2, R8, R9, R10, R11, // Clobbered
-			R3, R6, R7, R12, R13, R14, R15, // Preserved
+			R0, R1, R2, R8, R9, R10, R11, // Clobbered
+			R3, R5, R6, R7, R12, R13, R14, R15, // Preserved
 		},
 		Call: LinuxCPU.Call,
 		ExternCall: cpu.ABI{
@@ -86,5 +88,6 @@ var (
 		ShiftClobbered:    LinuxCPU.ShiftClobbered,
 		ShiftRestricted:   LinuxCPU.ShiftRestricted,
 		StackPointer:      SP,
+		FramePointer:      R5,
 	}
 )
