@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -25,6 +26,10 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 
 	_, leftIsStruct := leftValue.Type().(*types.Struct)
 	_, rightIsStruct := rightValue.Type().(*types.Struct)
+
+	if leftIsStruct && rightIsStruct && expr.Token.Kind == token.Concat {
+		return f.evaluateConcat(leftValue, rightValue, expr.Source())
+	}
 
 	if leftIsStruct || rightIsStruct {
 		return nil, errors.New(InvalidStructOperation, f.File, expr.Token)

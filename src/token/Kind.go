@@ -33,6 +33,7 @@ const (
 	Shr                               // >>
 	LogicalAnd                        // &&
 	LogicalOr                         // ||
+	Concat                            // ++
 	Define                            // :=
 	Dot                               // .
 	Range                             // ..
