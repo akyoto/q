@@ -14,6 +14,10 @@ close(fd int) -> error {
 	return syscall(_close, fd)
 }
 
+connect(fd int, address *any, length uint) -> error {
+	return syscall(_connect, fd, address, length)
+}
+
 listen(fd int, backlog int) -> error {
 	return syscall(_listen, fd, backlog)
 }

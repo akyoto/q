@@ -24,6 +24,10 @@ close(fd int) -> error {
 	return 0
 }
 
+connect(fd int, address *any, length uint) -> error {
+	return ws2_32.connect(fd, address, length as int)
+}
+
 listen(fd int, backlog int) -> error {
 	return ws2_32.listen(fd, backlog)
 }
@@ -63,6 +67,7 @@ extern {
 		accept(fd int, address *any|nil, length int) -> int
 		bind(socket int, address *any, length int) -> (error int)
 		closesocket(fd int) -> int
+		connect(fd int, address *any, length int) -> int
 		listen(fd int, backlog int) -> int
 		recv(fd int, address *byte|nil, length int, flags int) -> int
 		socket(family int, type int, protocol int) -> int

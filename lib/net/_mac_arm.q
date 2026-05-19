@@ -1,6 +1,7 @@
 const {
 	_close = 0x6
 	_socket = 0x61
+	_connect = 0x62
 	_accept = 0x1E
 	_bind = 0x68
 	_listen = 0x6A
