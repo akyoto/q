@@ -36,7 +36,7 @@ func (f *Function) composeStruct(structType *types.Struct, input *ssa.Parameter,
 	)
 
 	for _, field := range structType.Fields {
-		fieldSize := structType.Fields[i].Type.Size()
+		fieldSize := field.Type.Size()
 
 		if size+fieldSize > 8 {
 			param = &ssa.Parameter{
