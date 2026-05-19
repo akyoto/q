@@ -12,7 +12,7 @@ func (f *Function) compileReturn(node *ast.Return) error {
 		position := node.Token.End()
 
 		if len(node.Values) > 0 {
-			position = node.Values[0].Token.Position
+			position = node.Values[0].Source().Start()
 		}
 
 		return errors.NewAt(&ReturnCountMismatch{Count: len(node.Values), ExpectedCount: len(f.Output)}, f.File, position)
