@@ -111,13 +111,15 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 	// we created Phi functions at the top of the loop head.
 	// All that's left to do is to replace all the occurrences
 	// of the old values with their new Phi in the loop blocks.
-	loopBlocks := f.Blocks[loopBlockIndex:len(f.Blocks)]
+	loopBlocks := f.Blocks[loopBlockIndex:]
 
 	for _, block := range loopBlocks {
 		if block.Loop == nil {
 			block.Loop = loopHead
 		}
+	}
 
+	for _, block := range loopBlocks {
 		for phi := range loopHead.Phis {
 			oldValue := phi.Arguments[0]
 
@@ -138,11 +140,11 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 						continue
 					}
 
-					for name, identifier := range jumpBlock.Identifiers {
-						if identifier == oldValue {
-							jumpBlock.Identifiers[name] = phi
+					for name, value := range jumpBlock.IdentifiersBefore {
+						if value == oldValue {
+							jumpBlock.ReplaceIdentifier(name, oldValue, phi)
 						} else {
-							identifier.Replace(oldValue, phi)
+							value.Replace(oldValue, phi)
 						}
 					}
 

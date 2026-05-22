@@ -10,12 +10,13 @@ import (
 
 // Block is a list of instructions that can be targeted in branches.
 type Block struct {
-	Identifiers  map[string]Value
-	Protected    map[Value][]Value
-	Loop         *Block
-	Label        string
-	Instructions []Value
-	Predecessors []*Block
+	IdentifiersBefore map[string]Value
+	IdentifiersAfter  map[string]Value
+	Protected         map[Value][]Value
+	Loop              *Block
+	Label             string
+	Instructions      []Value
+	Predecessors      []*Block
 }
 
 // NewBlock creates a new basic block.
@@ -38,34 +39,36 @@ func (b *Block) AddSuccessor(successor *Block) {
 		maps.Copy(successor.Protected, b.Protected)
 	}
 
-	if b.Identifiers == nil {
+	if b.IdentifiersAfter == nil {
 		return
 	}
 
-	if successor.Identifiers == nil {
-		successor.Identifiers = make(map[string]Value, len(b.Identifiers))
+	if successor.IdentifiersAfter == nil {
+		successor.IdentifiersBefore = make(map[string]Value, len(b.IdentifiersAfter))
+		successor.IdentifiersAfter = make(map[string]Value, len(b.IdentifiersAfter))
 
 		if len(successor.Predecessors) == 1 {
-			maps.Copy(successor.Identifiers, b.Identifiers)
+			maps.Copy(successor.IdentifiersBefore, b.IdentifiersAfter)
+			maps.Copy(successor.IdentifiersAfter, b.IdentifiersAfter)
 			return
 		}
 	}
 
-	keys := make(map[string]struct{}, max(len(b.Identifiers), len(successor.Identifiers)))
+	keys := make(map[string]struct{}, max(len(b.IdentifiersAfter), len(successor.IdentifiersAfter)))
 
-	for name := range successor.Identifiers {
+	for name := range successor.IdentifiersBefore {
 		keys[name] = struct{}{}
 	}
 
-	for name := range b.Identifiers {
+	for name := range b.IdentifiersAfter {
 		keys[name] = struct{}{}
 	}
 
 	var modifiedStructs []string
 
 	for name := range keys {
-		oldValue, oldExists := successor.Identifiers[name]
-		newValue, newExists := b.Identifiers[name]
+		oldValue, oldExists := successor.IdentifiersBefore[name]
+		newValue, newExists := b.IdentifiersAfter[name]
 
 		switch {
 		case oldExists:
@@ -106,7 +109,7 @@ func (b *Block) AddSuccessor(successor *Block) {
 			}
 
 			successor.InsertAt(phi, 0)
-			successor.Identifiers[name] = phi
+			successor.ReplaceIdentifier(name, oldValue, phi)
 
 			if newExists {
 				phi.Arguments = append(phi.Arguments, newValue)
@@ -125,7 +128,7 @@ func (b *Block) AddSuccessor(successor *Block) {
 			}
 
 			successor.InsertAt(phi, 0)
-			successor.Identifiers[name] = phi
+			successor.ReplaceIdentifier(name, oldValue, phi)
 			phi.Arguments = append(phi.Arguments, newValue)
 		}
 	}
@@ -133,15 +136,15 @@ func (b *Block) AddSuccessor(successor *Block) {
 	// Structs that were modified in branches need to be recreated
 	// to use the new Phi values as their arguments.
 	for _, name := range modifiedStructs {
-		structure := successor.Identifiers[name].(*Struct)
+		structure := successor.IdentifiersBefore[name].(*Struct)
 		structType := structure.Typ.(*types.Struct)
 		newStruct := &Struct{Typ: structType, Arguments: make(Arguments, len(structure.Arguments))}
 
 		for i, field := range structType.Fields {
-			newStruct.Arguments[i] = successor.Identifiers[name+"."+field.Name]
+			newStruct.Arguments[i] = successor.IdentifiersBefore[name+"."+field.Name]
 		}
 
-		successor.Identifiers[name] = newStruct
+		successor.ReplaceIdentifier(name, structure, newStruct)
 	}
 }
 
@@ -206,14 +209,14 @@ func (b *Block) FindExisting(instr Value) Value {
 // FindIdentifier searches for all the possible values the identifier
 // can have and combines them to a phi instruction if necessary.
 func (b *Block) FindIdentifier(name string) (value Value, exists bool) {
-	value, exists = b.Identifiers[name]
+	value, exists = b.IdentifiersAfter[name]
 	return
 }
 
 // IdentifiersFor returns an iterator for all the identifiers pointing to the given value.
 func (b *Block) IdentifiersFor(value Value) iter.Seq[string] {
 	return func(yield func(string) bool) {
-		for name, val := range b.Identifiers {
+		for name, val := range b.IdentifiersAfter {
 			if val == value {
 				if !yield(name) {
 					return
@@ -225,16 +228,16 @@ func (b *Block) IdentifiersFor(value Value) iter.Seq[string] {
 
 // Identify adds a new identifier or changes an existing one.
 func (b *Block) Identify(name string, value Value) {
-	if b.Identifiers == nil {
-		b.Identifiers = make(map[string]Value, 8)
+	if b.IdentifiersAfter == nil {
+		b.IdentifiersAfter = make(map[string]Value, 8)
 	}
 
-	b.Identifiers[name] = value
+	b.IdentifiersAfter[name] = value
 }
 
 // IsIdentified returns true if the value can be obtained from one of the identifiers.
 func (b *Block) IsIdentified(value Value) bool {
-	for _, existing := range b.Identifiers {
+	for _, existing := range b.IdentifiersAfter {
 		if existing == value {
 			return true
 		}
@@ -304,6 +307,15 @@ func (b *Block) ReplaceAllUses(old Value, new Value) {
 	}
 }
 
+// ReplaceIdentifier replaces an existing identifier.
+func (b *Block) ReplaceIdentifier(name string, oldValue Value, newValue Value) {
+	b.IdentifiersBefore[name] = newValue
+
+	if b.IdentifiersAfter[name] == oldValue {
+		b.IdentifiersAfter[name] = newValue
+	}
+}
+
 // String returns the block label.
 func (b *Block) String() string {
 	return CleanLabel(b.Label)
@@ -311,9 +323,9 @@ func (b *Block) String() string {
 
 // Unidentify deletes the identifier for the given value.
 func (b *Block) Unidentify(value Value) {
-	for name, existing := range b.Identifiers {
+	for name, existing := range b.IdentifiersAfter {
 		if existing == value {
-			delete(b.Identifiers, name)
+			delete(b.IdentifiersAfter, name)
 			return
 		}
 	}

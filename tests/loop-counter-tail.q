@@ -1,17 +1,14 @@
 import io
-import run
 
 main() {
 	n := 10
 
 	loop {
-		if n == 0 {
+		if n < 0 {
 			return
 		}
 
-		io.write(".")
+		io.writeLine(n)
 		n -= 1
 	}
-
-	run.exit(1)
 }
