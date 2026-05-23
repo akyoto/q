@@ -1,6 +1,6 @@
 import io
 
-accept(fd int) -> (conn int, err error) {
+accept(fd int) -> (conn !int, err error) {
 	conn := syscall(_accept, fd, 0, 0)
 
 	if conn < 0 {
@@ -10,7 +10,7 @@ accept(fd int) -> (conn int, err error) {
 	return conn, 0
 }
 
-close(fd int) -> error {
+close(fd !int) -> error {
 	return syscall(_close, fd)
 }
 
