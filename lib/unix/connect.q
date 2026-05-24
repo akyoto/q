@@ -5,7 +5,7 @@ connect(path string) -> (!int, error) {
 		return 0, -1
 	}
 
-	s, err := net.socket(AF_UNIX, SOCK_STREAM, 0)
+	s, err := net.socket(net.AF_UNIX, net.SOCK_STREAM, 0)
 
 	if err != 0 {
 		return 0, err

@@ -10,7 +10,15 @@ exit() {
 
 extern {
 	ws2_32 {
-		WSAStartup(version uint16, address *any)
+		WSAStartup(version uint16, address *WsaData)
 		WSACleanup()
 	}
+}
+
+WsaData {
+	version uint16
+	highVersion uint16
+	maxSockets uint16
+	maxUdpDg uint16
+	vendorInfo *byte
 }

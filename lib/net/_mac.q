@@ -1,4 +1,3 @@
 const {
-	v4 = 2
-	v6 = 30
+	AF_INET6 = 30
 }

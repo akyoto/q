@@ -53,6 +53,11 @@ func (s *scanner) queueDirectory(directory string, pkg string) {
 					return
 				}
 
+			case "winux":
+				if s.build.OS != config.Linux && s.build.OS != config.Windows {
+					return
+				}
+
 			case "x86":
 				if s.build.Arch != config.X86 {
 					return
