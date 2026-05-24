@@ -77,6 +77,13 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 		return nil, errors.New(&UnknownType{Name: tokens.StringFrom(file.Bytes)}, file, tokens[0])
 	}
 
+	if len(tokens) >= 3 && tokens[1].Kind == token.Dot && tokens[2].Kind == token.Identifier {
+		pkgName := tokens[0].StringFrom(file.Bytes)
+		pkg := env.Packages[pkgName]
+		structName := tokens[2].StringFrom(file.Bytes)
+		return pkg.Structs[structName], nil
+	}
+
 	name := tokens[0].StringFrom(file.Bytes)
 	typ := typeByName(name, env)
 
