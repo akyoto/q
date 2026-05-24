@@ -40,16 +40,25 @@ func (f *Function) evaluateDelete(expr *expression.Expression) (ssa.Value, error
 		return call, nil
 
 	case *types.Struct:
-		structure := value.(*ssa.Struct)
-		ptr := structure.Arguments[0]
-		length := structure.Arguments[1]
-		elementSize := f.Append(&ssa.Int{Int: types.Unwrap(ptr.Type()).(*types.Pointer).To.Size()})
+		var (
+			structure   = value.(*ssa.Struct)
+			ptr         = structure.Arguments[0]
+			length      = structure.Arguments[1]
+			elementSize = types.Unwrap(ptr.Type()).(*types.Pointer).To.Size()
+			sizeInBytes ssa.Value
+		)
 
-		sizeInBytes := f.Append(&ssa.BinaryOp{
-			Op:    token.Mul,
-			Left:  length,
-			Right: elementSize,
-		})
+		if elementSize == 1 {
+			sizeInBytes = length
+		} else {
+			elementSizeValue := f.Append(&ssa.Int{Int: elementSize})
+
+			sizeInBytes = f.Append(&ssa.BinaryOp{
+				Op:    token.Mul,
+				Left:  length,
+				Right: elementSizeValue,
+			})
+		}
 
 		call := f.Append(&ssa.Call{
 			Func: &ssa.Function{

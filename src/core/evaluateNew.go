@@ -34,13 +34,19 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 		}
 
 		sliceType = f.Env.Slice(typ)
-		elementSize := f.Append(&ssa.Int{Int: typ.Size()})
+		elementSize := typ.Size()
 
-		sizeInBytes = f.Append(&ssa.BinaryOp{
-			Op:    token.Mul,
-			Left:  numElements,
-			Right: elementSize,
-		})
+		if elementSize == 1 {
+			sizeInBytes = numElements
+		} else {
+			elementSizeValue := f.Append(&ssa.Int{Int: elementSize})
+
+			sizeInBytes = f.Append(&ssa.BinaryOp{
+				Op:    token.Mul,
+				Left:  numElements,
+				Right: elementSizeValue,
+			})
+		}
 
 		mallocType = &types.Pointer{To: typ}
 	} else {

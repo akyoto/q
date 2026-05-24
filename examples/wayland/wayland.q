@@ -1,5 +1,4 @@
 import io
-import mem
 import net
 import wayland
 
@@ -14,7 +13,7 @@ main() {
 
 	io.writeLine("connected.")
 	io.writeLine("sending message...")
-	buffer := mem.alloc(4096)
+	buffer := new(byte, 4096)
 	size := wayland.header_size + 4
 	wayland.write32(buffer, wayland.display_object_id)
 	wayland.write16(buffer[4..], wayland.wl_display_get_registry_opcode)
@@ -27,16 +26,20 @@ main() {
 
 	if err != 0 {
 		io.write(err)
-		mem.free(buffer)
+		delete(buffer)
 		net.close(socket)
 		return
 	}
 
 	io.writeLine("received.")
-	io.writeLine("size:")
-	io.writeLine(n)
-	io.writeLine("msg:")
-	io.writeLine(buffer[wayland.header_size..n])
-	mem.free(buffer)
+	handleMessage(buffer[..n])
+	delete(buffer)
 	net.close(socket)
+}
+
+handleMessage(msg string) {
+	io.writeLine("size:")
+	io.writeLine(msg.len as int)
+	io.writeLine("msg:")
+	io.writeLine(msg[wayland.header_size..])
 }
