@@ -1,5 +1,6 @@
 const {
-	display_object_id = 1
-	header_size = 8
-	wl_display_get_registry_opcode = 1
+	displayGetRegistry = 1
+	registryGlobal = 0
+	displayId = 1
+	headerSize = 8
 }
