@@ -103,6 +103,11 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	}
 
 	field := structure.FieldByName(rightText)
+
+	if field == nil {
+		return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Source())
+	}
+
 	memory := f.structField(leftValue, field)
 
 	load := f.Append(&ssa.Load{
