@@ -1,5 +1,4 @@
 import io
-import mem
 import net
 import strings
 import wayland
@@ -30,16 +29,26 @@ main() {
 		return
 	}
 
-	loop {
-		err := readMessage(state, buffer)
+	err := readMessage(state, buffer)
 
-		if err != 0 {
-			delete(state)
-			delete(buffer)
-			net.close(socket)
-			return
-		}
+	if err != 0 {
+		delete(state)
+		delete(buffer)
+		net.close(socket)
+		return
 	}
+
+	if state.wl_compositor_name == 0 || state.wl_shm_name == 0 || state.xdg_wm_base_name == 0 {
+		io.writeLine("missing globals")
+	}
+
+	state.wl_compositor = wayland.newId(state)
+	state.wl_shm = wayland.newId(state)
+	state.xdg_wm_base = wayland.newId(state)
+
+	delete(state)
+	delete(buffer)
+	net.close(socket)
 }
 
 getRegistry(state *wayland.State, buffer string) -> error {
@@ -92,7 +101,7 @@ handleMessage(state *wayland.State, msg string) -> int {
 	return header.size as int
 }
 
-handleGlobal(state *wayland.State, name uint32, interface string, version uint32) {
+handleGlobal(state *wayland.State, name uint32, interface string, _version uint32) {
 	io.write("[")
 	io.write(name as int)
 	io.write("] ")
@@ -101,30 +110,13 @@ handleGlobal(state *wayland.State, name uint32, interface string, version uint32
 
 	switch {
 		strings.equal(interface, "wl_compositor") {
-			state.wl_compositor = bind(state, name, interface, version)
+			state.wl_compositor_name = name
 		}
 		strings.equal(interface, "wl_shm") {
-			state.wl_shm = bind(state, name, interface, version)
+			state.wl_shm_name = name
 		}
 		strings.equal(interface, "xdg_wm_base") {
-			state.xdg_wm_base = bind(state, name, interface, version)
+			state.xdg_wm_base_name = name
 		}
 	}
-}
-
-bind(state *wayland.State, name uint32, interface string, _version uint32) -> uint32 {
-	size := wayland.headerSize + 4 + 4 + interface.len + 4 + 4
-	buffer := new(byte, size)
-	wayland.write32(buffer, state.wl_registry)
-	wayland.write16(buffer[4..], wayland.registryBind)
-	wayland.write16(buffer[6..], size)
-	wayland.write32(buffer[8..], name)
-	wayland.write32(buffer[12..], interface.len as uint32)
-	mem.copy(buffer[16..], interface)
-	// wayland.write32(buffer[16+interface.len..], version)
-	id := wayland.newId(state)
-	wayland.write32(buffer[16+interface.len+4..], id)
-	//io.writeTo(state.socket, buffer[..size])
-	delete(buffer)
-	return id
 }

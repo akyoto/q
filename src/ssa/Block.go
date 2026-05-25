@@ -137,7 +137,7 @@ func (b *Block) AddSuccessor(successor *Block) {
 	// to use the new Phi values as their arguments.
 	for _, name := range modifiedStructs {
 		structure := successor.IdentifiersBefore[name].(*Struct)
-		structType := structure.Typ.(*types.Struct)
+		structType := types.Unwrap(structure.Typ).(*types.Struct)
 		newStruct := &Struct{Typ: structType, Arguments: make(Arguments, len(structure.Arguments))}
 
 		for i, field := range structType.Fields {
