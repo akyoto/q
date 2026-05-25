@@ -1,5 +1,7 @@
 import io
+import mem
 import net
+import strings
 import wayland
 
 main() {
@@ -41,12 +43,12 @@ main() {
 }
 
 getRegistry(state *wayland.State, buffer string) -> error {
-	state.registry = wayland.newId(state)
+	state.wl_registry = wayland.newId(state)
 	size := wayland.headerSize + 4
 	wayland.write32(buffer, wayland.displayId)
 	wayland.write16(buffer[4..], wayland.displayGetRegistry)
 	wayland.write16(buffer[6..], size)
-	wayland.write32(buffer[8..], state.registry)
+	wayland.write32(buffer[8..], state.wl_registry)
 	_, err := io.writeTo(state.socket, buffer[..size])
 	return err
 }
@@ -75,25 +77,54 @@ readMessage(state *wayland.State, buffer string) -> error {
 
 handleMessage(state *wayland.State, msg string) -> int {
 	header := msg.ptr as *wayland.Header
+	//assert header.size <= msg.len
 
-	if header.id == state.registry {
-		io.write("from:")
-		io.write(header.id as int)
-		io.write(" opcode:")
-		io.write(header.opcode as int)
-		io.write(" size:")
-		io.write(header.size as int)
-		io.write(" contents:")
-		id := [msg.ptr + wayland.headerSize as *uint32]
-		io.write(" id:")
-		io.write(id as int)
-		io.write(" name:")
+	if header.id == state.wl_registry {
+		name := [msg.ptr + wayland.headerSize as *uint32]
 		len := [msg.ptr + wayland.headerSize + 4 as *uint32]
 		start := wayland.headerSize + 8
 		end := start + len
-		contents := msg[start..end]
-		io.writeLine(contents)
+		interface := msg[start..end-1]
+		version := [msg.ptr + end as *uint32]
+		handleGlobal(state, name, interface, version)
 	}
 
 	return header.size as int
+}
+
+handleGlobal(state *wayland.State, name uint32, interface string, version uint32) {
+	io.write("[")
+	io.write(name as int)
+	io.write("] ")
+	io.write(interface)
+	io.write("\n")
+
+	switch {
+		strings.equal(interface, "wl_compositor") {
+			state.wl_compositor = bind(state, name, interface, version)
+		}
+		strings.equal(interface, "wl_shm") {
+			state.wl_shm = bind(state, name, interface, version)
+		}
+		strings.equal(interface, "xdg_wm_base") {
+			state.xdg_wm_base = bind(state, name, interface, version)
+		}
+	}
+}
+
+bind(state *wayland.State, name uint32, interface string, _version uint32) -> uint32 {
+	size := wayland.headerSize + 4 + 4 + interface.len + 4 + 4
+	buffer := new(byte, size)
+	wayland.write32(buffer, state.wl_registry)
+	wayland.write16(buffer[4..], wayland.registryBind)
+	wayland.write16(buffer[6..], size)
+	wayland.write32(buffer[8..], name)
+	wayland.write32(buffer[12..], interface.len as uint32)
+	mem.copy(buffer[16..], interface)
+	// wayland.write32(buffer[16+interface.len..], version)
+	id := wayland.newId(state)
+	wayland.write32(buffer[16+interface.len+4..], id)
+	//io.writeTo(state.socket, buffer[..size])
+	delete(buffer)
+	return id
 }
