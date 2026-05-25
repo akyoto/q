@@ -25,6 +25,7 @@ var examples = []run{
 	{"server", nil, "", "", -1},
 	{"shell", nil, "", "", -1},
 	{"thread", nil, "", "", -1},
+	{"wayland", nil, "", "", -1},
 }
 
 func TestExamples(t *testing.T) {

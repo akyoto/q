@@ -1,4 +1,4 @@
-accept(fd int) -> (conn int, err error) {
+accept(fd int) -> (conn !int, err error) {
 	conn := ws2_32.accept(fd, 0, 0)
 
 	if conn < 0 {
@@ -8,7 +8,7 @@ accept(fd int) -> (conn int, err error) {
 	return conn, 0
 }
 
-close(fd int) -> error {
+close(fd !int) -> error {
 	if ws2_32.shutdown(fd, 1) == -1 {
 		return ws2_32.WSAGetLastError()
 	}

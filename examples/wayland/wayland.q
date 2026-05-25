@@ -1,4 +1,5 @@
 import io
+import mem
 import net
 import strings
 import wayland
@@ -7,7 +8,7 @@ main() {
 	socket, err := wayland.connect()
 
 	if err != 0 {
-		io.write("connect error: ")
+		io.write("error: ")
 		io.write(err)
 		return
 	}
@@ -18,51 +19,68 @@ main() {
 	}
 
 	buffer := new(byte, 4096)
-	err := getRegistry(state, buffer)
+	err := communicate(state, buffer)
 
 	if err != 0 {
-		io.write("send error: ")
+		io.write("error: ")
 		io.write(err)
-		delete(state)
-		delete(buffer)
-		net.close(socket)
-		return
 	}
-
-	err := readMessage(state, buffer)
-
-	if err != 0 {
-		delete(state)
-		delete(buffer)
-		net.close(socket)
-		return
-	}
-
-	if state.wl_compositor_name == 0 || state.wl_shm_name == 0 || state.xdg_wm_base_name == 0 {
-		io.writeLine("missing globals")
-	}
-
-	state.wl_compositor = wayland.newId(state)
-	state.wl_shm = wayland.newId(state)
-	state.xdg_wm_base = wayland.newId(state)
 
 	delete(state)
 	delete(buffer)
 	net.close(socket)
 }
 
-getRegistry(state *wayland.State, buffer string) -> error {
-	state.wl_registry = wayland.newId(state)
-	size := wayland.headerSize + 4
-	wayland.write32(buffer, wayland.displayId)
-	wayland.write16(buffer[4..], wayland.displayGetRegistry)
-	wayland.write16(buffer[6..], size)
-	wayland.write32(buffer[8..], state.wl_registry)
-	_, err := io.writeTo(state.socket, buffer[..size])
-	return err
+communicate(state *wayland.State, buffer string) -> error {
+	err := getRegistry(state, buffer)
+
+	if err != 0 {
+		return err
+	}
+
+	err := read(state, buffer)
+
+	if err != 0 {
+		return err
+	}
+
+	if state.wl_compositor_name == 0 || state.wl_shm_name == 0 || state.xdg_wm_base_name == 0 {
+		return -1
+	}
+
+	mem.zero(buffer)
+	size := 0 as uint
+	state.wl_compositor = wayland.newId(state)
+	err := bindCompositor(state, buffer[size..], state.wl_compositor)
+
+	if err != 0 {
+		return err
+	}
+
+	state.wl_shm = wayland.newId(state)
+	err := bindShm(state, buffer[size..], state.wl_shm)
+
+	if err != 0 {
+		return err
+	}
+
+	state.xdg_wm_base = wayland.newId(state)
+	err := bindXdgWmBase(state, buffer[size..], state.xdg_wm_base)
+
+	if err != 0 {
+		return err
+	}
+
+	err := read(state, buffer)
+
+	if err != 0 {
+		return err
+	}
+
+	return 0
 }
 
-readMessage(state *wayland.State, buffer string) -> error {
+read(state *wayland.State, buffer string) -> error {
 	n, err := io.readFrom(state.socket, buffer)
 
 	if err != 0 {
@@ -98,6 +116,10 @@ handleMessage(state *wayland.State, msg string) -> int {
 		handleGlobal(state, name, interface, version)
 	}
 
+	if header.id == wayland.displayId && header.opcode == wayland.displayError {
+		//io.writeLine("wl_display::error")
+	}
+
 	return header.size as int
 }
 
@@ -119,4 +141,64 @@ handleGlobal(state *wayland.State, name uint32, interface string, _version uint3
 			state.xdg_wm_base_name = name
 		}
 	}
+}
+
+getRegistry(state *wayland.State, buffer string) -> error {
+	state.wl_registry = wayland.newId(state)
+	size := wayland.headerSize + 4
+	ptr := buffer.ptr
+	ptr = wayland.write32(ptr, wayland.displayId)
+	ptr = wayland.write16(ptr, wayland.displayGetRegistry)
+	ptr = wayland.write16(ptr, size)
+	ptr = wayland.write32(ptr, state.wl_registry)
+	_, err := io.writeTo(state.socket, buffer[..size])
+	return err
+}
+
+bindCompositor(state *wayland.State, buffer string, id uint32) -> error {
+	padded := buffer.len + 1
+	padded = (padded + 3) & -4
+	size := wayland.headerSize + 4 + 4 + padded + 4 + 4
+	ptr := buffer.ptr
+	ptr = wayland.write32(ptr, state.wl_registry)
+	ptr = wayland.write16(ptr, wayland.registryBind)
+	ptr = wayland.write16(ptr, size)
+	ptr = wayland.write32(ptr, state.wl_compositor_name)
+	ptr = wayland.writeString(ptr, "wl_compositor")
+	ptr = wayland.write32(ptr, 4)
+	ptr = wayland.write32(ptr, id)
+	_, err := io.writeTo(state.socket, buffer[..size])
+	return err
+}
+
+bindShm(state *wayland.State, buffer string, id uint32) -> error {
+	padded := buffer.len + 1
+	padded = (padded + 3) & -4
+	size := wayland.headerSize + 4 + 4 + padded + 4 + 4
+	ptr := buffer.ptr
+	ptr = wayland.write32(ptr, state.wl_registry)
+	ptr = wayland.write16(ptr, wayland.registryBind)
+	ptr = wayland.write16(ptr, size)
+	ptr = wayland.write32(ptr, state.wl_shm_name)
+	ptr = wayland.writeString(ptr, "wl_shm")
+	ptr = wayland.write32(ptr, 1)
+	ptr = wayland.write32(ptr, id)
+	_, err := io.writeTo(state.socket, buffer[..size])
+	return err
+}
+
+bindXdgWmBase(state *wayland.State, buffer string, id uint32) -> error {
+	padded := buffer.len + 1
+	padded = (padded + 3) & -4
+	size := wayland.headerSize + 4 + 4 + padded + 4 + 4
+	ptr := buffer.ptr
+	ptr = wayland.write32(ptr, state.wl_registry)
+	ptr = wayland.write16(ptr, wayland.registryBind)
+	ptr = wayland.write16(ptr, size)
+	ptr = wayland.write32(ptr, state.xdg_wm_base_name)
+	ptr = wayland.writeString(ptr, "xdg_wm_base")
+	ptr = wayland.write32(ptr, 2)
+	ptr = wayland.write32(ptr, id)
+	_, err := io.writeTo(state.socket, buffer[..size])
+	return err
 }
