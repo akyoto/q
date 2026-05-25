@@ -23,10 +23,27 @@ type run struct {
 
 // Run compiles a debug and release version and tests both.
 func (test *run) Run(t *testing.T, build *config.Build) {
-	build.Optimize(false)
-	test.RunBuild(t, test.Name+"/debug", build)
-	build.Optimize(true)
-	test.RunBuild(t, test.Name+"/release", build)
+	build.Matrix(func(cross *config.Build) {
+		if cross.OS == build.OS && cross.Arch == build.Arch {
+			cross.Optimize(false)
+			test.RunBuild(t, test.Name+"/"+cross.OS.String()+"/"+cross.Arch.String()+"/debug", cross)
+			cross.Optimize(true)
+			test.RunBuild(t, test.Name+"/"+cross.OS.String()+"/"+cross.Arch.String()+"/release", cross)
+		} else {
+			cross.Optimize(false)
+			test.Compile(t, test.Name+"/"+cross.OS.String()+"/"+cross.Arch.String()+"/debug", cross)
+			cross.Optimize(true)
+			test.Compile(t, test.Name+"/"+cross.OS.String()+"/"+cross.Arch.String()+"/release", cross)
+		}
+	})
+}
+
+// Compile only tests the compilation without actually running the executable.
+func (test *run) Compile(t *testing.T, name string, build *config.Build) {
+	t.Run(name, func(t *testing.T) {
+		_, err := compiler.Compile(build)
+		assert.Nil(t, err)
+	})
 }
 
 // RunBuild builds and runs the file to check if the output matches the expected output.

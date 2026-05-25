@@ -4,13 +4,14 @@ package config
 func (build *Build) Matrix(call func(*Build)) {
 	systems := []OS{Linux, Mac, Windows}
 	architectures := []Arch{ARM, X86}
+	tmp := *build
 
 	for _, os := range systems {
-		build.OS = os
+		tmp.OS = os
 
 		for _, arch := range architectures {
-			build.Arch = arch
-			call(build)
+			tmp.Arch = arch
+			call(&tmp)
 		}
 	}
 }
