@@ -22,6 +22,8 @@ var (
 	InvalidRune               = errors.String("Invalid rune")
 	InvalidStructOperation    = errors.String("Invalid operation on structs")
 	MissingCommaBetweenFields = errors.String("Missing ',' between struct fields")
+	MissingObject             = errors.String("Missing object or identifier")
+	MissingFieldName          = errors.String("Missing field name")
 	MissingOperand            = errors.String("Missing operand")
 	UnnecessaryCast           = errors.String("Unnecessary type cast")
 )

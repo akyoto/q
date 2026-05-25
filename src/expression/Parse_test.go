@@ -107,9 +107,12 @@ func TestParse(t *testing.T) {
 		{"Function calls 27", "a(b,c)*2+15*4", "(+ (* (λ a b c) 2) (* 15 4))"},
 		{"Function calls 28", "a(,)", "(λ a  )"},
 
-		{"Package function calls", "a.b(c)", "(λ (. a b) c)"},
-		{"Package function calls 2", "a.b(c,d)", "(λ (. a b) c d)"},
-		{"Package function calls 3", "a.b.c(d,e)", "(λ (. (. a b) c) d e)"},
+		{"Member access", "a.b", "(. a b)"},
+		{"Member access 2", "a.", "(. a)"},
+		{"Member access 3", ".b", "(.  b)"},
+		{"Member access 4", "a.b(c)", "(λ (. a b) c)"},
+		{"Member access 5", "a.b(c,d)", "(λ (. a b) c d)"},
+		{"Member access 6", "a.b.c(d,e)", "(λ (. (. a b) c) d e)"},
 
 		{"Array access", "a[0]", "(@ a 0)"},
 		{"Array access 2", "a[b+c]", "(@ a (+ b c))"},

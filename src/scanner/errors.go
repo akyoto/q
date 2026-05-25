@@ -24,15 +24,6 @@ var (
 	NoInputFiles               = errors.String("No input files")
 )
 
-// UnknownImport error is created when a package import failed.
-type UnknownImport struct {
-	Package string
-}
-
-func (err *UnknownImport) Error() string {
-	return fmt.Sprintf("Unknown import '%s'", err.Package)
-}
-
 // InvalidCharacter is created when an invalid character appears.
 type InvalidCharacter struct {
 	Character string
@@ -49,4 +40,13 @@ type IsNotDirectory struct {
 
 func (err *IsNotDirectory) Error() string {
 	return fmt.Sprintf("'%s' is not a directory", err.Path)
+}
+
+// UnknownImport error is created when a package import failed.
+type UnknownImport struct {
+	Package string
+}
+
+func (err *UnknownImport) Error() string {
+	return fmt.Sprintf("Package '%s' does not exist", err.Package)
 }

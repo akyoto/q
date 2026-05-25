@@ -18,7 +18,17 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 	}
 
 	left := node.Expression.Children[0]
+
+	if len(left.Children) == 1 {
+		return errors.NewAt(MissingFieldName, f.File, left.Source().End())
+	}
+
 	address := left.Children[0]
+
+	if address.Token.Kind == token.Invalid {
+		return errors.NewAt(MissingObject, f.File, left.Source().Start())
+	}
+
 	fieldExpr := left.Children[1]
 	fieldName := fieldExpr.String(f.File.Bytes)
 	addressValue, err := f.evaluate(address)
