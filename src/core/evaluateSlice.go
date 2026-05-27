@@ -9,7 +9,7 @@ import (
 )
 
 // evaluateSlice converts a slice expression to an SSA value.
-func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.Expression, addressValue ssa.Value, length ssa.Value) (ssa.Value, error) {
+func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.Expression, address ssa.Value, length ssa.Value) (ssa.Value, error) {
 	switch len(index.Children) {
 	case 1:
 		from, err := f.evaluateRight(index.Children[0])
@@ -22,25 +22,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			return nil, errors.New(&TypeMismatch{Encountered: from.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[0].Source())
 		}
 
-		newPointer := f.Append(&ssa.BinaryOp{
-			Op:    token.Add,
-			Left:  addressValue,
-			Right: from,
-		})
-
-		newLength := f.Append(&ssa.BinaryOp{
-			Op:    token.Sub,
-			Left:  length,
-			Right: from,
-		})
-
-		slice := &ssa.Struct{
-			Typ:       types.String,
-			Arguments: []ssa.Value{newPointer, newLength},
-			Source:    expr.Source(),
-		}
-
-		return slice, nil
+		return f.makeSlice(address, from, length, expr.Source()), nil
 
 	case 2:
 		if index.Children[0].Token.Kind == token.Invalid {
@@ -56,7 +38,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 
 			slice := &ssa.Struct{
 				Typ:       types.String,
-				Arguments: []ssa.Value{addressValue, to},
+				Arguments: []ssa.Value{address, to},
 				Source:    expr.Source(),
 			}
 
@@ -83,25 +65,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 			return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source())
 		}
 
-		newPointer := f.Append(&ssa.BinaryOp{
-			Op:    token.Add,
-			Left:  addressValue,
-			Right: from,
-		})
-
-		newLength := f.Append(&ssa.BinaryOp{
-			Op:    token.Sub,
-			Left:  to,
-			Right: from,
-		})
-
-		slice := &ssa.Struct{
-			Typ:       types.String,
-			Arguments: []ssa.Value{newPointer, newLength},
-			Source:    expr.Source(),
-		}
-
-		return slice, nil
+		return f.makeSlice(address, from, to, expr.Source()), nil
 	}
 
 	return nil, errors.New(InvalidExpression, f.File, expr.Source())
