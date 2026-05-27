@@ -40,26 +40,8 @@ func (f *Function) evaluateRight(expr *expression.Expression) (ssa.Value, error)
 
 	switch typ := memory.Typ.(type) {
 	case *types.Struct:
-		fields := make([]ssa.Value, 0, len(typ.Fields))
-
-		for _, field := range typ.Fields {
-			fieldMemory := f.structField(memory, field)
-
-			fieldValue := f.Append(&ssa.Load{
-				Memory: fieldMemory,
-				Source: expr.Source(),
-			})
-
-			fields = append(fields, fieldValue)
-		}
-
-		value := &ssa.Struct{
-			Typ:       typ,
-			Arguments: fields,
-			Source:    expr.Source(),
-		}
-
-		return value, nil
+		structure := f.loadFields(memory, typ, expr.Source())
+		return structure, nil
 
 	default:
 		load := f.Append(&ssa.Load{

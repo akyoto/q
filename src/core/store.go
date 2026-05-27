@@ -27,15 +27,7 @@ func (f *Function) store(memory *ssa.Memory, value ssa.Value) error {
 	composite, isStruct := value.(*ssa.Struct)
 
 	if isStruct {
-		for i, field := range structure.Fields {
-			fieldValue := composite.Arguments[i]
-
-			f.Append(&ssa.Store{
-				Memory: f.structField(memory, field),
-				Value:  fieldValue,
-			})
-		}
-
+		f.storeFields(memory, structure, composite.Arguments)
 		return nil
 	}
 
@@ -52,12 +44,6 @@ func (f *Function) store(memory *ssa.Memory, value ssa.Value) error {
 		fieldValues[i] = fieldValue
 	}
 
-	for i, field := range structure.Fields {
-		f.Append(&ssa.Store{
-			Memory: f.structField(memory, field),
-			Value:  fieldValues[i],
-		})
-	}
-
+	f.storeFields(memory, structure, fieldValues)
 	return nil
 }
