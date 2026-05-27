@@ -21,6 +21,6 @@ func (f *Function) evaluateString(expr *expression.Expression) (ssa.Value, error
 		Source: expr.Source(),
 	})
 
-	v := f.makeStruct(types.String, expr.Source(), []ssa.Value{pointer, length})
+	v := f.makeStruct(types.String, []ssa.Value{pointer, length}, expr.Source())
 	return v, nil
 }

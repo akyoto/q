@@ -16,9 +16,5 @@ func (f *Function) loadFields(memory *ssa.Memory, typ *types.Struct, source ssa.
 		})
 	}
 
-	return &ssa.Struct{
-		Typ:       typ,
-		Arguments: fields,
-		Source:    source,
-	}
+	return f.makeStruct(typ, fields, source)
 }

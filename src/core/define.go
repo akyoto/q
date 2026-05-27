@@ -117,7 +117,7 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		fields = append(fields, fieldValue)
 	}
 
-	composite := f.makeStruct(rightValue.Type(), left.Source(), fields)
+	composite := f.makeStruct(rightValue.Type(), fields, left.Source())
 	f.Block().Identify(name, composite)
 	return nil
 }

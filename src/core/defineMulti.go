@@ -87,7 +87,7 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 			count++
 		}
 
-		composite := f.makeStruct(fn.Typ.Output[i], identifier.Source(), fields)
+		composite := f.makeStruct(fn.Typ.Output[i], fields, identifier.Source())
 		f.Block().Identify(name, composite)
 		protected = append(protected, composite)
 	}

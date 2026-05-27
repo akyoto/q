@@ -26,7 +26,7 @@ func (f *Function) composeStruct(structType *types.Struct, input *ssa.Parameter,
 			offset++
 		}
 
-		structure := f.makeStruct(structType, input.Source, fields)
+		structure := f.makeStruct(structType, fields, input.Source)
 		return structure, offset - 1
 	}
 
@@ -75,6 +75,6 @@ func (f *Function) composeStruct(structType *types.Struct, input *ssa.Parameter,
 		size += fieldSize
 	}
 
-	structure := f.makeStruct(structType, input.Source, fields)
+	structure := f.makeStruct(structType, fields, input.Source)
 	return structure, offset - 1
 }
