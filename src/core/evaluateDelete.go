@@ -4,7 +4,6 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -40,25 +39,11 @@ func (f *Function) evaluateDelete(expr *expression.Expression) (ssa.Value, error
 		return call, nil
 
 	case *types.Struct:
-		var (
-			structure   = value.(*ssa.Struct)
-			ptr         = structure.Arguments[0]
-			length      = structure.Arguments[1]
-			elementSize = types.Unwrap(ptr.Type()).(*types.Pointer).To.Size()
-			sizeInBytes ssa.Value
-		)
-
-		if elementSize == 1 {
-			sizeInBytes = length
-		} else {
-			elementSizeValue := f.Append(&ssa.Int{Int: elementSize})
-
-			sizeInBytes = f.Append(&ssa.BinaryOp{
-				Op:    token.Mul,
-				Left:  length,
-				Right: elementSizeValue,
-			})
-		}
+		structure := value.(*ssa.Struct)
+		ptr := structure.Arguments[0]
+		numElements := structure.Arguments[1]
+		elementSize := types.Unwrap(ptr.Type()).(*types.Pointer).To.Size()
+		sizeInBytes := f.multiplySize(numElements, elementSize)
 
 		call := f.Append(&ssa.Call{
 			Func: &ssa.Function{
@@ -71,7 +56,7 @@ func (f *Function) evaluateDelete(expr *expression.Expression) (ssa.Value, error
 
 		block := f.Block()
 		block.Unidentify(ptr)
-		block.Unidentify(length)
+		block.Unidentify(numElements)
 		return call, nil
 
 	default:

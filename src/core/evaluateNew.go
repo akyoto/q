@@ -5,7 +5,6 @@ import (
 
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -35,19 +34,7 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 
 		sliceType = f.Env.Slice(typ)
 		elementSize := typ.Size()
-
-		if elementSize == 1 {
-			sizeInBytes = numElements
-		} else {
-			elementSizeValue := f.Append(&ssa.Int{Int: elementSize})
-
-			sizeInBytes = f.Append(&ssa.BinaryOp{
-				Op:    token.Mul,
-				Left:  numElements,
-				Right: elementSizeValue,
-			})
-		}
-
+		sizeInBytes = f.multiplySize(numElements, elementSize)
 		mallocType = &types.Pointer{To: typ}
 	} else {
 		sizeInBytes = f.Append(&ssa.Int{Int: typ.Size()})
