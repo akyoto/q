@@ -103,21 +103,7 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		return nil
 	}
 
-	fields := make(ssa.Arguments, 0, len(structure.Fields))
-
-	for i, field := range structure.Fields {
-		fieldValue := &ssa.FromTuple{
-			Tuple:  rightValue,
-			Index:  i,
-			Source: left.Source(),
-		}
-
-		f.Block().Append(fieldValue)
-		f.Block().Identify(name+"."+field.Name, fieldValue)
-		fields = append(fields, fieldValue)
-	}
-
-	composite := f.makeStruct(rightValue.Type(), fields, left.Source())
+	composite := f.makeStructFromTuple(rightValue, rightValue.Type(), structure, name, left.Source())
 	f.Block().Identify(name, composite)
 	return nil
 }

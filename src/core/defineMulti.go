@@ -71,23 +71,14 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 			continue
 		}
 
-		fields := make(ssa.Arguments, 0, len(structure.Fields))
+		composite := f.makeStructFromTuple(rightValue, fn.Typ.Output[i], structure, name, identifier.Source())
 
-		for _, field := range structure.Fields {
-			fieldValue := &ssa.FromTuple{
-				Tuple:  rightValue,
-				Index:  count,
-				Source: identifier.Source(),
-			}
-
-			f.Block().Append(fieldValue)
-			f.Block().Identify(name+"."+field.Name, fieldValue)
-			fields = append(fields, fieldValue)
-			protected = append(protected, fieldValue)
-			count++
+		for _, element := range composite.Arguments {
+			element.(*ssa.FromTuple).Index += count
+			protected = append(protected, element)
 		}
 
-		composite := f.makeStruct(fn.Typ.Output[i], fields, identifier.Source())
+		count += len(composite.Arguments)
 		f.Block().Identify(name, composite)
 		protected = append(protected, composite)
 	}
