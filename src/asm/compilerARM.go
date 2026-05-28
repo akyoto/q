@@ -90,6 +90,23 @@ func (c *compilerARM) Compile(instr Instruction) {
 	case *CompareNumber:
 		code, _ := arm.CompareRegisterNumber(instr.Destination, instr.Number)
 		c.append(code)
+	case *ConditionalSet:
+		switch instr.Condition {
+		case token.Equal:
+			c.append(arm.SetIfEqual(instr.Destination))
+		case token.NotEqual:
+			c.append(arm.SetIfNotEqual(instr.Destination))
+		case token.Greater:
+			c.append(arm.SetIfGreater(instr.Destination))
+		case token.GreaterEqual:
+			c.append(arm.SetIfGreaterOrEqual(instr.Destination))
+		case token.Less:
+			c.append(arm.SetIfLess(instr.Destination))
+		case token.LessEqual:
+			c.append(arm.SetIfLessOrEqual(instr.Destination))
+		default:
+			panic("unknown condition")
+		}
 	case *Divide:
 		c.append(arm.DivUnsignedRegisterRegister(instr.Destination, instr.Source, instr.Operand))
 	case *DivideSigned:

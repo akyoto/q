@@ -88,6 +88,24 @@ func (c *compilerX86) Compile(instr Instruction) {
 		} else {
 			c.code = x86.CompareRegisterNumber(c.code, instr.Destination, instr.Number)
 		}
+	case *ConditionalSet:
+		switch instr.Condition {
+		case token.Equal:
+			c.code = x86.SetIfEqual(c.code, instr.Destination)
+		case token.NotEqual:
+			c.code = x86.SetIfNotEqual(c.code, instr.Destination)
+		case token.Greater:
+			c.code = x86.SetIfGreater(c.code, instr.Destination)
+		case token.GreaterEqual:
+			c.code = x86.SetIfGreaterOrEqual(c.code, instr.Destination)
+		case token.Less:
+			c.code = x86.SetIfLess(c.code, instr.Destination)
+		case token.LessEqual:
+			c.code = x86.SetIfLessOrEqual(c.code, instr.Destination)
+		default:
+			panic("unknown condition")
+		}
+
 	case *Divide:
 		if instr.Operand == x86.R2 {
 			panic("divisor register cannot be R2")

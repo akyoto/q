@@ -20,9 +20,13 @@ type (
 	CallRegister    struct{ Address cpu.Register }
 	Compare         rr
 	CompareNumber   rn
-	Divide          rrr
-	DivideSigned    rrr
-	Jump            struct {
+	ConditionalSet  struct {
+		Destination cpu.Register
+		Condition   token.Kind
+	}
+	Divide       rrr
+	DivideSigned rrr
+	Jump         struct {
 		Label     string
 		Condition token.Kind
 	}

@@ -79,6 +79,23 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Destination)
 			other.Print(", ")
 			imm.Print(instr.Number)
+		case *asm.ConditionalSet:
+			switch instr.Condition {
+			case token.Equal:
+				mnemonic.Print("  set if == ")
+			case token.Greater:
+				mnemonic.Print("  set if > ")
+			case token.GreaterEqual:
+				mnemonic.Print("  set if >= ")
+			case token.Less:
+				mnemonic.Print("  set if < ")
+			case token.LessEqual:
+				mnemonic.Print("  set if <= ")
+			case token.NotEqual:
+				mnemonic.Print("  set if != ")
+			}
+
+			register.Print(instr.Destination)
 		case *asm.Divide:
 			mnemonic.Print("  div.u ")
 			register.Print(instr.Destination)

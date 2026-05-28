@@ -17,7 +17,15 @@ func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
 		})
 
 	case token.Not:
-		panic("not implemented: logical not")
+		f.Assembler.Append(&asm.CompareNumber{
+			Destination: left.Register,
+			Number:      0,
+		})
+
+		f.Assembler.Append(&asm.ConditionalSet{
+			Destination: step.Register,
+			Condition:   token.Equal,
+		})
 
 	default:
 		panic("not implemented: " + instr.String())
