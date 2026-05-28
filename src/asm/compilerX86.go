@@ -105,7 +105,6 @@ func (c *compilerX86) Compile(instr Instruction) {
 		default:
 			panic("unknown condition")
 		}
-
 	case *Divide:
 		if instr.Operand == x86.R2 {
 			panic("divisor register cannot be R2")

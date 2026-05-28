@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -21,6 +22,13 @@ func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
 			Destination: left.Register,
 			Number:      0,
 		})
+
+		if f.build.Arch == config.X86 {
+			f.Assembler.Append(&asm.MoveNumber{
+				Destination: step.Register,
+				Number:      0,
+			})
+		}
 
 		f.Assembler.Append(&asm.ConditionalSet{
 			Destination: step.Register,
