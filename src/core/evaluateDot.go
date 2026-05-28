@@ -5,7 +5,6 @@ import (
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
-	"git.urbach.dev/cli/q/src/types"
 )
 
 // evaluateDot converts a dot expression to an SSA value.
@@ -58,75 +57,14 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return nil, errors.New(ExpectedStructField, f.File, right.Source())
 	}
 
-	rightText := right.Token.StringFrom(f.File.Bytes)
-
 	switch leftValue := leftValue.(type) {
 	case *ssa.Struct:
-		field := types.Unwrap(leftValue.Typ).(*types.Struct).FieldByName(rightText)
-
-		if field == nil {
-			return nil, errors.New(&UnknownStructField{StructName: leftValue.Typ.Name(), FieldName: rightText}, f.File, right.Source())
-		}
-
-		value := leftValue.Arguments[field.Index]
-
-		if value == nil {
-			return nil, errors.New(&UndefinedStructField{Identifier: left.SourceString(f.File.Bytes), FieldName: rightText}, f.File, right.Source())
-		}
-
-		return value, nil
+		return f.fieldFromStruct(leftValue, left, right)
 
 	case *ssa.Call:
-		leftUnwrapped := types.Unwrap(leftValue.Type())
-		structure, isStruct := leftUnwrapped.(*types.Struct)
+		return f.fieldFromCall(leftValue, left, right, expr)
 
-		if isStruct {
-			field := structure.FieldByName(rightText)
-
-			if field == nil {
-				return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Source())
-			}
-
-			value := f.Append(&ssa.FromTuple{
-				Tuple:  leftValue,
-				Index:  int(field.Index),
-				Source: left.Source(),
-			})
-
-			return value, nil
-		}
+	default:
+		return f.fieldFromMemory(leftValue, left, right, expr)
 	}
-
-	leftUnwrapped := types.Unwrap(leftValue.Type())
-	pointer, isPointer := leftUnwrapped.(*types.Pointer)
-
-	if isPointer {
-		leftUnwrapped = pointer.To
-	}
-
-	structure, isStructPointer := leftUnwrapped.(*types.Struct)
-
-	if !isStructPointer {
-		return nil, errors.New(&NotDataStruct{TypeName: leftUnwrapped.Name()}, f.File, left.Source())
-	}
-
-	field := structure.FieldByName(rightText)
-
-	if field == nil {
-		return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Source())
-	}
-
-	memory := f.structField(leftValue, field)
-	_, memoryIsStruct := memory.Typ.(*types.Struct)
-
-	if !memoryIsStruct {
-		load := f.Append(&ssa.Load{
-			Memory: memory,
-			Source: expr.Source(),
-		})
-
-		return load, nil
-	}
-
-	return memory, nil
 }
