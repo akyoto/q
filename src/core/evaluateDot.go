@@ -83,6 +83,10 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		if isStruct {
 			field := structure.FieldByName(rightText)
 
+			if field == nil {
+				return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: rightText}, f.File, right.Source())
+			}
+
 			value := f.Append(&ssa.FromTuple{
 				Tuple:  leftValue,
 				Index:  int(field.Index),
@@ -113,11 +117,16 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	}
 
 	memory := f.structField(leftValue, field)
+	_, memoryIsStruct := memory.Typ.(*types.Struct)
 
-	load := f.Append(&ssa.Load{
-		Memory: memory,
-		Source: expr.Source(),
-	})
+	if !memoryIsStruct {
+		load := f.Append(&ssa.Load{
+			Memory: memory,
+			Source: expr.Source(),
+		})
 
-	return load, nil
+		return load, nil
+	}
+
+	return memory, nil
 }

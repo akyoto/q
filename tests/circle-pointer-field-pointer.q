@@ -1,16 +1,18 @@
 main() {
-	c := Circle {
-		center: Point{x: 1, y: 2},
+	c := new(Circle) {
+		center: new(Point){x: 1, y: 2},
 		radius: 3
 	}
 
 	assert c.center.x == 1
 	assert c.center.y == 2
 	assert c.radius == 3
+	delete(c.center)
+	delete(c)
 }
 
 Circle {
-	center Point
+	center !*Point
 	radius int
 }
 

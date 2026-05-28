@@ -92,6 +92,8 @@ var tests = []run{
 	{"string-by-value", nil, "", "Hello\n", 0},
 	{"circle", nil, "", "", 0},
 	{"circle-pointer", nil, "", "", 0},
+	{"circle-field-pointer", nil, "", "", 0},
+	{"circle-pointer-field-pointer", nil, "", "", 0},
 	{"color-8", nil, "", "", 0},
 	{"color-16", nil, "", "", 0},
 	{"color-32", nil, "", "", 0},
