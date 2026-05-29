@@ -53,6 +53,8 @@ var tests = []run{
 	{"phi-advanced", nil, "", "", 0},
 	{"phi-reassign", nil, "", "", 0},
 	{"phi-reassign-output", nil, "", "12345", 0},
+	{"min", nil, "", "", 0},
+	{"max", nil, "", "", 0},
 	{"hello", nil, "", "Hello\nHello\nHello\n", 0},
 	{"escape", nil, "", "a\tb\nc\td\n", 0},
 	{"script", nil, "", "Hello\n", 0},
@@ -131,13 +133,13 @@ var tests = []run{
 	{"pointer-to-pointer", nil, "", "", 0},
 	{"stack-pointer", nil, "", "", 0},
 	{"global", nil, "", "", 0},
+	{"c-length", nil, "", "", 0},
+	{"c-string", nil, "", "", 0},
 	{"cli-args", nil, "", "", 0},
 	{"cli-args", []string{"Hello"}, "", "Hello\n", 0},
 	{"cli-args", []string{"Hello", "World"}, "", "Hello\nWorld\n", 0},
 	{"cli-args", []string{"Hello", "世界"}, "", "Hello\n世界\n", 0},
 	{"cli-env", nil, "", "", 0},
-	{"c-length", nil, "", "", 0},
-	{"c-string", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {

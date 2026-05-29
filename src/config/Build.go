@@ -9,5 +9,4 @@ type Build struct {
 	Dry           bool
 	FoldConstants bool
 	LintBinaryOps bool
-	RemoveCopies  bool
 }

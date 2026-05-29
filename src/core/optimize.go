@@ -24,14 +24,6 @@ func (f *Function) optimize() error {
 		f.Block().Append(&ssa.Return{})
 	}
 
-	// Copies were inserted for assignments to be safe in case
-	// loops would replace an existing value with a phi inside
-	// the loop. Now that all the loop replacements happened,
-	// we can safely remove the copies.
-	if f.Env.Build.RemoveCopies {
-		f.removeCopies()
-	}
-
 	// Lint binary operations that can often be reduced to
 	// simpler expressions.
 	if f.Env.Build.LintBinaryOps {
