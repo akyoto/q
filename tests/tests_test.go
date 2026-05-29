@@ -136,6 +136,8 @@ var tests = []run{
 	{"cli-args", []string{"Hello", "World"}, "", "Hello\nWorld\n", 0},
 	{"cli-args", []string{"Hello", "世界"}, "", "Hello\n世界\n", 0},
 	{"cli-env", nil, "", "", 0},
+	{"c-length", nil, "", "", 0},
+	{"c-string", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {

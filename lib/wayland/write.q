@@ -14,7 +14,11 @@ writeString(ptr *byte, s string) -> *byte {
 	len := s.len + 1
 	ptr = write32(ptr, len as uint32)
 	padded := (len + 3) & -4
-	mem.copy(ptr, s.ptr, s.len)
+
+	loop i := 0..s.len {
+		ptr[i] = s.ptr[i]
+	}
+
 	mem.zero(string{ptr: ptr+s.len, len: padded-s.len})
 	return ptr + padded
 }
