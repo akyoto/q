@@ -1,6 +1,7 @@
 const {
 	read = 0x1
 	write = 0x2
-	private = 0x02
+	shared = 0x1
+	private = 0x2
 	anonymous = 0x20
 }

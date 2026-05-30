@@ -35,3 +35,17 @@ size(fd int) -> (uint, error) {
 close(fd !int) -> error {
 	return syscall(_close, fd)
 }
+
+memfd_create(path *byte, flags uint) -> (!int, error) {
+	fd := syscall(_memfd_create, path, flags)
+
+	if fd < 0 {
+		return 0, fd
+	}
+
+	return fd, 0
+}
+
+ftruncate(fd int, length uint) -> error {
+	return syscall(_ftruncate, fd, length)
+}

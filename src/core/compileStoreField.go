@@ -37,6 +37,12 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		return err
 	}
 
+	_, isResource := rightValue.Type().(*types.Resource)
+
+	if isResource {
+		f.Block().Unidentify(rightValue)
+	}
+
 	if node.Expression.Token.Kind != token.Assign {
 		leftValue, err := f.evaluateRight(left)
 

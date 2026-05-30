@@ -42,6 +42,14 @@ close(fd !int) -> error {
 	return -1
 }
 
+memfd_create(_path *byte, _flags uint) -> (!int, error) {
+	return 0, -1
+}
+
+ftruncate(_fd int, _length uint) -> error {
+	return -1
+}
+
 extern {
 	kernel32 {
 		CloseHandle(handle int) -> (success bool)

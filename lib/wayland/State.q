@@ -10,6 +10,10 @@ State {
 	wl_compositor_name uint32
 	wl_shm_name uint32
 	xdg_wm_base_name uint32
+
+	shm_fd !int
+	shm_size uint
+	shm_data *byte
 }
 
 newId(state *State) -> uint32 {
