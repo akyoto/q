@@ -159,6 +159,20 @@ getRegistry(state *wayland.State, buffer string) -> error {
 	return err
 }
 
+createPool(state *wayland.State, buffer string) -> error {
+	state.wl_shm_pool = wayland.newId(state)
+	size := wayland.header_size + 4 + 4
+	ptr := buffer.ptr
+	ptr = wayland.write32(ptr, state.wl_shm)
+	ptr = wayland.write16(ptr, wayland.wl_shm_create_pool)
+	ptr = wayland.write16(ptr, size)
+	ptr = wayland.write32(ptr, state.wl_shm_pool)
+	ptr = wayland.write32(ptr, state.shm_size)
+	// TODO: Send fd as ancillary data
+	_, err := io.writeTo(state.socket, buffer[..size])
+	return err
+}
+
 bindCompositor(state *wayland.State, buffer string, interface string) -> error {
 	padded := wayland.pad(interface.len + 1)
 	size := bindSize(padded)
