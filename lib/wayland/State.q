@@ -8,8 +8,8 @@ State {
 	xdg_wm_base uint32
 
 	wl_compositor_name uint32
-    wl_shm_name uint32
-    xdg_wm_base_name uint32
+	wl_shm_name uint32
+	xdg_wm_base_name uint32
 }
 
 newId(state *State) -> uint32 {

@@ -13,7 +13,7 @@ write32(ptr *byte, v uint32) -> *byte {
 writeString(ptr *byte, s string) -> *byte {
 	len := s.len + 1
 	ptr = write32(ptr, len as uint32)
-	padded := (len + 3) & -4
+	padded := pad(len)
 
 	loop i := 0..s.len {
 		ptr[i] = s.ptr[i]

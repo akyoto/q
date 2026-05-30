@@ -13,7 +13,7 @@ main() {
 	}
 
 	state := new(wayland.State) {
-		id: 1,
+		id: wayland.wl_display_id,
 		socket: socket
 	}
 
@@ -91,7 +91,7 @@ read(state *wayland.State, buffer string) -> error {
 	pos := 0
 
 	loop {
-		if pos + wayland.headerSize >= n {
+		if pos + wayland.header_size >= n {
 			return 0
 		}
 
@@ -104,16 +104,16 @@ handleMessage(state *wayland.State, msg string) -> int {
 	//assert header.size <= msg.len
 
 	if header.id == state.wl_registry {
-		name := [msg.ptr + wayland.headerSize as *uint32]
-		len := [msg.ptr + wayland.headerSize + 4 as *uint32]
-		start := wayland.headerSize + 8
+		name := [msg.ptr + wayland.header_size as *uint32]
+		len := [msg.ptr + wayland.header_size + 4 as *uint32]
+		start := wayland.header_size + 8
 		end := start + len
 		interface := msg[start..end-1]
 		version := [msg.ptr + end as *uint32]
 		handleGlobal(state, name, interface, version)
 	}
 
-	if header.id == wayland.displayId && header.opcode == wayland.displayError {
+	if header.id == wayland.wl_display_id && header.opcode == wayland.wl_display_error {
 		io.writeLine("wl_display::error")
 	}
 
@@ -142,10 +142,10 @@ handleGlobal(state *wayland.State, name uint32, interface string, _version uint3
 
 getRegistry(state *wayland.State, buffer string) -> error {
 	state.wl_registry = wayland.newId(state)
-	size := wayland.headerSize + 4
+	size := wayland.header_size + 4
 	ptr := buffer.ptr
-	ptr = wayland.write32(ptr, wayland.displayId)
-	ptr = wayland.write16(ptr, wayland.displayGetRegistry)
+	ptr = wayland.write32(ptr, wayland.wl_display_id)
+	ptr = wayland.write16(ptr, wayland.wl_display_get_registry)
 	ptr = wayland.write16(ptr, size)
 	ptr = wayland.write32(ptr, state.wl_registry)
 	_, err := io.writeTo(state.socket, buffer[..size])
@@ -153,9 +153,8 @@ getRegistry(state *wayland.State, buffer string) -> error {
 }
 
 bindCompositor(state *wayland.State, buffer string, interface string) -> error {
-	padded := interface.len + 1
-	padded = (padded + 3) & -4
-	size := wayland.headerSize + 4 + 4 + padded + 4 + 4
+	padded := wayland.pad(interface.len + 1)
+	size := bindSize(padded)
 
 	if size > buffer.len {
 		return -1
@@ -163,7 +162,7 @@ bindCompositor(state *wayland.State, buffer string, interface string) -> error {
 
 	ptr := buffer.ptr
 	ptr = wayland.write32(ptr, state.wl_registry)
-	ptr = wayland.write16(ptr, wayland.registryBind)
+	ptr = wayland.write16(ptr, wayland.wl_registry_bind)
 	ptr = wayland.write16(ptr, size)
 	ptr = wayland.write32(ptr, state.wl_compositor_name)
 	ptr = wayland.writeString(ptr, interface)
@@ -174,9 +173,8 @@ bindCompositor(state *wayland.State, buffer string, interface string) -> error {
 }
 
 bindShm(state *wayland.State, buffer string, interface string) -> error {
-	padded := interface.len + 1
-	padded = (padded + 3) & -4
-	size := wayland.headerSize + 4 + 4 + padded + 4 + 4
+	padded := wayland.pad(interface.len + 1)
+	size := bindSize(padded)
 
 	if size > buffer.len {
 		return -1
@@ -184,7 +182,7 @@ bindShm(state *wayland.State, buffer string, interface string) -> error {
 
 	ptr := buffer.ptr
 	ptr = wayland.write32(ptr, state.wl_registry)
-	ptr = wayland.write16(ptr, wayland.registryBind)
+	ptr = wayland.write16(ptr, wayland.wl_registry_bind)
 	ptr = wayland.write16(ptr, size)
 	ptr = wayland.write32(ptr, state.wl_shm_name)
 	ptr = wayland.writeString(ptr, interface)
@@ -195,9 +193,8 @@ bindShm(state *wayland.State, buffer string, interface string) -> error {
 }
 
 bindXdgWmBase(state *wayland.State, buffer string, interface string) -> error {
-	padded := interface.len + 1
-	padded = (padded + 3) & -4
-	size := wayland.headerSize + 4 + 4 + padded + 4 + 4
+	padded := wayland.pad(interface.len + 1)
+	size := bindSize(padded)
 
 	if size > buffer.len {
 		return -1
@@ -205,7 +202,7 @@ bindXdgWmBase(state *wayland.State, buffer string, interface string) -> error {
 
 	ptr := buffer.ptr
 	ptr = wayland.write32(ptr, state.wl_registry)
-	ptr = wayland.write16(ptr, wayland.registryBind)
+	ptr = wayland.write16(ptr, wayland.wl_registry_bind)
 	ptr = wayland.write16(ptr, size)
 	ptr = wayland.write32(ptr, state.xdg_wm_base_name)
 	ptr = wayland.writeString(ptr, interface)
@@ -213,4 +210,8 @@ bindXdgWmBase(state *wayland.State, buffer string, interface string) -> error {
 	ptr = wayland.write32(ptr, state.xdg_wm_base)
 	_, err := io.writeTo(state.socket, buffer[..size])
 	return err
+}
+
+bindSize(padded uint) -> uint16 {
+	return wayland.header_size + 4 + 4 + padded + 4 + 4
 }
