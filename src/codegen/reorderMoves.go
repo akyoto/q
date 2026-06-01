@@ -1,6 +1,9 @@
 package codegen
 
-import "git.urbach.dev/cli/q/src/asm"
+import (
+	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/set"
+)
 
 // reorderMoves reorders the move instructions.
 func reorderMoves(moves []asm.Instruction) {
@@ -11,7 +14,7 @@ func reorderMoves(moves []asm.Instruction) {
 		move := instr.(*asm.Move)
 
 		if futureRegisters&(1<<move.Source) != 0 {
-			bringToFront(moves[:i+1], i)
+			set.BringToFront(moves[:i+1], i)
 
 			if usedRegisters&(1<<move.Destination) != 0 {
 				panic("cycle detected while reordering moves")

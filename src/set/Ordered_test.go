@@ -18,6 +18,7 @@ func TestOrdered(t *testing.T) {
 	assert.Equal(t, s.Count(), 3)
 	s.Add(1)
 	assert.Equal(t, s.Count(), 3)
+	assert.Equal(t, s.Count(), len(s.Slice()))
 
 	for element := range s.All() {
 		if element == 2 {

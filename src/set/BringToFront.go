@@ -1,7 +1,7 @@
-package codegen
+package set
 
-// bringToFront brings the element at `index` within the `slice` to the front.
-func bringToFront[T any](slice []T, index int) {
+// BringToFront brings the element at `index` within the `slice` to the front.
+func BringToFront[T any](slice []T, index int) {
 	if index <= 0 || index >= len(slice) {
 		return
 	}

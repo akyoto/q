@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -19,7 +20,7 @@ func (f *Function) reorderParameters() {
 		currentRegister := f.CPU.Call.In[param.Index]
 
 		if futureRegisters&(1<<currentRegister) != 0 {
-			bringToFront(f.Steps[:i+1], i)
+			set.BringToFront(f.Steps[:i+1], i)
 
 			for h := range i + 1 {
 				f.Steps[h].Index = Index(h)
