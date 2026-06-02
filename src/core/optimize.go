@@ -47,6 +47,14 @@ func (f *Function) optimize() error {
 	// to calculate the list of users.
 	f.ComputeUsers()
 
+	// Move values closer to their first use to reduce the number
+	// of values that are alive at the same time.
+	if f.Env.Build.ReorderValues {
+		for _, block := range f.Blocks {
+			block.Reorder()
+		}
+	}
+
 	// Now that we have the list of users for each instruction,
 	// we can filter out dead values.
 	err := f.removeDeadCode(folded)

@@ -5,6 +5,7 @@ import (
 	"maps"
 	"slices"
 
+	"git.urbach.dev/cli/q/src/set"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -298,6 +299,36 @@ func (b *Block) RemoveNilValues() {
 	b.Instructions = slices.DeleteFunc(b.Instructions, func(value Value) bool {
 		return value == nil
 	})
+}
+
+// Reorder moves values closer to their first use.
+func (b *Block) Reorder() {
+	for start, instr := range slices.Backward(b.Instructions) {
+		switch instr.(type) {
+		case *Bytes, *Data, *Int:
+		default:
+			continue
+		}
+
+		users := instr.Users()
+
+		if len(users) == 0 {
+			continue
+		}
+
+		firstUser := users[0]
+		end := b.Index(firstUser)
+
+		if end <= start+1 {
+			continue
+		}
+
+		for end > start && slices.Contains(b.Instructions[end-1].Users(), firstUser) {
+			end--
+		}
+
+		set.BringToBack(b.Instructions[start:end], 0)
+	}
 }
 
 // ReplaceAllUses replaces all uses of `old` with `new`.

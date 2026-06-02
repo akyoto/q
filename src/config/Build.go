@@ -8,5 +8,6 @@ type Build struct {
 	Filter        string
 	Dry           bool
 	FoldConstants bool
+	ReorderValues bool
 	LintBinaryOps bool
 }
