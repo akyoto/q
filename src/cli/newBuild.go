@@ -42,7 +42,7 @@ func newBuild(args []string) (*config.Build, error) {
 			build.Filter = args[i]
 
 		case "-no-fold":
-			build.FoldConstants = false
+			build.Fold = false
 
 		case "-no-lint":
 			build.Lint(false)
@@ -51,7 +51,7 @@ func newBuild(args []string) (*config.Build, error) {
 			build.Optimize(false)
 
 		case "-no-reorder":
-			build.ReorderValues = false
+			build.Reorder = false
 
 		case "-os":
 			i++

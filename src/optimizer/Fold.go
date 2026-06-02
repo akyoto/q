@@ -1,9 +1,9 @@
-package fold
+package optimizer
 
 import "git.urbach.dev/cli/q/src/ssa"
 
-// Constants evaluates binary operations at compile time and replaces them with constants.
-func Constants(ir ssa.IR) map[ssa.Value]struct{} {
+// Fold evaluates binary operations at compile time and replaces them with constants.
+func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 	var folded map[ssa.Value]struct{}
 
 	for _, block := range ir.Blocks {
@@ -38,7 +38,7 @@ func Constants(ir ssa.IR) map[ssa.Value]struct{} {
 			folded[binaryOp.Right] = struct{}{}
 
 			constant := &ssa.Int{
-				Int:    Binary(binaryOp.Op, left.Int, right.Int),
+				Int:    FoldBinary(binaryOp.Op, left.Int, right.Int),
 				Source: binaryOp.Source,
 			}
 

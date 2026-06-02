@@ -1,9 +1,9 @@
-package fold
+package optimizer
 
 import "git.urbach.dev/cli/q/src/token"
 
-// Binary calculates the result of the binary operation.
-func Binary(op token.Kind, a int, b int) int {
+// FoldBinary calculates the result of the binary operation.
+func FoldBinary(op token.Kind, a int, b int) int {
 	switch op {
 	case token.Add:
 		return a + b

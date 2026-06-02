@@ -2,7 +2,7 @@ package core
 
 import (
 	"git.urbach.dev/cli/q/src/errors"
-	"git.urbach.dev/cli/q/src/fold"
+	"git.urbach.dev/cli/q/src/optimizer"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -39,8 +39,8 @@ func (f *Function) optimize() error {
 	// result is propagated to subsequent operations.
 	var folded map[ssa.Value]struct{}
 
-	if f.Env.Build.FoldConstants {
-		folded = fold.Constants(f.IR)
+	if f.Env.Build.Fold {
+		folded = optimizer.Fold(f.IR)
 	}
 
 	// After cleaning up some of the instructions we can proceed
@@ -49,10 +49,8 @@ func (f *Function) optimize() error {
 
 	// Move values closer to their first use to reduce the number
 	// of values that are alive at the same time.
-	if f.Env.Build.ReorderValues {
-		for _, block := range f.Blocks {
-			block.Reorder()
-		}
+	if f.Env.Build.Reorder {
+		optimizer.Reorder(f.IR)
 	}
 
 	// Now that we have the list of users for each instruction,

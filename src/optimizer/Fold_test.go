@@ -1,15 +1,15 @@
-package fold_test
+package optimizer_test
 
 import (
 	"testing"
 
-	"git.urbach.dev/cli/q/src/fold"
+	"git.urbach.dev/cli/q/src/optimizer"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/go/assert"
 )
 
-func TestFold(t *testing.T) {
+func TestFoldConstants(t *testing.T) {
 	operations := []token.Kind{
 		token.Add,
 		token.And,
@@ -31,7 +31,7 @@ func TestFold(t *testing.T) {
 		two := ir.Append(&ssa.Int{Int: 2})
 		binOp := ir.Append(&ssa.BinaryOp{Op: op, Left: one, Right: two})
 
-		folded := fold.Constants(ir)
+		folded := optimizer.Fold(ir)
 		assert.NotNil(t, folded)
 		assert.Equal(t, block.Index(binOp), -1)
 

@@ -315,12 +315,12 @@ The source code structure uses a flat layout without nesting:
 - [errors](../src/errors) - Error handling that reports lines and columns
 - [exe](../src/exe) - Generic executable format to calculate section offsets
 - [expression](../src/expression) - Expression parser generating trees
-- [fold](../src/fold) - Constant folding
 - [fs](../src/fs) - File system access
 - [global](../src/global) - Global variables like the working directory
 - [linker](../src/linker) - Frontend for generating executable files
 - [macho](../src/macho) - Mach-O format for Mac executables
 - [memfile](../src/memfile) - Memory backed file descriptors
+- [optimizer](../src/optimizer) - Code optimization
 - [pe](../src/pe) - PE format for Windows executables
 - [scanner](../src/scanner) - Scanner that parses top-level instructions
 - [set](../src/set) - Generic set implementation

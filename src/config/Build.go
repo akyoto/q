@@ -7,7 +7,7 @@ type Build struct {
 	OS            OS
 	Filter        string
 	Dry           bool
-	FoldConstants bool
-	ReorderValues bool
+	Fold          bool
+	Reorder       bool
 	LintBinaryOps bool
 }
