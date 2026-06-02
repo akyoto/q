@@ -141,6 +141,7 @@ var tests = []run{
 	{"cli-args", []string{"Hello", "World"}, "", "Hello\nWorld\n", 0},
 	{"cli-args", []string{"Hello", "世界"}, "", "Hello\n世界\n", 0},
 	{"cli-env", nil, "", "", 0},
+	{"random", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {
