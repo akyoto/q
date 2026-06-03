@@ -53,6 +53,10 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return f.evaluatePackageMember(pkg, rightText, expr)
 	}
 
+	if expr.Parent != nil && expr.Parent.Token.Kind == token.Call && expr.Parent.Children[0] == expr {
+		return f.evaluateMethod(leftValue, left, right, expr)
+	}
+
 	if right.Token.Kind != token.Identifier {
 		return nil, errors.New(ExpectedStructField, f.File, right.Source())
 	}
