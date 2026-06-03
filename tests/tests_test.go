@@ -141,6 +141,12 @@ var tests = []run{
 	{"cli-args", []string{"Hello", "World"}, "", "Hello\nWorld\n", 0},
 	{"cli-args", []string{"Hello", "世界"}, "", "Hello\n世界\n", 0},
 	{"cli-env", nil, "", "", 0},
+	{"method-local-int", nil, "", "42\n", 0},
+	{"method-local-string", nil, "", "Hello\n", 0},
+	{"method-local-overload", nil, "", "42\nHello\n", 0},
+	{"method-local-field", nil, "", "1\n2\n", 0},
+	{"method-local-struct", nil, "", "1\n2\n", 0},
+	{"method-local-struct-pointer", nil, "", "1\n2\n", 0},
 	{"random", nil, "", "", 0},
 }
 

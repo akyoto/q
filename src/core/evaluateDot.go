@@ -24,6 +24,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return f.evaluateAsm(right)
 	}
 
+	reset := len(f.Block().Instructions)
 	leftValue, err := f.evaluate(left)
 
 	if err != nil {
@@ -54,6 +55,7 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	}
 
 	if expr.Parent != nil && expr.Parent.Token.Kind == token.Call && expr.Parent.Children[0] == expr {
+		f.Block().Instructions = f.Block().Instructions[:reset]
 		return f.evaluateMethod(leftValue, left, right, expr)
 	}
 
