@@ -103,31 +103,17 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 			continue
 		}
 
-		// Find all the registers that this instruction
-		// would clobber and mark them as used.
-		var clobbered []cpu.Register
-
+		// Mark input and output registers as used.
 		switch instr := current.Value.(type) {
-		case *ssa.BinaryOp:
-			switch instr.Op {
-			case token.Div, token.Mod:
-				clobbered = f.CPU.DivisionClobbered
-			case token.Shl, token.Shr:
-				clobbered = f.CPU.ShiftClobbered
-			}
-		case *ssa.Call:
-			clobbered = f.CPU.Call.Clobbered
-		case *ssa.CallExtern:
-			clobbered = f.CPU.ExternCall.Clobbered
 		case *ssa.FromTuple:
 			usedRegisters |= (1 << f.CPU.Call.Out[instr.Index])
 		case *ssa.Parameter:
 			usedRegisters |= (1 << f.CPU.Call.In[instr.Index])
-		case *ssa.Syscall:
-			clobbered = f.CPU.Syscall.Clobbered
 		}
 
-		for _, reg := range clobbered {
+		// Find all the registers that this instruction
+		// would clobber and mark them as used.
+		for _, reg := range f.clobberedRegisters(current.Value) {
 			usedRegisters |= (1 << reg)
 		}
 	}

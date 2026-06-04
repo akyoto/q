@@ -5,7 +5,6 @@ import (
 
 	"git.urbach.dev/cli/q/src/arm"
 	"git.urbach.dev/cli/q/src/config"
-	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -14,16 +13,9 @@ import (
 // It then assigns a new register to the value that was defined earlier.
 func (f *Function) fixRegisterConflicts() {
 	for _, step := range f.Steps {
-		var clobbered []cpu.Register
-
 		switch instr := step.Value.(type) {
 		case *ssa.BinaryOp:
-			switch instr.Op {
-			case token.Div, token.Mod:
-				clobbered = f.CPU.DivisionClobbered
-			case token.Shl, token.Shr:
-				clobbered = f.CPU.ShiftRestricted
-
+			if instr.Op == token.Shl || instr.Op == token.Shr {
 				if slices.Contains(f.CPU.ShiftRestricted, step.Register) {
 					f.assignFreeRegister(step)
 				}
@@ -42,17 +34,13 @@ func (f *Function) fixRegisterConflicts() {
 					f.assignFreeRegister(left)
 				}
 			}
-		case *ssa.Call:
-			clobbered = f.CPU.Call.Clobbered
-		case *ssa.CallExtern:
-			clobbered = f.CPU.ExternCall.Clobbered
 		case *ssa.Register:
 			if f.build.Arch == config.ARM && step.Register == arm.SP {
 				f.assignFreeRegister(step)
 			}
-		case *ssa.Syscall:
-			clobbered = f.CPU.Syscall.Clobbered
 		}
+
+		clobbered := f.clobberedRegisters(step.Value)
 
 		for i, live := range step.Live {
 			if live.Register == -1 {
