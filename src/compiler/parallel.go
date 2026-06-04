@@ -16,12 +16,9 @@ func parallel(functions iter.Seq[*core.Function], call func(*core.Function)) {
 			continue
 		}
 
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			call(function)
-		}()
+		})
 	}
 
 	wg.Wait()
