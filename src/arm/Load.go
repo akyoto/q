@@ -7,7 +7,7 @@ func Load(destination cpu.Register, base cpu.Register, offset cpu.Register, scal
 	return 0b01<<22 | StoreRegister(destination, base, offset, scale, length)
 }
 
-// LoadSigned loads from memory into a register with a register offset and sign extends it.
+// LoadSigned loads from memory into a register with a register offset and sign-extends it.
 func LoadSigned(destination cpu.Register, base cpu.Register, offset cpu.Register, scale Scale, length byte) uint32 {
 	return 0b10<<22 | StoreRegister(destination, base, offset, scale, length)
 }
@@ -17,7 +17,7 @@ func LoadFixedOffset(destination cpu.Register, base cpu.Register, mode AddressMo
 	return 0b01<<22 | StoreFixedOffsetRegister(destination, base, mode, offset, length)
 }
 
-// LoadFixedOffsetSigned loads from memory with a signed offset from -256 to 255 into a register.
+// LoadFixedOffsetSigned loads from memory with a signed offset from -256 to 255 into a register and sign-extends it.
 func LoadFixedOffsetSigned(destination cpu.Register, base cpu.Register, mode AddressMode, offset int, length byte) uint32 {
 	return 0b10<<22 | StoreFixedOffsetRegister(destination, base, mode, offset, length)
 }
@@ -27,7 +27,7 @@ func LoadFixedOffsetScaled(destination cpu.Register, base cpu.Register, mode Add
 	return 0b01<<22 | StoreFixedOffsetRegisterScaled(destination, base, mode, offset, length)
 }
 
-// LoadFixedOffsetScaledSigned loads from memory with a scaled unsigned offset from 0 to 4095 into a register.
+// LoadFixedOffsetScaledSigned loads from memory with a scaled unsigned offset from 0 to 4095 into a register and sign-extends it.
 func LoadFixedOffsetScaledSigned(destination cpu.Register, base cpu.Register, mode AddressMode, offset uint, length byte) uint32 {
 	return 0b10<<22 | StoreFixedOffsetRegisterScaled(destination, base, mode, offset, length)
 }
