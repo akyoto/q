@@ -116,9 +116,7 @@ fizzbuzz(x int) {
 }
 ```
 
-See more examples like [raylib](../examples/raylib/raylib.q), [server](../examples/server/server.q), [shell](../examples/shell/shell.q) and [thread](../examples/thread/thread.q) in the [examples](../examples) directory.
-
-Examples show the current capabilities but they do not represent the final API or language design.
+See more in the [examples](../examples) directory. Examples show current capabilities but they do not represent the final API or language design.
 
 ## Reference
 
@@ -512,9 +510,9 @@ If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](
 ### Is there a community?
 
 * **IRC**: [#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev) is the main hub for collaboration.
-* **Discord**: [Q - Programming Language](https://discord.gg/4q3DJFsTvB) is a more laid-back alternative that is popular among gamers.
-* ~~**E-Mail**:~~ Mailing lists are planned.
-* ~~**Forum**:~~ Web forums are planned.
+* **Discord**: [Q community](https://discord.gg/4q3DJFsTvB) is a more laid-back alternative that is popular among gamers.
+* ~~**Forum**:~~ Web forums are currently not available.
+* ~~**E-Mail**:~~ Mailing lists are currently not available.
 
 ## Thanks
 
