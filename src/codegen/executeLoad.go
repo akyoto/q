@@ -3,6 +3,7 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
@@ -13,7 +14,8 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 	memory := instr.Memory
 	address := f.ValueToStep[memory.Address]
 	index := f.ValueToStep[memory.Index]
-	elementSize := step.Value.Type().Size()
+	elementType := step.Value.Type()
+	elementSize := elementType.Size()
 
 	if index.Register == -1 {
 		f.Assembler.Append(&asm.LoadFixedOffset{
@@ -22,6 +24,7 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 			Destination: step.Register,
 			Scale:       memory.Scale,
 			Length:      byte(elementSize),
+			Signed:      !types.IsUnsigned(elementType),
 		})
 	} else {
 		f.Assembler.Append(&asm.Load{
@@ -30,6 +33,7 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 			Destination: step.Register,
 			Scale:       memory.Scale,
 			Length:      byte(elementSize),
+			Signed:      !types.IsUnsigned(elementType),
 		})
 	}
 }

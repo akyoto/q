@@ -221,17 +221,37 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *Load:
 		scale := toX86Scale(instr.Scale, instr.Length)
 
-		if instr.Length <= 2 {
-			c.code = x86.LoadZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+		if instr.Signed {
+			if instr.Length <= 4 {
+				c.code = x86.LoadSignExtend(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			} else {
+				c.code = x86.Load(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			}
 		} else {
-			c.code = x86.Load(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			if instr.Length <= 2 {
+				c.code = x86.LoadZeroExtend(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			} else {
+				c.code = x86.Load(c.code, instr.Destination, instr.Base, instr.Index, scale, instr.Length)
+			}
 		}
 	case *LoadFixedOffset:
 		if instr.Scale {
 			panic("not implemented")
 		}
 
-		c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+		if instr.Signed {
+			if instr.Length <= 4 {
+				c.code = x86.LoadFixedOffsetSignExtend(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+			} else {
+				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+			}
+		} else {
+			if instr.Length <= 2 {
+				panic("not implemented")
+			} else {
+				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+			}
+		}
 	case *Modulo:
 		if instr.Operand == x86.R0 {
 			panic("modulo operand register cannot be R0")

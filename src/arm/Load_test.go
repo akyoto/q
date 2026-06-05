@@ -31,6 +31,27 @@ func TestLoad(t *testing.T) {
 	}
 }
 
+func TestLoadSigned(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Base        cpu.Register
+		Offset      cpu.Register
+		Scale       arm.Scale
+		Length      byte
+		Code        uint32
+	}{
+		{arm.X0, arm.X1, arm.X2, arm.Scale1, 4, 0xB8A26820},
+		{arm.X0, arm.X1, arm.X2, arm.Scale1, 2, 0x78A26820},
+		{arm.X0, arm.X1, arm.X2, arm.Scale1, 1, 0x38A26820},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("ldrs %s, [%s, #%s] %db", pattern.Destination, pattern.Base, pattern.Offset, pattern.Length)
+		code := arm.LoadSigned(pattern.Destination, pattern.Base, pattern.Offset, pattern.Scale, pattern.Length)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
 func TestLoadFixedOffset(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register
@@ -66,6 +87,27 @@ func TestLoadFixedOffset(t *testing.T) {
 	}
 }
 
+func TestLoadFixedOffsetSigned(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Base        cpu.Register
+		Mode        arm.AddressMode
+		Offset      int
+		Length      byte
+		Code        uint32
+	}{
+		{arm.X0, arm.X1, arm.UnscaledImmediate, -8, 1, 0x389F8020},
+		{arm.X0, arm.X1, arm.UnscaledImmediate, -8, 2, 0x789F8020},
+		{arm.X0, arm.X1, arm.UnscaledImmediate, -8, 4, 0xB89F8020},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("ldurs %s, [%s, %d] %db", pattern.Destination, pattern.Base, pattern.Offset, pattern.Length)
+		code := arm.LoadFixedOffsetSigned(pattern.Destination, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
 func TestLoadFixedOffsetScaled(t *testing.T) {
 	usagePatterns := []struct {
 		Destination cpu.Register
@@ -78,11 +120,35 @@ func TestLoadFixedOffsetScaled(t *testing.T) {
 		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 8, 0xF9400001},
 		{arm.X1, arm.X0, arm.UnscaledImmediate, 1, 8, 0xF9400401},
 		{arm.X1, arm.X0, arm.UnscaledImmediate, 4095, 8, 0xF97FFC01},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 1, 0x39400001},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 2, 0x79400001},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 4, 0xB9400001},
 	}
 
 	for _, pattern := range usagePatterns {
 		t.Logf("ldr %s, [%s, %d] %db", pattern.Destination, pattern.Base, pattern.Offset*uint(pattern.Length), pattern.Length)
 		code := arm.LoadFixedOffsetScaled(pattern.Destination, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
+		assert.Equal(t, code, pattern.Code)
+	}
+}
+
+func TestLoadFixedOffsetScaledSigned(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Base        cpu.Register
+		Mode        arm.AddressMode
+		Offset      uint
+		Length      byte
+		Code        uint32
+	}{
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 1, 0x39800001},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 2, 0x79800001},
+		{arm.X1, arm.X0, arm.UnscaledImmediate, 0, 4, 0xB9800001},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("ldrs %s, [%s, %d] %db", pattern.Destination, pattern.Base, pattern.Offset*uint(pattern.Length), pattern.Length)
+		code := arm.LoadFixedOffsetScaledSigned(pattern.Destination, pattern.Base, pattern.Mode, pattern.Offset, pattern.Length)
 		assert.Equal(t, code, pattern.Code)
 	}
 }

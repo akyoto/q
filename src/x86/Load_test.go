@@ -84,7 +84,7 @@ func TestLoad(t *testing.T) {
 	}
 
 	for _, pattern := range usagePatterns {
-		t.Logf("load %dB %s, [%s+%s]", pattern.Length, pattern.Destination, pattern.Base, pattern.OffsetRegister)
+		t.Logf("mov %s, %dB [%s+%s]", pattern.Destination, pattern.Length, pattern.Base, pattern.OffsetRegister)
 		code := x86.Load(nil, pattern.Destination, pattern.Base, pattern.OffsetRegister, pattern.Scale, pattern.Length)
 		assert.DeepEqual(t, code, pattern.Code)
 	}
@@ -135,8 +135,74 @@ func TestLoadZeroExtend(t *testing.T) {
 	}
 
 	for _, pattern := range usagePatterns {
-		t.Logf("loadzx %dB %s, [%s+%s]", pattern.Length, pattern.Destination, pattern.Base, pattern.OffsetRegister)
+		t.Logf("movzx %s, %dB [%s+%s]", pattern.Destination, pattern.Length, pattern.Base, pattern.OffsetRegister)
 		code := x86.LoadZeroExtend(nil, pattern.Destination, pattern.Base, pattern.OffsetRegister, pattern.Scale, pattern.Length)
+		assert.DeepEqual(t, code, pattern.Code)
+	}
+}
+
+func TestLoadSignExtend(t *testing.T) {
+	usagePatterns := []struct {
+		Destination    cpu.Register
+		Length         byte
+		Base           cpu.Register
+		OffsetRegister cpu.Register
+		Scale          x86.Scale
+		Code           []byte
+	}{
+		{x86.R15, 4, x86.R0, x86.R15, x86.Scale1, []byte{0x4E, 0x63, 0x3C, 0x38}},
+		{x86.R15, 2, x86.R0, x86.R15, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x3C, 0x38}},
+		{x86.R15, 1, x86.R0, x86.R15, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x3C, 0x38}},
+		{x86.R14, 4, x86.R1, x86.R14, x86.Scale1, []byte{0x4E, 0x63, 0x34, 0x31}},
+		{x86.R14, 2, x86.R1, x86.R14, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x34, 0x31}},
+		{x86.R14, 1, x86.R1, x86.R14, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x34, 0x31}},
+		{x86.R13, 4, x86.R2, x86.R13, x86.Scale1, []byte{0x4E, 0x63, 0x2C, 0x2A}},
+		{x86.R13, 2, x86.R2, x86.R13, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x2C, 0x2A}},
+		{x86.R13, 1, x86.R2, x86.R13, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x2C, 0x2A}},
+		{x86.R12, 4, x86.R3, x86.R12, x86.Scale1, []byte{0x4E, 0x63, 0x24, 0x23}},
+		{x86.R12, 2, x86.R3, x86.R12, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x24, 0x23}},
+		{x86.R12, 1, x86.R3, x86.R12, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x24, 0x23}},
+		{x86.R11, 4, x86.SP, x86.R11, x86.Scale1, []byte{0x4E, 0x63, 0x1C, 0x1C}},
+		{x86.R11, 2, x86.SP, x86.R11, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x1C, 0x1C}},
+		{x86.R11, 1, x86.SP, x86.R11, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x1C, 0x1C}},
+		{x86.R10, 4, x86.R5, x86.R10, x86.Scale1, []byte{0x4E, 0x63, 0x54, 0x15, 0x00}},
+		{x86.R10, 2, x86.R5, x86.R10, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x54, 0x15, 0x00}},
+		{x86.R10, 1, x86.R5, x86.R10, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x54, 0x15, 0x00}},
+		{x86.R9, 4, x86.R6, x86.R9, x86.Scale1, []byte{0x4E, 0x63, 0x0C, 0x0E}},
+		{x86.R9, 2, x86.R6, x86.R9, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x0C, 0x0E}},
+		{x86.R9, 1, x86.R6, x86.R9, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x0C, 0x0E}},
+		{x86.R8, 4, x86.R7, x86.R8, x86.Scale1, []byte{0x4E, 0x63, 0x04, 0x07}},
+		{x86.R8, 2, x86.R7, x86.R8, x86.Scale1, []byte{0x4E, 0x0F, 0xBF, 0x04, 0x07}},
+		{x86.R8, 1, x86.R7, x86.R8, x86.Scale1, []byte{0x4E, 0x0F, 0xBE, 0x04, 0x07}},
+		{x86.R7, 4, x86.R8, x86.R7, x86.Scale1, []byte{0x49, 0x63, 0x3C, 0x38}},
+		{x86.R7, 2, x86.R8, x86.R7, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x3C, 0x38}},
+		{x86.R7, 1, x86.R8, x86.R7, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x3C, 0x38}},
+		{x86.R6, 4, x86.R9, x86.R6, x86.Scale1, []byte{0x49, 0x63, 0x34, 0x31}},
+		{x86.R6, 2, x86.R9, x86.R6, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x34, 0x31}},
+		{x86.R6, 1, x86.R9, x86.R6, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x34, 0x31}},
+		{x86.R5, 4, x86.R10, x86.R5, x86.Scale1, []byte{0x49, 0x63, 0x2C, 0x2A}},
+		{x86.R5, 2, x86.R10, x86.R5, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x2C, 0x2A}},
+		{x86.R5, 1, x86.R10, x86.R5, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x2C, 0x2A}},
+		{x86.SP, 4, x86.R11, x86.SP, x86.Scale1, []byte{0x4A, 0x63, 0x24, 0x1C}},
+		{x86.SP, 2, x86.R11, x86.SP, x86.Scale1, []byte{0x4A, 0x0F, 0xBF, 0x24, 0x1C}},
+		{x86.SP, 1, x86.R11, x86.SP, x86.Scale1, []byte{0x4A, 0x0F, 0xBE, 0x24, 0x1C}},
+		{x86.R3, 4, x86.R12, x86.R3, x86.Scale1, []byte{0x49, 0x63, 0x1C, 0x1C}},
+		{x86.R3, 2, x86.R12, x86.R3, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x1C, 0x1C}},
+		{x86.R3, 1, x86.R12, x86.R3, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x1C, 0x1C}},
+		{x86.R2, 4, x86.R13, x86.R2, x86.Scale1, []byte{0x49, 0x63, 0x54, 0x15, 0x00}},
+		{x86.R2, 2, x86.R13, x86.R2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x54, 0x15, 0x00}},
+		{x86.R2, 1, x86.R13, x86.R2, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x54, 0x15, 0x00}},
+		{x86.R1, 4, x86.R14, x86.R1, x86.Scale1, []byte{0x49, 0x63, 0x0C, 0x0E}},
+		{x86.R1, 2, x86.R14, x86.R1, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x0C, 0x0E}},
+		{x86.R1, 1, x86.R14, x86.R1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x0C, 0x0E}},
+		{x86.R0, 4, x86.R15, x86.R0, x86.Scale1, []byte{0x49, 0x63, 0x04, 0x07}},
+		{x86.R0, 2, x86.R15, x86.R0, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x04, 0x07}},
+		{x86.R0, 1, x86.R15, x86.R0, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x04, 0x07}},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("movsx %s, %dB [%s+%s]", pattern.Destination, pattern.Length, pattern.Base, pattern.OffsetRegister)
+		code := x86.LoadSignExtend(nil, pattern.Destination, pattern.Base, pattern.OffsetRegister, pattern.Scale, pattern.Length)
 		assert.DeepEqual(t, code, pattern.Code)
 	}
 }

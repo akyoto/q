@@ -95,6 +95,10 @@ func (f *Function) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 
 			return false
 		case config.X86:
+			if instr.Memory.Scale {
+				return false
+			}
+
 			if instr.Value == number && cpu.SizeInt(number.Int) <= 4 {
 				return true
 			}

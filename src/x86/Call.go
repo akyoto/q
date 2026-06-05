@@ -47,5 +47,5 @@ func CallAt(code []byte, address uint32) []byte {
 // CallAtMemory calls a function at the address stored at the given memory address.
 // The memory address is relative to the next instruction.
 func CallAtMemory(code []byte, base cpu.Register, offset int8, scale Scale) []byte {
-	return memAccess(code, 0xFF, 0xFF, 0b010, base, offset, scale, 4)
+	return memAccess(code, 0b010, base, offset, scale, 4, 0xFF, 0xFF)
 }

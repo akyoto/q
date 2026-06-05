@@ -151,8 +151,75 @@ func TestLoadFixedOffset(t *testing.T) {
 	}
 
 	for _, pattern := range usagePatterns {
-		t.Logf("load %dB %s, [%s+%d]", pattern.Length, pattern.Destination, pattern.Base, pattern.Offset)
+		t.Logf("mov %s, %dB [%s+%d]", pattern.Destination, pattern.Length, pattern.Base, pattern.Offset)
 		code := x86.LoadFixedOffset(nil, pattern.Destination, pattern.Base, pattern.Offset, pattern.Scale, pattern.Length)
+		assert.DeepEqual(t, code, pattern.Code)
+	}
+}
+
+func TestLoadFixedOffsetSignExtend(t *testing.T) {
+	usagePatterns := []struct {
+		Destination cpu.Register
+		Base        cpu.Register
+		Offset      int8
+		Length      byte
+		Scale       x86.Scale
+		Code        []byte
+	}{
+		// No offset
+		{x86.R0, x86.R15, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x07}},
+		{x86.R0, x86.R15, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x07}},
+		{x86.R0, x86.R15, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x07}},
+		{x86.R1, x86.R14, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x0E}},
+		{x86.R1, x86.R14, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x0E}},
+		{x86.R1, x86.R14, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x0E}},
+		{x86.R2, x86.R13, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x55, 0x00}},
+		{x86.R2, x86.R13, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x55, 0x00}},
+		{x86.R2, x86.R13, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x55, 0x00}},
+		{x86.R3, x86.R12, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x1C, 0x24}},
+		{x86.R3, x86.R12, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x1C, 0x24}},
+		{x86.R3, x86.R12, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x1C, 0x24}},
+		{x86.SP, x86.R11, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x23}},
+		{x86.SP, x86.R11, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x23}},
+		{x86.SP, x86.R11, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x23}},
+		{x86.R5, x86.R10, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x2A}},
+		{x86.R5, x86.R10, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x2A}},
+		{x86.R5, x86.R10, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x2A}},
+		{x86.R6, x86.R9, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x31}},
+		{x86.R6, x86.R9, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x31}},
+		{x86.R6, x86.R9, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x31}},
+		{x86.R7, x86.R8, 0, 4, x86.Scale1, []byte{0x49, 0x63, 0x38}},
+		{x86.R7, x86.R8, 0, 2, x86.Scale1, []byte{0x49, 0x0F, 0xBF, 0x38}},
+		{x86.R7, x86.R8, 0, 1, x86.Scale1, []byte{0x49, 0x0F, 0xBE, 0x38}},
+		{x86.R8, x86.R7, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x07}},
+		{x86.R8, x86.R7, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x07}},
+		{x86.R8, x86.R7, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x07}},
+		{x86.R9, x86.R6, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x0E}},
+		{x86.R9, x86.R6, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x0E}},
+		{x86.R9, x86.R6, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x0E}},
+		{x86.R10, x86.R5, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x55, 0x00}},
+		{x86.R10, x86.R5, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x55, 0x00}},
+		{x86.R10, x86.R5, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x55, 0x00}},
+		{x86.R11, x86.SP, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x1C, 0x24}},
+		{x86.R11, x86.SP, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x1C, 0x24}},
+		{x86.R11, x86.SP, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x1C, 0x24}},
+		{x86.R12, x86.R3, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x23}},
+		{x86.R12, x86.R3, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x23}},
+		{x86.R12, x86.R3, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x23}},
+		{x86.R13, x86.R2, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x2A}},
+		{x86.R13, x86.R2, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x2A}},
+		{x86.R13, x86.R2, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x2A}},
+		{x86.R14, x86.R1, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x31}},
+		{x86.R14, x86.R1, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x31}},
+		{x86.R14, x86.R1, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x31}},
+		{x86.R15, x86.R0, 0, 4, x86.Scale1, []byte{0x4C, 0x63, 0x38}},
+		{x86.R15, x86.R0, 0, 2, x86.Scale1, []byte{0x4C, 0x0F, 0xBF, 0x38}},
+		{x86.R15, x86.R0, 0, 1, x86.Scale1, []byte{0x4C, 0x0F, 0xBE, 0x38}},
+	}
+
+	for _, pattern := range usagePatterns {
+		t.Logf("movsx %s, %dB [%s+%d]", pattern.Destination, pattern.Length, pattern.Base, pattern.Offset)
+		code := x86.LoadFixedOffsetSignExtend(nil, pattern.Destination, pattern.Base, pattern.Offset, pattern.Scale, pattern.Length)
 		assert.DeepEqual(t, code, pattern.Code)
 	}
 }
