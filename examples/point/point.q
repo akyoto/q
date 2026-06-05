@@ -6,9 +6,11 @@ Point {
 }
 
 main() {
-	p := new(Point)
-	p.x = 1
-	p.y = 2
+	p := new(Point) {
+		x: 1,
+		y: 2
+	}
+
 	write(p)
 	delete(p)
 }

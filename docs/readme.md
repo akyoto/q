@@ -41,48 +41,47 @@ Q is also a code generation framework that aims to produce raw machine code for 
 > [!WARNING]
 > Q is [in early development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
-> The compiler currently passes a total of [750 tests](#how-do-i-run-the-tests).
+> The compiler currently passes a total of [2400 tests](#how-do-i-run-the-tests).
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
 ## Installation
 
-Build from source:
-
 ```shell
+# Build from source:
 git clone https://git.urbach.dev/cli/q
 cd q
 go build
-```
 
-Install via symlink:
-
-```shell
-ln -s $PWD/q ~/.local/bin/q
+# Install via symlink to a directory in your PATH:
+ln -s $PWD/q ~/.local/bin/
 ```
 
 ## Usage
 
-Run:
-
 ```shell
+# Run a file or directory
 q examples/hello
-```
 
-Build:
-
-```shell
+# Build an executable inside examples/hello
 q build examples/hello
-```
 
-Cross-compile:
-
-```shell
+# Cross-compile for another system
 q build examples/hello -os [linux|mac|windows] -arch [x86|arm]
+
+# Show all imported files
+q files examples/hello
+
+# Show SSA form
+q ssa examples/hello
+
+# Show assembly form
+q asm examples/hello
 ```
 
 ## News
 
+- **2026-06-03**: Method calls.
 - **2026-05-07**: Struct initialization.
 - **2026-05-06**: Command line arguments.
 - **2025-10-10**: Loop control flow.
@@ -107,14 +106,22 @@ q build examples/hello -os [linux|mac|windows] -arch [x86|arm]
 
 ## Examples
 
-The syntax is still evolving because the focus is currently on correct machine code generation for all platforms and architectures. However, you can take a look at the [examples](../examples) and the [tests](../tests) to get a perspective on the current status.
+Basic [hello](../examples/hello/hello.q) example:
 
-A few selected examples:
+```
+import io
 
-- [hello](../examples/hello/hello.q)
+main() {
+	io.write("Hello\n")
+}
+```
+
+Simple examples:
+
 - [echo](../examples/echo/echo.q)
 - [fibonacci](../examples/fibonacci/fibonacci.q)
 - [fizzbuzz](../examples/fizzbuzz/fizzbuzz.q)
+- [point](../examples/point/point.q)
 
 Advanced examples using experimental APIs:
 
@@ -135,6 +142,7 @@ The following is a cheat sheet documenting the syntax.
 | Define a struct                      | `Point {}`                   | ✔️ Stable       |
 | Define input and output types        | `f(a int) -> (b int) {}`     | ✔️ Stable       |
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
+| Define a struct method               | `f(p Point) {}`              | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
 | Allocate a type                      | `new(int)`                   | 🚧 Experimental |
 | Allocate an array                    | `new(int, 10)`               | 🚧 Experimental |
@@ -142,6 +150,7 @@ The following is a cheat sheet documenting the syntax.
 | Allocate and initialize a struct     | `new(Point){x: 1, y: 2}`     | 🚧 Experimental |
 | Delete a type from the heap          | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
+| Call struct methods                  | `p.f()`                      | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
 | Index a pointer                      | `ptr[0]`                     | ✔️ Stable       |
 | Slice a string                       | `"Hello"[1..3]`              | ✔️ Stable       |
@@ -438,11 +447,10 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 - [Kofi](https://ko-fi.com/akyoto)
 - [GitHub](https://github.com/sponsors/akyoto)
-- [Stripe](https://donate.stripe.com/4gw7vf5Jxflf83m7st)
 
 ### If I donate, what will my money be used for?
 
-Testing infrastructure and support for existing and new architectures.
+Continuous development, testing infrastructure and support for new platforms and architectures.
 
 ### How do I pronounce the name?
 
@@ -453,13 +461,13 @@ Testing infrastructure and support for existing and new architectures.
 ### How do I run the tests?
 
 ```shell
-# Run all tests:
+# Run all tests
 go run gotest.tools/gotestsum@latest
 
-# Generate coverage:
+# Generate coverage
 go test -coverpkg=./... -coverprofile=cover.out ./...
 
-# View coverage:
+# View coverage
 go tool cover -func cover.out
 go tool cover -html cover.out
 ```
@@ -467,16 +475,16 @@ go tool cover -html cover.out
 ### How do I run the benchmarks?
 
 ```shell
-# Run compiler benchmarks:
+# Run compiler benchmarks
 go test ./tests -run '^$' -bench . -benchmem
 
-# Run compiler benchmarks in single-threaded mode:
+# Run compiler benchmarks in single-threaded mode
 GOMAXPROCS=1 go test ./tests -run '^$' -bench . -benchmem
 
-# Generate profiling data:
+# Generate profiling data
 go test ./tests -run '^$' -bench . -benchmem -cpuprofile cpu.out -memprofile mem.out
 
-# View profiling data:
+# View profiling data
 go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
 go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 ```
@@ -486,9 +494,12 @@ go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
 With the commands `ssa` and `asm` you can analyze the intermediate stages which reveal how the compiler understands your program code.
 If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables one instruction at a time.
 
-### Is there an IRC channel?
+### Is there a community?
 
-[#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev).
+* **IRC**: [#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev) is the main hub for collaboration.
+* **Discord**: [Q - Programming Language](https://discord.gg/4q3DJFsTvB) is a more laid-back alternative that is popular among gamers.
+* ~~**E-Mail**:~~ Mailing lists are planned.
+* ~~**Forum**:~~ Web forums are planned.
 
 ## Thanks
 
