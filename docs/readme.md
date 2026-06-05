@@ -48,12 +48,12 @@ Q is also a code generation framework that aims to produce raw machine code for 
 ## Installation
 
 ```shell
-# Build from source:
+# Build from source
 git clone https://git.urbach.dev/cli/q
 cd q
 go build
 
-# Install via symlink to a directory in your PATH:
+# Install via symlink to a directory in your PATH
 ln -s $PWD/q ~/.local/bin/
 ```
 
