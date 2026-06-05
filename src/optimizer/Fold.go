@@ -1,6 +1,9 @@
 package optimizer
 
-import "git.urbach.dev/cli/q/src/ssa"
+import (
+	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
+)
 
 // Fold evaluates binary operations at compile time and replaces them with constants.
 func Fold(ir ssa.IR) map[ssa.Value]struct{} {
@@ -27,6 +30,10 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 			right, rightIsInt := binaryOp.Right.(*ssa.Int)
 
 			if !rightIsInt {
+				continue
+			}
+
+			if (binaryOp.Op == token.Div || binaryOp.Op == token.Mod) && right.Int == 0 {
 				continue
 			}
 
