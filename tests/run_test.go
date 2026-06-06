@@ -9,6 +9,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/config"
+	"git.urbach.dev/cli/q/src/exe"
 	"git.urbach.dev/cli/q/src/linker"
 	"git.urbach.dev/go/assert"
 )
@@ -41,8 +42,10 @@ func (test *run) Run(t *testing.T, build *config.Build) {
 // Compile only tests the compilation without actually running the executable.
 func (test *run) Compile(t *testing.T, name string, build *config.Build) {
 	t.Run(name, func(t *testing.T) {
-		_, err := compiler.Compile(build)
+		env, err := compiler.Compile(build)
 		assert.Nil(t, err)
+		discard := &exe.Discard{}
+		linker.Write(discard, env)
 	})
 }
 
@@ -53,6 +56,8 @@ func (test *run) RunBuild(t *testing.T, name string, build *config.Build) {
 		assert.Nil(t, err)
 
 		if test.ExitCode == -1 {
+			discard := &exe.Discard{}
+			linker.Write(discard, env)
 			return
 		}
 
