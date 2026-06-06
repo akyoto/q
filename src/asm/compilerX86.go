@@ -247,7 +247,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			}
 		} else {
 			if instr.Length <= 2 {
-				panic("not implemented")
+				c.code = x86.LoadFixedOffsetZeroExtend(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
 			} else {
 				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
 			}
