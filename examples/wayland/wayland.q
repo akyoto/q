@@ -25,7 +25,7 @@ main() {
 		io.write(err)
 	}
 
-	deleteShm(state)
+	wayland.deleteShm(state)
 	delete(state)
 	delete(buffer)
 	net.close(socket)
@@ -75,7 +75,7 @@ communicate(state *wayland.State, buffer string) -> error {
 		return err
 	}
 
-	err := createShm(state)
+	err := wayland.createShm(state)
 
 	if err != 0 {
 		return err

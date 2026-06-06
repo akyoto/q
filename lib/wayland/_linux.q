@@ -2,7 +2,7 @@ import c
 import fs
 import mem
 
-createShm(state *wayland.State) -> error {
+createShm(state *State) -> error {
 	path := c.string("wl_shm")
 	fd, err := fs.memfd_create(path.ptr, 0)
 	delete(path)
@@ -25,7 +25,7 @@ createShm(state *wayland.State) -> error {
 	return 0
 }
 
-deleteShm(state *wayland.State) {
+deleteShm(state *State) {
 	if state.shm_data != 0 {
 		mem.munmap(state.shm_data, state.shm_size as uint64)
 	}
