@@ -11,6 +11,15 @@ var (
 	MissingMainFunction = errors.String("Missing main function")
 )
 
+// MultiError error is created when there is more than one error.
+type MultiError struct {
+	Errors []error
+}
+
+func (err *MultiError) Error() string {
+	return ""
+}
+
 // UnusedImport error is created when an import is never used.
 type UnusedImport struct {
 	Package string

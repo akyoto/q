@@ -2,14 +2,9 @@ package cli
 
 import (
 	"errors"
-	"fmt"
-	"os"
 	"os/exec"
-	"strings"
 
-	fe "git.urbach.dev/cli/q/src/errors"
-	"git.urbach.dev/go/color"
-	"git.urbach.dev/go/color/ansi"
+	"git.urbach.dev/cli/q/src/compiler"
 )
 
 // Exit codes.
@@ -30,32 +25,18 @@ func exit(err error) int {
 		expectedParameter *ExpectedParameter
 		unknownParameter  *UnknownParameter
 		invalidValue      *InvalidValue
-		fileError         *fe.FileError
+		multiError        *compiler.MultiError
 	)
 
-	if errors.As(err, &fileError) {
-		line, offset := fileError.Line()
-		indent := strings.Repeat(" ", offset)
-		color.Redirect(os.Stderr)
-		ansi.Reset.Printf("%s\n\n", fileError.Link())
-		source := fileError.Source()
-		length := int(source.End() - source.Start())
-
-		if length > 0 {
-			ansi.Reset.Printf("    %s", line[:offset])
-			ansi.Red.Print(line[offset : offset+length])
-			ansi.Reset.Println(line[offset+length:])
-		} else {
-			ansi.Reset.Printf("    %s\n", line)
+	if errors.As(err, &multiError) {
+		for _, err := range multiError.Errors {
+			showError(err)
 		}
 
-		ansi.Red.Printf("%s    ┬\n", indent)
-		ansi.Red.Printf("%s    ╰─ ", indent)
-		ansi.Reset.Printf("%s\n\n", fileError.Error())
-		ansi.Dim.Println(fileError.Stack())
-	} else {
-		fmt.Fprintln(os.Stderr, err)
+		return fail
 	}
+
+	showError(err)
 
 	if errors.As(err, &exit) {
 		return exit.ExitCode()

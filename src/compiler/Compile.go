@@ -49,10 +49,10 @@ func Compile(build *config.Build) (*core.Environment, error) {
 	})
 
 	// Report errors if any occurred
-	for f := range env.Functions() {
-		if f.Err != nil {
-			return nil, f.Err
-		}
+	err = findError(env.Functions())
+
+	if err != nil {
+		return nil, err
 	}
 
 	// Check for unused imports in all files
