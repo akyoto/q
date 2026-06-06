@@ -9,6 +9,12 @@ import (
 // compileReturn compiles a return instruction.
 func (f *Function) compileReturn(node *ast.Return) error {
 	if len(node.Values) != len(f.Output) {
+		// Special case: Use the multi-return of a single call
+		// to satisfy the requirement for multiple return types.
+		if len(node.Values) == 1 && len(f.Output) > 1 {
+			return f.compileReturnTuple(node)
+		}
+
 		position := node.Token.End()
 
 		if len(node.Values) > 0 {
