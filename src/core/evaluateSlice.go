@@ -36,12 +36,7 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 				return nil, errors.New(&TypeMismatch{Encountered: to.Type().Name(), Expected: types.AnyInt.Name()}, f.File, index.Children[1].Source())
 			}
 
-			slice := &ssa.Struct{
-				Typ:       types.String,
-				Arguments: []ssa.Value{address, to},
-				Source:    expr.Source(),
-			}
-
+			slice := f.makeStruct(types.String, []ssa.Value{address, to}, expr.Source())
 			return slice, nil
 		}
 
