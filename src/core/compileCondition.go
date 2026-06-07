@@ -111,7 +111,7 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		}
 
 		if !types.Is(value.Type(), types.Bool) {
-			return errors.New(InvalidCondition, f.File, condition.Source())
+			return errors.New(&TypeMismatch{Encountered: value.Type().Name(), Expected: types.Bool.Name()}, f.File, condition.Source())
 		}
 
 		branch := &ssa.Branch{
