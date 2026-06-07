@@ -8,6 +8,7 @@ import (
 
 // Bool is a boolean value.
 type Bool struct {
+	Independent
 	Liveness
 	Bool bool
 	Source
@@ -24,14 +25,8 @@ func (a *Bool) Equals(v Value) bool {
 	return a.Bool == b.Bool
 }
 
-// Inputs returns nil because a boolean value has no inputs.
-func (b *Bool) Inputs() []Value { return nil }
-
 // IsPure returns true because a boolean value is always constant.
 func (b *Bool) IsPure() bool { return true }
-
-// Replace does nothing because a boolean value has no inputs.
-func (b *Bool) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the boolean value.
 func (b *Bool) String() string { return fmt.Sprint(b.Bool) }

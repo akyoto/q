@@ -10,6 +10,7 @@ import (
 // Register represents a CPU register.
 type Register struct {
 	Register cpu.Register
+	Independent
 	Liveness
 	Source
 }
@@ -25,14 +26,8 @@ func (a *Register) Equals(v Value) bool {
 	return a.Register == b.Register
 }
 
-// Inputs returns nil.
-func (s *Register) Inputs() []Value { return nil }
-
 // IsPure returns true because a register access has no side effects.
 func (s *Register) IsPure() bool { return true }
-
-// Replace does nothing.
-func (s *Register) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the register.
 func (s *Register) String() string { return fmt.Sprintf("register(%s)", s.Register.String()) }

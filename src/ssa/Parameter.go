@@ -12,6 +12,7 @@ type Parameter struct {
 	Typ    types.Type
 	Name   string
 	Tokens token.List
+	Independent
 	Liveness
 	Source
 	Index uint8
@@ -28,14 +29,8 @@ func (a *Parameter) Equals(v Value) bool {
 	return a.Index == b.Index
 }
 
-// Inputs returns nil because a parameter has no inputs.
-func (p *Parameter) Inputs() []Value { return nil }
-
 // IsPure returns true because a parameter is always constant.
 func (p *Parameter) IsPure() bool { return true }
-
-// Replace does nothing because a parameter has no inputs.
-func (p *Parameter) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the parameter.
 func (p *Parameter) String() string { return fmt.Sprintf("args[%d]", p.Index) }

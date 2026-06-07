@@ -10,6 +10,7 @@ import (
 // Bytes is a raw slice of bytes.
 type Bytes struct {
 	Bytes []byte
+	Independent
 	Liveness
 	Source
 }
@@ -25,14 +26,8 @@ func (a *Bytes) Equals(v Value) bool {
 	return bytes.Equal(a.Bytes, b.Bytes)
 }
 
-// Inputs returns nil because a byte slice has no inputs.
-func (b *Bytes) Inputs() []Value { return nil }
-
 // IsPure returns true because a byte slice is always constant.
 func (b *Bytes) IsPure() bool { return true }
-
-// Replace does nothing because a byte slice has no inputs.
-func (b *Bytes) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the byte slice.
 func (b *Bytes) String() string { return strconv.Quote(string(b.Bytes)) }

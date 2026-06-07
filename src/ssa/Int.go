@@ -8,6 +8,7 @@ import (
 
 // Int is an integer value.
 type Int struct {
+	Independent
 	Liveness
 	Int int
 	Source
@@ -24,14 +25,8 @@ func (a *Int) Equals(v Value) bool {
 	return a.Int == b.Int
 }
 
-// Inputs returns nil because an integer has no inputs.
-func (i *Int) Inputs() []Value { return nil }
-
 // IsPure returns true because an integer is always constant.
 func (i *Int) IsPure() bool { return true }
-
-// Replace does nothing because an integer has no inputs.
-func (i *Int) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the integer.
 func (i *Int) String() string { return strconv.Itoa(i.Int) }

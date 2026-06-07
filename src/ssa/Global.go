@@ -8,6 +8,7 @@ import (
 type Global struct {
 	Label string
 	Typ   types.Type
+	Independent
 	Liveness
 	Source
 }
@@ -23,14 +24,8 @@ func (a *Global) Equals(v Value) bool {
 	return a.Label == b.Label
 }
 
-// Inputs returns nil because a data label has no inputs.
-func (d *Global) Inputs() []Value { return nil }
-
 // IsPure returns true because a data label is always constant.
 func (d *Global) IsPure() bool { return true }
-
-// Replace does nothing because a data label has no inputs.
-func (d *Global) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the data label.
 func (d *Global) String() string { return d.Label }

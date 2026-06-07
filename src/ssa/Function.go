@@ -8,6 +8,7 @@ import (
 type Function struct {
 	Typ *types.Function
 	FunctionRef
+	Independent
 	Liveness
 	Source
 }
@@ -23,14 +24,8 @@ func (a *Function) Equals(v Value) bool {
 	return a.Package() == b.Package() && a.Name() == b.Name()
 }
 
-// Inputs returns nil because a function reference has no inputs.
-func (f *Function) Inputs() []Value { return nil }
-
 // IsPure returns true because a function reference is always constant.
 func (f *Function) IsPure() bool { return true }
-
-// Replace does nothing because a function reference has no inputs.
-func (f *Function) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the function.
 func (f *Function) String() string {
