@@ -15,10 +15,10 @@ type operator struct {
 // Operators defines the Operators used in the language.
 // The number corresponds to the operator priority and can not be zero.
 var Operators = [64]operator{
-	token.Struct: {7, 1},
 	token.Dot:    {7, 2},
 	token.Call:   {7, 1},
 	token.Array:  {7, 2},
+	token.Struct: {7, 1},
 	token.Negate: {6, 1},
 	token.Not:    {6, 1},
 	token.Mul:    {5, 2},
@@ -26,13 +26,13 @@ var Operators = [64]operator{
 	token.Mod:    {5, 2},
 	token.Add:    {4, 2},
 	token.Sub:    {4, 2},
-	token.Shr:    {4, 2},
-	token.Shl:    {4, 2},
 	token.And:    {4, 2},
-	token.Xor:    {4, 2},
 	token.Or:     {4, 2},
-	token.Cast:   {4, 2},
+	token.Xor:    {4, 2},
+	token.Shl:    {4, 2},
+	token.Shr:    {4, 2},
 	token.Concat: {4, 2},
+	token.Cast:   {4, 2},
 
 	token.Greater:      {3, 2},
 	token.Less:         {3, 2},

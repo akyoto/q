@@ -28,7 +28,7 @@ func operators() int {
 		})
 	}
 
-	slices.SortFunc(ops, func(a operator, b operator) int {
+	slices.SortStableFunc(ops, func(a operator, b operator) int {
 		return int(b.precedence) - int(a.precedence)
 	})
 
