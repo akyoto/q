@@ -4,8 +4,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// Data is a memory location identified by a label.
-type Data struct {
+// Global is a memory location identified by a label.
+type Global struct {
 	Label string
 	Typ   types.Type
 	Liveness
@@ -13,8 +13,8 @@ type Data struct {
 }
 
 // Equals returns true if the data labels are equal.
-func (a *Data) Equals(v Value) bool {
-	b, sameType := v.(*Data)
+func (a *Global) Equals(v Value) bool {
+	b, sameType := v.(*Global)
 
 	if !sameType {
 		return false
@@ -24,16 +24,16 @@ func (a *Data) Equals(v Value) bool {
 }
 
 // Inputs returns nil because a data label has no inputs.
-func (d *Data) Inputs() []Value { return nil }
+func (d *Global) Inputs() []Value { return nil }
 
 // IsPure returns true because a data label is always constant.
-func (d *Data) IsPure() bool { return true }
+func (d *Global) IsPure() bool { return true }
 
 // Replace does nothing because a data label has no inputs.
-func (d *Data) Replace(Value, Value) {}
+func (d *Global) Replace(Value, Value) {}
 
 // String returns a human-readable representation of the data label.
-func (d *Data) String() string { return d.Label }
+func (d *Global) String() string { return d.Label }
 
 // Type returns the type of the memory it references.
-func (d *Data) Type() types.Type { return d.Typ }
+func (d *Global) Type() types.Type { return d.Typ }

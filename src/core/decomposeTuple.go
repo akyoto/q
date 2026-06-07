@@ -22,7 +22,7 @@ func (f *Function) decomposeTuple(value ssa.Value, tuple *types.Tuple, typeCheck
 			return nil, errors.New(typeMismatch, f.File, source)
 		}
 
-		v := f.Append(&ssa.FromTuple{
+		v := f.Append(&ssa.Field{
 			Tuple:  value,
 			Index:  i,
 			Source: source,

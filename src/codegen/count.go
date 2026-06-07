@@ -6,9 +6,9 @@ type counter uint16
 // count stores how often a certain statement appeared so we can generate a unique label from it.
 type count struct {
 	Assert    counter
-	Data      counter
 	Branch    counter
+	Data      counter
 	Loop      counter
-	Switch    counter
 	SubBranch counter
+	Switch    counter
 }

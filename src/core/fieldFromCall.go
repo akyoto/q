@@ -20,7 +20,7 @@ func (f *Function) fieldFromCall(call *ssa.Call, left *expression.Expression, ri
 			return nil, errors.New(&UnknownStructField{StructName: structure.Name(), FieldName: fieldName}, f.File, right.Source())
 		}
 
-		value := f.Append(&ssa.FromTuple{
+		value := f.Append(&ssa.Field{
 			Tuple:  call,
 			Index:  int(field.Index),
 			Source: expr.Source(),

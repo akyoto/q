@@ -12,7 +12,7 @@ func Reorder(ir ssa.IR) {
 	for _, block := range ir.Blocks {
 		for start, instr := range slices.Backward(block.Instructions) {
 			switch instr.(type) {
-			case *ssa.Bytes, *ssa.Data, *ssa.Int:
+			case *ssa.Bytes, *ssa.Global, *ssa.Int:
 			default:
 				continue
 			}

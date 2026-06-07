@@ -25,7 +25,7 @@ func (f *Function) hintABI(step *Step) {
 
 			f.ValueToStep[param].hint(f.CPU.ExternCall.In[r])
 		}
-	case *ssa.FromTuple:
+	case *ssa.Field:
 		if step.Register == -1 {
 			step.Register = f.CPU.Call.Out[instr.Index]
 		}

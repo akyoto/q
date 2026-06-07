@@ -51,7 +51,7 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 		structure, isStructType := types.Unwrap(fn.Typ.Output[i]).(*types.Struct)
 
 		if !isStructType {
-			value := &ssa.FromTuple{
+			value := &ssa.Field{
 				Tuple:  rightValue,
 				Index:  count,
 				Source: identifier.Source(),
@@ -74,7 +74,7 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 		composite := f.makeStructFromTuple(rightValue, fn.Typ.Output[i], structure, name, identifier.Source())
 
 		for _, element := range composite.Arguments {
-			element.(*ssa.FromTuple).Index += count
+			element.(*ssa.Field).Index += count
 			protected = append(protected, element)
 		}
 

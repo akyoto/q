@@ -6,8 +6,8 @@ import (
 	"git.urbach.dev/cli/q/src/types"
 )
 
-// FromTuple is a value inside of a struct or tuple.
-type FromTuple struct {
+// Field is a value inside of a struct or tuple.
+type Field struct {
 	Tuple Value
 	Liveness
 	Index int
@@ -15,8 +15,8 @@ type FromTuple struct {
 }
 
 // Equals returns true if the tuple accesses are equal.
-func (a *FromTuple) Equals(v Value) bool {
-	b, sameType := v.(*FromTuple)
+func (a *Field) Equals(v Value) bool {
+	b, sameType := v.(*Field)
 
 	if !sameType {
 		return false
@@ -26,23 +26,23 @@ func (a *FromTuple) Equals(v Value) bool {
 }
 
 // Inputs returns the tuple.
-func (f *FromTuple) Inputs() []Value { return []Value{f.Tuple} }
+func (f *Field) Inputs() []Value { return []Value{f.Tuple} }
 
 // IsPure returns true because accessing the same element will always have the same value.
-func (f *FromTuple) IsPure() bool { return true }
+func (f *Field) IsPure() bool { return true }
 
 // Replace replaces the tuple if it matches.
-func (f *FromTuple) Replace(old Value, new Value) {
+func (f *Field) Replace(old Value, new Value) {
 	if f.Tuple == old {
 		f.Tuple = new
 	}
 }
 
 // String returns a human-readable representation of the tuple access.
-func (f *FromTuple) String() string { return fmt.Sprintf("field(%p, %d)", f.Tuple, f.Index) }
+func (f *Field) String() string { return fmt.Sprintf("field(%p, %d)", f.Tuple, f.Index) }
 
 // Type returns the type of the tuple element.
-func (f *FromTuple) Type() types.Type {
+func (f *Field) Type() types.Type {
 	switch typ := types.Unwrap(f.Tuple.Type()).(type) {
 	case *types.Struct:
 		return typ.Fields[f.Index].Type

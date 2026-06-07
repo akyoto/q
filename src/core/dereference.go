@@ -8,7 +8,7 @@ import (
 // dereference loads from memory if the value was a memory address, otherwise returns the raw value.
 func (f *Function) dereference(value ssa.Value) ssa.Value {
 	switch value := value.(type) {
-	case *ssa.Data:
+	case *ssa.Global:
 		zero := f.Append(&ssa.Int{Int: 0})
 
 		load := f.Append(&ssa.Load{

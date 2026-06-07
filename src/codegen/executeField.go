@@ -5,7 +5,7 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-func (f *Function) executeFromTuple(step *Step, instr *ssa.FromTuple) {
+func (f *Function) executeField(step *Step, instr *ssa.Field) {
 	source := f.CPU.Call.Out[instr.Index]
 
 	if step.Register == source {

@@ -10,7 +10,7 @@ func (f *Function) makeStructFromTuple(tuple ssa.Value, typ types.Type, structTy
 	fields := make([]ssa.Value, len(structType.Fields))
 
 	for i, field := range structType.Fields {
-		fieldValue := &ssa.FromTuple{
+		fieldValue := &ssa.Field{
 			Tuple:  tuple,
 			Index:  i,
 			Source: source,

@@ -21,12 +21,12 @@ func (f *Function) execute(step *Step) {
 		f.executeCallExtern(step, instr)
 	case *ssa.Copy:
 		f.executeCopy(step, instr)
-	case *ssa.Data:
-		f.executeData(step, instr)
-	case *ssa.FromTuple:
-		f.executeFromTuple(step, instr)
+	case *ssa.Field:
+		f.executeField(step, instr)
 	case *ssa.Function:
 		f.executeFunction(step, instr)
+	case *ssa.Global:
+		f.executeGlobal(step, instr)
 	case *ssa.Int:
 		f.executeInt(step, instr)
 	case *ssa.Jump:

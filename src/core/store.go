@@ -34,7 +34,7 @@ func (f *Function) store(memory *ssa.Memory, value ssa.Value) error {
 	fieldValues := make([]ssa.Value, len(structure.Fields))
 
 	for i := range structure.Fields {
-		fieldValue := &ssa.FromTuple{
+		fieldValue := &ssa.Field{
 			Tuple:  value,
 			Index:  i,
 			Source: token.NewSource(value.(errors.Source).Start(), value.(errors.Source).End()),

@@ -28,17 +28,17 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		return err
 	}
 
-	data, isData := leftValue.(*ssa.Data)
+	global, isGlobal := leftValue.(*ssa.Global)
 
-	if isData {
+	if isGlobal {
 		zero := f.Append(&ssa.Int{Int: 0})
 
 		f.Append(&ssa.Store{
 			Memory: &ssa.Memory{
-				Typ:     data.Typ.(*types.Pointer).To,
-				Address: data,
+				Typ:     global.Typ.(*types.Pointer).To,
+				Address: global,
 				Index:   zero,
-				Source:  data.Source,
+				Source:  global.Source,
 			},
 			Value: rightValue,
 		})
