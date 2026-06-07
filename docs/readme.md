@@ -41,23 +41,29 @@ Q is also a code generation framework that aims to produce raw machine code for 
 > [!WARNING]
 > Q is [in early development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
-> The compiler currently passes a total of [2400 tests](#how-do-i-run-the-tests).
+> The compiler currently passes a total of [2500 tests](#how-do-i-run-the-tests).
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
 ## Installation
 
+Build from source:
+
 ```shell
-# Build from source
 git clone https://git.urbach.dev/cli/q
 cd q
 go build
+```
 
-# Install via symlink to a directory in your PATH
+Install via symlink to a directory in your `PATH`:
+
+```shell
 ln -s $PWD/q ~/.local/bin/
 ```
 
 ## Usage
+
+Build and run:
 
 ```shell
 # Run a file or directory
@@ -68,20 +74,22 @@ q build examples/hello
 
 # Cross-compile for another system
 q build examples/hello -os [linux|mac|windows] -arch [x86|arm]
+```
 
-# Show all imported files
-q files examples/hello
+Show additional information:
 
+```shell
 # Show SSA form
 q ssa examples/hello
 
 # Show assembly form
 q asm examples/hello
+
+# Show all imported files
+q files examples/hello
 ```
 
 ## Examples
-
-[hello.q](../examples/hello/hello.q)
 
 ```q
 import io
@@ -90,8 +98,6 @@ main() {
 	io.write("Hello\n")
 }
 ```
-
-[fibonacci.q](../examples/fibonacci/fibonacci.q)
 
 ```q
 fibonacci(n int) -> int {
@@ -102,8 +108,6 @@ fibonacci(n int) -> int {
 	return fibonacci(n - 1) + fibonacci(n - 2)
 }
 ```
-
-[fizzbuzz.q](../examples/fizzbuzz/fizzbuzz.q)
 
 ```q
 fizzbuzz(x int) {
@@ -116,7 +120,7 @@ fizzbuzz(x int) {
 }
 ```
 
-See more in the [examples](../examples) directory. Examples show current capabilities but they do not represent the final API or language design.
+See more in the [examples](../examples) directory.
 
 ## Reference
 
