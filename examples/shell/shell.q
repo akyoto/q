@@ -1,17 +1,16 @@
 import io
-import mem
 import process
 import strings
 
 main() {
-	buffer := mem.alloc(256)
+	buffer := new(byte, 256)
 
 	loop {
 		io.write("λ ")
 		n := io.read(buffer)
 
 		if n <= 0 {
-			mem.free(buffer)
+			delete(buffer)
 			return
 		}
 

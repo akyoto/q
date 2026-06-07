@@ -16,11 +16,12 @@ main() {
 	loop {
 		conn, err := net.accept(socket)
 
-		if err == 0 {
-			net.send(conn, "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\nHello\n")
-			net.close(conn)
-		} else {
+		if err != 0 {
 			io.write(err)
+			loop.next()
 		}
+
+		net.send(conn, "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\nHello\n")
+		net.close(conn)
 	}
 }

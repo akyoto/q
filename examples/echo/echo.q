@@ -1,14 +1,13 @@
 import io
-import mem
 
 main() {
-	buffer := mem.alloc(4096)
+	buffer := new(byte, 4096)
 
 	loop {
 		n := io.read(buffer)
 
 		if n <= 0 {
-			mem.free(buffer)
+			delete(buffer)
 			return
 		}
 

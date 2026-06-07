@@ -1,6 +1,5 @@
 import fs
 import io
-import mem
 
 main() {
 	source, err := fs.readFile("examples/readfile/readfile.q")
@@ -11,5 +10,5 @@ main() {
 	}
 
 	io.write(source)
-	mem.free(source)
+	delete(source)
 }
