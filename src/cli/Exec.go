@@ -19,6 +19,9 @@ func Exec(args []string) int {
 	case "help":
 		return help()
 
+	case "keywords":
+		return keywords()
+
 	case "run":
 		return run(args[1:])
 

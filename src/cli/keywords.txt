@@ -1,0 +1,12 @@
+assert
+const
+else
+extern
+global
+go
+if
+import
+loop
+return
+switch
+EOF
