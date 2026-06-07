@@ -12,12 +12,16 @@ Compiler for the Q programming language.
 
         q build [file] -os [linux|mac|windows] -arch [x86|arm]
 
-    Show all imported files:
+    List all imported files:
 
         q files [file]
 
     Show intermediate stages:
 
         q [asm|ssa] [file] -func [name]
+
+    Query information:
+
+        q [keywords|operators|version]
 
 EOF
