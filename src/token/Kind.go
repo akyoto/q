@@ -222,6 +222,10 @@ func (k Kind) String() string {
 		return "<<="
 	case FieldAssign:
 		return ":"
+	case Cast:
+		return "as"
+	case Concat:
+		return "++"
 	default:
 		return ""
 	}
