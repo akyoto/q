@@ -9,15 +9,17 @@ import (
 // makeSlice creates a new slice.
 func (f *Function) makeSlice(address ssa.Value, from ssa.Value, to ssa.Value, source ssa.Source) *ssa.Struct {
 	newPointer := f.Append(&ssa.BinaryOp{
-		Op:    token.Add,
-		Left:  address,
-		Right: from,
+		Op:     token.Add,
+		Left:   address,
+		Right:  from,
+		Source: source,
 	})
 
 	newLength := f.Append(&ssa.BinaryOp{
-		Op:    token.Sub,
-		Left:  to,
-		Right: from,
+		Op:     token.Sub,
+		Left:   to,
+		Right:  from,
+		Source: source,
 	})
 
 	return f.makeStruct(types.String, []ssa.Value{newPointer, newLength}, source)
