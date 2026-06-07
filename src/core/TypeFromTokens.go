@@ -80,8 +80,19 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 	if len(tokens) >= 3 && tokens[1].Kind == token.Dot && tokens[2].Kind == token.Identifier {
 		pkgName := tokens[0].StringFrom(file.Bytes)
 		pkg := env.Packages[pkgName]
+
+		if pkg == nil {
+			return nil, errors.New(&UnknownIdentifier{Name: pkgName}, file, tokens[0])
+		}
+
 		structName := tokens[2].StringFrom(file.Bytes)
-		return pkg.Structs[structName], nil
+		typ := pkg.Structs[structName]
+
+		if typ == nil {
+			return nil, errors.New(&UnknownType{Name: structName}, file, tokens[2])
+		}
+
+		return typ, nil
 	}
 
 	name := tokens[0].StringFrom(file.Bytes)
