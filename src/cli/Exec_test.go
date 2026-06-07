@@ -8,6 +8,7 @@ import (
 )
 
 func TestExec(t *testing.T) {
+	assert.Equal(t, cli.Exec([]string{"asm", "../../examples/hello"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello/hello.q", "-dry"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry", "-os", "linux", "-arch", "arm"}), 0)
@@ -18,8 +19,10 @@ func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry", "-os", "windows", "-arch", "x86"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry", "-no-lint"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry", "-no-optimize"}), 0)
+	assert.Equal(t, cli.Exec([]string{"files", "../../examples/hello"}), 0)
 	assert.Equal(t, cli.Exec([]string{"help"}), 0)
 	assert.Equal(t, cli.Exec([]string{"run", "../../examples/hello"}), 0)
+	assert.Equal(t, cli.Exec([]string{"ssa", "../../examples/hello"}), 0)
 	assert.Equal(t, cli.Exec([]string{"version"}), 0)
 	assert.Equal(t, cli.Exec([]string{"../../tests/script.q"}), 0)
 }
