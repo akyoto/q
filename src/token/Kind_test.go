@@ -9,11 +9,13 @@ import (
 
 func TestTokenGroups(t *testing.T) {
 	assert.True(t, token.Assign.IsAssignment())
-	assert.True(t, token.Add.IsOperator())
-	assert.True(t, token.If.IsKeyword())
-	assert.True(t, token.Not.IsUnaryOperator())
-	assert.True(t, token.Number.IsNumeric())
 	assert.True(t, token.Equal.IsComparison())
+	assert.True(t, token.New.IsBuiltin())
+	assert.True(t, token.If.IsKeyword())
+	assert.True(t, token.Number.IsNumeric())
+	assert.True(t, token.Add.IsOperator())
+	assert.True(t, token.Not.IsUnaryOperator())
+	assert.True(t, token.Identifier.IsLiteral())
 }
 
 func TestTokenKindString(t *testing.T) {
@@ -56,5 +58,7 @@ func TestTokenKindString(t *testing.T) {
 	assert.Equal(t, token.ShrAssign.String(), ">>=")
 	assert.Equal(t, token.ShlAssign.String(), "<<=")
 	assert.Equal(t, token.FieldAssign.String(), ":")
+	assert.Equal(t, token.Cast.String(), "as")
+	assert.Equal(t, token.Concat.String(), "++")
 	assert.Equal(t, token.Invalid.String(), "")
 }
