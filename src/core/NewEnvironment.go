@@ -8,19 +8,14 @@ import (
 
 // NewEnvironment creates a new environment.
 func NewEnvironment(build *config.Build) *Environment {
-	return &Environment{
+	env := &Environment{
 		Build:    build,
 		Files:    make([]*fs.File, 0, 16),
 		Packages: make(map[string]*Package, 8),
-		typeCache: typeCache{
-			pointerTypes: map[types.Type]types.Type{
-				types.Any:  types.AnyPointer,
-				types.Byte: types.CString,
-			},
-			resourceTypes: map[types.Type]types.Type{},
-			sliceTypes: map[types.Type]types.Type{
-				types.Byte: types.String,
-			},
-		},
 	}
+
+	env.pointerTypes.Store(types.Any, types.AnyPointer)
+	env.pointerTypes.Store(types.Byte, types.CString)
+	env.sliceTypes.Store(types.Byte, types.String)
+	return env
 }
