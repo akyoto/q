@@ -9,11 +9,9 @@ import (
 
 // Global variables that are useful in all packages.
 var (
-	Arch       string
-	Executable string
-	Library    string
-	OS         string
-	Root       string
+	Arch    string
+	Library string
+	OS      string
 )
 
 // init is the very first thing that's executed.
@@ -23,21 +21,20 @@ func init() {
 	OS = runtime.GOOS
 	Arch = runtime.GOARCH
 
-	var err error
-	Executable, err = os.Executable()
+	executable, err := os.Executable()
 
 	if err != nil {
 		panic(err)
 	}
 
-	Executable, err = filepath.EvalSymlinks(Executable)
+	executable, err = filepath.EvalSymlinks(executable)
 
 	if err != nil {
 		panic(err)
 	}
 
-	Root = filepath.Dir(Executable)
-	Library = filepath.Join(Root, "lib")
+	root := filepath.Dir(executable)
+	Library = filepath.Join(root, "lib")
 	stat, err := os.Stat(Library)
 
 	if err != nil || !stat.IsDir() {
