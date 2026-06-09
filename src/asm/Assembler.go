@@ -126,6 +126,7 @@ func (a *Assembler) Skip(instr Instruction) bool {
 		jump, isJump := a.Last().(*Jump)
 
 		if isJump && jump.Label == instr.Name {
+			instr.Align = 0
 			a.SetLast(instr)
 			return true
 		}
