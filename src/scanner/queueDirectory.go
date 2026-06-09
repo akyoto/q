@@ -31,44 +31,26 @@ func (s *scanner) queueDirectory(directory string, pkg string) {
 			}
 
 			condition := tmp[underscore+1:]
+			pass := false
 
 			switch condition {
 			case "linux":
-				if s.build.OS != config.Linux {
-					return
-				}
-
+				pass = s.build.OS == config.Linux
 			case "mac":
-				if s.build.OS != config.Mac {
-					return
-				}
-
+				pass = s.build.OS == config.Mac
 			case "unix":
-				if s.build.OS != config.Linux && s.build.OS != config.Mac {
-					return
-				}
-
+				pass = s.build.OS == config.Linux || s.build.OS == config.Mac
 			case "windows":
-				if s.build.OS != config.Windows {
-					return
-				}
-
+				pass = s.build.OS == config.Windows
 			case "winux":
-				if s.build.OS != config.Linux && s.build.OS != config.Windows {
-					return
-				}
-
+				pass = s.build.OS == config.Linux || s.build.OS == config.Windows
 			case "x86":
-				if s.build.Arch != config.X86 {
-					return
-				}
-
+				pass = s.build.Arch == config.X86
 			case "arm":
-				if s.build.Arch != config.ARM {
-					return
-				}
+				pass = s.build.Arch == config.ARM
+			}
 
-			default:
+			if !pass {
 				return
 			}
 
