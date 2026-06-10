@@ -39,6 +39,7 @@ func TestParse(t *testing.T) {
 		{"Grouping right", "1*(2+3)", "(* 1 (+ 2 3))"},
 		{"Grouping same operator", "1+(2+3)", "(+ 1 (+ 2 3))"},
 		{"Grouping same operator 2", "1+(2+3)+(4+5)", "(+ (+ 1 (+ 2 3)) (+ 4 5))"},
+		{"Grouping error", "(", ""},
 
 		{"Two groups", "(1+2)*(3+4)", "(* (+ 1 2) (+ 3 4))"},
 		{"Two groups 2", "(1+2-3)*(3+4-5)", "(* (- (+ 1 2) 3) (- (+ 3 4) 5))"},
@@ -106,6 +107,9 @@ func TestParse(t *testing.T) {
 		{"Function calls 26", "1+2*a()+4", "(+ (+ 1 (* 2 (λ a))) 4)"},
 		{"Function calls 27", "a(b,c)*2+15*4", "(+ (* (λ a b c) 2) (* 15 4))"},
 		{"Function calls 28", "a(,)", "(λ a  )"},
+
+		{"New", "new(int)", "(λ new int)"},
+		{"New array", "new(int, 10)", "(λ new int 10)"},
 
 		{"Member access", "a.b", "(. a b)"},
 		{"Member access 2", "a.", "(. a)"},
