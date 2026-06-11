@@ -14,7 +14,7 @@ main() {
 
 	state := new(wayland.State) {
 		id: wayland.wl_display_id,
-		socket: socket
+		socket: socket,
 	}
 
 	buffer := new(byte, 4096)

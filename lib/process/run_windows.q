@@ -2,8 +2,10 @@ import c
 import mem
 
 run(path string) -> error {
-	startInfo := new(StartupInfo)
-	startInfo.size = 104
+	startInfo := new(StartupInfo) {
+		size: 104,
+	}
+
 	processInfo := new(ProcessInformation)
 	cpath := c.string(path)
 	success := kernel32.CreateProcessA(0, cpath.ptr, 0, 0, false, 0, 0, 0, startInfo, processInfo)

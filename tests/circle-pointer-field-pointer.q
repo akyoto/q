@@ -1,7 +1,7 @@
 main() {
 	c := new(Circle) {
 		center: new(Point){x: 1, y: 2},
-		radius: 3
+		radius: 3,
 	}
 
 	assert c.center.x == 1

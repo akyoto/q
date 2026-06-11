@@ -14,9 +14,11 @@ sleep(nanoseconds int) {
 		nanoseconds = nanoseconds % second
 	}
 
-	duration := new(Timespec)
-	duration.seconds = seconds
-	duration.nanoseconds = nanoseconds
+	duration := new(Timespec) {
+		seconds: seconds,
+		nanoseconds: nanoseconds,
+	}
+
 	syscall(_nanosleep, duration)
 	delete(duration)
 }

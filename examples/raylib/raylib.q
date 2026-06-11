@@ -23,7 +23,7 @@ main() {
 		x: canvasWidth / 2,
 		y: canvasHeight / 2,
 		width: 10,
-		height: 10
+		height: 10,
 	}
 
 	loop {
