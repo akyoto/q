@@ -17,6 +17,10 @@ func (f *Function) evaluateNewStruct(expr *expression.Expression) (ssa.Value, er
 	structType := types.Unwrap(pointer.Type()).(*types.Pointer).To.(*types.Struct)
 
 	for _, definition := range expr.Children[1:] {
+		if isTrailing(definition, expr.Children) {
+			continue
+		}
+
 		field, rightValue, err := f.extractField(structType, definition)
 
 		if err != nil {
