@@ -85,7 +85,7 @@ q ssa examples/hello
 # Show assembly form
 q asm examples/hello
 
-# Show all imported files
+# List all imported files
 q files examples/hello
 ```
 
@@ -447,13 +447,13 @@ You need to create a file with the contents above and add execution permissions 
 
 ### Does it have a fast memory allocator?
 
-No, the current implementation is only temporary and it needs to be replaced with a faster one once the required language features have been implemented.
+[No](../lib/mem), the current implementation is only temporary and it needs to be replaced with a faster one once the required language features have been implemented.
 
 ### Any editor extensions?
 
-**Neovim**: Planned.
-
-**VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
+- ~~**Neovim**~~: Planned.
+- **VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
+- ~~**Zed**~~: Planned.
 
 ### Why is it written in Go and not language X?
 
@@ -462,8 +462,9 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 ### I can't contribute but can I donate to the project?
 
-- [Kofi](https://ko-fi.com/akyoto)
+- [Buy Me a Coffee](https://buymeacoffee.com/akyoto)
 - [GitHub](https://github.com/sponsors/akyoto)
+- [Kofi](https://ko-fi.com/akyoto)
 
 ### If I donate, what will my money be used for?
 
