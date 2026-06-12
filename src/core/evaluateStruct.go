@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -22,7 +23,7 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 	structType, isStructType := typ.(*types.Struct)
 
 	if !isStructType {
-		panic("not a struct")
+		return nil, errors.New(&NotDataStruct{TypeName: typ.Name()}, f.File, expr.Children[0].Source())
 	}
 
 	structure := &ssa.Struct{

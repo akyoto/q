@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
@@ -14,7 +15,12 @@ func (f *Function) evaluateNewStruct(expr *expression.Expression) (ssa.Value, er
 		return nil, err
 	}
 
-	structType := types.Unwrap(pointer.Type()).(*types.Pointer).To.(*types.Struct)
+	typ := types.Unwrap(pointer.Type()).(*types.Pointer).To
+	structType, isStructType := typ.(*types.Struct)
+
+	if !isStructType {
+		return nil, errors.New(&NotDataStruct{TypeName: typ.Name()}, f.File, expr.Children[0].Children[1].Source())
+	}
 
 	for _, definition := range expr.Children[1:] {
 		if isTrailing(definition, expr.Children) {
