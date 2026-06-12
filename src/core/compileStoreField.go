@@ -60,10 +60,16 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 	switch pointer := types.Unwrap(addressValue.Type()).(type) {
 	case *types.Pointer:
-		field := pointer.To.(*types.Struct).FieldByName(fieldName)
+		structType, isStructType := pointer.To.(*types.Struct)
+
+		if !isStructType {
+			return errors.New(&NotDataStruct{TypeName: pointer.To.Name()}, f.File, address.Source())
+		}
+
+		field := structType.FieldByName(fieldName)
 
 		if field == nil {
-			return errors.New(&UnknownStructField{StructName: pointer.To.Name(), FieldName: fieldName}, f.File, fieldExpr.Source())
+			return errors.New(&UnknownStructField{StructName: structType.Name(), FieldName: fieldName}, f.File, fieldExpr.Source())
 		}
 
 		if !types.Is(rightValue.Type(), field.Type) {

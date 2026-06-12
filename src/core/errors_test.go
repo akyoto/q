@@ -65,6 +65,7 @@ var errs = []struct {
 	{"NotDataStruct2.q", &core.NotDataStruct{TypeName: "int64"}},
 	{"NotDataStruct3.q", &core.NotDataStruct{TypeName: "int64"}},
 	{"NotDataStruct4.q", &core.NotDataStruct{TypeName: "int64"}},
+	{"NotDataStruct5.q", &core.NotDataStruct{TypeName: "int64"}},
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},
 	{"PartiallyUnknownIdentifier.q", &core.PartiallyUnknownIdentifier{Name: "x"}},
