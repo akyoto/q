@@ -22,7 +22,7 @@ func (f *Function) validateLeft(left *expression.Expression, right *expression.E
 			if isGlobal {
 				v := f.Append(&ssa.Global{
 					Label:  f.File.Package + "." + global.Name,
-					Typ:    f.Env.Pointer(global.Typ),
+					Typ:    global.Typ,
 					Source: left.Source(),
 				})
 

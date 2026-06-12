@@ -35,7 +35,7 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 
 		f.Append(&ssa.Store{
 			Memory: &ssa.Memory{
-				Typ:     global.Typ.(*types.Pointer).To,
+				Typ:     global.Typ,
 				Address: global,
 				Index:   zero,
 				Source:  global.Source,

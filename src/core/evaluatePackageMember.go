@@ -34,7 +34,7 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 		if exists {
 			v := f.Append(&ssa.Global{
 				Label:  pkg.Name + "." + global.Name,
-				Typ:    f.Env.Pointer(global.Typ),
+				Typ:    global.Typ,
 				Source: expr.Source(),
 			})
 
