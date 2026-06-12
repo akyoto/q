@@ -12,18 +12,11 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 	constant, exists := pkg.Constants[rightText]
 
 	if exists {
-		number, err := toNumber(constant.Value.Token, constant.File)
-
-		if err != nil {
-			return nil, err
-		}
-
-		v := f.Append(&ssa.Int{
-			Int:    number,
-			Source: expr.Source(),
-		})
-
-		return v, nil
+		tmp := f.File
+		f.File = constant.File
+		v, err := f.evaluateRight(constant.Value)
+		f.File = tmp
+		return v, err
 	}
 
 	variants, exists := pkg.Functions[rightText]
