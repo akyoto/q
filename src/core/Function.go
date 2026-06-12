@@ -23,6 +23,7 @@ type Function struct {
 	name          string
 	pkg           string
 	body          token.Source
+	constantStack []*Constant
 	valueToStruct map[ssa.Value]*ssa.Struct
 	loopStack
 	ssa.IR

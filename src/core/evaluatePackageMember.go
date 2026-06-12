@@ -1,6 +1,8 @@
 package core
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -12,10 +14,16 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 	constant, exists := pkg.Constants[rightText]
 
 	if exists {
+		if slices.Contains(f.constantStack, constant) {
+			return nil, errors.New(&CycleDetected{A: f.constantStack[len(f.constantStack)-1].Name, B: constant.Name}, f.File, expr.Source())
+		}
+
+		f.constantStack = append(f.constantStack, constant)
 		tmp := f.File
 		f.File = constant.File
 		v, err := f.evaluateRight(constant.Value)
 		f.File = tmp
+		f.constantStack = f.constantStack[:len(f.constantStack)-1]
 		return v, err
 	}
 

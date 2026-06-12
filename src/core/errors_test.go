@@ -23,6 +23,8 @@ var errs = []struct {
 	{"AlwaysFalse2.q", core.AlwaysFalse},
 	{"AlwaysFalse3.q", core.AlwaysFalse},
 	{"AlwaysFalse4.q", core.AlwaysFalse},
+	// {"CycleDetected.q", &core.CycleDetected{A: "A", B: "B"}}, // TODO: deterministic output
+	{"CycleDetected2.q", &core.CycleDetected{A: "y", B: "x"}},
 	{"DefinitionCountMismatch.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 1, ExpectedCount: 2}},
 	{"DefinitionCountMismatch2.q", &core.DefinitionCountMismatch{Function: "main.swap", Count: 3, ExpectedCount: 2}},
 	{"DefinitionCountMismatch3.q", &core.DefinitionCountMismatch{Function: "main.nothing", Count: 1, ExpectedCount: 0}},
