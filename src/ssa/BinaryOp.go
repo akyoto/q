@@ -28,12 +28,26 @@ func (a *BinaryOp) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Left.Equals(b.Left) && a.Right.Equals(b.Right)
+	if a.Left.Equals(b.Left) && a.Right.Equals(b.Right) {
+		return true
+	}
+
+	return a.IsCommutative() && a.Left.Equals(b.Right) && a.Right.Equals(b.Left)
 }
 
 // Inputs returns the left and right operands.
 func (op *BinaryOp) Inputs() []Value {
 	return []Value{op.Left, op.Right}
+}
+
+// IsCommutative returns true if changing the order of the operands does not change the result.
+func (op *BinaryOp) IsCommutative() bool {
+	switch op.Op {
+	case token.Add, token.Mul, token.And, token.Or, token.Xor, token.LogicalAnd, token.LogicalOr, token.Equal, token.NotEqual:
+		return true
+	default:
+		return false
+	}
 }
 
 // IsPure returns true if both operands are constant.

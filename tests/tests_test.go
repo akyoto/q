@@ -77,6 +77,7 @@ var tests = []run{
 	{"loop-nested-xy", nil, "", "0,0\n0,1\n0,2\n1,0\n1,1\n1,2\n2,0\n2,1\n2,2\n", 0},
 	{"loop-nested-xyz", nil, "", "0,0,0\n0,0,1\n0,0,2\n0,1,0\n0,1,1\n0,1,2\n0,2,0\n0,2,1\n0,2,2\n1,0,0\n1,0,1\n1,0,2\n1,1,0\n1,1,1\n1,1,2\n1,2,0\n1,2,1\n1,2,2\n2,0,0\n2,0,1\n2,0,2\n2,1,0\n2,1,1\n2,1,2\n2,2,0\n2,2,1\n2,2,2\n", 0},
 	{"loop-nested-return", nil, "", "..........", 0},
+	{"commutativity", nil, "", "", 0},
 	{"factorial", nil, "", "", 0},
 	{"fibonacci", nil, "", "", 0},
 	{"memory", nil, "", "Hello\n", 0},
