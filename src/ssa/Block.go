@@ -108,7 +108,7 @@ func (b *Block) AddSuccessor(successor *Block) {
 				phi.Arguments[i] = oldValue
 			}
 
-			successor.InsertAt(phi, 0)
+			successor.InsertAt(0, phi)
 			successor.ReplaceIdentifier(name, oldValue, phi)
 
 			if newExists {
@@ -127,7 +127,7 @@ func (b *Block) AddSuccessor(successor *Block) {
 				phi.Arguments[i] = Undefined
 			}
 
-			successor.InsertAt(phi, 0)
+			successor.InsertAt(0, phi)
 			successor.ReplaceIdentifier(name, oldValue, phi)
 			phi.Arguments = append(phi.Arguments, newValue)
 		}
@@ -258,8 +258,8 @@ func (b *Block) Index(search Value) int {
 }
 
 // InsertAt inserts the `value` at the given `index`.
-func (b *Block) InsertAt(value Value, index int) {
-	b.Instructions = slices.Insert(b.Instructions, index, value)
+func (b *Block) InsertAt(index int, values ...Value) {
+	b.Instructions = slices.Insert(b.Instructions, index, values...)
 }
 
 // Last returns the last value.

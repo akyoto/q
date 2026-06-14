@@ -53,5 +53,11 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 	}
 
 	source := value.(errors.Source)
+
+	if source.Start() == 0 && source.End() == 0 {
+		block.RemoveAt(i)
+		return nil
+	}
+
 	return errors.New(&UnusedValue{Value: source.StringFrom(f.File.Bytes)}, f.File, token.NewSource(source.Start(), source.End()))
 }

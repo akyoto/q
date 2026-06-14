@@ -40,6 +40,16 @@ func (op *BinaryOp) Inputs() []Value {
 	return []Value{op.Left, op.Right}
 }
 
+// IsAssociative returns true if rearranging the parentheses does not change the result.
+func (op *BinaryOp) IsAssociative() bool {
+	switch op.Op {
+	case token.Add, token.Mul, token.And, token.Or, token.Xor, token.LogicalAnd, token.LogicalOr:
+		return true
+	default:
+		return false
+	}
+}
+
 // IsCommutative returns true if changing the order of the operands does not change the result.
 func (op *BinaryOp) IsCommutative() bool {
 	switch op.Op {

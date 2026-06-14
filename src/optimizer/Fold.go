@@ -21,13 +21,28 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 				continue
 			}
 
-			left, leftIsInt := binaryOp.Left.(*ssa.Int)
+			isAssociative := binaryOp.IsAssociative()
+			foldLeft := binaryOp.Left
+			leftBinOp, leftIsBinOp := foldLeft.(*ssa.BinaryOp)
+
+			if isAssociative && leftIsBinOp && leftBinOp.Op == binaryOp.Op {
+				foldLeft = leftBinOp.Right
+			}
+
+			left, leftIsInt := foldLeft.(*ssa.Int)
 
 			if !leftIsInt {
 				continue
 			}
 
-			right, rightIsInt := binaryOp.Right.(*ssa.Int)
+			foldRight := binaryOp.Right
+			rightBinOp, rightIsBinOp := foldRight.(*ssa.BinaryOp)
+
+			if isAssociative && rightIsBinOp && rightBinOp.Op == binaryOp.Op {
+				foldRight = rightBinOp.Left
+			}
+
+			right, rightIsInt := foldRight.(*ssa.Int)
 
 			if !rightIsInt {
 				continue
@@ -37,20 +52,39 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 				continue
 			}
 
+			if leftIsBinOp && rightIsBinOp {
+				continue
+			}
+
 			if folded == nil {
 				folded = make(map[ssa.Value]struct{})
 			}
 
-			folded[binaryOp.Left] = struct{}{}
-			folded[binaryOp.Right] = struct{}{}
+			folded[foldLeft] = struct{}{}
+			folded[foldRight] = struct{}{}
 
 			constant := &ssa.Int{
 				Int:    FoldBinary(binaryOp.Op, left.Int, right.Int),
 				Source: binaryOp.Source,
 			}
 
-			block.Instructions[i] = constant
-			ir.ReplaceAll(value, constant)
+			switch {
+			case !leftIsBinOp && !rightIsBinOp:
+				block.Instructions[i] = constant
+				ir.ReplaceAll(value, constant)
+
+			case leftIsBinOp && !rightIsBinOp:
+				folded[leftBinOp] = struct{}{}
+				binaryOp.Left = leftBinOp.Left
+				binaryOp.Right = constant
+				block.InsertAt(i, constant)
+
+			case !leftIsBinOp && rightIsBinOp:
+				folded[rightBinOp] = struct{}{}
+				binaryOp.Left = constant
+				binaryOp.Right = rightBinOp.Right
+				block.InsertAt(i, constant)
+			}
 		}
 	}
 

@@ -161,6 +161,7 @@ var tests = []run{
 	{"method-local-struct-pointer", nil, "", "1\n2\n", 0},
 	{"random", nil, "", "", 0},
 	{"sqrt", nil, "", "", 0},
+	{"fold", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {
