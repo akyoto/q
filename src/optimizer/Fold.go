@@ -21,7 +21,7 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 				continue
 			}
 
-			isAssociative := binaryOp.IsAssociative()
+			isAssociative := binaryOp.Op.IsAssociative()
 			foldLeft := binaryOp.Left
 			leftBinOp, leftIsBinOp := foldLeft.(*ssa.BinaryOp)
 
@@ -31,7 +31,7 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 				if innerRightIsInt {
 					foldLeft = innerRight
 				} else {
-					if !binaryOp.IsCommutative() {
+					if !binaryOp.Op.IsCommutative() {
 						continue
 					}
 
@@ -64,7 +64,7 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 				if innerLeftIsInt {
 					foldRight = innerLeft
 				} else {
-					if !binaryOp.IsCommutative() {
+					if !binaryOp.Op.IsCommutative() {
 						continue
 					}
 

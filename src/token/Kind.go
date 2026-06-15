@@ -141,6 +141,26 @@ func (k Kind) IsUnaryOperator() bool {
 	return k > ___UNARY___ && k < ___END_UNARY___
 }
 
+// IsAssociative returns true if rearranging the parentheses does not change the result.
+func (k Kind) IsAssociative() bool {
+	switch k {
+	case Add, Mul, And, Or, Xor, LogicalAnd, LogicalOr:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsCommutative returns true if changing the order of the operands does not change the result.
+func (k Kind) IsCommutative() bool {
+	switch k {
+	case Add, Mul, And, Or, Xor, LogicalAnd, LogicalOr, Equal, NotEqual:
+		return true
+	default:
+		return false
+	}
+}
+
 // String returns a human-readable representation of the token kind.
 func (k Kind) String() string {
 	switch k {
