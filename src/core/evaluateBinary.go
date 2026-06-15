@@ -3,6 +3,7 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
+	"git.urbach.dev/cli/q/src/optimizer"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
@@ -11,13 +12,23 @@ import (
 // evaluateBinary converts a binary expression to an SSA value.
 func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error) {
 	left := expr.Children[0]
+	right := expr.Children[1]
+
+	if expr.Token.Kind.IsCommutative() {
+		leftComplexity := optimizer.Complexity(left)
+		rightComplexity := optimizer.Complexity(right)
+
+		if rightComplexity > leftComplexity {
+			left, right = right, left
+		}
+	}
+
 	leftValue, err := f.evaluateRight(left)
 
 	if err != nil {
 		return nil, err
 	}
 
-	right := expr.Children[1]
 	rightValue, err := f.evaluateRight(right)
 
 	if err != nil {
