@@ -20,6 +20,10 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 			f.Assembler.Append(&asm.Compare{Destination: left.Register, Source: right.Register})
 		}
 
+		if step.Register != -1 {
+			f.conditionalSet(step.Register, instr.Op)
+		}
+
 		return
 	}
 

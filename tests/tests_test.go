@@ -104,6 +104,7 @@ var tests = []run{
 	{"return-2", nil, "", "", 0},
 	{"return-3", nil, "", "", 0},
 	{"return-4", nil, "", "", 0},
+	{"return-bool", nil, "", "", 0},
 	{"return-string", nil, "", "Hello\n", 0},
 	{"return-tuple", nil, "", "", 0},
 	{"multi-define-assign", nil, "", "", 0},

@@ -27,5 +27,7 @@ func (f *Function) hintDestination(step *Step) {
 			variant.Phis.Add(step)
 			variant.hint(step.Register)
 		}
+	case *ssa.UnaryOp:
+		f.ValueToStep[instr.Operand].hint(step.Register)
 	}
 }
