@@ -26,7 +26,23 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 			leftBinOp, leftIsBinOp := foldLeft.(*ssa.BinaryOp)
 
 			if isAssociative && leftIsBinOp && leftBinOp.Op == binaryOp.Op {
-				foldLeft = leftBinOp.Right
+				innerRight, innerRightIsInt := leftBinOp.Right.(*ssa.Int)
+
+				if innerRightIsInt {
+					foldLeft = innerRight
+				} else {
+					if !binaryOp.IsCommutative() {
+						continue
+					}
+
+					innerLeft, innerLeftIsInt := leftBinOp.Left.(*ssa.Int)
+
+					if !innerLeftIsInt {
+						continue
+					}
+
+					foldLeft = innerLeft
+				}
 			}
 
 			left, leftIsInt := foldLeft.(*ssa.Int)
@@ -40,6 +56,26 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 
 			if isAssociative && rightIsBinOp && rightBinOp.Op == binaryOp.Op {
 				foldRight = rightBinOp.Left
+			}
+
+			if isAssociative && rightIsBinOp && rightBinOp.Op == binaryOp.Op {
+				innerLeft, innerLeftIsInt := rightBinOp.Left.(*ssa.Int)
+
+				if innerLeftIsInt {
+					foldRight = innerLeft
+				} else {
+					if !binaryOp.IsCommutative() {
+						continue
+					}
+
+					innerRight, innerRightIsInt := rightBinOp.Right.(*ssa.Int)
+
+					if !innerRightIsInt {
+						continue
+					}
+
+					foldRight = innerRight
+				}
 			}
 
 			right, rightIsInt := foldRight.(*ssa.Int)
@@ -75,14 +111,26 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 
 			case leftIsBinOp && !rightIsBinOp:
 				folded[leftBinOp] = struct{}{}
-				binaryOp.Left = leftBinOp.Left
+
+				if foldLeft == leftBinOp.Right {
+					binaryOp.Left = leftBinOp.Left
+				} else {
+					binaryOp.Left = leftBinOp.Right
+				}
+
 				binaryOp.Right = constant
 				block.InsertAt(i, constant)
 
 			case !leftIsBinOp && rightIsBinOp:
 				folded[rightBinOp] = struct{}{}
 				binaryOp.Left = constant
-				binaryOp.Right = rightBinOp.Right
+
+				if foldRight == rightBinOp.Left {
+					binaryOp.Right = rightBinOp.Right
+				} else {
+					binaryOp.Right = rightBinOp.Left
+				}
+
 				block.InsertAt(i, constant)
 			}
 		}
