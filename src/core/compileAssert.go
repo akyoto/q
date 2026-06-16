@@ -12,8 +12,6 @@ func (f *Function) compileAssert(assert *ast.Assert) error {
 	elseLabel := f.CreateLabel("assert.else", f.Count.Assert)
 	thenBlock := ssa.NewBlock(thenLabel)
 	elseBlock := ssa.NewBlock(elseLabel)
-	f.Block().AddSuccessor(thenBlock)
-	f.Block().AddSuccessor(elseBlock)
 	err := f.compileCondition(assert.Condition, thenBlock, elseBlock)
 
 	if err != nil {

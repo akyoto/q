@@ -12,11 +12,8 @@ func (f *Function) compileIf(branch *ast.If) error {
 	exitLabel := f.CreateLabel("if.exit", f.Count.Branch)
 	thenBlock := ssa.NewBlock(thenLabel)
 	exitBlock := ssa.NewBlock(exitLabel)
-	beforeIf := f.Block()
-	beforeIf.AddSuccessor(thenBlock)
 
 	if branch.Else == nil {
-		beforeIf.AddSuccessor(exitBlock)
 		err := f.compileCondition(branch.Condition, thenBlock, exitBlock)
 
 		if err != nil {
@@ -35,7 +32,6 @@ func (f *Function) compileIf(branch *ast.If) error {
 	} else {
 		elseLabel := f.CreateLabel("if.else", f.Count.Branch)
 		elseBlock := ssa.NewBlock(elseLabel)
-		beforeIf.AddSuccessor(elseBlock)
 		err := f.compileCondition(branch.Condition, thenBlock, elseBlock)
 
 		if err != nil {

@@ -10,6 +10,9 @@ import (
 
 // compileCondition inserts code to jump to the start label or end label depending on the truth of the condition.
 func (f *Function) compileCondition(condition *expression.Expression, thenBlock *ssa.Block, elseBlock *ssa.Block) error {
+	f.Block().AddSuccessor(thenBlock)
+	f.Block().AddSuccessor(elseBlock)
+
 	switch condition.Token.Kind {
 	case token.LogicalOr:
 		f.Count.SubBranch++
@@ -24,13 +27,10 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			return err
 		}
 
-		f.Block().AddSuccessor(leftFail)
 		f.AddBlock(leftFail)
 
 		// Right
 		right := condition.Children[1]
-		leftFail.AddSuccessor(thenBlock)
-		leftFail.AddSuccessor(elseBlock)
 		err = f.compileCondition(right, thenBlock, elseBlock)
 		return err
 
@@ -47,13 +47,10 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			return err
 		}
 
-		f.Block().AddSuccessor(leftSuccess)
 		f.AddBlock(leftSuccess)
 
 		// Right
 		right := condition.Children[1]
-		leftSuccess.AddSuccessor(thenBlock)
-		leftSuccess.AddSuccessor(elseBlock)
 		err = f.compileCondition(right, thenBlock, elseBlock)
 		return err
 

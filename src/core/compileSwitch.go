@@ -36,9 +36,6 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 			elseBlock = exitBlock
 		}
 
-		caseBlock := f.Block()
-		caseBlock.AddSuccessor(thenBlock)
-		caseBlock.AddSuccessor(elseBlock)
 		err := f.compileCondition(branch.Condition, thenBlock, elseBlock)
 
 		if err != nil {

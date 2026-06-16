@@ -29,6 +29,10 @@ func NewBlock(label string) *Block {
 
 // AddSuccessor adds the given block as a successor.
 func (b *Block) AddSuccessor(successor *Block) {
+	if slices.Contains(successor.Predecessors, b) {
+		return
+	}
+
 	successor.Predecessors = append(successor.Predecessors, b)
 
 	if len(b.Protected) > 0 {
