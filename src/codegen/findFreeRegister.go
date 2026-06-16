@@ -11,10 +11,10 @@ import (
 
 // findFreeRegister finds a free register for the given value.
 func (f *Function) findFreeRegister(step *Step) cpu.Register {
-	usedRegisters := 0
+	usedRegisters := bitSet(0)
 
 	if f.needsFramePointer {
-		usedRegisters = 1 << f.CPU.FramePointer
+		usedRegisters.Set(f.CPU.FramePointer)
 	}
 
 	binaryOp, isBinaryOp := step.Value.(*ssa.BinaryOp)
@@ -27,18 +27,18 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 				right := f.ValueToStep[binaryOp.Right]
 
 				if left.Register != -1 {
-					usedRegisters |= (1 << left.Register)
+					usedRegisters.Set(left.Register)
 				}
 
 				if right.Register != -1 {
-					usedRegisters |= (1 << right.Register)
+					usedRegisters.Set(right.Register)
 				}
 			}
 		case config.X86:
 			right := f.ValueToStep[binaryOp.Right]
 
 			if right.Register != -1 {
-				usedRegisters |= (1 << right.Register)
+				usedRegisters.Set(right.Register)
 			}
 		}
 	}
@@ -53,16 +53,16 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 			case config.ARM:
 				if current.Register != -1 && binaryOp.Op == token.Mod {
 					if binaryOp.Left == step.Value {
-						usedRegisters |= (1 << current.Register)
+						usedRegisters.Set(current.Register)
 					}
 
 					if binaryOp.Right == step.Value {
-						usedRegisters |= (1 << current.Register)
+						usedRegisters.Set(current.Register)
 					}
 				}
 			case config.X86:
 				if current.Register != -1 && binaryOp.Right == step.Value {
-					usedRegisters |= (1 << current.Register)
+					usedRegisters.Set(current.Register)
 				}
 			}
 
@@ -70,14 +70,14 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 			case token.Div, token.Mod:
 				if binaryOp.Right == step.Value {
 					for _, reg := range f.CPU.DivisorRestricted {
-						usedRegisters |= (1 << reg)
+						usedRegisters.Set(reg)
 					}
 				}
 
 			case token.Shl, token.Shr:
 				if current == step {
 					for _, reg := range f.CPU.ShiftRestricted {
-						usedRegisters |= (1 << reg)
+						usedRegisters.Set(reg)
 					}
 				}
 			}
@@ -95,7 +95,7 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 				continue
 			}
 
-			usedRegisters |= (1 << live.Register)
+			usedRegisters.Set(live.Register)
 		}
 
 		// Ignore the definition itself.
@@ -106,28 +106,28 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 		// Mark input and output registers as used.
 		switch instr := current.Value.(type) {
 		case *ssa.Field:
-			usedRegisters |= (1 << f.CPU.Call.Out[instr.Index])
+			usedRegisters.Set(f.CPU.Call.Out[instr.Index])
 		case *ssa.Parameter:
-			usedRegisters |= (1 << f.CPU.Call.In[instr.Index])
+			usedRegisters.Set(f.CPU.Call.In[instr.Index])
 		}
 
 		// Find all the registers that this instruction
 		// would clobber and mark them as used.
 		for _, reg := range f.clobberedRegisters(current.Value) {
-			usedRegisters |= (1 << reg)
+			usedRegisters.Set(reg)
 		}
 	}
 
 	// Pick one of the register hints if possible.
 	for _, reg := range step.Hints {
-		if usedRegisters&(1<<reg) == 0 {
+		if !usedRegisters.Has(reg) {
 			return reg
 		}
 	}
 
 	// Pick a general purpose register that's not used yet.
 	for _, reg := range f.CPU.General {
-		if usedRegisters&(1<<reg) == 0 {
+		if !usedRegisters.Has(reg) {
 			return reg
 		}
 	}

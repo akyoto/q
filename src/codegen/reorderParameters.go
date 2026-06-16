@@ -7,8 +7,8 @@ import (
 
 // reorderParameters reorders the sequence of parameter initialization and assigns new registers if needed.
 func (f *Function) reorderParameters() {
-	usedRegisters := 0
-	futureRegisters := 0
+	usedRegisters := bitSet(0)
+	futureRegisters := bitSet(0)
 
 	for i, step := range f.Steps {
 		param, isParam := step.Value.(*ssa.Parameter)
@@ -19,19 +19,19 @@ func (f *Function) reorderParameters() {
 
 		currentRegister := f.CPU.Call.In[param.Index]
 
-		if futureRegisters&(1<<currentRegister) != 0 {
+		if futureRegisters.Has(currentRegister) {
 			set.BringToFront(f.Steps[:i+1], i)
 
 			for h := range i + 1 {
 				f.Steps[h].Index = Index(h)
 			}
 
-			if usedRegisters&(1<<step.Register) != 0 {
+			if usedRegisters.Has(step.Register) {
 				f.assignFreeRegister(step)
 			}
 		}
 
-		usedRegisters |= (1 << currentRegister)
-		futureRegisters |= (1 << step.Register)
+		usedRegisters.Set(currentRegister)
+		futureRegisters.Set(step.Register)
 	}
 }

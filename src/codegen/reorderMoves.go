@@ -7,21 +7,21 @@ import (
 
 // reorderMoves reorders the move instructions.
 func reorderMoves(moves []asm.Instruction) {
-	usedRegisters := 0
-	futureRegisters := 0
+	usedRegisters := bitSet(0)
+	futureRegisters := bitSet(0)
 
 	for i, instr := range moves {
 		move := instr.(*asm.Move)
 
-		if futureRegisters&(1<<move.Source) != 0 {
+		if futureRegisters.Has(move.Source) {
 			set.BringToFront(moves[:i+1], i)
 
-			if usedRegisters&(1<<move.Destination) != 0 {
+			if usedRegisters.Has(move.Destination) {
 				panic("cycle detected while reordering moves")
 			}
 		}
 
-		usedRegisters |= (1 << move.Source)
-		futureRegisters |= (1 << move.Destination)
+		usedRegisters.Set(move.Source)
+		futureRegisters.Set(move.Destination)
 	}
 }
