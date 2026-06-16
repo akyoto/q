@@ -29,6 +29,8 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 
 		// Right
 		right := condition.Children[1]
+		leftFail.AddSuccessor(thenBlock)
+		leftFail.AddSuccessor(elseBlock)
 		err = f.compileCondition(right, thenBlock, elseBlock)
 		return err
 
@@ -50,8 +52,9 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 
 		// Right
 		right := condition.Children[1]
+		leftSuccess.AddSuccessor(thenBlock)
+		leftSuccess.AddSuccessor(elseBlock)
 		err = f.compileCondition(right, thenBlock, elseBlock)
-
 		return err
 
 	case token.Equal, token.NotEqual, token.Greater, token.Less, token.GreaterEqual, token.LessEqual:
