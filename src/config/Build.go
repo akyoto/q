@@ -10,4 +10,5 @@ type Build struct {
 	Fold          bool
 	Reorder       bool
 	LintBinaryOps bool
+	LintDeadCode  bool
 }

@@ -59,5 +59,9 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 		return nil
 	}
 
-	return errors.New(&UnusedValue{Value: source.StringFrom(f.File.Bytes)}, f.File, token.NewSource(source.Start(), source.End()))
+	if f.Env.Build.LintDeadCode {
+		return errors.New(&UnusedValue{Value: source.StringFrom(f.File.Bytes)}, f.File, token.NewSource(source.Start(), source.End()))
+	}
+
+	return nil
 }
