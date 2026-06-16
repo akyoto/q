@@ -1,7 +1,10 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/ssa"
 )
 
 // insertPhiMoves moves all live values that are part of a Phi instruction
@@ -11,11 +14,17 @@ func (f *Function) insertPhiMoves(step *Step) {
 	start := len(f.Assembler.Instructions)
 
 	for _, live := range step.Live {
-		if live.Block != step.Block {
-			continue
-		}
-
 		for phi := range live.Phis.All() {
+			if !slices.Contains(phi.Block.Predecessors, step.Block) {
+				continue
+			}
+
+			index := phi.Value.(*ssa.Phi).Arguments.Index(live.Value)
+
+			if phi.Block.Predecessors[index] != step.Block {
+				continue
+			}
+
 			if live.Register == phi.Register {
 				continue
 			}
