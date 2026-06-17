@@ -23,7 +23,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	ssaFunc, isFunction := funcValue.(*ssa.Function)
 
 	if !isFunction {
-		return nil, errors.New(InvalidCallExpression, f.File, identifier.Source())
+		return nil, errors.New(&TypeMismatch{Expected: "function", Encountered: funcValue.Type().Name()}, f.File, identifier.Source())
 	}
 
 	fn := ssaFunc.FunctionRef.(*Function)

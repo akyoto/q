@@ -12,7 +12,6 @@ var (
 	DivisionByZero            = errors.String("Division by zero")
 	ExpectedPackageMember     = errors.String("Expected package member")
 	ExpectedStructField       = errors.String("Expected struct field")
-	InvalidCallExpression     = errors.String("Invalid call expression")
 	InvalidCondition          = errors.String("Invalid condition")
 	InvalidExpression         = errors.String("Invalid expression")
 	InvalidFieldInit          = errors.String("Invalid field initialization (expected 'field: value')")
