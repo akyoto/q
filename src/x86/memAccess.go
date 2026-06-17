@@ -1,9 +1,13 @@
 package x86
 
-import "git.urbach.dev/cli/q/src/cpu"
+import (
+	"encoding/binary"
+
+	"git.urbach.dev/cli/q/src/cpu"
+)
 
 // memAccess encodes a memory access.
-func memAccess(code []byte, register cpu.Register, base cpu.Register, offset int8, scale Scale, length byte, opCode8 byte, opCode32 byte) []byte {
+func memAccess(code []byte, register cpu.Register, base cpu.Register, offset int32, scale Scale, length byte, opCode8 byte, opCode32 byte) []byte {
 	opCode := opCode32
 
 	if length == 1 {
@@ -14,6 +18,10 @@ func memAccess(code []byte, register cpu.Register, base cpu.Register, offset int
 
 	if offset != 0 || base == R5 || base == R13 {
 		mod = AddressMemoryOffset8
+
+		if cpu.SizeInt(int64(offset)) > 1 {
+			mod = AddressMemoryOffset32
+		}
 	}
 
 	if length == 2 {
@@ -26,9 +34,12 @@ func memAccess(code []byte, register cpu.Register, base cpu.Register, offset int
 		code = append(code, SIB(scale, 0b100, 0b100))
 	}
 
-	if mod == AddressMemoryOffset8 {
-		code = append(code, byte(offset))
+	switch mod {
+	case AddressMemoryOffset8:
+		return append(code, byte(offset))
+	case AddressMemoryOffset32:
+		return binary.LittleEndian.AppendUint32(code, uint32(offset))
+	default:
+		return code
 	}
-
-	return code
 }

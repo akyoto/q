@@ -11,7 +11,7 @@ import (
 func TestStoreFixedOffsetNumber(t *testing.T) {
 	usagePatterns := []struct {
 		Register cpu.Register
-		Offset   int8
+		Offset   int32
 		Scale    x86.Scale
 		Length   byte
 		Number   int
@@ -160,7 +160,7 @@ func TestStoreFixedOffsetNumber(t *testing.T) {
 func TestStoreFixedOffsetRegister(t *testing.T) {
 	usagePatterns := []struct {
 		RegisterTo   cpu.Register
-		Offset       int8
+		Offset       int32
 		Scale        x86.Scale
 		Length       byte
 		RegisterFrom cpu.Register

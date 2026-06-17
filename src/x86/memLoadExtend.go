@@ -1,9 +1,13 @@
 package x86
 
-import "git.urbach.dev/cli/q/src/cpu"
+import (
+	"encoding/binary"
+
+	"git.urbach.dev/cli/q/src/cpu"
+)
 
 // memLoadExtend encodes a memory load with sign or zero extension.
-func memLoadExtend(code []byte, destination cpu.Register, base cpu.Register, offset int8, scale Scale, length byte, opCode8 byte, opCode16 byte, opCode32 byte) []byte {
+func memLoadExtend(code []byte, destination cpu.Register, base cpu.Register, offset int32, scale Scale, length byte, opCode8 byte, opCode16 byte, opCode32 byte) []byte {
 	var (
 		opCode byte
 		mod    = AddressMemory
@@ -20,6 +24,10 @@ func memLoadExtend(code []byte, destination cpu.Register, base cpu.Register, off
 
 	if offset != 0 || base == R5 || base == R13 {
 		mod = AddressMemoryOffset8
+
+		if cpu.SizeInt(int64(offset)) > 1 {
+			mod = AddressMemoryOffset32
+		}
 	}
 
 	w := byte(1)
@@ -39,9 +47,12 @@ func memLoadExtend(code []byte, destination cpu.Register, base cpu.Register, off
 		code = append(code, SIB(scale, 0b100, 0b100))
 	}
 
-	if mod == AddressMemoryOffset8 {
-		code = append(code, byte(offset))
+	switch mod {
+	case AddressMemoryOffset8:
+		return append(code, byte(offset))
+	case AddressMemoryOffset32:
+		return binary.LittleEndian.AppendUint32(code, uint32(offset))
+	default:
+		return code
 	}
-
-	return code
 }

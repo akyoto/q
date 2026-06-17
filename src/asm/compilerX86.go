@@ -241,15 +241,15 @@ func (c *compilerX86) Compile(instr Instruction) {
 
 		if instr.Signed {
 			if instr.Length <= 4 {
-				c.code = x86.LoadFixedOffsetSignExtend(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+				c.code = x86.LoadFixedOffsetSignExtend(c.code, instr.Destination, instr.Base, int32(instr.Index), x86.Scale1, instr.Length)
 			} else {
-				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int32(instr.Index), x86.Scale1, instr.Length)
 			}
 		} else {
 			if instr.Length <= 2 {
-				c.code = x86.LoadFixedOffsetZeroExtend(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+				c.code = x86.LoadFixedOffsetZeroExtend(c.code, instr.Destination, instr.Base, int32(instr.Index), x86.Scale1, instr.Length)
 			} else {
-				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int8(instr.Index), x86.Scale1, instr.Length)
+				c.code = x86.LoadFixedOffset(c.code, instr.Destination, instr.Base, int32(instr.Index), x86.Scale1, instr.Length)
 			}
 		}
 	case *Modulo:
@@ -385,10 +385,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.StoreRegister(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Source)
 	case *StoreFixedOffset:
 		scale := toX86Scale(instr.Scale, instr.Length)
-		c.code = x86.StoreFixedOffsetRegister(c.code, instr.Base, int8(instr.Index), scale, instr.Length, instr.Source)
+		c.code = x86.StoreFixedOffsetRegister(c.code, instr.Base, int32(instr.Index), scale, instr.Length, instr.Source)
 	case *StoreFixedOffsetNumber:
 		scale := toX86Scale(instr.Scale, instr.Length)
-		c.code = x86.StoreFixedOffsetNumber(c.code, instr.Base, int8(instr.Index), scale, instr.Length, instr.Number)
+		c.code = x86.StoreFixedOffsetNumber(c.code, instr.Base, int32(instr.Index), scale, instr.Length, instr.Number)
 	case *StoreNumber:
 		scale := toX86Scale(instr.Scale, instr.Length)
 		c.code = x86.StoreNumber(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Number)

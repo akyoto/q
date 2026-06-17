@@ -5,12 +5,12 @@ import (
 )
 
 // StoreFixedOffsetNumber writes a number to a memory address.
-func StoreFixedOffsetNumber(code []byte, base cpu.Register, offset int8, scale Scale, length byte, number int) []byte {
+func StoreFixedOffsetNumber(code []byte, base cpu.Register, offset int32, scale Scale, length byte, number int) []byte {
 	code = memAccess(code, 0b000, base, offset, scale, length, 0xC6, 0xC7)
 	return appendNumber(code, length, number)
 }
 
 // StoreFixedOffsetRegister writes the contents of the register to a memory address.
-func StoreFixedOffsetRegister(code []byte, base cpu.Register, offset int8, scale Scale, length byte, register cpu.Register) []byte {
+func StoreFixedOffsetRegister(code []byte, base cpu.Register, offset int32, scale Scale, length byte, register cpu.Register) []byte {
 	return memAccess(code, register, base, offset, scale, length, 0x88, 0x89)
 }
