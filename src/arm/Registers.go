@@ -67,6 +67,7 @@ var (
 		},
 		FramePointer: FP,
 		StackPointer: SP,
+		MaxRegisters: 32,
 	}
 
 	MacCPU = cpu.CPU{
@@ -79,15 +80,17 @@ var (
 			Clobbered: LinuxCPU.Syscall.Clobbered,
 			Preserved: LinuxCPU.Syscall.Preserved,
 		},
-		FramePointer: FP,
-		StackPointer: SP,
+		FramePointer: LinuxCPU.FramePointer,
+		StackPointer: LinuxCPU.StackPointer,
+		MaxRegisters: LinuxCPU.MaxRegisters,
 	}
 
 	WindowsCPU = cpu.CPU{
 		General:      LinuxCPU.General,
 		Call:         LinuxCPU.Call,
 		ExternCall:   LinuxCPU.ExternCall,
-		FramePointer: FP,
-		StackPointer: SP,
+		FramePointer: LinuxCPU.FramePointer,
+		StackPointer: LinuxCPU.StackPointer,
+		MaxRegisters: LinuxCPU.MaxRegisters,
 	}
 )

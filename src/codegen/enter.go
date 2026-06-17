@@ -10,6 +10,10 @@ const (
 func (f *Function) enter() {
 	f.Assembler.Append(&asm.Label{Name: f.FullName, Align: alignFunction})
 
+	if f.stackSpace > 0 && !f.build.Dry {
+		panic("register spills to memory not implemented yet")
+	}
+
 	if f.Preserved.Count() > 0 && !f.isInit {
 		f.Assembler.Append(&asm.Push{Registers: f.Preserved.Slice()})
 	}

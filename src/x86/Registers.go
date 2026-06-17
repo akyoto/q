@@ -51,6 +51,7 @@ var (
 		ShiftRestricted:   []cpu.Register{R1},
 		StackPointer:      SP,
 		FramePointer:      R5,
+		MaxRegisters:      16,
 	}
 
 	MacCPU = cpu.CPU{
@@ -67,8 +68,9 @@ var (
 		DivisorRestricted: LinuxCPU.DivisorRestricted,
 		ShiftClobbered:    LinuxCPU.ShiftClobbered,
 		ShiftRestricted:   LinuxCPU.ShiftRestricted,
-		StackPointer:      SP,
-		FramePointer:      R5,
+		StackPointer:      LinuxCPU.StackPointer,
+		FramePointer:      LinuxCPU.FramePointer,
+		MaxRegisters:      LinuxCPU.MaxRegisters,
 	}
 
 	WindowsCPU = cpu.CPU{
@@ -87,7 +89,8 @@ var (
 		DivisorRestricted: LinuxCPU.DivisorRestricted,
 		ShiftClobbered:    LinuxCPU.ShiftClobbered,
 		ShiftRestricted:   LinuxCPU.ShiftRestricted,
-		StackPointer:      SP,
-		FramePointer:      R5,
+		StackPointer:      LinuxCPU.StackPointer,
+		FramePointer:      LinuxCPU.FramePointer,
+		MaxRegisters:      LinuxCPU.MaxRegisters,
 	}
 )

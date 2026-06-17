@@ -12,4 +12,5 @@ type CPU struct {
 	ShiftRestricted   []Register
 	FramePointer      Register
 	StackPointer      Register
+	MaxRegisters      Register
 }

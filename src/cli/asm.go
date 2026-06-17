@@ -13,6 +13,7 @@ func asm(args []string) int {
 		return exit(err)
 	}
 
+	b.Dry = true
 	env, err := compiler.Compile(b)
 
 	if err != nil {
