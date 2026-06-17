@@ -6,28 +6,7 @@ import (
 )
 
 func (f *Function) executeCall(step *Step, instr *ssa.Call) {
-	args := instr.Arguments
-
-	for i, arg := range args {
-		sourceStep := f.ValueToStep[arg]
-		source := sourceStep.Register
-		destination := f.CPU.Call.In[i]
-
-		if f.isSpilled(source) {
-			f.loadSpill(sourceStep, destination)
-			continue
-		}
-
-		if source == destination {
-			continue
-		}
-
-		f.Assembler.Append(&asm.Move{
-			Destination: destination,
-			Source:      source,
-		})
-	}
-
+	f.moveValuesToRegisters(instr.Arguments, f.CPU.Call.In)
 	functionPointer, isPointer := f.ValueToStep[instr.Func]
 
 	if isPointer {

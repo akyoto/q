@@ -11,7 +11,11 @@ func reorderMoves(moves []asm.Instruction) {
 	futureRegisters := bitSet(0)
 
 	for i, instr := range moves {
-		move := instr.(*asm.Move)
+		move, isMove := instr.(*asm.Move)
+
+		if !isMove {
+			continue
+		}
 
 		if futureRegisters.Has(move.Source) {
 			set.BringToFront(moves[:i+1], i)
