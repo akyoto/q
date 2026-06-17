@@ -10,6 +10,14 @@ func (f *Function) leave() {
 		return
 	}
 
+	if f.stackSize > 0 {
+		f.Assembler.Append(&asm.AddNumber{
+			Destination: f.CPU.StackPointer,
+			Source:      f.CPU.StackPointer,
+			Number:      int(f.stackSize),
+		})
+	}
+
 	if f.hasStackFrame || f.hasExternCalls {
 		f.Assembler.Append(&asm.StackFrameEnd{FramePointer: f.needsFramePointer})
 	}

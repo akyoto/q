@@ -16,7 +16,7 @@ type Function struct {
 	Assembler         asm.Assembler
 	Preserved         set.Ordered[cpu.Register]
 	Count             count
-	stackSpace        uint
+	stackSize         uint
 	isInit            bool
 	isExit            bool
 	needsFramePointer bool

@@ -9,13 +9,22 @@ func (f *Function) executeCall(step *Step, instr *ssa.Call) {
 	args := instr.Arguments
 
 	for i, arg := range args {
-		if f.ValueToStep[arg].Register == f.CPU.Call.In[i] {
+		sourceStep := f.ValueToStep[arg]
+		source := sourceStep.Register
+		destination := f.CPU.Call.In[i]
+
+		if f.isSpilled(source) {
+			f.loadSpill(sourceStep, destination)
+			continue
+		}
+
+		if source == destination {
 			continue
 		}
 
 		f.Assembler.Append(&asm.Move{
-			Destination: f.CPU.Call.In[i],
-			Source:      f.ValueToStep[arg].Register,
+			Destination: destination,
+			Source:      source,
 		})
 	}
 

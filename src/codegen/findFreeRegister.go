@@ -135,7 +135,8 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 	// Pick a virtual register.
 	for reg := f.CPU.MaxRegisters; reg <= 63; reg++ {
 		if !usedRegisters.Has(reg) {
-			f.stackSpace += 8
+			stackOffset := uint(reg-f.CPU.MaxRegisters) * 8
+			f.stackSize = stackOffset + 8
 			return reg
 		}
 	}

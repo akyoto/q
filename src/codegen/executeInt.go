@@ -10,6 +10,11 @@ func (f *Function) executeInt(step *Step, instr *ssa.Int) {
 		return
 	}
 
+	if f.isSpilled(step.Register) {
+		f.storeSpillNumber(step, instr.Int)
+		return
+	}
+
 	f.Assembler.Append(&asm.MoveNumber{
 		Destination: step.Register,
 		Number:      instr.Int,
