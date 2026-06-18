@@ -1,6 +1,8 @@
 package tests_test
 
 import (
+	"hash/crc32"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -52,44 +54,83 @@ func (test *run) Compile(t *testing.T, name string, build *config.Build) {
 // RunBuild builds and runs the file to check if the output matches the expected output.
 func (test *run) RunBuild(t *testing.T, name string, build *config.Build) {
 	t.Run(name, func(t *testing.T) {
-		env, err := compiler.Compile(build)
-		assert.Nil(t, err)
-
 		if test.ExitCode == -1 {
+			env, err := compiler.Compile(build)
+			assert.Nil(t, err)
 			discard := &exe.Discard{}
 			linker.Write(discard, env)
 			return
 		}
 
-		tmpDir := filepath.Join(os.TempDir(), "q", "tests")
-		err = os.MkdirAll(tmpDir, 0o755)
+		originalHash := uint32(0)
+		tmpDir := os.TempDir()
+		err := os.MkdirAll(tmpDir, 0o755)
 		assert.Nil(t, err)
-
 		executable := build.Executable()
 		executable = filepath.Join(tmpDir, filepath.Base(executable))
-		err = linker.WriteFile(executable, env)
-		assert.Nil(t, err)
 
-		stat, err := os.Stat(executable)
-		assert.Nil(t, err)
-		assert.True(t, stat.Size() > 0)
+		for range 3 {
+			env, err := compiler.Compile(build)
+			assert.Nil(t, err)
 
-		cmd := exec.Command(executable, test.Args...)
-		cmd.Stdin = strings.NewReader(test.Input)
-		output, err := cmd.Output()
-		exitCode := 0
+			err = linker.WriteFile(executable, env)
+			assert.Nil(t, err)
 
-		if err != nil {
-			exitError, ok := err.(*exec.ExitError)
+			stat, err := os.Stat(executable)
+			assert.Nil(t, err)
+			assert.True(t, stat.Size() > 0)
 
-			if !ok {
-				t.Fatal(exitError)
+			// Run the executable
+			cmd := exec.Command(executable, test.Args...)
+			cmd.Stdin = strings.NewReader(test.Input)
+			output, err := cmd.Output()
+			exitCode := 0
+
+			if err != nil {
+				exitError, ok := err.(*exec.ExitError)
+
+				if !ok {
+					t.Fatal(exitError)
+				}
+
+				exitCode = exitError.ExitCode()
 			}
 
-			exitCode = exitError.ExitCode()
-		}
+			assert.Equal(t, exitCode, test.ExitCode)
+			assert.DeepEqual(t, string(output), test.Output)
 
-		assert.Equal(t, exitCode, test.ExitCode)
-		assert.DeepEqual(t, string(output), test.Output)
+			// Fail the test if the machine code is not deterministic
+			newHash, err := checksum(executable)
+			assert.Nil(t, err)
+
+			if originalHash == 0 {
+				originalHash = newHash
+			} else {
+				assert.Equal(t, newHash, originalHash)
+			}
+
+			// Clean up
+			err = os.Remove(executable)
+			assert.Nil(t, err)
+		}
 	})
+}
+
+// checksum calculates a checksum for the file contents.
+func checksum(path string) (uint32, error) {
+	file, err := os.Open(path)
+
+	if err != nil {
+		return 0, err
+	}
+
+	defer file.Close()
+	sum := crc32.NewIEEE()
+	_, err = io.Copy(sum, file)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return sum.Sum32(), nil
 }

@@ -229,11 +229,19 @@ func (b *Block) FindIdentifier(name string) (value Value, exists bool) {
 // IdentifiersFor returns an iterator for all the identifiers pointing to the given value.
 func (b *Block) IdentifiersFor(value Value) iter.Seq[string] {
 	return func(yield func(string) bool) {
+		names := make([]string, 0, len(b.IdentifiersAfter))
+
 		for name, val := range b.IdentifiersAfter {
 			if val == value {
-				if !yield(name) {
-					return
-				}
+				names = append(names, name)
+			}
+		}
+
+		slices.Sort(names)
+
+		for _, name := range names {
+			if !yield(name) {
+				return
 			}
 		}
 	}
