@@ -20,7 +20,13 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 		return err
 	}
 
-	fn := rightValue.(*ssa.Call).Func
+	call, isCall := rightValue.(*ssa.Call)
+
+	if !isCall {
+		return errors.New(ExpectedFunctionCall, f.File, right.Source())
+	}
+
+	fn := call.Func
 	leaves := make([]*expression.Expression, 0, 2)
 
 	for leaf := range left.Leaves() {

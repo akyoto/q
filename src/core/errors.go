@@ -10,6 +10,7 @@ var (
 	AlwaysFalse               = errors.String("Condition is always false")
 	AlwaysTrue                = errors.String("Condition is always true")
 	DivisionByZero            = errors.String("Division by zero")
+	ExpectedFunctionCall      = errors.String("Expected function call")
 	ExpectedPackageMember     = errors.String("Expected package member")
 	ExpectedStructField       = errors.String("Expected struct field")
 	InvalidCondition          = errors.String("Invalid condition")
