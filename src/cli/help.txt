@@ -8,20 +8,31 @@ Compiler for the Q programming language.
 
         q build [file]
 
-    Build for another system:
+    Build options:
 
-        q build [file] -os [linux|mac|windows] -arch [x86|arm]
-
-    List all imported files:
-
-        q files [file]
+        -arch [x86|arm]              # sets the processor architecture
+        -os [linux|mac|windows]      # sets the operating system
+        -no-lint                     # disables the linter
+        -no-optimize                 # disables the optimizer
 
     Show intermediate stages:
 
-        q [asm|ssa] [file] -func [name]
+        q asm [file]                 # shows assembly code (accepts build and filter options)
+        q ssa [file]                 # shows SSA form (accepts build and filter options)
+
+    Filter options:
+
+        -func [name]                 # filters output by function name
+
+    List all imported files:
+
+        q files [file]               # accepts build options
 
     Query information:
 
-        q [keywords|operators|version]
+        q help                       # shows this help
+        q keywords                   # lists keywords
+        q operators                  # lists operator precedence
+        q version                    # shows the version
 
 EOF
