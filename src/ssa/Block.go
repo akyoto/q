@@ -4,6 +4,7 @@ import (
 	"iter"
 	"maps"
 	"slices"
+	"strings"
 
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -58,19 +59,27 @@ func (b *Block) AddSuccessor(successor *Block) {
 		}
 	}
 
-	keys := make(map[string]struct{}, max(len(b.IdentifiersAfter), len(successor.IdentifiersAfter)))
+	keys := make([]string, 0, max(len(b.IdentifiersAfter), len(successor.IdentifiersAfter)))
 
 	for name := range successor.IdentifiersBefore {
-		keys[name] = struct{}{}
+		if !slices.Contains(keys, name) {
+			keys = append(keys, name)
+		}
 	}
 
 	for name := range b.IdentifiersAfter {
-		keys[name] = struct{}{}
+		if !slices.Contains(keys, name) {
+			keys = append(keys, name)
+		}
 	}
+
+	slices.SortFunc(keys, func(a string, b string) int {
+		return strings.Compare(b, a)
+	})
 
 	var modifiedStructs []string
 
-	for name := range keys {
+	for _, name := range keys {
 		oldValue, oldExists := successor.IdentifiersBefore[name]
 		newValue, newExists := b.IdentifiersAfter[name]
 

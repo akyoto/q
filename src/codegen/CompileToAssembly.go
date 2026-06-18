@@ -16,7 +16,6 @@ func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFra
 	f.needsFramePointer = (hasStackFrame || hasExternCalls) && !f.isInit && !f.isExit
 	f.build = build
 	f.IR = createSteps(ir)
-	f.reorderPhis()
 
 	for _, step := range slices.Backward(f.Steps) {
 		f.hintABI(step)
