@@ -119,6 +119,7 @@ var tests = []run{
 	{"strings-prefix", nil, "", "", 0},
 	{"strings-suffix", nil, "", "", 0},
 	{"strings-concat", nil, "", "", 0},
+	{"strings-parse-int", nil, "", "", 0},
 	{"reorder-add", nil, "", "", 0},
 	{"reorder-values", nil, "", "", 0},
 	{"free-registers", nil, "", "", 0},
