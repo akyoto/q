@@ -21,8 +21,8 @@ extern {
 }
 
 Color {
-	r byte
-	g byte
-	b byte
-	a byte
+	r uint8
+	g uint8
+	b uint8
+	a uint8
 }

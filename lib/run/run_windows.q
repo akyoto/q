@@ -7,7 +7,7 @@ crash() {
 	exit(1)
 }
 
-exit(code byte) {
+exit(code uint8) {
 	kernel32.ExitProcess(code as uint)
 }
 
