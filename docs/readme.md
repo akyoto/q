@@ -41,7 +41,7 @@ Q is also a code generation framework that aims to produce raw machine code for 
 > [!WARNING]
 > Q is [in early development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
-> The compiler currently passes a total of [2500 tests](#how-do-i-run-the-tests).
+> The compiler currently passes a total of [2800 tests](#how-do-i-run-the-tests).
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
@@ -63,30 +63,16 @@ ln -s $PWD/q ~/.local/bin/
 
 ## Usage
 
-Build and run:
+Run a file or directory:
 
 ```shell
-# Run a file or directory
 q examples/hello
-
-# Build an executable inside examples/hello
-q build examples/hello
-
-# Cross-compile for another system
-q build examples/hello -os [linux|mac|windows] -arch [x86|arm]
 ```
 
-Show additional information:
+Build an executable:
 
 ```shell
-# Show SSA form
-q ssa examples/hello
-
-# Show assembly form
-q asm examples/hello
-
-# List all imported files
-q files examples/hello
+q build examples/hello
 ```
 
 ## Examples
@@ -140,7 +126,7 @@ The following is a cheat sheet documenting the syntax.
 | Allocate an array                    | `new(int, 10)`               | 🚧 Experimental |
 | Allocate a struct                    | `new(Point)`                 | 🚧 Experimental |
 | Allocate and initialize a struct     | `new(Point){x: 1, y: 2}`     | 🚧 Experimental |
-| Delete a type from the heap          | `delete(p)`                  | 🚧 Experimental |
+| Delete an object                     | `delete(p)`                  | 🚧 Experimental |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Call struct methods                  | `p.f()`                      | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
@@ -158,8 +144,6 @@ The following is a cheat sheet documenting the syntax.
 | Branch multiple times                | `switch { cond {} _ {} }`    | ✔️ Stable       |
 | Define a constant                    | `const { x = 42 }`           | ✔️ Stable       |
 | Declare an external function         | `extern { g { f() } }`       | ✔️ Stable       |
-| Allocate memory                      | `mem.alloc(4096)`            | ✔️ Stable       |
-| Free memory                          | `mem.free(buffer)`           | 🚧 Experimental |
 | Output a string                      | `io.write("Hello\n")`        | ✔️ Stable       |
 | Output an integer                    | `io.write(42)`               | ✔️ Stable       |
 | Cast a type                          | `x as byte`                  | 🚧 Experimental |
@@ -365,7 +349,10 @@ The typical flow for a build command is the following:
 1. [core.Compile](../src/core/Compile.go)
 1. [linker.Write](../src/linker/Write.go)
 
-There is also an interactive [dependency graph](https://deps-q.urbach.dev/) and a [flame graph](https://prof-q.urbach.dev/ui/flamegraph) (via gopkgview and pprof).
+An online view of analytic tools can be found here:
+
+- [Dependency Graph](https://deps-q.urbach.dev/) via gopkgview
+- [Flame Graph](https://prof-q.urbach.dev/ui/flamegraph) via pprof
 
 ## FAQ
 
@@ -462,7 +449,7 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 ### I can't contribute but can I donate to the project?
 
-- [Buy Me a Coffee](https://buymeacoffee.com/akyoto)
+- [BMAC](https://buymeacoffee.com/akyoto)
 - [GitHub](https://github.com/sponsors/akyoto)
 - [Kofi](https://ko-fi.com/akyoto)
 
@@ -503,14 +490,26 @@ GOMAXPROCS=1 go test ./tests -run '^$' -bench . -benchmem
 go test ./tests -run '^$' -bench . -benchmem -cpuprofile cpu.out -memprofile mem.out
 
 # View profiling data
-go tool pprof --nodefraction=0.1 -http=:8080 ./cpu.out
-go tool pprof --nodefraction=0.1 -http=:8080 ./mem.out
+go tool pprof -http=:8080 ./cpu.out
+go tool pprof -http=:8080 ./mem.out
 ```
 
-### Any debugging tools?
+### How do I run a single file in `tests`?
 
-With the commands `ssa` and `asm` you can analyze the intermediate stages which reveal how the compiler understands your program code.
-If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through the x86-64 executables one instruction at a time.
+To run a single test file, linter errors must be disabled using the `-no-lint` flag:
+
+```shell
+q tests/add.q -no-lint
+```
+
+This is needed because tests often assert "obvious" facts that the linter would not allow in normal programs.
+
+### How do I analyze a problem with the compiler?
+
+Replace `q build` with `q ssa` or `q asm` to see the intermediate stages which reveal how the compiler understands your program code.
+Use `-func` to filter out specific functions.
+
+If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through x86-64 executables one instruction at a time.
 
 ### Is there a community?
 
