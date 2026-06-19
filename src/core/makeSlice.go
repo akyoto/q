@@ -8,10 +8,13 @@ import (
 
 // makeSlice creates a new slice.
 func (f *Function) makeSlice(address ssa.Value, from ssa.Value, to ssa.Value, source ssa.Source) *ssa.Struct {
+	elementType := types.Unwrap(address.Type()).(*types.Pointer).To
+	addressOffset := f.multiplySize(from, elementType.Size())
+
 	newPointer := f.Append(&ssa.BinaryOp{
 		Op:     token.Add,
 		Left:   address,
-		Right:  from,
+		Right:  addressOffset,
 		Source: source,
 	})
 
@@ -22,5 +25,5 @@ func (f *Function) makeSlice(address ssa.Value, from ssa.Value, to ssa.Value, so
 		Source: source,
 	})
 
-	return f.makeStruct(types.String, []ssa.Value{newPointer, newLength}, source)
+	return f.makeStruct(f.Env.Slice(elementType), []ssa.Value{newPointer, newLength}, source)
 }
