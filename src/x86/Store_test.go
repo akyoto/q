@@ -14,7 +14,7 @@ func TestStoreNumber(t *testing.T) {
 		Offset     cpu.Register
 		Scale      x86.Scale
 		Length     byte
-		Number     int
+		Number     int32
 		Code       []byte
 	}{
 		{x86.R0, x86.R15, x86.Scale1, 8, 0x7F, []byte{0x4A, 0xC7, 0x04, 0x38, 0x7F, 0x00, 0x00, 0x00}},

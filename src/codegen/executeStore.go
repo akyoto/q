@@ -16,7 +16,7 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			f.Assembler.Append(&asm.StoreFixedOffsetNumber{
 				Base:   address.Register,
 				Index:  index.Value.(*ssa.Int).Int,
-				Number: source.Value.(*ssa.Int).Int,
+				Number: int32(source.Value.(*ssa.Int).Int),
 				Scale:  memory.Scale,
 				Length: byte(memory.Typ.Size()),
 			})
@@ -24,7 +24,7 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			f.Assembler.Append(&asm.StoreNumber{
 				Base:   address.Register,
 				Index:  index.Register,
-				Number: source.Value.(*ssa.Int).Int,
+				Number: int32(source.Value.(*ssa.Int).Int),
 				Scale:  memory.Scale,
 				Length: byte(memory.Typ.Size()),
 			})

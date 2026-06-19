@@ -3,7 +3,7 @@ package x86
 import "encoding/binary"
 
 // appendNumber appends the number for memory store instructions.
-func appendNumber(code []byte, length byte, number int) []byte {
+func appendNumber(code []byte, length byte, number int32) []byte {
 	switch length {
 	case 1:
 		return append(code, uint8(number))

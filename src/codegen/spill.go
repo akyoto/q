@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
+	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -30,46 +31,46 @@ func (f *Function) spillOffset(reg cpu.Register) int {
 }
 
 // storeSpillNumber stores a number on the stack.
-func (f *Function) storeSpillNumber(step *Step, number int) {
-	if f.build.Arch == config.ARM {
-		usedRegisters := bitSet(0)
-		tmp := cpu.Register(0)
-
-		for _, live := range step.Live {
-			if live.Register == -1 || f.isSpilled(live.Register) {
-				continue
-			}
-
-			usedRegisters.Set(live.Register)
-		}
-
-		for _, reg := range f.CPU.General {
-			if !usedRegisters.Has(reg) {
-				tmp = reg
-				break
-			}
-		}
-
-		f.Assembler.Append(&asm.MoveNumber{
-			Destination: tmp,
-			Number:      number,
-		})
-
-		f.Assembler.Append(&asm.StoreFixedOffset{
+func (f *Function) storeSpillNumber(step *Step, number *ssa.Int) {
+	if f.build.Arch == config.X86 && cpu.SizeInt(number.Int) <= 4 {
+		f.Assembler.Append(&asm.StoreFixedOffsetNumber{
 			Index:  f.spillOffset(step.Register),
 			Base:   f.CPU.StackPointer,
-			Source: tmp,
-			Length: 8,
+			Number: int32(number.Int),
+			Length: byte(number.Type().Size()),
 			Scale:  false,
 		})
 
 		return
 	}
 
-	f.Assembler.Append(&asm.StoreFixedOffsetNumber{
+	usedRegisters := bitSet(0)
+	tmp := cpu.Register(0)
+
+	for _, live := range step.Live {
+		if live.Register == -1 || f.isSpilled(live.Register) {
+			continue
+		}
+
+		usedRegisters.Set(live.Register)
+	}
+
+	for _, reg := range f.CPU.General {
+		if !usedRegisters.Has(reg) {
+			tmp = reg
+			break
+		}
+	}
+
+	f.Assembler.Append(&asm.MoveNumber{
+		Destination: tmp,
+		Number:      number.Int,
+	})
+
+	f.Assembler.Append(&asm.StoreFixedOffset{
 		Index:  f.spillOffset(step.Register),
 		Base:   f.CPU.StackPointer,
-		Number: number,
+		Source: tmp,
 		Length: 8,
 		Scale:  false,
 	})

@@ -5,7 +5,7 @@ import (
 )
 
 // StoreNumber writes a number to a memory address with a register offset.
-func StoreNumber(code []byte, base cpu.Register, offset cpu.Register, scale Scale, length byte, number int) []byte {
+func StoreNumber(code []byte, base cpu.Register, offset cpu.Register, scale Scale, length byte, number int32) []byte {
 	code = memAccessDynamic(code, 0b000, base, offset, scale, length, length, nil, 0xC6, 0xC7)
 	return appendNumber(code, length, number)
 }

@@ -5,7 +5,7 @@ import (
 )
 
 // StoreFixedOffsetNumber writes a number to a memory address.
-func StoreFixedOffsetNumber(code []byte, base cpu.Register, offset int32, scale Scale, length byte, number int) []byte {
+func StoreFixedOffsetNumber(code []byte, base cpu.Register, offset int32, scale Scale, length byte, number int32) []byte {
 	code = memAccess(code, 0b000, base, offset, scale, length, 0xC6, 0xC7)
 	return appendNumber(code, length, number)
 }

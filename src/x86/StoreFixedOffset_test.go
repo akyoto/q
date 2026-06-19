@@ -14,7 +14,7 @@ func TestStoreFixedOffsetNumber(t *testing.T) {
 		Offset   int32
 		Scale    x86.Scale
 		Length   byte
-		Number   int
+		Number   int32
 		Code     []byte
 	}{
 		// No offset

@@ -87,13 +87,13 @@ type (
 	}
 	StoreFixedOffsetNumber struct {
 		Index  int
-		Number int
+		Number int32
 		Base   cpu.Register
 		Length byte
 		Scale  bool
 	}
 	StoreNumber struct {
-		Number int
+		Number int32
 		Base   cpu.Register
 		Index  cpu.Register
 		Length byte

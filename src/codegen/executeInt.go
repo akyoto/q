@@ -11,7 +11,7 @@ func (f *Function) executeInt(step *Step, instr *ssa.Int) {
 	}
 
 	if f.isSpilled(step.Register) {
-		f.storeSpillNumber(step, instr.Int)
+		f.storeSpillNumber(step, instr)
 		return
 	}
 
