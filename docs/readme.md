@@ -112,7 +112,7 @@ See more in the [examples](../examples) directory.
 
 The following is a cheat sheet documenting the syntax.
 
-| I need to...                         |                              | API stability   |
+| I need to...                         |                              | Stability       |
 | ------------------------------------ | ---------------------------- | --------------- |
 | Define a new variable                | `x := 1`                     | ✔️ Stable       |
 | Reassign an existing variable        | `x = 2`                      | ✔️ Stable       |
@@ -120,15 +120,15 @@ The following is a cheat sheet documenting the syntax.
 | Define a struct                      | `Point {}`                   | ✔️ Stable       |
 | Define input and output types        | `f(a int) -> (b int) {}`     | ✔️ Stable       |
 | Define same function for other types | `f(_ string) {} f(_ int) {}` | 🚧 Experimental |
-| Define a struct method               | `f(p Point) {}`              | 🚧 Experimental |
 | Instantiate a struct                 | `Point{x: 1, y: 2}`          | ✔️ Stable       |
 | Allocate a type                      | `new(int)`                   | 🚧 Experimental |
 | Allocate an array                    | `new(int, 10)`               | 🚧 Experimental |
 | Allocate a struct                    | `new(Point)`                 | 🚧 Experimental |
 | Allocate and initialize a struct     | `new(Point){x: 1, y: 2}`     | 🚧 Experimental |
 | Delete an object                     | `delete(p)`                  | 🚧 Experimental |
-| Access struct fields                 | `p.x`                        | ✔️ Stable       |
+| Define a struct method               | `f(p *Point) {}`             | 🚧 Experimental |
 | Call struct methods                  | `p.f()`                      | ✔️ Stable       |
+| Access struct fields                 | `p.x`                        | ✔️ Stable       |
 | Dereference a pointer                | `[ptr]`                      | ✔️ Stable       |
 | Index a pointer                      | `ptr[0]`                     | ✔️ Stable       |
 | Slice a string                       | `"Hello"[1..3]`              | ✔️ Stable       |
@@ -149,6 +149,42 @@ The following is a cheat sheet documenting the syntax.
 | Cast a type                          | `x as byte`                  | 🚧 Experimental |
 | Mark a type as a resource            | `!`                          | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
+
+## Keywords
+
+| Keyword    |                                                            | Stability       |
+| ---------- | ---------------------------------------------------------- | --------------- |
+| `assert`   | Tests conditions at runtime                                | ✔️ Stable       |
+| `const`    | Defines constant expressions                               | ✔️ Stable       |
+| `else`     | Failure branch for if statements                           | ✔️ Stable       |
+| `extern`   | Foreign function definitions                               | ✔️ Stable       |
+| `global`   | Global variables (discouraged but required in stdlib)      | ✔️ Stable       |
+| `go`       | Asynchronous function calls                                | 🚧 Experimental |
+| `if`       | Branches based on a condition                              | ✔️ Stable       |
+| `import`   | Allows access to other packages                            | ✔️ Stable       |
+| `loop`     | Repeatable code                                            | ✔️ Stable       |
+| `return`   | Ends the function and returns values to the caller         | ✔️ Stable       |
+| `switch`   | Multiple branches executing the first true condition block | ✔️ Stable       |
+
+## Builtins
+
+| Function   |                                                            | Stability       |
+| ---------- | ---------------------------------------------------------- | --------------- |
+| `delete`   | Frees memory                                               | 🚧 Experimental |
+| `new`      | Allocates memory                                           | 🚧 Experimental |
+| `syscall`  | Calls a kernel function                                    | ✔️ Stable       |
+
+## Operators
+
+1. `.` `()` `[]` `{}`
+1. `!` `-`
+1. `*` `/` `%`
+1. `+` `-` `&` `|` `^` `<<` `>>` `as`
+1. `==` `!=` `<` `>` `<=` `>=`
+1. `&&`
+1. `||`
+1. `..` `,`
+1. `:=` `=` `+=` `-=` `*=` `/=` `%=` `&=` `|=` `^=` `<<=` `>>=` `:`
 
 ## News
 
