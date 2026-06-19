@@ -114,7 +114,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
 
-		c.code = x86.ExtendR0ToR2(c.code)
+		c.code = x86.XorRegisterRegister(c.code, x86.R2, x86.R2)
 		c.code = x86.DivUnsignedRegister(c.code, instr.Operand)
 
 		if instr.Destination != x86.R0 {
@@ -129,7 +129,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
 
-		c.code = x86.ExtendR0ToR2(c.code)
+		c.code = x86.SignExtendR0ToR2(c.code)
 		c.code = x86.DivSignedRegister(c.code, instr.Operand)
 
 		if instr.Destination != x86.R0 {
@@ -261,7 +261,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
 
-		c.code = x86.ExtendR0ToR2(c.code)
+		c.code = x86.XorRegisterRegister(c.code, x86.R2, x86.R2)
 		c.code = x86.DivUnsignedRegister(c.code, instr.Operand)
 
 		if instr.Destination != x86.R2 {
@@ -276,7 +276,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
 
-		c.code = x86.ExtendR0ToR2(c.code)
+		c.code = x86.SignExtendR0ToR2(c.code)
 		c.code = x86.DivSignedRegister(c.code, instr.Operand)
 
 		if instr.Destination != x86.R2 {
