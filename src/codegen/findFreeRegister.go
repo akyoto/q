@@ -95,24 +95,26 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 				continue
 			}
 
+			switch instr := live.Value.(type) {
+			case *ssa.Field:
+				_, isFieldFromCall := instr.Tuple.(*ssa.Call)
+
+				if isFieldFromCall && live.Index > current.Index {
+					usedRegisters.Set(f.CPU.Call.Out[instr.Index])
+				}
+
+			case *ssa.Parameter:
+				if live.Index > current.Index {
+					usedRegisters.Set(f.CPU.Call.In[instr.Index])
+				}
+			}
+
 			usedRegisters.Set(live.Register)
 		}
 
 		// Ignore the definition itself.
 		if current == step {
 			continue
-		}
-
-		// Mark input and output registers as used.
-		switch instr := current.Value.(type) {
-		case *ssa.Field:
-			_, isFieldFromCall := instr.Tuple.(*ssa.Call)
-
-			if isFieldFromCall {
-				usedRegisters.Set(f.CPU.Call.Out[instr.Index])
-			}
-		case *ssa.Parameter:
-			usedRegisters.Set(f.CPU.Call.In[instr.Index])
 		}
 
 		// Find all the registers that this instruction

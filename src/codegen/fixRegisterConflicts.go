@@ -47,9 +47,22 @@ func (f *Function) fixRegisterConflicts() {
 				continue
 			}
 
-			if live.Value != step.Value && slices.Contains(clobbered, live.Register) {
-				f.assignFreeRegister(live)
-				continue
+			if live.Value != step.Value {
+				if slices.Contains(clobbered, live.Register) {
+					f.assignFreeRegister(live)
+					continue
+				}
+
+				field, isField := live.Value.(*ssa.Field)
+
+				if isField {
+					_, isFieldFromCall := field.Tuple.(*ssa.Call)
+
+					if isFieldFromCall && live.Index > step.Index && step.Register == f.CPU.Call.Out[field.Index] {
+						f.assignFreeRegister(step)
+						break
+					}
+				}
 			}
 
 			for _, previous := range step.Live[:i] {
