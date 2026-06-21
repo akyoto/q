@@ -106,7 +106,11 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 		// Mark input and output registers as used.
 		switch instr := current.Value.(type) {
 		case *ssa.Field:
-			usedRegisters.Set(f.CPU.Call.Out[instr.Index])
+			_, isFieldFromCall := instr.Tuple.(*ssa.Call)
+
+			if isFieldFromCall {
+				usedRegisters.Set(f.CPU.Call.Out[instr.Index])
+			}
 		case *ssa.Parameter:
 			usedRegisters.Set(f.CPU.Call.In[instr.Index])
 		}
