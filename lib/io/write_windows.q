@@ -1,8 +1,8 @@
-write(buffer string) -> (count int, err error) {
+write(buffer string) -> (count uint, err error) {
 	return writeTo(stdout, buffer)
 }
 
-writeTo(fd int, buffer string) -> (count int, err error) {
+writeTo(fd int, buffer string) -> (count uint, err error) {
 	ptr := new(uint32)
 	success := kernel32.WriteFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
 
@@ -13,7 +13,7 @@ writeTo(fd int, buffer string) -> (count int, err error) {
 
 	count := [ptr]
 	delete(ptr)
-	return count as int, 0
+	return count as uint, 0
 }
 
 extern {

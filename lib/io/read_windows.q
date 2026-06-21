@@ -1,8 +1,8 @@
-read(buffer string) -> (count int, err error) {
+read(buffer string) -> (count uint, err error) {
 	return readFrom(stdin, buffer)
 }
 
-readFrom(fd int, buffer string) -> (count int, err error) {
+readFrom(fd int, buffer string) -> (count uint, err error) {
 	ptr := new(uint32)
 	success := kernel32.ReadFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
 
@@ -13,7 +13,7 @@ readFrom(fd int, buffer string) -> (count int, err error) {
 
 	count := [ptr]
 	delete(ptr)
-	return count as int, 0
+	return count as uint, 0
 }
 
 extern {

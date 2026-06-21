@@ -32,14 +32,14 @@ listen(fd int, backlog int) -> error {
 	return ws2_32.listen(fd, backlog)
 }
 
-recv(fd int, buffer string) -> (read int, err error) {
+recv(fd int, buffer string) -> (count uint, err error) {
 	n := ws2_32.recv(fd, buffer.ptr, buffer.len as int, 0)
 
 	if n == -1 {
 		return 0, ws2_32.WSAGetLastError()
 	}
 
-	return n, 0
+	return n as uint, 0
 }
 
 socket(family int, type int, protocol int) -> (int, error) {
@@ -52,14 +52,14 @@ socket(family int, type int, protocol int) -> (int, error) {
 	return s, 0
 }
 
-send(fd int, buffer string) -> (written int, err error) {
+send(fd int, buffer string) -> (count uint, err error) {
 	n := ws2_32.send(fd, buffer.ptr, buffer.len as int, 0)
 
 	if n == -1 {
 		return 0, ws2_32.WSAGetLastError()
 	}
 
-	return n, 0
+	return n as uint, 0
 }
 
 extern {
