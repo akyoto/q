@@ -1,5 +1,5 @@
 read(buffer string) -> (count uint, err error) {
-	return readFrom(0, buffer)
+	return readFrom(stdin, buffer)
 }
 
 readFrom(fd int, buffer string) -> (count uint, err error) {

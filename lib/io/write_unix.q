@@ -1,5 +1,5 @@
 write(buffer string) -> (count uint, err error) {
-	return writeTo(1, buffer)
+	return writeTo(stdout, buffer)
 }
 
 writeTo(fd int, buffer string) -> (count uint, err error) {
