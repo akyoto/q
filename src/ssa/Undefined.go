@@ -9,8 +9,8 @@ type undefined struct {
 	Void
 }
 
-// Equals always returns false.
-func (v *undefined) Equals(Value) bool { return false }
+// Equals only returns true when the value points to the same object.
+func (a *undefined) Equals(b Value) bool { return a == b }
 
 // String returns a human-readable representation of the undefined value.
 func (v *undefined) String() string { return "undefined" }

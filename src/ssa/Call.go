@@ -22,7 +22,7 @@ func (a *Call) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Arguments.Equals(b.Arguments)
+	return a.Func.Equals(b.Func) && a.Arguments.Equals(b.Arguments)
 }
 
 // Inputs is the function pointer and the list of arguments.
