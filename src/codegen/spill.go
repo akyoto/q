@@ -32,12 +32,20 @@ func (f *Function) spillOffset(reg cpu.Register) int {
 
 // storeSpillNumber stores a number on the stack.
 func (f *Function) storeSpillNumber(step *Step, number *ssa.Int) {
-	if f.build.Arch == config.X86 && cpu.SizeInt(number.Int) <= 4 {
+	typ := number.Type()
+
+	if typ == types.AnyInt {
+		typ = types.Int
+	}
+
+	unsigned := types.IsUnsigned(typ)
+
+	if f.build.Arch == config.X86 && (!unsigned && cpu.SizeInt(number.Int) <= 4 || unsigned && cpu.SizeUint(number.Int) <= 4) {
 		f.Assembler.Append(&asm.StoreFixedOffsetNumber{
 			Index:  f.spillOffset(step.Register),
 			Base:   f.CPU.StackPointer,
 			Number: int32(number.Int),
-			Length: byte(number.Type().Size()),
+			Length: byte(typ.Size()),
 			Scale:  false,
 		})
 
@@ -71,7 +79,7 @@ func (f *Function) storeSpillNumber(step *Step, number *ssa.Int) {
 		Index:  f.spillOffset(step.Register),
 		Base:   f.CPU.StackPointer,
 		Source: tmp,
-		Length: 8,
+		Length: byte(typ.Size()),
 		Scale:  false,
 	})
 }
