@@ -26,20 +26,29 @@ func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step, first bool
 		region.End = uint32(use.Index)
 	}
 
-	steps := f.Steps[region.Start:region.End]
+	var (
+		steps   = f.Steps[region.Start:region.End]
+		field   *ssa.Field
+		isField bool
+	)
 
 	for _, current := range slices.Backward(steps) {
 		if slices.Contains(current.Live, live) {
 			return
 		}
 
+		if isField && field.Tuple == current.Value {
+			return
+		}
+
 		current.Live = append(current.Live, live)
 
 		if live.Value == current.Value {
+			field, isField = current.Value.(*ssa.Field)
 			_, isParam := current.Value.(*ssa.Parameter)
 			_, isPhi := current.Value.(*ssa.Phi)
 
-			if !isParam && !isPhi {
+			if !isParam && !isPhi && !isField {
 				return
 			}
 		}
