@@ -1,8 +1,8 @@
-write(buffer string) -> (written int) {
-	return syscall(_write, 1, buffer.ptr, buffer.len)
+write(buffer string) -> (count int, err error) {
+	return writeTo(1, buffer)
 }
 
-writeTo(fd int, buffer string) -> (written int, err error) {
+writeTo(fd int, buffer string) -> (count int, err error) {
 	n := syscall(_write, fd, buffer.ptr, buffer.len)
 
 	if n < 0 {

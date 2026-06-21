@@ -7,9 +7,9 @@ main() {
 
 	loop {
 		io.write("λ ")
-		n := io.read(buffer)
+		n, _ := io.read(buffer)
 
-		if n <= 0 {
+		if n == 0 {
 			delete(buffer)
 			return
 		}
