@@ -17,16 +17,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, err
 	}
 
-	addressType := types.Unwrap(addressValue.Type())
-	addressStruct, addressIsStruct := addressValue.(*ssa.Struct)
-	var length ssa.Value
-
-	if addressIsStruct {
-		length = addressStruct.Arguments[1]
-		addressValue = addressStruct.Arguments[0]
-		addressType = addressValue.Type()
-	}
-
+	addressValue, addressType, length := f.decomposeSlice(addressValue)
 	pointer, isPointer := types.Unwrap(addressType).(*types.Pointer)
 
 	if !isPointer {
