@@ -75,6 +75,7 @@ var errs = []struct {
 	{"ResourceAlreadyConsumed3.q", &core.UnknownIdentifier{Name: "x"}},
 	{"ResourceNotConsumed.q", &core.ResourceNotConsumed{TypeName: "!int64"}},
 	{"ResourceNotConsumed2.q", &core.ResourceNotConsumed{TypeName: "!int64"}},
+	{"ResourceNotConsumed3.q", &core.ResourceNotConsumed{TypeName: "![]int64"}},
 	{"ResourcePartiallyConsumed.q", &core.ResourcePartiallyConsumed{TypeName: "!int64"}},
 	{"ResourceTypeMismatch.q", &core.TypeMismatch{Encountered: "int64", Expected: "!int64", ParameterName: "_", IsReturn: false}},
 	{"ReturnCountMismatch.q", &core.ReturnCountMismatch{Count: 1, ExpectedCount: 0}},

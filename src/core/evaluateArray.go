@@ -17,7 +17,12 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, err
 	}
 
-	addressValue, addressType, length := f.decomposeSlice(addressValue)
+	addressValue, addressType, length, err := f.decomposeSlice(addressValue, address.Source())
+
+	if err != nil {
+		return nil, err
+	}
+
 	pointer, isPointer := types.Unwrap(addressType).(*types.Pointer)
 
 	if !isPointer {
