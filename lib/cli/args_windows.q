@@ -4,14 +4,14 @@ import mem
 args() -> ![]string {
 	argcp := new(int32)
 	wargv := shell32.CommandLineToArgvW(kernel32.GetCommandLineW(), argcp)
-	argc := [argcp] as uint
+	argc := [argcp]-1 as uint
 	delete(argcp)
 	args := new(string, argc)
 
 	loop i := 0..args.len {
-		length := kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i], -1, 0, 0, 0, 0) - 1
+		length := kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i+1], -1, 0, 0, 0, 0) - 1
 		args[i] = mem.alloc(length as uint)
-		kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i], -1, args[i].ptr, length, 0, 0)
+		kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i+1], -1, args[i].ptr, length, 0, 0)
 	}
 
 	kernel32.LocalFree(wargv)

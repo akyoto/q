@@ -3,14 +3,22 @@ import fs
 import io
 
 main() {
-	args := cli.args()[1..]
+	args := cli.args()
 
 	if args.len == 0 {
-		io.writeLine("no file specified")
+		io.writeLine("no files")
+		delete(args)
 		return
 	}
 
-	path := args[0]
+	loop i := 0..args.len {
+		read(args[i])
+	}
+
+	delete(args)
+}
+
+read(path string) {
 	source, err := fs.readFile(path)
 
 	if err != 0 {
@@ -19,6 +27,6 @@ main() {
 		return
 	}
 
-	io.write(source)
+	io.writeLine(source)
 	delete(source)
 }
