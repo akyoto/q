@@ -15,9 +15,3 @@ readFrom(fd int, buffer string) -> (count uint, err error) {
 	delete(ptr)
 	return count as uint, 0
 }
-
-extern {
-	kernel32 {
-		ReadFile(fd int64, buffer *byte, length uint32, read *uint32, overlapped *any|nil) -> (success bool)
-	}
-}
