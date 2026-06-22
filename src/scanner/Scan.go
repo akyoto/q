@@ -13,11 +13,11 @@ import (
 // Scan scans all the files included in the build.
 func Scan(build *config.Build) (*core.Environment, error) {
 	s := scanner{
-		constants: make(chan *core.Constant, 8),
-		functions: make(chan *core.Function, 8),
-		files:     make(chan *fs.File, 8),
-		structs:   make(chan *types.Struct, 8),
-		globals:   make(chan *core.Global, 1),
+		constants: make(chan *core.Constant, 128),
+		functions: make(chan *core.Function, 128),
+		files:     make(chan *fs.File, 128),
+		structs:   make(chan *types.Struct, 128),
+		globals:   make(chan *core.Global, 128),
 		errors:    make(chan error),
 		build:     build,
 	}
