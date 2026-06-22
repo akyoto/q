@@ -32,8 +32,15 @@ func operators() int {
 		return int(b.precedence) - int(a.precedence)
 	})
 
+	level := 1
+
+	for i := 1; i < len(ops); i++ {
+		if ops[i].precedence != ops[i-1].precedence {
+			level++
+		}
+	}
+
 	lastPrecedence := ops[0].precedence
-	level := 0
 	fmt.Printf("[%d] ", level)
 
 	for _, op := range ops {
@@ -55,7 +62,7 @@ func operators() int {
 		}
 
 		if op.precedence != lastPrecedence {
-			level++
+			level--
 			fmt.Printf("\n[%d] ", level)
 		}
 
