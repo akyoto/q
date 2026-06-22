@@ -35,19 +35,24 @@ The first character of an identifier must not be a digit. Identifiers are case-s
 
 ## Operators
 
-1. `.` `()` `[]` `{}`
-1. `!` `-`
-1. `*` `/` `%`
-1. `+` `-` `&` `|` `^` `<<` `>>` `as`
-1. `==` `!=` `<` `>` `<=` `>=`
-1. `&&`
-1. `||`
-1. `..` `,`
-1. `:=` `=` `+=` `-=` `*=` `/=` `%=` `&=` `|=` `^=` `<<=` `>>=` `:`
+Operator precedence introduces additional rules that programmers must learn and can lead to hidden mistakes.
+To minimize this complexity, the language uses only 9 precedence levels:
+
+| Precedence | Operators                                                         | Description             |
+| ---------: | ----------------------------------------------------------------- | ----------------------- |
+|          9 | `.` `()` `[]` `{}`                                                | Postfix                 |
+|          8 | `!` `-`                                                           | Unary                   |
+|          7 | `*` `/` `%`                                                       | Multiplicative          |
+|          6 | `+` `-` `&` `\|` `^` `<<` `>>` `as`                               | Additive, bitwise, cast |
+|          5 | `==` `!=` `<` `>` `<=` `>=`                                       | Comparison              |
+|          4 | `&&`                                                              | Logical AND             |
+|          3 | `\|\|`                                                            | Logical OR              |
+|          2 | `..` `,`                                                          | Range, separator        |
+|          1 | `:=` `=` `+=` `-=` `*=` `/=` `%=` `&=` `\|=` `^=` `<<=` `>>=` `:` | Assignment              |
 
 ## Keywords
 
-| Keyword    |                                                            | Stability       |
+| Keyword    | Description                                                | Stability       |
 | ---------- | ---------------------------------------------------------- | --------------- |
 | `assert`   | Tests conditions at runtime                                | ✔️ Stable       |
 | `const`    | Defines constant expressions                               | ✔️ Stable       |
@@ -63,7 +68,7 @@ The first character of an identifier must not be a digit. Identifiers are case-s
 
 ## Builtins
 
-| Function   |                                                            | Stability       |
+| Function   | Description                                                | Stability       |
 | ---------- | ---------------------------------------------------------- | --------------- |
 | `delete`   | Frees memory                                               | 🚧 Experimental |
 | `new`      | Allocates memory                                           | 🚧 Experimental |
