@@ -10,7 +10,6 @@ main() {
 		n, _ := io.read(buffer)
 
 		if n == 0 {
-			delete(buffer)
 			return
 		}
 

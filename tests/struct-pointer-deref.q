@@ -10,8 +10,6 @@ main() {
 	assert p.y == 2
 	assert p2.x == 3
 	assert p2.y == 2
-
-	delete(p)
 }
 
 Point {

@@ -7,15 +7,12 @@ main() {
 
 	if args.len == 0 {
 		io.writeLine("no files")
-		delete(args)
 		return
 	}
 
 	loop i := 0..args.len {
 		read(args[i])
 	}
-
-	delete(args)
 }
 
 read(path string) {
@@ -28,5 +25,4 @@ read(path string) {
 	}
 
 	io.writeLine(source)
-	delete(source)
 }

@@ -12,7 +12,6 @@ main() {
 	}
 
 	write(p)
-	delete(p)
 }
 
 write(p *Point) {

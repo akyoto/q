@@ -13,6 +13,5 @@ connect(path string) -> (!int, error) {
 
 	addr := address(path)
 	err := net.connect(s, addr.ptr, addr.len)
-	delete(addr)
 	return s, err
 }

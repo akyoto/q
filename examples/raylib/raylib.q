@@ -29,7 +29,6 @@ main() {
 	loop {
 		if raylib.WindowShouldClose() {
 			raylib.CloseWindow()
-			delete(player)
 			return
 		}
 

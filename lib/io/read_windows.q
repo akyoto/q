@@ -7,11 +7,9 @@ readFrom(fd int, buffer string) -> (count uint, err error) {
 	success := kernel32.ReadFile(fd, buffer.ptr, buffer.len as uint32, ptr, 0)
 
 	if !success {
-		delete(ptr)
 		return 0, -1
 	}
 
 	count := [ptr]
-	delete(ptr)
 	return count as uint, 0
 }

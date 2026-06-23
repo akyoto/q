@@ -26,8 +26,6 @@ main() {
 	}
 
 	wayland.deleteShm(state)
-	delete(state)
-	delete(buffer)
 	net.close(socket)
 }
 

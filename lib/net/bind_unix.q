@@ -7,6 +7,5 @@ bind(socket int, port uint16) -> error {
 	}
 
 	err := syscall(_bind, socket, addr, 28)
-	delete(addr)
 	return err
 }

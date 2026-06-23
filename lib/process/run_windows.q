@@ -12,16 +12,12 @@ run(path string) -> error {
 	mem.free(cpath)
 
 	if !success {
-		delete(processInfo)
-		delete(startInfo)
 		return -1
 	}
 
 	kernel32.WaitForSingleObject(processInfo.process, 0xFFFFFFFF)
 	kernel32.CloseHandle(processInfo.process)
 	kernel32.CloseHandle(processInfo.thread)
-	delete(processInfo)
-	delete(startInfo)
 	return 0
 }
 

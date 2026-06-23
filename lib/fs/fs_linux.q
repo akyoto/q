@@ -23,12 +23,10 @@ size(fd int) -> (uint, error) {
 	err := syscall(_fstat, fd, stats)
 
 	if err != 0 {
-		delete(stats)
 		return 0, err
 	}
 
 	size := stats.size as uint
-	delete(stats)
 	return size, 0
 }
 

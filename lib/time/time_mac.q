@@ -4,7 +4,6 @@ now() -> int {
 	t := new(Timespec)
 	syscall(_gettimeofday, t, 0, 0)
 	n := t.seconds * second + t.microseconds * microsecond
-	delete(t)
 	return n
 }
 

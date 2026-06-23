@@ -6,5 +6,4 @@ main() {
 	assert a[0] == -1
 	assert a[1] == -32767
 	assert a[2] == -32768
-	delete(a)
 }

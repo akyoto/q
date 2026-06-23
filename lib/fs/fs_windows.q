@@ -24,11 +24,9 @@ size(fd int) -> (uint, error) {
 
 	if success {
 		size := [ptr] as uint
-		delete(ptr)
 		return size, 0
 	}
 
-	delete(ptr)
 	return 0, -1
 }
 

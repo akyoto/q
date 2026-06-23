@@ -2,7 +2,6 @@ now() -> int {
 	systemTime := new(int64)
 	kernel32.GetSystemTimePreciseAsFileTime(systemTime)
 	n := [systemTime]
-	delete(systemTime)
 	return (n - 116444736000000000) * 100
 }
 

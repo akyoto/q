@@ -2,7 +2,6 @@ now() -> int {
 	t := new(Timespec)
 	syscall(_clock_gettime, realtime, t)
 	n := t.seconds * second + t.nanoseconds
-	delete(t)
 	return n
 }
 
@@ -20,5 +19,4 @@ sleep(nanoseconds int) {
 	}
 
 	syscall(_nanosleep, duration)
-	delete(duration)
 }

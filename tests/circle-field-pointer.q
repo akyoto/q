@@ -7,7 +7,6 @@ main() {
 	assert c.center.x == 1
 	assert c.center.y == 2
 	assert c.radius == 3
-	delete(c.center)
 }
 
 Circle {

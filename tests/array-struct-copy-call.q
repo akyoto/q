@@ -6,7 +6,6 @@ main() {
 	assert p[0].y == 2
 	assert p[1].x == 3
 	assert p[1].y == 4
-	delete(p)
 }
 
 f(x int, y int) -> Point {

@@ -7,5 +7,4 @@ main() {
 	assert rand.next() == 0x48F2DE556F30DE38
 	assert rand.next() == 0x6EA7C59F89BBFC75
 	assert rand.next() == 0x765437C08F02E2F5
-	delete(rand)
 }
