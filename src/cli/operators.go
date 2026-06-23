@@ -48,11 +48,11 @@ func operators() int {
 
 		switch op.kind {
 		case token.Call:
-			text = "call()"
+			text = "()"
 		case token.Array:
-			text = "[index]"
+			text = "[]"
 		case token.Struct:
-			text = "struct{}"
+			text = "{}"
 		default:
 			text = op.kind.String()
 		}
