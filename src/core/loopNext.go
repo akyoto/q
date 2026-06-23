@@ -7,12 +7,13 @@ import (
 
 // loopNext starts the next iteration of the loop.
 func (f *Function) loopNext(loop *Loop) {
-	if loop.FromValue != nil {
+	if loop.IteratorName != "" {
+		endOfLoopValue, _ := f.Block().FindIdentifier(loop.IteratorName)
 		one := f.Append(&ssa.Int{Int: 1})
 
 		nextIteration := f.Append(&ssa.BinaryOp{
 			Op:    token.Add,
-			Left:  loop.FromValue,
+			Left:  endOfLoopValue,
 			Right: one,
 		})
 

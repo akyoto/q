@@ -8,6 +8,5 @@ import (
 type Loop struct {
 	Head         *ssa.Block
 	Exit         *ssa.Block
-	FromValue    ssa.Value
 	IteratorName string
 }

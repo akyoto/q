@@ -42,7 +42,6 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 			fromValue = f.copy(fromValue, from.Source())
 		}
 
-		loop.FromValue = fromValue
 		beforeLoop.Identify(name, fromValue)
 		f.jump(loopHead)
 
