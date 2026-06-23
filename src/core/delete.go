@@ -20,14 +20,13 @@ func (f *Function) delete(value ssa.Value) (ssa.Value, error) {
 			Int: typ.Size(),
 		})
 
-		call := f.Append(&ssa.Call{
-			Func: &ssa.Function{
-				FunctionRef: free,
-				Typ:         free.Type,
-			},
-			Arguments: []ssa.Value{value, size},
-		})
+		fn := &ssa.Function{
+			FunctionRef: free,
+			Typ:         free.Type,
+		}
 
+		args := []ssa.Value{value, size}
+		call := f.call(fn, args, ssa.Source{})
 		return call, nil
 
 	case *types.Struct:

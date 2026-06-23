@@ -61,29 +61,32 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 			return err
 		}
 
-		comparison := conditionValue.(*ssa.BinaryOp)
-		left := comparison.Left
+		binaryOp, isBinaryOp := conditionValue.(*ssa.BinaryOp)
 
-		if left.Type() == types.Error {
-			right := comparison.Right.(*ssa.Int)
+		if isBinaryOp && binaryOp.Op.IsComparison() {
+			left := binaryOp.Left
 
-			switch {
-			case condition.Token.Kind == token.NotEqual && right.Int == 0:
-				for _, protected := range thenBlock.Protected[left] {
-					thenBlock.Unidentify(protected)
+			if left.Type() == types.Error {
+				right := binaryOp.Right.(*ssa.Int)
+
+				switch {
+				case condition.Token.Kind == token.NotEqual && right.Int == 0:
+					for _, protected := range thenBlock.Protected[left] {
+						thenBlock.Unidentify(protected)
+					}
+
+					thenBlock.Unprotect(left)
+					elseBlock.Unidentify(left)
+					elseBlock.Unprotect(left)
+				case condition.Token.Kind == token.Equal && right.Int == 0:
+					for _, protected := range elseBlock.Protected[left] {
+						elseBlock.Unidentify(protected)
+					}
+
+					elseBlock.Unprotect(left)
+					thenBlock.Unidentify(left)
+					thenBlock.Unprotect(left)
 				}
-
-				thenBlock.Unprotect(left)
-				elseBlock.Unidentify(left)
-				elseBlock.Unprotect(left)
-			case condition.Token.Kind == token.Equal && right.Int == 0:
-				for _, protected := range elseBlock.Protected[left] {
-					elseBlock.Unidentify(protected)
-				}
-
-				elseBlock.Unprotect(left)
-				thenBlock.Unidentify(left)
-				thenBlock.Unprotect(left)
 			}
 		}
 

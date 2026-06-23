@@ -21,11 +21,12 @@ func (f *Function) compileAssert(assert *ast.Assert) error {
 	f.AddBlock(elseBlock)
 	crash := f.Env.Function("run", "crash")
 
-	elseBlock.Append(&ssa.Call{Func: &ssa.Function{
+	fn := &ssa.Function{
 		FunctionRef: crash,
 		Typ:         crash.Type,
-	}})
+	}
 
+	f.call(fn, nil, assert.Condition.Source())
 	f.Dependencies.Add(crash)
 	f.AddBlock(thenBlock)
 	return nil

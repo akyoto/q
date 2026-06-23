@@ -17,7 +17,7 @@ func (f *Function) evaluateArray(expr *expression.Expression) (ssa.Value, error)
 		return nil, err
 	}
 
-	addressValue, addressType, length, err := f.decomposeSlice(addressValue, address.Source())
+	addressValue, addressType, length, err := f.decomposeSlice(addressValue)
 
 	if err != nil {
 		return nil, err

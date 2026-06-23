@@ -44,16 +44,15 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 	malloc := f.Env.Function("mem", "alloc")
 	f.Dependencies.Add(malloc)
 
-	call := f.Append(&ssa.Call{
-		Func: &ssa.Function{
-			FunctionRef: malloc,
-			Typ: &types.Function{
-				Output: []types.Type{mallocType},
-			},
+	fn := &ssa.Function{
+		FunctionRef: malloc,
+		Typ: &types.Function{
+			Output: []types.Type{mallocType},
 		},
-		Arguments: []ssa.Value{sizeInBytes},
-		Source:    expr.Source(),
-	})
+	}
+
+	args := []ssa.Value{sizeInBytes}
+	call := f.call(fn, args, expr.Source())
 
 	if isSlice {
 		structure := &ssa.Struct{

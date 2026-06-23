@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/optimizer"
@@ -35,14 +37,34 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 		return nil, err
 	}
 
-	_, leftIsStruct := leftValue.Type().(*types.Struct)
-	_, rightIsStruct := rightValue.Type().(*types.Struct)
+	_, leftIsStruct := types.Unwrap(leftValue.Type()).(*types.Struct)
+	_, rightIsStruct := types.Unwrap(rightValue.Type()).(*types.Struct)
 
-	if leftIsStruct && rightIsStruct && expr.Token.Kind == token.Concat {
-		return f.evaluateConcat(leftValue, rightValue, expr.Source())
+	if leftIsStruct && rightIsStruct {
+		switch expr.Token.Kind {
+		case token.Concat:
+			return f.evaluateStringOp("concat", leftValue, rightValue, expr.Source())
+		case token.Equal:
+			return f.evaluateStringOp("equal", leftValue, rightValue, expr.Source())
+		case token.NotEqual:
+			equal, err := f.evaluateStringOp("equal", leftValue, rightValue, expr.Source())
+
+			if err != nil {
+				return nil, err
+			}
+
+			v := f.Append(&ssa.UnaryOp{
+				Op:      token.Not,
+				Operand: equal,
+				Source:  expr.Source(),
+			})
+
+			return v, nil
+		}
 	}
 
 	if leftIsStruct || rightIsStruct {
+		fmt.Println(leftValue.Type().Name(), rightValue.Type().Name())
 		return nil, errors.New(InvalidStructOperation, f.File, expr.Token)
 	}
 
