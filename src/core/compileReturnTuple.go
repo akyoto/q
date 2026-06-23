@@ -32,6 +32,7 @@ func (f *Function) compileReturnTuple(node *ast.Return) error {
 		return errors.NewAt(&ReturnCountMismatch{Count: len(args), ExpectedCount: len(f.Output)}, f.File, node.Values[0].Source().Start())
 	}
 
+	f.deleteResources()
 	f.Append(&ssa.Return{Arguments: args})
 	return nil
 }
