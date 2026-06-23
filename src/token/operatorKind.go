@@ -39,8 +39,6 @@ func operatorKind(op []byte, next byte) (Kind, bool) {
 		}
 	case "+":
 		switch next {
-		case '+':
-			return Concat, true
 		case '=':
 			return AddAssign, true
 		default:

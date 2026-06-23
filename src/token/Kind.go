@@ -33,7 +33,6 @@ const (
 	Shr                               // >>
 	LogicalAnd                        // &&
 	LogicalOr                         // ||
-	Concat                            // ++
 	Define                            // :=
 	Dot                               // .
 	Range                             // ..
@@ -244,8 +243,6 @@ func (k Kind) String() string {
 		return ":"
 	case Cast:
 		return "as"
-	case Concat:
-		return "++"
 	default:
 		return ""
 	}

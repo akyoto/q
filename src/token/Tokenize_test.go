@@ -108,7 +108,7 @@ func TestNumber(t *testing.T) {
 }
 
 func TestOperator(t *testing.T) {
-	tokens := token.Tokenize([]byte(`a + b - c * d / e % f << g >> h & i | j ^ k ++ n`))
+	tokens := token.Tokenize([]byte(`a + b - c * d / e % f << g >> h & i | j ^ k`))
 
 	expected := []token.Kind{
 		token.Identifier,
@@ -131,8 +131,6 @@ func TestOperator(t *testing.T) {
 		token.Or,
 		token.Identifier,
 		token.Xor,
-		token.Identifier,
-		token.Concat,
 		token.Identifier,
 		token.EOF,
 	}

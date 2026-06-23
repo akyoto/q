@@ -1,4 +1,4 @@
 main() {
-	assert "Hello" ++ "World" == "HelloWorld"
-	assert "Hello" ++ "World" != "WorldHello"
+	assert "Hello" + "World" == "HelloWorld"
+	assert "Hello" + "World" != "WorldHello"
 }

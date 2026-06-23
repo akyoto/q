@@ -42,7 +42,7 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 
 	if leftIsStruct && rightIsStruct {
 		switch expr.Token.Kind {
-		case token.Concat:
+		case token.Add:
 			return f.evaluateStringOp("concat", leftValue, rightValue, expr.Source())
 		case token.Equal:
 			return f.evaluateStringOp("equal", leftValue, rightValue, expr.Source())

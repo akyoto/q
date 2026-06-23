@@ -48,9 +48,6 @@ func (s *scanner) scanFunctionBody(file *fs.File, tokens token.List, i int) (int
 		case token.New, token.Delete:
 			s.queueDirectory(filepath.Join(global.Library, "mem"), "mem")
 
-		case token.Concat:
-			s.queueDirectory(filepath.Join(global.Library, "strings"), "strings")
-
 		case token.Invalid:
 			return bodyStart, i, errors.New(&InvalidCharacter{Character: tokens[i].StringFrom(file.Bytes)}, file, tokens[i])
 
