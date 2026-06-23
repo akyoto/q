@@ -24,7 +24,7 @@ extract(current string, name string) -> (string, error) {
 	key, value, err := strings.cut(current, "=")
 	assert err == 0
 
-	if strings.equal(key, name) {
+	if key == name {
 		return value, 0
 	}
 

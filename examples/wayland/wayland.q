@@ -1,6 +1,5 @@
 import io
 import net
-import strings
 import wayland
 
 main() {
@@ -133,13 +132,13 @@ handleGlobal(state *wayland.State, name uint32, interface string, _version uint3
 	io.write("\n")
 
 	switch {
-		strings.equal(interface, "wl_compositor") {
+		interface == "wl_compositor" {
 			state.wl_compositor_name = name
 		}
-		strings.equal(interface, "wl_shm") {
+		interface == "wl_shm" {
 			state.wl_shm_name = name
 		}
-		strings.equal(interface, "xdg_wm_base") {
+		interface == "xdg_wm_base" {
 			state.xdg_wm_base_name = name
 		}
 	}
