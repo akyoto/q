@@ -25,6 +25,10 @@ main() {
 	assert err == 0
 	assert posLL == 2
 
+	posHello, err := strings.index("HHeHelHellHello", "Hello")
+	assert err == 0
+	assert posHello == 10
+
 	_, err1 := strings.index("Hello", "Hello World")
 	assert err1 != 0
 

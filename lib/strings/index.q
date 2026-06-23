@@ -17,6 +17,7 @@ index(a string, b string) -> (uint, error) {
 				return i - j + 1, 0
 			}
 		} else {
+			i -= j
 			j = 0
 		}
 	}
