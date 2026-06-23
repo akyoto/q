@@ -53,7 +53,11 @@ func show(text string) {
 				line = line[end+1:]
 			}
 		case strings.HasPrefix(line, "    "):
-			ansi.Green.Print(line)
+			if strings.HasSuffix(line, " options:\n") {
+				fmt.Print(line)
+			} else {
+				ansi.Green.Print(line)
+			}
 		case line == "EOF":
 		default:
 			fmt.Print(line)

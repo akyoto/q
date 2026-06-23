@@ -1,5 +1,9 @@
 Compiler for the Q programming language.
 
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Commands                                                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
     Run a source file:
 
         q [file]
@@ -8,31 +12,32 @@ Compiler for the Q programming language.
 
         q build [file]
 
-    Build options:
-
-        -arch [x86|arm]              # sets the processor architecture
-        -os [linux|mac|windows]      # sets the operating system
-        -no-lint                     # disables the linter
-        -no-optimize                 # disables the optimizer
-
     Show intermediate stages:
 
-        q asm [file]                 # shows assembly code (accepts build and filter options)
-        q ssa [file]                 # shows SSA form (accepts build and filter options)
-
-    Filter options:
-
-        -func [name]                 # filters output by function name
-
-    List all imported files:
-
-        q files [file]               # accepts build options
+        q files [file]
+        q ssa [file]
+        q asm [file]
 
     Query information:
 
-        q help                       # shows this help
-        q keywords                   # lists keywords
-        q operators                  # lists operator precedence
-        q version                    # shows the version
+        q help
+        q keywords
+        q operators
+        q version
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Options                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+    Build options:
+
+        -arch [x86|arm]                 # Sets the processor architecture
+        -no-lint                        # Disables the linter
+        -no-optimize                    # Disables the optimizer
+        -os [linux|mac|windows]         # Sets the operating system
+
+    Filter options:
+
+        -func [name]                    # Filters output by function name
 
 EOF
