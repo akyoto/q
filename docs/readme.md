@@ -85,6 +85,22 @@ main() {
 }
 ```
 
+```
+echo() {
+	buffer := new(byte, 4096)
+
+	loop {
+		n, _ := io.read(buffer)
+
+		if n == 0 {
+			return
+		}
+
+		io.write(buffer[..n])
+	}
+}
+```
+
 ```q
 fibonacci(n int) -> int {
 	if n <= 1 {
@@ -154,6 +170,7 @@ See more in the [reference manual](reference.md).
 
 ## News
 
+- **2026-06-23**: Automatic deallocation.
 - **2026-06-03**: Method calls.
 - **2026-05-07**: Struct initialization.
 - **2026-05-06**: Command line arguments.
@@ -253,6 +270,9 @@ The standard library currently makes use of this feature in two packages:
 
 - `fs.open` must be followed by `fs.close`
 - `mem.alloc` must be followed by `mem.free`
+
+For memory allocations of slices and pointers `delete` is called automatically on all exit points of the identifier's scope.
+Non-pointer types like `!int` currently do not support automatic lifecycle management and require an explicit free call, e.g. an `fs.close` for `!int` file handles.
 
 ## Errors
 
@@ -451,7 +471,7 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 ### I can't contribute but can I donate to the project?
 
-- [BMAC](https://buymeacoffee.com/akyoto)
+- [Bmac](https://buymeacoffee.com/akyoto)
 - [GitHub](https://github.com/sponsors/akyoto)
 - [Kofi](https://ko-fi.com/akyoto)
 
