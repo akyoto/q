@@ -15,7 +15,7 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 			Memory: &ssa.Memory{
 				Address: value,
 				Index:   zero,
-				Typ:     value.Typ,
+				Typ:     value.Typ.(*types.Pointer).To,
 			},
 			Source: value.Source,
 		})
