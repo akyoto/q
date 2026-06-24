@@ -73,3 +73,13 @@ To minimize this complexity, the language uses only 9 precedence levels:
 | `delete`   | Frees memory                                               | 🚧 Experimental |
 | `new`      | Allocates memory                                           | 🚧 Experimental |
 | `syscall`  | Calls a kernel function                                    | ✔️ Stable       |
+
+## Packages
+
+A package is defined by a directory.
+All files in that directory belong to the same package and share access to its identifiers.
+Subdirectories form separate packages.
+
+Within each package, a function named `init` is executed automatically at program startup,
+while a function named `exit` runs before the program terminates.
+This feature is intended primarily for the standard library and is generally discouraged in application code.
