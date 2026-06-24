@@ -1,6 +1,6 @@
 import run
 
-osAlloc(length uint) -> *uint8 {
+rawAlloc(length uint) -> *uint8 {
 	x := kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
 
 	if x == 0 {
@@ -10,7 +10,7 @@ osAlloc(length uint) -> *uint8 {
 	return x
 }
 
-osFree(ptr *any, len uint) {
+rawFree(ptr *any, len uint) {
 	kernel32.VirtualFree(ptr, len, decommit)
 }
 

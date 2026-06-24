@@ -10,7 +10,7 @@ alloc(length uint) -> (buffer !string) {
 	}
 
 	size := (length + (pageSize - 1)) & -pageSize
-	x := osAlloc(size)
+	x := rawAlloc(size)
 	heap.last = x
 	heap.current = x + length
 	heap.next = x + size

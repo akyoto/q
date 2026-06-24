@@ -11,7 +11,7 @@ free(buffer !string) {
 
 		if heap.current < heap.last {
 			size := (heap.next - heap.last) as uint
-			osFree(heap.last, size)
+			rawFree(heap.last, size)
 			heap.next = heap.last
 			heap.last -= pageSize
 		}
