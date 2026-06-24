@@ -25,6 +25,7 @@ var (
 	MissingObject             = errors.String("Missing object or identifier")
 	MissingFieldName          = errors.String("Missing field name")
 	MissingOperand            = errors.String("Missing operand")
+	SyscallNotAvailable       = errors.String("Syscall is not available for this operating system")
 	UnnecessaryCast           = errors.String("Unnecessary type cast")
 )
 
