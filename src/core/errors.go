@@ -76,6 +76,20 @@ func (err *IdenticalExpressions) Error() string {
 	return fmt.Sprintf("Identical expressions to the left and right of the '%s' operator", err.Operator)
 }
 
+// InvalidLoopControl represents invalid loop control statements.
+type InvalidLoopControl struct {
+	Name        string
+	CorrectName string
+}
+
+func (err *InvalidLoopControl) Error() string {
+	if err.CorrectName != "" {
+		return fmt.Sprintf("Invalid loop control '%s', did you mean '%s'?", err.Name, err.CorrectName)
+	}
+
+	return fmt.Sprintf("Invalid loop control '%s'", err.Name)
+}
+
 // NoMatchingFunction is created when a function is not defined for the given type.
 type NoMatchingFunction struct {
 	Function string

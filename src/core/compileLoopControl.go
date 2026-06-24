@@ -19,8 +19,9 @@ func (f *Function) compileLoopControl(control *ast.LoopControl) error {
 	}
 
 	loop := f.loopStack.Current()
+	name := call.Children[0].Token.StringFrom(f.File.Bytes)
 
-	switch call.Children[0].Token.StringFrom(f.File.Bytes) {
+	switch name {
 	case "next":
 		f.loopNext(loop)
 	case "restart":
@@ -28,7 +29,13 @@ func (f *Function) compileLoopControl(control *ast.LoopControl) error {
 	case "stop":
 		f.jump(loop.Exit)
 	default:
-		panic("invalid")
+		correctName := ""
+
+		if name == "break" {
+			correctName = "stop"
+		}
+
+		return errors.New(&InvalidLoopControl{Name: name, CorrectName: correctName}, f.File, call.Children[0].Source())
 	}
 
 	return nil

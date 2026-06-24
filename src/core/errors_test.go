@@ -53,6 +53,8 @@ var errs = []struct {
 	{"InvalidFieldInit.q", core.InvalidFieldInit},
 	{"InvalidFieldInit2.q", core.InvalidFieldInit},
 	{"InvalidLeftExpression.q", core.InvalidLeftExpression},
+	{"InvalidLoopControl.q", &core.InvalidLoopControl{Name: "unknown"}},
+	{"InvalidLoopControl2.q", &core.InvalidLoopControl{Name: "break", CorrectName: "stop"}},
 	{"InvalidLoopHeader.q", core.InvalidLoopHeader},
 	{"InvalidStructOperation.q", core.InvalidStructOperation},
 	{"InvalidStructOperation2.q", core.InvalidStructOperation},
