@@ -28,24 +28,6 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		return err
 	}
 
-	global, isGlobal := leftValue.(*ssa.Global)
-
-	if isGlobal {
-		zero := f.Append(&ssa.Int{Int: 0})
-
-		f.Append(&ssa.Store{
-			Memory: &ssa.Memory{
-				Typ:     global.Typ,
-				Address: global,
-				Index:   zero,
-				Source:  global.Source,
-			},
-			Value: rightValue,
-		})
-
-		return nil
-	}
-
 	call, isCall := rightValue.(*ssa.Call)
 
 	if isCall && len(call.Func.Typ.Output) != 1 {
@@ -71,15 +53,35 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 
 	if isAssign && root.Token.Kind != token.Assign {
 		operator := removeAssign(root.Token.Kind)
+		leftValueDeref, err := f.evaluateRight(left)
 
-		operation := f.Append(&ssa.BinaryOp{
+		if err != nil {
+			return err
+		}
+
+		rightValue = f.Append(&ssa.BinaryOp{
 			Op:     operator,
-			Left:   leftValue,
+			Left:   leftValueDeref,
 			Right:  rightValue,
 			Source: root.Source(),
 		})
+	}
 
-		f.Block().Identify(name, operation)
+	global, isGlobal := leftValue.(*ssa.Global)
+
+	if isGlobal {
+		zero := f.Append(&ssa.Int{Int: 0})
+
+		f.Append(&ssa.Store{
+			Memory: &ssa.Memory{
+				Typ:     global.Typ,
+				Address: global,
+				Index:   zero,
+				Source:  global.Source,
+			},
+			Value: rightValue,
+		})
+
 		return nil
 	}
 

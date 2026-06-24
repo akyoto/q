@@ -151,6 +151,7 @@ var tests = []run{
 	{"const-string", nil, "", "Hello", 0},
 	{"const-color", nil, "", "", 0},
 	{"global", nil, "", "", 0},
+	{"global-math", nil, "", "", 0},
 	{"c-length", nil, "", "", 0},
 	{"c-string", nil, "", "", 0},
 	{"cli-args", nil, "", "", 0},
