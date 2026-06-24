@@ -11,6 +11,7 @@ main() {
 
 work() {
 	io.write("[ ] start\n")
-	time.sleep(500 * time.millisecond)
+	// TODO: Thread-local memory allocators would allow time.sleep
+	// time.sleep(500 * time.millisecond)
 	io.write("[x] end\n")
 }
