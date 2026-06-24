@@ -9,9 +9,10 @@ args() -> ![]string {
 	args := new(string, argc)
 
 	loop i := 0..args.len {
-		length := kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i+1], -1, 0, 0, 0, 0) - 1
-		args[i] = mem.alloc(length as uint)
-		kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i+1], -1, args[i].ptr, length, 0, 0)
+		length := kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i+1], -1, 0, 0, 0, 0) - 1 as uint
+		// TODO: Memory leak that needs to be removed once the type system has been fully implemented
+		args[i] = string{ptr: mem.rawAlloc(length), len: length}
+		kernel32.WideCharToMultiByte(io.utf8, 0, wargv[i+1], -1, args[i].ptr, length as int32, 0, 0)
 	}
 
 	kernel32.LocalFree(wargv)
