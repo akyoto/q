@@ -1,3 +1,5 @@
 main() {
-	syscall(x)
+	f(x)
 }
+
+f(_ any) {}

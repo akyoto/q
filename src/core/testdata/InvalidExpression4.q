@@ -1,3 +1,5 @@
 main() {
-	syscall(+, -, *, /)
+	f(+, -, *, /)
 }
+
+f(_ any, _ any, _ any, _ any) {}
