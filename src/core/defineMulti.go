@@ -42,9 +42,15 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 
 	for i, identifier := range leaves {
 		name := identifier.String(f.File.Bytes)
+		structure, isStructType := types.Unwrap(fn.Typ.Output[i]).(*types.Struct)
 
 		if name == "_" {
-			count++
+			if isStructType {
+				count += len(structure.Fields)
+			} else {
+				count++
+			}
+
 			continue
 		}
 
@@ -53,8 +59,6 @@ func (f *Function) defineMulti(left *expression.Expression, right *expression.Ex
 		if err != nil {
 			return err
 		}
-
-		structure, isStructType := types.Unwrap(fn.Typ.Output[i]).(*types.Struct)
 
 		if !isStructType {
 			value := &ssa.Field{
