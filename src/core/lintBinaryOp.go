@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -126,7 +128,7 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 					return errors.New(AlwaysTrue, f.File, binOp.Source)
 				}
 
-			case rightInt.Int < 0:
+			case rightInt.Int < 0 && strings.HasPrefix(rightInt.StringFrom(f.File.Bytes), "-"):
 				switch binOp.Op {
 				case token.Equal, token.LessEqual, token.Less:
 					return errors.New(AlwaysFalse, f.File, binOp.Source)
@@ -150,7 +152,7 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 					return errors.New(AlwaysTrue, f.File, binOp.Source)
 				}
 
-			case leftInt.Int < 0:
+			case leftInt.Int < 0 && strings.HasPrefix(leftInt.StringFrom(f.File.Bytes), "-"):
 				switch binOp.Op {
 				case token.Equal, token.GreaterEqual, token.Greater:
 					return errors.New(AlwaysFalse, f.File, binOp.Source)
