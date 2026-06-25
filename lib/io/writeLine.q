@@ -3,7 +3,17 @@ writeLine(buffer string) {
 	write("\n")
 }
 
-writeLine(number int) {
-	write(number)
+writeLine(signed int) {
+	write(signed)
+	write("\n")
+}
+
+writeLine(unsigned uint) {
+	write(unsigned)
+	write("\n")
+}
+
+writeLine(pointer *any) {
+	write(pointer)
 	write("\n")
 }
