@@ -1,6 +1,6 @@
 import net
 
-listen(port uint16) -> (int, error) {
+listen(port uint16) -> (uint, error) {
 	s, err := net.socket(net.AF_INET6, net.SOCK_STREAM, 0)
 
 	if err != 0 {

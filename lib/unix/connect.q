@@ -1,6 +1,6 @@
 import net
 
-connect(path string) -> (!int, error) {
+connect(path string) -> (!uint, error) {
 	if path.len > maxPathLength {
 		return 0, -1
 	}

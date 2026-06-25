@@ -1,5 +1,5 @@
 State {
-	socket int
+	socket uint
 	id uint32
 
 	wl_compositor uint32
@@ -12,7 +12,7 @@ State {
 	wl_shm_name uint32
 	xdg_wm_base_name uint32
 
-	shm_fd !int
+	shm_fd !uint
 	shm_size uint32
 	shm_data *byte
 }

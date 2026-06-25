@@ -2,7 +2,7 @@ read(buffer string) -> (count uint, err error) {
 	return readFrom(stdin, buffer)
 }
 
-readFrom(fd int, buffer string) -> (count uint, err error) {
+readFrom(fd uint, buffer string) -> (count uint, err error) {
 	n := syscall(_read, fd, buffer.ptr, buffer.len)
 
 	if n < 0 {

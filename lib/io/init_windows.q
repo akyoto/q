@@ -6,8 +6,8 @@ init() {
 }
 
 global {
-	stdin int64
-	stdout int64
+	stdin uint
+	stdout uint
 }
 
 const {
@@ -16,7 +16,7 @@ const {
 
 extern {
 	kernel32 {
-		GetStdHandle(device int64) -> (handle int64)
+		GetStdHandle(device int64) -> (handle uint)
 		SetConsoleCP(cp uint)
 		SetConsoleOutputCP(cp uint)
 	}

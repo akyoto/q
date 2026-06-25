@@ -1,4 +1,4 @@
-openRead(path *byte) -> (!int, error) {
+openRead(path *byte) -> (!uint, error) {
 	fd := syscall(_openat, -100, path, readOnly, 0)
 
 	if fd < 0 {
@@ -8,7 +8,7 @@ openRead(path *byte) -> (!int, error) {
 	return fd, 0
 }
 
-openWrite(path *byte) -> (!int, error) {
+openWrite(path *byte) -> (!uint, error) {
 	fd := syscall(_openat, -100, path, writeOnly | create | truncate, 0o644)
 
 	if fd < 0 {
@@ -18,7 +18,7 @@ openWrite(path *byte) -> (!int, error) {
 	return fd, 0
 }
 
-size(fd int) -> (uint, error) {
+size(fd uint) -> (uint, error) {
 	stats := new(FileStat)
 	err := syscall(_fstat, fd, stats)
 
@@ -30,11 +30,11 @@ size(fd int) -> (uint, error) {
 	return size, 0
 }
 
-close(fd !int) -> error {
+close(fd !uint) -> error {
 	return syscall(_close, fd)
 }
 
-memfd_create(path *byte, flags uint) -> (!int, error) {
+memfd_create(path *byte, flags uint) -> (!uint, error) {
 	fd := syscall(_memfd_create, path, flags)
 
 	if fd < 0 {
@@ -44,6 +44,6 @@ memfd_create(path *byte, flags uint) -> (!int, error) {
 	return fd, 0
 }
 
-ftruncate(fd int, length uint) -> error {
+ftruncate(fd uint, length uint) -> error {
 	return syscall(_ftruncate, fd, length)
 }

@@ -1,6 +1,6 @@
 import unix
 
-connect() -> (!int, error) {
+connect() -> (!uint, error) {
 	path, err := path()
 
 	if err != 0 {

@@ -1,3 +1,4 @@
 const {
 	AF_INET6 = 23
+	SOCKET_ERROR = 0xFFFFFFFF
 }
