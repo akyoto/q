@@ -20,4 +20,68 @@ WsaData {
 	maxSockets uint16
 	maxUdpDg uint16
 	vendorInfo *byte
+
+	// TODO: 257 bytes (description)
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+
+	_ uint8
+
+	// TODO: 129 bytes (systemStatus)
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+	_ uint64
+
+	_ uint8
+
+	// TODO: 6 bytes (padding)
+	_ uint32
+	_ uint16
 }
