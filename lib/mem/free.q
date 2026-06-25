@@ -5,9 +5,11 @@ free(buffer !string) {
 		return
 	}
 
-	if buffer.ptr + buffer.len == heap.current {
+	aligned := (buffer.len + 15) & -16
+
+	if buffer.ptr + aligned == heap.current {
 		zero(buffer)
-		heap.current -= buffer.len
+		heap.current -= aligned
 
 		if heap.current < heap.last {
 			size := (heap.next - heap.last) as uint

@@ -3,16 +3,18 @@ alloc(length uint) -> (buffer !string) {
 		return string{ptr: 0 as *uint8, len: 0}
 	}
 
-	if heap.current + length < heap.next {
-		ptr := heap.current
-		heap.current += length
-		return string{ptr: ptr, len: length}
+	aligned := (length + 15) & -16
+
+	if heap.current + aligned < heap.next {
+		x := heap.current
+		heap.current += aligned
+		return string{ptr: x, len: length}
 	}
 
-	size := (length + (pageSize - 1)) & -pageSize
+	size := (aligned + (pageSize - 1)) & -pageSize
 	x := rawAlloc(size)
 	heap.last = x
-	heap.current = x + length
+	heap.current = x + aligned
 	heap.next = x + size
 	return string{ptr: x, len: length}
 }
