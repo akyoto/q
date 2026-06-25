@@ -25,6 +25,18 @@ func (f *Function) deleteResources() {
 		aValue := identifiers[a]
 		bValue := identifiers[b]
 
+		aStruct, aIsStruct := aValue.(*ssa.Struct)
+
+		if aIsStruct && len(aStruct.Arguments) > 0 {
+			aValue = aStruct.Arguments[0]
+		}
+
+		bStruct, bIsStruct := bValue.(*ssa.Struct)
+
+		if bIsStruct && len(bStruct.Arguments) > 0 {
+			bValue = bStruct.Arguments[0]
+		}
+
 		for _, block := range f.IR.Blocks {
 			aIndex := block.Index(aValue)
 			bIndex := block.Index(bValue)
@@ -39,7 +51,7 @@ func (f *Function) deleteResources() {
 			}
 		}
 
-		return 0
+		panic("non-deterministic memory deallocation order")
 	})
 
 	for _, name := range names {
