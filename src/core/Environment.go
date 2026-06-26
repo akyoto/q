@@ -104,6 +104,23 @@ func (env *Environment) LiveFunctions() iter.Seq[*Function] {
 	}
 }
 
+// Package resolves a package name for the given file and marks the import as used.
+func (env *Environment) Package(name string, file *fs.File) *Package {
+	pkg, exists := env.Packages[name]
+
+	if exists && !pkg.IsExtern && pkg.Name != "main" {
+		imp, exists := file.Imports[name]
+
+		if !exists {
+			return nil
+		}
+
+		imp.Used.Add(1)
+	}
+
+	return pkg
+}
+
 // ResolveTypes resolves all the type tokens in structs, globals and function parameters.
 func (env *Environment) ResolveTypes() error {
 	err := env.parseStructs(env.Structs())

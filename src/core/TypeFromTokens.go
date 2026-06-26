@@ -79,7 +79,7 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 
 	if len(tokens) >= 3 && tokens[1].Kind == token.Dot && tokens[2].Kind == token.Identifier {
 		pkgName := tokens[0].StringFrom(file.Bytes)
-		pkg := env.Packages[pkgName]
+		pkg := env.Package(pkgName, file)
 
 		if pkg == nil {
 			return nil, errors.New(&UnknownIdentifier{Name: pkgName}, file, tokens[0])

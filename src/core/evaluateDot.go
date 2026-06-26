@@ -34,16 +34,10 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	pkgValue, isPackage := leftValue.(*ssa.Package)
 
 	if isPackage {
-		pkg := f.Env.Packages[pkgValue.Name]
+		pkg := f.Env.Package(pkgValue.Name, f.File)
 
-		if !pkg.IsExtern && pkg.Name != "main" {
-			imp, exists := f.File.Imports[pkgValue.Name]
-
-			if !exists {
-				return nil, errors.New(&UnknownIdentifier{Name: pkgValue.Name}, f.File, left.Source())
-			}
-
-			imp.Used.Add(1)
+		if pkg == nil {
+			return nil, errors.New(&UnknownIdentifier{Name: pkgValue.Name}, f.File, left.Source())
 		}
 
 		if right.Token.Kind != token.Identifier {
