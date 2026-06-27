@@ -9,5 +9,5 @@ func MulRegisterNumber(code []byte, register cpu.Register, number int) []byte {
 
 // MulRegisterRegister multiplies a register with another register.
 func MulRegisterRegister(code []byte, register cpu.Register, operand cpu.Register) []byte {
-	return encode(code, AddressDirect, register, operand, 8, 0x0F, 0xAF)
+	return encode(code, AddressDirect, register, operand, 8, 0x0FAF)
 }

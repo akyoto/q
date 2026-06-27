@@ -7,7 +7,7 @@ import (
 )
 
 // encodeNum encodes an instruction with up to two registers and a number parameter.
-func encodeNum(code []byte, mod AddressMode, reg cpu.Register, rm cpu.Register, number int, opCode8 byte, opCode32 byte) []byte {
+func encodeNum(code []byte, mod AddressMode, reg cpu.Register, rm cpu.Register, number int, opCode8 uint32, opCode32 uint32) []byte {
 	if cpu.SizeInt(int64(number)) == 1 {
 		code = encode(code, mod, reg, rm, 8, opCode8)
 		return append(code, byte(number))

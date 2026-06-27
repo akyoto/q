@@ -3,24 +3,44 @@ package x86
 import "git.urbach.dev/cli/q/src/cpu"
 
 // encode is the core function that encodes an instruction.
-func encode(code []byte, mod AddressMode, reg cpu.Register, rm cpu.Register, numBytes byte, opCodes ...byte) []byte {
-	w := byte(0) // Indicates a 64-bit register.
-	r := byte(0) // Extension to the "reg" field in ModRM.
-	x := byte(0) // Extension to the SIB index field.
-	b := byte(0) // Extension to the "rm" field in ModRM or the SIB base (r8 up to r15 use this).
+func encode(code []byte, mod AddressMode, reg cpu.Register, rm cpu.Register, length byte, opCode uint32) []byte {
+	var (
+		w byte
+		r byte
+		b byte
+	)
 
-	if numBytes == 8 {
+	if length == 8 {
 		w = 1
+	} else {
+		w = 0
 	}
 
 	r, reg = split(reg)
 	b, rm = split(rm)
 
-	if w != 0 || r != 0 || x != 0 || b != 0 || (numBytes == 1 && (reg == SP || reg == R5 || reg == R6 || reg == R7)) {
-		code = append(code, REX(w, r, x, b))
+	if length == 2 {
+		code = append(code, 0x66)
 	}
 
-	code = append(code, opCodes...)
+	if w != 0 || r != 0 || b != 0 || (length == 1 && reg >= SP && reg <= R7) {
+		code = append(code, REX(w, r, 0, b))
+	}
+
+	if opCode&0xFF0000 != 0 {
+		code = append(code, byte(opCode>>16))
+	}
+
+	if opCode&0xFF00 != 0 {
+		code = append(code, byte(opCode>>8))
+	}
+
+	code = append(code, byte(opCode))
 	code = append(code, ModRM(mod, byte(reg), byte(rm)))
+
+	if mod != AddressDirect && rm == 0b100 {
+		code = append(code, SIB(Scale1, 0b100, 0b100))
+	}
+
 	return code
 }

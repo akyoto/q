@@ -6,21 +6,15 @@ import (
 	"git.urbach.dev/cli/q/src/cpu"
 )
 
-// memLoadExtend encodes a memory load with sign or zero extension.
-func memLoadExtend(code []byte, register cpu.Register, base cpu.Register, offset int32, length byte, opCode8 uint32, opCode16 uint32, opCode32 uint32) []byte {
-	var (
-		opCode uint32
-		mod    = AddressMemory
-	)
+// memAccessFixedOffset encodes a memory access.
+func memAccessFixedOffset(code []byte, register cpu.Register, base cpu.Register, offset int32, length byte, opCode8 uint32, opCode32 uint32) []byte {
+	opCode := opCode32
 
-	switch length {
-	case 1:
+	if length == 1 {
 		opCode = opCode8
-	case 2:
-		opCode = opCode16
-	case 4:
-		opCode = opCode32
 	}
+
+	mod := AddressMemory
 
 	if offset != 0 || base == R5 || base == R13 {
 		mod = AddressMemoryOffset8
@@ -30,7 +24,7 @@ func memLoadExtend(code []byte, register cpu.Register, base cpu.Register, offset
 		}
 	}
 
-	code = encode(code, mod, register, base, 8, opCode)
+	code = encode(code, mod, register, base, length, opCode)
 
 	switch mod {
 	case AddressMemoryOffset8:
