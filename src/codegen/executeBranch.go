@@ -2,16 +2,32 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/x86"
 )
 
 func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 	var op token.Kind
 	binaryOp, isBinaryOp := instr.Condition.(*ssa.BinaryOp)
+	cas, isCas := instr.Condition.(*ssa.Cas)
 
 	if isBinaryOp && binaryOp.Op.IsComparison() {
 		op = binaryOp.Op
+	} else if isCas {
+		op = token.Equal
+
+		dest := f.ValueToStep[cas.Arguments[1]].Register
+
+		if f.build.Arch == config.X86 {
+			dest = x86.R0
+		}
+
+		f.Assembler.Append(&asm.CompareNumber{
+			Destination: dest,
+			Number:      cas.Arguments[1].(*ssa.Int).Int,
+		})
 	} else {
 		op = token.NotEqual
 

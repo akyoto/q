@@ -40,6 +40,8 @@ func (f *Function) needsRegister(s *Step) bool {
 	switch instr := s.Value.(type) {
 	case *ssa.BinaryOp:
 		return !instr.Op.IsComparison()
+	case *ssa.Cas:
+		return false
 	case *ssa.Int:
 		if len(users) == 1 {
 			// Check if we can encode single-use integers as immediates

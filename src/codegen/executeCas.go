@@ -28,11 +28,4 @@ func (f *Function) executeCas(step *Step, instr *ssa.Cas) {
 		Address:  address.Register,
 		Length:   8,
 	})
-
-	if step.Register != oldValueRegister {
-		f.Assembler.Append(&asm.Move{
-			Destination: step.Register,
-			Source:      oldValueRegister,
-		})
-	}
 }

@@ -31,4 +31,4 @@ func (c *Cas) IsPure() bool { return false }
 func (c *Cas) String() string { return fmt.Sprintf("cas(%s)", c.Arguments.String()) }
 
 // Type returns the type of the CAS operation.
-func (c *Cas) Type() types.Type { return types.UInt32 }
+func (c *Cas) Type() types.Type { return types.Bool }
