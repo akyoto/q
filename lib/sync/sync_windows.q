@@ -1,9 +1,9 @@
-wake(state *uint32, count int32) -> error {
+wake(_state *uint32, _count int32) -> error {
 	// TODO: Not implemented.
 	return -1
 }
 
-wait(address *uint32, value uint32) -> error {
+wait(_address *uint32, _value uint32) -> error {
 	// TODO: Not implemented.
 	return -1
 }
