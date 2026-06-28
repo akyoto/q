@@ -82,6 +82,9 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.CallRegister(c.code, instr.Address)
 	case *Compare:
 		c.code = x86.CompareRegisterRegister(c.code, instr.Destination, instr.Source)
+	case *CompareAndSwap:
+		c.code = x86.Lock(c.code)
+		c.code = x86.CompareAndSwapFixedOffset(c.code, instr.Address, 0, instr.Length, instr.NewValue)
 	case *CompareNumber:
 		if instr.Number == 0 {
 			c.code = x86.TestRegisterRegister(c.code, instr.Destination, instr.Destination)

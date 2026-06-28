@@ -19,6 +19,8 @@ func (f *Function) execute(step *Step) {
 		f.executeCall(step, instr)
 	case *ssa.CallExtern:
 		f.executeCallExtern(step, instr)
+	case *ssa.Cas:
+		f.executeCas(step, instr)
 	case *ssa.Copy:
 		f.executeCopy(step, instr)
 	case *ssa.Field:

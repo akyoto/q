@@ -19,8 +19,14 @@ type (
 	CallExternEnd   struct{}
 	CallRegister    struct{ Address cpu.Register }
 	Compare         rr
-	CompareNumber   rn
-	ConditionalSet  struct {
+	CompareAndSwap  struct {
+		OldValue cpu.Register
+		NewValue cpu.Register
+		Address  cpu.Register
+		Length   byte
+	}
+	CompareNumber  rn
+	ConditionalSet struct {
 		Destination cpu.Register
 		Condition   token.Kind
 	}

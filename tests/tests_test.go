@@ -168,6 +168,7 @@ var tests = []run{
 	{"random", nil, "", "", 0},
 	{"sqrt", nil, "", "", 0},
 	{"fold", nil, "", "", 0},
+	{"cas", nil, "", "", 0},
 	{"spill-call", nil, "", "", 0},
 }
 

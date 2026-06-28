@@ -49,9 +49,10 @@ func TestKeyword(t *testing.T) {
 }
 
 func TestBuiltin(t *testing.T) {
-	tokens := token.Tokenize([]byte("delete new syscall"))
+	tokens := token.Tokenize([]byte("cas delete new syscall"))
 
 	expected := []token.Kind{
+		token.Cas,
 		token.Delete,
 		token.New,
 		token.Syscall,

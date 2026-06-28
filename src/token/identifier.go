@@ -17,6 +17,8 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 		kind = Cast
 	case "assert":
 		kind = Assert
+	case "cas":
+		kind = Cas
 	case "const":
 		kind = Const
 	case "delete":

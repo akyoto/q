@@ -87,6 +87,8 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(arm.CallRegister(instr.Address))
 	case *Compare:
 		c.append(arm.CompareRegisterRegister(instr.Destination, instr.Source))
+	case *CompareAndSwap:
+		c.append(arm.CompareAndSwap(instr.OldValue, instr.NewValue, instr.Address, instr.Length))
 	case *CompareNumber:
 		code, _ := arm.CompareRegisterNumber(instr.Destination, instr.Number)
 		c.append(code)

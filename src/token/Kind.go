@@ -84,6 +84,7 @@ const (
 	___END_BLOCKS___                  // </blocks>
 	___END_KEYWORDS___                // </keywords>
 	___BUILTINS___                    // <builtins>
+	Cas                               // cas
 	Delete                            // delete
 	New                               // new
 	Syscall                           // syscall

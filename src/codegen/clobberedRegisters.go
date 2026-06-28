@@ -22,6 +22,8 @@ func (f *Function) clobberedRegisters(instr ssa.Value) []cpu.Register {
 		return f.CPU.Call.Clobbered
 	case *ssa.CallExtern:
 		return f.CPU.ExternCall.Clobbered
+	case *ssa.Cas:
+		return f.CPU.CasClobbered
 	case *ssa.Syscall:
 		return f.CPU.Syscall.Clobbered
 	default:

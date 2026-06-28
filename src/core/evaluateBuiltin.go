@@ -9,11 +9,14 @@ import (
 // evaluateBuiltin converts a call to a builtin function to an SSA value.
 func (f *Function) evaluateBuiltin(expr *expression.Expression) (ssa.Value, error) {
 	switch expr.Children[0].Token.Kind {
-	case token.New:
-		return f.evaluateNew(expr)
+	case token.Cas:
+		return f.evaluateCas(expr)
 
 	case token.Delete:
 		return f.evaluateDelete(expr)
+
+	case token.New:
+		return f.evaluateNew(expr)
 
 	case token.Syscall:
 		return f.evaluateSyscall(expr)

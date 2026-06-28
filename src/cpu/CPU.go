@@ -6,6 +6,7 @@ type CPU struct {
 	Call              ABI
 	ExternCall        ABI
 	Syscall           ABI
+	CasClobbered      []Register
 	DivisionClobbered []Register
 	DivisorRestricted []Register
 	ShiftClobbered    []Register

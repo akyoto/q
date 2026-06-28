@@ -74,6 +74,13 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Destination)
 			other.Print(", ")
 			register.Print(instr.Source)
+		case *asm.CompareAndSwap:
+			mnemonic.Print("  cas ")
+			register.Print(instr.OldValue)
+			other.Print(", ")
+			register.Print(instr.NewValue)
+			other.Print(", ")
+			register.Print(instr.Address)
 		case *asm.CompareNumber:
 			mnemonic.Print("  compare ")
 			register.Print(instr.Destination)
