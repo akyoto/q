@@ -8,3 +8,8 @@ import "git.urbach.dev/cli/q/src/cpu"
 func CompareAndSwap(code []byte, base cpu.Register, offset cpu.Register, scale Scale, length byte, source cpu.Register) []byte {
 	return memAccess(code, source, base, offset, scale, length, length, 0x0FB0, 0x0FB1)
 }
+
+// CompareAndSwapFixedOffset is a CompareAndSwap with a fixed offset.
+func CompareAndSwapFixedOffset(code []byte, base cpu.Register, offset int32, length byte, source cpu.Register) []byte {
+	return memAccessFixedOffset(code, source, base, offset, length, 0x0FB0, 0x0FB1)
+}
