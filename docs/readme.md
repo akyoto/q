@@ -170,6 +170,7 @@ See more in the [reference manual](reference.md).
 
 ## News
 
+- **2026-06-28**: Mutex synchronization.
 - **2026-06-23**: Automatic deallocation.
 - **2026-06-03**: Method calls.
 - **2026-05-07**: Struct initialization.
@@ -453,10 +454,6 @@ main() {
 ```
 
 You need to create a file with the contents above and add execution permissions via `chmod +x`. Now you can run the script without an explicit compiler build. The generated machine code runs directly from RAM if the OS supports it.
-
-### Does it have a fast memory allocator?
-
-[No](../lib/mem), the current implementation is only temporary and it needs to be replaced with a faster one once the required language features have been implemented.
 
 ### Any editor extensions?
 
