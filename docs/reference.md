@@ -36,17 +36,16 @@ The first character of an identifier must not be a digit. Identifiers are case-s
 ## Operators
 
 Operator precedence introduces additional rules that programmers must learn and can lead to hidden mistakes.
-To minimize this complexity, the language uses only 9 precedence levels:
+To minimize this complexity, the language uses only 8 precedence levels:
 
 | Precedence | Operators                                                         | Description             |
 | ---------: | ----------------------------------------------------------------- | ----------------------- |
-|          9 | `.` `()` `[]` `{}`                                                | Postfix                 |
-|          8 | `!` `-`                                                           | Unary                   |
-|          7 | `*` `/` `%`                                                       | Multiplicative          |
-|          6 | `+` `-` `&` `\|` `^` `<<` `>>` `as`                               | Additive, bitwise, cast |
-|          5 | `==` `!=` `<` `>` `<=` `>=`                                       | Comparison              |
-|          4 | `&&`                                                              | Logical AND             |
-|          3 | `\|\|`                                                            | Logical OR              |
+|          8 | `.` `()` `[]` `{}`                                                | Postfix                 |
+|          7 | `!` `-`                                                           | Unary                   |
+|          6 | `*` `/` `%`                                                       | Multiplicative          |
+|          5 | `+` `-` `&` `\|` `^` `<<` `>>` `as`                               | Additive, bitwise, cast |
+|          4 | `==` `!=` `<` `>` `<=` `>=`                                       | Comparison              |
+|          3 | `&&` `\|\|`                                                       | Logical                 |
 |          2 | `..` `,`                                                          | Range, separator        |
 |          1 | `:=` `=` `+=` `-=` `*=` `/=` `%=` `&=` `\|=` `^=` `<<=` `>>=` `:` | Assignment              |
 

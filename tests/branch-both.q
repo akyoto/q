@@ -3,19 +3,19 @@ import run
 main() {
 	x := 0
 
-	if x == x && x != x || x != x && x != x {
+	if (x == x && x != x) || (x != x && x != x) {
 		run.exit(1)
 	}
 
-	if x != x && x == x || x != x && x != x {
+	if (x != x && x == x) || (x != x && x != x) {
 		run.exit(1)
 	}
 
-	if x != x && x != x || x == x && x != x {
+	if (x != x && x != x) || (x == x && x != x) {
 		run.exit(1)
 	}
 
-	if x != x && x != x || x != x && x == x {
+	if (x != x && x != x) || (x != x && x == x) {
 		run.exit(1)
 	}
 
@@ -35,8 +35,8 @@ main() {
 		run.exit(1)
 	}
 
-	if (x == x && x != x || x == x && x == x) && (x == x && x == x || x == x && x != x) {
-		if (x != x || x == x) && (x != x || x != x) || (x == x || x != x) && (x != x || x == x) {
+	if ((x == x && x != x) || (x == x && x == x)) && ((x == x && x == x) || (x == x && x != x)) {
+		if ((x != x || x == x) && (x != x || x != x)) || ((x == x || x != x) && (x != x || x == x)) {
 			run.exit(0)
 		}
 	}
