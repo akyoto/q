@@ -171,6 +171,7 @@ See more in the [reference manual](reference.md).
 ## News
 
 - **2026-06-28**: Mutex synchronization.
+- **2026-06-24**: Fast memory allocation.
 - **2026-06-23**: Automatic deallocation.
 - **2026-06-03**: Method calls.
 - **2026-05-07**: Struct initialization.
