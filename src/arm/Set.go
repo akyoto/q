@@ -17,8 +17,8 @@ func SetIfGreater(destination cpu.Register) uint32 {
 	return cset(GT, destination)
 }
 
-// SetIfGreaterOrEqual sets the register to 1 if the result was greater or equal, otherwise to 0.
-func SetIfGreaterOrEqual(destination cpu.Register) uint32 {
+// SetIfGreaterEqual sets the register to 1 if the result was greater or equal, otherwise to 0.
+func SetIfGreaterEqual(destination cpu.Register) uint32 {
 	return cset(GE, destination)
 }
 
@@ -27,9 +27,29 @@ func SetIfLess(destination cpu.Register) uint32 {
 	return cset(LT, destination)
 }
 
-// SetIfLessOrEqual sets the register to 1 if the result was less or equal, otherwise to 0.
-func SetIfLessOrEqual(destination cpu.Register) uint32 {
+// SetIfLessEqual sets the register to 1 if the result was less or equal, otherwise to 0.
+func SetIfLessEqual(destination cpu.Register) uint32 {
 	return cset(LE, destination)
+}
+
+// SetIfUnsignedGreater sets the register to 1 if the result was greater using unsigned comparison, otherwise to 0.
+func SetIfUnsignedGreater(destination cpu.Register) uint32 {
+	return cset(HI, destination)
+}
+
+// SetIfUnsignedGreaterEqual sets the register to 1 if the result was greater or equal using unsigned comparison, otherwise to 0.
+func SetIfUnsignedGreaterEqual(destination cpu.Register) uint32 {
+	return cset(HS, destination)
+}
+
+// SetIfUnsignedLess sets the register to 1 if the result was less using unsigned comparison, otherwise to 0.
+func SetIfUnsignedLess(destination cpu.Register) uint32 {
+	return cset(LO, destination)
+}
+
+// SetIfUnsignedLessEqual sets the register to 1 if the result was less or equal using unsigned comparison, otherwise to 0.
+func SetIfUnsignedLessEqual(destination cpu.Register) uint32 {
+	return cset(LS, destination)
 }
 
 // cset encodes a conditional set instruction.

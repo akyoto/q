@@ -22,7 +22,7 @@ func Jump8IfGreater(code []byte, offset int8) []byte {
 }
 
 // JumpIfGreaterOrEqual jumps if the result was greater or equal.
-func Jump8IfGreaterOrEqual(code []byte, offset int8) []byte {
+func Jump8IfGreaterEqual(code []byte, offset int8) []byte {
 	return append(code, 0x7D, byte(offset))
 }
 
@@ -32,6 +32,26 @@ func Jump8IfLess(code []byte, offset int8) []byte {
 }
 
 // JumpIfLessOrEqual jumps if the result was less or equal.
-func Jump8IfLessOrEqual(code []byte, offset int8) []byte {
+func Jump8IfLessEqual(code []byte, offset int8) []byte {
 	return append(code, 0x7E, byte(offset))
+}
+
+// Jump8IfUnsignedGreater jumps if the result was greater using unsigned comparison.
+func Jump8IfUnsignedGreater(code []byte, offset int8) []byte {
+	return append(code, 0x77, byte(offset))
+}
+
+// Jump8IfUnsignedGreaterEqual jumps if the result was greater or equal using unsigned comparison.
+func Jump8IfUnsignedGreaterEqual(code []byte, offset int8) []byte {
+	return append(code, 0x73, byte(offset))
+}
+
+// Jump8IfUnsignedLess jumps if the result was less using unsigned comparison.
+func Jump8IfUnsignedLess(code []byte, offset int8) []byte {
+	return append(code, 0x72, byte(offset))
+}
+
+// Jump8IfUnsignedLessEqual jumps if the result was less or equal using unsigned comparison.
+func Jump8IfUnsignedLessEqual(code []byte, offset int8) []byte {
+	return append(code, 0x76, byte(offset))
 }

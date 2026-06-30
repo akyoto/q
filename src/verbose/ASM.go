@@ -90,16 +90,26 @@ func printAssembly(f *core.Function) {
 			switch instr.Condition {
 			case token.Equal:
 				mnemonic.Print("  set if == ")
-			case token.Greater:
-				mnemonic.Print("  set if > ")
-			case token.GreaterEqual:
-				mnemonic.Print("  set if >= ")
-			case token.Less:
-				mnemonic.Print("  set if < ")
-			case token.LessEqual:
-				mnemonic.Print("  set if <= ")
 			case token.NotEqual:
 				mnemonic.Print("  set if != ")
+			case token.Greater:
+				mnemonic.Print("  set if.s > ")
+			case token.GreaterEqual:
+				mnemonic.Print("  set if.s >= ")
+			case token.Less:
+				mnemonic.Print("  set if.s < ")
+			case token.LessEqual:
+				mnemonic.Print("  set if.s <= ")
+			case token.UnsignedGreater:
+				mnemonic.Print("  set if.u > ")
+			case token.UnsignedGreaterEqual:
+				mnemonic.Print("  set if.u >= ")
+			case token.UnsignedLess:
+				mnemonic.Print("  set if.u < ")
+			case token.UnsignedLessEqual:
+				mnemonic.Print("  set if.u <= ")
+			default:
+				ansi.Red.Print("  set: unknown condition: " + instr.Condition.String() + " ")
 			}
 
 			register.Print(instr.Destination)
@@ -121,18 +131,28 @@ func printAssembly(f *core.Function) {
 			switch instr.Condition {
 			case token.Equal:
 				mnemonic.Print("  jump if == ")
-			case token.Greater:
-				mnemonic.Print("  jump if > ")
-			case token.GreaterEqual:
-				mnemonic.Print("  jump if >= ")
-			case token.Less:
-				mnemonic.Print("  jump if < ")
-			case token.LessEqual:
-				mnemonic.Print("  jump if <= ")
 			case token.NotEqual:
 				mnemonic.Print("  jump if != ")
+			case token.Greater:
+				mnemonic.Print("  jump if.s > ")
+			case token.GreaterEqual:
+				mnemonic.Print("  jump if.s >= ")
+			case token.Less:
+				mnemonic.Print("  jump if.s < ")
+			case token.LessEqual:
+				mnemonic.Print("  jump if.s <= ")
+			case token.UnsignedGreater:
+				mnemonic.Print("  jump if.u > ")
+			case token.UnsignedGreaterEqual:
+				mnemonic.Print("  jump if.u >= ")
+			case token.UnsignedLess:
+				mnemonic.Print("  jump if.u < ")
+			case token.UnsignedLessEqual:
+				mnemonic.Print("  jump if.u <= ")
 			case token.Invalid:
 				mnemonic.Print("  jump ")
+			default:
+				ansi.Red.Print("  jump: unknown condition: " + instr.Condition.String() + " ")
 			}
 
 			label.Print(ssa.CleanLabel(instr.Label))

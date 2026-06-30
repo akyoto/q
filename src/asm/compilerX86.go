@@ -100,11 +100,19 @@ func (c *compilerX86) Compile(instr Instruction) {
 		case token.Greater:
 			c.code = x86.SetIfGreater(c.code, instr.Destination)
 		case token.GreaterEqual:
-			c.code = x86.SetIfGreaterOrEqual(c.code, instr.Destination)
+			c.code = x86.SetIfGreaterEqual(c.code, instr.Destination)
 		case token.Less:
 			c.code = x86.SetIfLess(c.code, instr.Destination)
 		case token.LessEqual:
-			c.code = x86.SetIfLessOrEqual(c.code, instr.Destination)
+			c.code = x86.SetIfLessEqual(c.code, instr.Destination)
+		case token.UnsignedGreater:
+			c.code = x86.SetIfUnsignedGreater(c.code, instr.Destination)
+		case token.UnsignedGreaterEqual:
+			c.code = x86.SetIfUnsignedGreaterEqual(c.code, instr.Destination)
+		case token.UnsignedLess:
+			c.code = x86.SetIfUnsignedLess(c.code, instr.Destination)
+		case token.UnsignedLessEqual:
+			c.code = x86.SetIfUnsignedLessEqual(c.code, instr.Destination)
 		default:
 			panic("unknown condition")
 		}
@@ -147,11 +155,19 @@ func (c *compilerX86) Compile(instr Instruction) {
 		case token.Greater:
 			c.code = x86.Jump8IfGreater(c.code, 0x00)
 		case token.GreaterEqual:
-			c.code = x86.Jump8IfGreaterOrEqual(c.code, 0x00)
+			c.code = x86.Jump8IfGreaterEqual(c.code, 0x00)
 		case token.Less:
 			c.code = x86.Jump8IfLess(c.code, 0x00)
 		case token.LessEqual:
-			c.code = x86.Jump8IfLessOrEqual(c.code, 0x00)
+			c.code = x86.Jump8IfLessEqual(c.code, 0x00)
+		case token.UnsignedGreater:
+			c.code = x86.Jump8IfUnsignedGreater(c.code, 0x00)
+		case token.UnsignedGreaterEqual:
+			c.code = x86.Jump8IfUnsignedGreaterEqual(c.code, 0x00)
+		case token.UnsignedLess:
+			c.code = x86.Jump8IfUnsignedLess(c.code, 0x00)
+		case token.UnsignedLessEqual:
+			c.code = x86.Jump8IfUnsignedLessEqual(c.code, 0x00)
 		default:
 			c.code = x86.Jump8(c.code, 0x00)
 		}
@@ -171,7 +187,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			offset := address - patch.end
 
 			switch code[0] {
-			case 0x74, 0x75, 0x7C, 0x7D, 0x7E, 0x7F, 0xEB:
+			case 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x7C, 0x7D, 0x7E, 0x7F, 0xEB:
 				if cpu.SizeInt(offset) == 1 {
 					code[1] = byte(offset)
 					return code
@@ -180,10 +196,18 @@ func (c *compilerX86) Compile(instr Instruction) {
 				var jump []byte
 
 				switch code[0] {
+				case 0x72: // JB
+					jump = []byte{0x0F, 0x82}
+				case 0x73: // JAE
+					jump = []byte{0x0F, 0x83}
 				case 0x74: // JE
 					jump = []byte{0x0F, 0x84}
 				case 0x75: // JNE
 					jump = []byte{0x0F, 0x85}
+				case 0x76: // JBE
+					jump = []byte{0x0F, 0x86}
+				case 0x77: // JA
+					jump = []byte{0x0F, 0x87}
 				case 0x7C: // JL
 					jump = []byte{0x0F, 0x8C}
 				case 0x7D: // JGE

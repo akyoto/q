@@ -12,7 +12,7 @@ type operator struct {
 
 // Operators defines the Operators used in the language.
 // The number corresponds to the operator priority and can not be zero.
-var Operators = [64]operator{
+var Operators = [256]operator{
 	token.Dot:    {8, 2},
 	token.Call:   {8, 1},
 	token.Array:  {8, 2},

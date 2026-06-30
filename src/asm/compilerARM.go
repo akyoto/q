@@ -101,11 +101,19 @@ func (c *compilerARM) Compile(instr Instruction) {
 		case token.Greater:
 			c.append(arm.SetIfGreater(instr.Destination))
 		case token.GreaterEqual:
-			c.append(arm.SetIfGreaterOrEqual(instr.Destination))
+			c.append(arm.SetIfGreaterEqual(instr.Destination))
 		case token.Less:
 			c.append(arm.SetIfLess(instr.Destination))
 		case token.LessEqual:
-			c.append(arm.SetIfLessOrEqual(instr.Destination))
+			c.append(arm.SetIfLessEqual(instr.Destination))
+		case token.UnsignedGreater:
+			c.append(arm.SetIfUnsignedGreater(instr.Destination))
+		case token.UnsignedGreaterEqual:
+			c.append(arm.SetIfUnsignedGreaterEqual(instr.Destination))
+		case token.UnsignedLess:
+			c.append(arm.SetIfUnsignedLess(instr.Destination))
+		case token.UnsignedLessEqual:
+			c.append(arm.SetIfUnsignedLessEqual(instr.Destination))
 		default:
 			panic("unknown condition")
 		}
@@ -146,11 +154,19 @@ func (c *compilerARM) Compile(instr Instruction) {
 			case token.Greater:
 				jump, encodable = arm.JumpIfGreater(offset)
 			case token.GreaterEqual:
-				jump, encodable = arm.JumpIfGreaterOrEqual(offset)
+				jump, encodable = arm.JumpIfGreaterEqual(offset)
 			case token.Less:
 				jump, encodable = arm.JumpIfLess(offset)
 			case token.LessEqual:
-				jump, encodable = arm.JumpIfLessOrEqual(offset)
+				jump, encodable = arm.JumpIfLessEqual(offset)
+			case token.UnsignedGreater:
+				jump, encodable = arm.JumpIfUnsignedGreater(offset)
+			case token.UnsignedGreaterEqual:
+				jump, encodable = arm.JumpIfUnsignedGreaterEqual(offset)
+			case token.UnsignedLess:
+				jump, encodable = arm.JumpIfUnsignedLess(offset)
+			case token.UnsignedLessEqual:
+				jump, encodable = arm.JumpIfUnsignedLessEqual(offset)
 			default:
 				jump, encodable = arm.Jump(offset)
 			}

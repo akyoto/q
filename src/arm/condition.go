@@ -5,8 +5,8 @@ type condition uint8
 const (
 	EQ condition = iota
 	NE
-	CS
-	CC
+	HS // CS
+	LO // CC
 	MI
 	PL
 	VS

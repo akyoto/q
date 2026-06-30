@@ -17,8 +17,8 @@ func SetIfGreater(code []byte, destination cpu.Register) []byte {
 	return append(code, 0x0F, 0x9F, ModRM(AddressDirect, 0, byte(destination)))
 }
 
-// SetIfGreaterOrEqual sets the register to 1 if the result was greater or equal, otherwise to 0.
-func SetIfGreaterOrEqual(code []byte, destination cpu.Register) []byte {
+// SetIfGreaterEqual sets the register to 1 if the result was greater or equal, otherwise to 0.
+func SetIfGreaterEqual(code []byte, destination cpu.Register) []byte {
 	return append(code, 0x0F, 0x9D, ModRM(AddressDirect, 0, byte(destination)))
 }
 
@@ -27,7 +27,27 @@ func SetIfLess(code []byte, destination cpu.Register) []byte {
 	return append(code, 0x0F, 0x9C, ModRM(AddressDirect, 0, byte(destination)))
 }
 
-// SetIfLessOrEqual sets the register to 1 if the result was less or equal, otherwise to 0.
-func SetIfLessOrEqual(code []byte, destination cpu.Register) []byte {
+// SetIfLessEqual sets the register to 1 if the result was less or equal, otherwise to 0.
+func SetIfLessEqual(code []byte, destination cpu.Register) []byte {
 	return append(code, 0x0F, 0x9E, ModRM(AddressDirect, 0, byte(destination)))
+}
+
+// SetIfUnsignedGreater sets the register to 1 if the result was greater using unsigned comparison, otherwise to 0.
+func SetIfUnsignedGreater(code []byte, destination cpu.Register) []byte {
+	return append(code, 0x0F, 0x97, ModRM(AddressDirect, 0, byte(destination)))
+}
+
+// SetIfUnsignedGreaterEqual sets the register to 1 if the result was greater or equal using unsigned comparison, otherwise to 0.
+func SetIfUnsignedGreaterEqual(code []byte, destination cpu.Register) []byte {
+	return append(code, 0x0F, 0x93, ModRM(AddressDirect, 0, byte(destination)))
+}
+
+// SetIfUnsignedLess sets the register to 1 if the result was less using unsigned comparison, otherwise to 0.
+func SetIfUnsignedLess(code []byte, destination cpu.Register) []byte {
+	return append(code, 0x0F, 0x92, ModRM(AddressDirect, 0, byte(destination)))
+}
+
+// SetIfUnsignedLessEqual sets the register to 1 if the result was less or equal using unsigned comparison, otherwise to 0.
+func SetIfUnsignedLessEqual(code []byte, destination cpu.Register) []byte {
+	return append(code, 0x0F, 0x96, ModRM(AddressDirect, 0, byte(destination)))
 }

@@ -40,6 +40,22 @@ func TestJump(t *testing.T) {
 		{6, 0, 0x5400000D},
 		{6, 1, 0x5400002D},
 		{6, -1, 0x54FFFFED},
+
+		{7, 0, 0x54000008},
+		{7, 1, 0x54000028},
+		{7, -1, 0x54FFFFE8},
+
+		{8, 0, 0x54000002},
+		{8, 1, 0x54000022},
+		{8, -1, 0x54FFFFE2},
+
+		{9, 0, 0x54000003},
+		{9, 1, 0x54000023},
+		{9, -1, 0x54FFFFE3},
+
+		{10, 0, 0x54000009},
+		{10, 1, 0x54000029},
+		{10, -1, 0x54FFFFE9},
 	}
 
 	for _, pattern := range usagePatterns {
@@ -60,11 +76,19 @@ func TestJump(t *testing.T) {
 		case 3:
 			code, encodable = arm.JumpIfGreater(pattern.Offset)
 		case 4:
-			code, encodable = arm.JumpIfGreaterOrEqual(pattern.Offset)
+			code, encodable = arm.JumpIfGreaterEqual(pattern.Offset)
 		case 5:
 			code, encodable = arm.JumpIfLess(pattern.Offset)
 		case 6:
-			code, encodable = arm.JumpIfLessOrEqual(pattern.Offset)
+			code, encodable = arm.JumpIfLessEqual(pattern.Offset)
+		case 7:
+			code, encodable = arm.JumpIfUnsignedGreater(pattern.Offset)
+		case 8:
+			code, encodable = arm.JumpIfUnsignedGreaterEqual(pattern.Offset)
+		case 9:
+			code, encodable = arm.JumpIfUnsignedLess(pattern.Offset)
+		case 10:
+			code, encodable = arm.JumpIfUnsignedLessEqual(pattern.Offset)
 		}
 
 		assert.Equal(t, code, pattern.Code)

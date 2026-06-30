@@ -31,10 +31,14 @@ func TestJump(t *testing.T) {
 }
 
 func TestConditionalJump(t *testing.T) {
+	assert.DeepEqual(t, x86.Jump8IfUnsignedLess(nil, 1), []byte{0x72, 0x01})
+	assert.DeepEqual(t, x86.Jump8IfUnsignedGreaterEqual(nil, 1), []byte{0x73, 0x01})
 	assert.DeepEqual(t, x86.Jump8IfEqual(nil, 1), []byte{0x74, 0x01})
 	assert.DeepEqual(t, x86.Jump8IfNotEqual(nil, 1), []byte{0x75, 0x01})
+	assert.DeepEqual(t, x86.Jump8IfUnsignedLessEqual(nil, 1), []byte{0x76, 0x01})
+	assert.DeepEqual(t, x86.Jump8IfUnsignedGreater(nil, 1), []byte{0x77, 0x01})
 	assert.DeepEqual(t, x86.Jump8IfLess(nil, 1), []byte{0x7C, 0x01})
-	assert.DeepEqual(t, x86.Jump8IfGreaterOrEqual(nil, 1), []byte{0x7D, 0x01})
-	assert.DeepEqual(t, x86.Jump8IfLessOrEqual(nil, 1), []byte{0x7E, 0x01})
+	assert.DeepEqual(t, x86.Jump8IfGreaterEqual(nil, 1), []byte{0x7D, 0x01})
+	assert.DeepEqual(t, x86.Jump8IfLessEqual(nil, 1), []byte{0x7E, 0x01})
 	assert.DeepEqual(t, x86.Jump8IfGreater(nil, 1), []byte{0x7F, 0x01})
 }

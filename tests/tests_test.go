@@ -28,6 +28,7 @@ var tests = []run{
 	{"bitwise-or", nil, "", "", 0},
 	{"bitwise-xor", nil, "", "", 0},
 	{"unsigned", nil, "", "", 0},
+	{"unsigned-comparison", nil, "", "", 0},
 	{"shift", nil, "", "", 0},
 	{"shift-register", nil, "", "", 0},
 	{"shift-sign", nil, "", "", 0},

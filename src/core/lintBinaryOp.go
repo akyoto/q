@@ -122,17 +122,17 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 			switch {
 			case rightInt.Int == 0:
 				switch binOp.Op {
-				case token.Less:
+				case token.UnsignedLess:
 					return errors.New(AlwaysFalse, f.File, binOp.Source)
-				case token.GreaterEqual:
+				case token.UnsignedGreaterEqual:
 					return errors.New(AlwaysTrue, f.File, binOp.Source)
 				}
 
 			case rightInt.Int < 0 && strings.HasPrefix(rightInt.StringFrom(f.File.Bytes), "-"):
 				switch binOp.Op {
-				case token.Equal, token.LessEqual, token.Less:
+				case token.Equal, token.UnsignedLessEqual, token.UnsignedLess:
 					return errors.New(AlwaysFalse, f.File, binOp.Source)
-				case token.NotEqual, token.GreaterEqual, token.Greater:
+				case token.NotEqual, token.UnsignedGreaterEqual, token.UnsignedGreater:
 					return errors.New(AlwaysTrue, f.File, binOp.Source)
 				}
 			}
@@ -146,17 +146,17 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 			switch {
 			case leftInt.Int == 0:
 				switch binOp.Op {
-				case token.Greater:
+				case token.UnsignedGreater:
 					return errors.New(AlwaysFalse, f.File, binOp.Source)
-				case token.LessEqual:
+				case token.UnsignedLessEqual:
 					return errors.New(AlwaysTrue, f.File, binOp.Source)
 				}
 
 			case leftInt.Int < 0 && strings.HasPrefix(leftInt.StringFrom(f.File.Bytes), "-"):
 				switch binOp.Op {
-				case token.Equal, token.GreaterEqual, token.Greater:
+				case token.Equal, token.UnsignedGreaterEqual, token.UnsignedGreater:
 					return errors.New(AlwaysFalse, f.File, binOp.Source)
-				case token.NotEqual, token.LessEqual, token.Less:
+				case token.NotEqual, token.UnsignedLessEqual, token.UnsignedLess:
 					return errors.New(AlwaysTrue, f.File, binOp.Source)
 				}
 			}
