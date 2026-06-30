@@ -30,7 +30,15 @@ func zero(tokens List, buffer []byte, i Position) (List, Position) {
 		i++
 	}
 
-	tokens = append(tokens, Token{Kind: Number, Position: position, Length: Length(i - position)})
+	last := len(tokens) - 1
+
+	if len(tokens) > 0 && tokens[last].Kind == Negate {
+		tokens[last].Kind = Number
+		tokens[last].Length = Length(i-position) + 1
+	} else {
+		tokens = append(tokens, Token{Kind: Number, Position: position, Length: Length(i - position)})
+	}
+
 	return tokens, i
 }
 
