@@ -16,6 +16,9 @@ func Exec(args []string) int {
 	case "files":
 		return files(args[1:])
 
+	case "format":
+		return format(args[1:])
+
 	case "help":
 		return help()
 
