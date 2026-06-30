@@ -76,19 +76,6 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 	}
 
 	if v.Op.IsComparison() {
-		if types.IsUnsigned(leftValue.Type()) || types.IsUnsigned(rightValue.Type()) {
-			switch v.Op {
-			case token.Greater:
-				v.Op = token.UnsignedGreater
-			case token.GreaterEqual:
-				v.Op = token.UnsignedGreaterEqual
-			case token.Less:
-				v.Op = token.UnsignedLess
-			case token.LessEqual:
-				v.Op = token.UnsignedLessEqual
-			}
-		}
-
 		f.Block().Append(v)
 		return v, nil
 	}

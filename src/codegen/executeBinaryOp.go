@@ -21,7 +21,8 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 		}
 
 		if step.Register != -1 {
-			f.conditionalSet(step.Register, instr.Op)
+			unsigned := types.IsUnsigned(left.Value.Type()) || types.IsUnsigned(right.Value.Type())
+			f.conditionalSet(step.Register, instr.Op, unsigned)
 		}
 
 		return

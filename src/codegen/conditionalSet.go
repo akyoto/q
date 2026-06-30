@@ -8,7 +8,7 @@ import (
 )
 
 // conditionalSet sets the target register to 0 or 1 depending on the condition.
-func (f *Function) conditionalSet(register cpu.Register, condition token.Kind) {
+func (f *Function) conditionalSet(register cpu.Register, op token.Kind, unsigned bool) {
 	if f.build.Arch == config.X86 {
 		f.Assembler.Append(&asm.MoveNumber{
 			Destination: register,
@@ -18,6 +18,6 @@ func (f *Function) conditionalSet(register cpu.Register, condition token.Kind) {
 
 	f.Assembler.Append(&asm.ConditionalSet{
 		Destination: register,
-		Condition:   condition,
+		Condition:   tokenToCondition(op, unsigned),
 	})
 }

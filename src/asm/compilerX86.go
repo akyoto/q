@@ -7,7 +7,6 @@ import (
 
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/exe"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/x86"
 )
 
@@ -93,25 +92,25 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *ConditionalSet:
 		switch instr.Condition {
-		case token.Equal:
+		case Equal:
 			c.code = x86.SetIfEqual(c.code, instr.Destination)
-		case token.NotEqual:
+		case NotEqual:
 			c.code = x86.SetIfNotEqual(c.code, instr.Destination)
-		case token.Greater:
+		case Greater:
 			c.code = x86.SetIfGreater(c.code, instr.Destination)
-		case token.GreaterEqual:
+		case GreaterEqual:
 			c.code = x86.SetIfGreaterEqual(c.code, instr.Destination)
-		case token.Less:
+		case Less:
 			c.code = x86.SetIfLess(c.code, instr.Destination)
-		case token.LessEqual:
+		case LessEqual:
 			c.code = x86.SetIfLessEqual(c.code, instr.Destination)
-		case token.UnsignedGreater:
+		case UnsignedGreater:
 			c.code = x86.SetIfUnsignedGreater(c.code, instr.Destination)
-		case token.UnsignedGreaterEqual:
+		case UnsignedGreaterEqual:
 			c.code = x86.SetIfUnsignedGreaterEqual(c.code, instr.Destination)
-		case token.UnsignedLess:
+		case UnsignedLess:
 			c.code = x86.SetIfUnsignedLess(c.code, instr.Destination)
-		case token.UnsignedLessEqual:
+		case UnsignedLessEqual:
 			c.code = x86.SetIfUnsignedLessEqual(c.code, instr.Destination)
 		default:
 			panic("unknown condition")
@@ -148,25 +147,25 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *Jump:
 		switch instr.Condition {
-		case token.Equal:
+		case Equal:
 			c.code = x86.Jump8IfEqual(c.code, 0x00)
-		case token.NotEqual:
+		case NotEqual:
 			c.code = x86.Jump8IfNotEqual(c.code, 0x00)
-		case token.Greater:
+		case Greater:
 			c.code = x86.Jump8IfGreater(c.code, 0x00)
-		case token.GreaterEqual:
+		case GreaterEqual:
 			c.code = x86.Jump8IfGreaterEqual(c.code, 0x00)
-		case token.Less:
+		case Less:
 			c.code = x86.Jump8IfLess(c.code, 0x00)
-		case token.LessEqual:
+		case LessEqual:
 			c.code = x86.Jump8IfLessEqual(c.code, 0x00)
-		case token.UnsignedGreater:
+		case UnsignedGreater:
 			c.code = x86.Jump8IfUnsignedGreater(c.code, 0x00)
-		case token.UnsignedGreaterEqual:
+		case UnsignedGreaterEqual:
 			c.code = x86.Jump8IfUnsignedGreaterEqual(c.code, 0x00)
-		case token.UnsignedLess:
+		case UnsignedLess:
 			c.code = x86.Jump8IfUnsignedLess(c.code, 0x00)
-		case token.UnsignedLessEqual:
+		case UnsignedLessEqual:
 			c.code = x86.Jump8IfUnsignedLessEqual(c.code, 0x00)
 		default:
 			c.code = x86.Jump8(c.code, 0x00)

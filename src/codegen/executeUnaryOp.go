@@ -22,7 +22,7 @@ func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
 			Number:      0,
 		})
 
-		f.conditionalSet(step.Register, token.Equal)
+		f.conditionalSet(step.Register, token.Equal, false)
 
 	default:
 		panic("not implemented: " + instr.String())

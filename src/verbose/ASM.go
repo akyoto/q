@@ -7,7 +7,6 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/go/color/ansi"
 )
 
@@ -88,28 +87,28 @@ func printAssembly(f *core.Function) {
 			imm.Print(instr.Number)
 		case *asm.ConditionalSet:
 			switch instr.Condition {
-			case token.Equal:
+			case asm.Equal:
 				mnemonic.Print("  set if == ")
-			case token.NotEqual:
+			case asm.NotEqual:
 				mnemonic.Print("  set if != ")
-			case token.Greater:
+			case asm.Greater:
 				mnemonic.Print("  set if.s > ")
-			case token.GreaterEqual:
+			case asm.GreaterEqual:
 				mnemonic.Print("  set if.s >= ")
-			case token.Less:
+			case asm.Less:
 				mnemonic.Print("  set if.s < ")
-			case token.LessEqual:
+			case asm.LessEqual:
 				mnemonic.Print("  set if.s <= ")
-			case token.UnsignedGreater:
+			case asm.UnsignedGreater:
 				mnemonic.Print("  set if.u > ")
-			case token.UnsignedGreaterEqual:
+			case asm.UnsignedGreaterEqual:
 				mnemonic.Print("  set if.u >= ")
-			case token.UnsignedLess:
+			case asm.UnsignedLess:
 				mnemonic.Print("  set if.u < ")
-			case token.UnsignedLessEqual:
+			case asm.UnsignedLessEqual:
 				mnemonic.Print("  set if.u <= ")
 			default:
-				ansi.Red.Print("  set: unknown condition: " + instr.Condition.String() + " ")
+				ansi.Red.Print("  set: unknown condition: " + fmt.Sprint(instr.Condition) + " ")
 			}
 
 			register.Print(instr.Destination)
@@ -129,30 +128,30 @@ func printAssembly(f *core.Function) {
 			register.Print(instr.Operand)
 		case *asm.Jump:
 			switch instr.Condition {
-			case token.Equal:
+			case asm.Equal:
 				mnemonic.Print("  jump if == ")
-			case token.NotEqual:
+			case asm.NotEqual:
 				mnemonic.Print("  jump if != ")
-			case token.Greater:
+			case asm.Greater:
 				mnemonic.Print("  jump if.s > ")
-			case token.GreaterEqual:
+			case asm.GreaterEqual:
 				mnemonic.Print("  jump if.s >= ")
-			case token.Less:
+			case asm.Less:
 				mnemonic.Print("  jump if.s < ")
-			case token.LessEqual:
+			case asm.LessEqual:
 				mnemonic.Print("  jump if.s <= ")
-			case token.UnsignedGreater:
+			case asm.UnsignedGreater:
 				mnemonic.Print("  jump if.u > ")
-			case token.UnsignedGreaterEqual:
+			case asm.UnsignedGreaterEqual:
 				mnemonic.Print("  jump if.u >= ")
-			case token.UnsignedLess:
+			case asm.UnsignedLess:
 				mnemonic.Print("  jump if.u < ")
-			case token.UnsignedLessEqual:
+			case asm.UnsignedLessEqual:
 				mnemonic.Print("  jump if.u <= ")
-			case token.Invalid:
+			case asm.None:
 				mnemonic.Print("  jump ")
 			default:
-				ansi.Red.Print("  jump: unknown condition: " + instr.Condition.String() + " ")
+				ansi.Red.Print("  jump: unknown condition: " + fmt.Sprint(instr.Condition) + " ")
 			}
 
 			label.Print(ssa.CleanLabel(instr.Label))

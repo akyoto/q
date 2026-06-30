@@ -6,7 +6,6 @@ import (
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/data"
 	"git.urbach.dev/cli/q/src/dll"
-	"git.urbach.dev/cli/q/src/token"
 )
 
 // Assembler contains a list of instructions.
@@ -166,7 +165,7 @@ func (a *Assembler) Skip(instr Instruction) bool {
 		// Jump + Return is unnecessary
 		jump, isJump := a.Last().(*Jump)
 
-		if isJump && jump.Condition == token.Invalid {
+		if isJump && jump.Condition == None {
 			return true
 		}
 

@@ -6,7 +6,6 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/go/assert"
 )
 
@@ -115,12 +114,16 @@ func TestAssembler(t *testing.T) {
 	g.Append(&asm.Label{Name: "g"})
 	g.Append(&asm.Call{Label: "a"})
 	g.Append(&asm.Compare{Destination: 0, Source: 1})
-	g.Append(&asm.Jump{Label: "a", Condition: token.Equal})
-	g.Append(&asm.Jump{Label: "a", Condition: token.NotEqual})
-	g.Append(&asm.Jump{Label: "a", Condition: token.Greater})
-	g.Append(&asm.Jump{Label: "a", Condition: token.GreaterEqual})
-	g.Append(&asm.Jump{Label: "a", Condition: token.Less})
-	g.Append(&asm.Jump{Label: "a", Condition: token.LessEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.Equal})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.NotEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.Greater})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.GreaterEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.Less})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.LessEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.UnsignedGreater})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.UnsignedGreaterEqual})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.UnsignedLess})
+	g.Append(&asm.Jump{Label: "a", Condition: asm.UnsignedLessEqual})
 	g.Append(&asm.Return{})
 
 	final := asm.Assembler{}

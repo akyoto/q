@@ -6,7 +6,6 @@ import (
 
 	"git.urbach.dev/cli/q/src/arm"
 	"git.urbach.dev/cli/q/src/config"
-	"git.urbach.dev/cli/q/src/token"
 )
 
 type compilerARM struct {
@@ -94,25 +93,25 @@ func (c *compilerARM) Compile(instr Instruction) {
 		c.append(code)
 	case *ConditionalSet:
 		switch instr.Condition {
-		case token.Equal:
+		case Equal:
 			c.append(arm.SetIfEqual(instr.Destination))
-		case token.NotEqual:
+		case NotEqual:
 			c.append(arm.SetIfNotEqual(instr.Destination))
-		case token.Greater:
+		case Greater:
 			c.append(arm.SetIfGreater(instr.Destination))
-		case token.GreaterEqual:
+		case GreaterEqual:
 			c.append(arm.SetIfGreaterEqual(instr.Destination))
-		case token.Less:
+		case Less:
 			c.append(arm.SetIfLess(instr.Destination))
-		case token.LessEqual:
+		case LessEqual:
 			c.append(arm.SetIfLessEqual(instr.Destination))
-		case token.UnsignedGreater:
+		case UnsignedGreater:
 			c.append(arm.SetIfUnsignedGreater(instr.Destination))
-		case token.UnsignedGreaterEqual:
+		case UnsignedGreaterEqual:
 			c.append(arm.SetIfUnsignedGreaterEqual(instr.Destination))
-		case token.UnsignedLess:
+		case UnsignedLess:
 			c.append(arm.SetIfUnsignedLess(instr.Destination))
-		case token.UnsignedLessEqual:
+		case UnsignedLessEqual:
 			c.append(arm.SetIfUnsignedLessEqual(instr.Destination))
 		default:
 			panic("unknown condition")
@@ -147,25 +146,25 @@ func (c *compilerARM) Compile(instr Instruction) {
 			)
 
 			switch instr.Condition {
-			case token.Equal:
+			case Equal:
 				jump, encodable = arm.JumpIfEqual(offset)
-			case token.NotEqual:
+			case NotEqual:
 				jump, encodable = arm.JumpIfNotEqual(offset)
-			case token.Greater:
+			case Greater:
 				jump, encodable = arm.JumpIfGreater(offset)
-			case token.GreaterEqual:
+			case GreaterEqual:
 				jump, encodable = arm.JumpIfGreaterEqual(offset)
-			case token.Less:
+			case Less:
 				jump, encodable = arm.JumpIfLess(offset)
-			case token.LessEqual:
+			case LessEqual:
 				jump, encodable = arm.JumpIfLessEqual(offset)
-			case token.UnsignedGreater:
+			case UnsignedGreater:
 				jump, encodable = arm.JumpIfUnsignedGreater(offset)
-			case token.UnsignedGreaterEqual:
+			case UnsignedGreaterEqual:
 				jump, encodable = arm.JumpIfUnsignedGreaterEqual(offset)
-			case token.UnsignedLess:
+			case UnsignedLess:
 				jump, encodable = arm.JumpIfUnsignedLess(offset)
-			case token.UnsignedLessEqual:
+			case UnsignedLessEqual:
 				jump, encodable = arm.JumpIfUnsignedLessEqual(offset)
 			default:
 				jump, encodable = arm.Jump(offset)

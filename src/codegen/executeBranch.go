@@ -5,6 +5,7 @@ import (
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 	"git.urbach.dev/cli/q/src/x86"
 )
 
@@ -12,9 +13,11 @@ func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 	var op token.Kind
 	binaryOp, isBinaryOp := instr.Condition.(*ssa.BinaryOp)
 	cas, isCas := instr.Condition.(*ssa.Cas)
+	unsigned := false
 
 	if isBinaryOp && binaryOp.Op.IsComparison() {
 		op = binaryOp.Op
+		unsigned = types.IsUnsigned(binaryOp.Left.Type()) || types.IsUnsigned(binaryOp.Right.Type())
 	} else if isCas {
 		op = token.Equal
 
@@ -39,12 +42,13 @@ func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 
 	f.insertPhiMoves(step)
 	following := f.Steps[step.Index+1].Value.(*Label)
+	condition := tokenToCondition(op, unsigned)
 
 	switch following.Name {
 	case instr.Then.Label:
-		f.jumpIfFalse(op, instr.Else.Label)
+		f.jumpIfFalse(condition, instr.Else.Label)
 	case instr.Else.Label:
-		f.jumpIfTrue(op, instr.Then.Label)
+		f.jumpIfTrue(condition, instr.Then.Label)
 	default:
 		panic("branch instruction must be followed by the 'then' or 'else' block")
 	}

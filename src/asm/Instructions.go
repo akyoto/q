@@ -2,7 +2,6 @@ package asm
 
 import (
 	"git.urbach.dev/cli/q/src/cpu"
-	"git.urbach.dev/cli/q/src/token"
 )
 
 type (
@@ -28,13 +27,13 @@ type (
 	CompareNumber  rn
 	ConditionalSet struct {
 		Destination cpu.Register
-		Condition   token.Kind
+		Condition   Condition
 	}
 	Divide       rrr
 	DivideSigned rrr
 	Jump         struct {
 		Label     string
-		Condition token.Kind
+		Condition Condition
 	}
 	Label struct {
 		Name  string

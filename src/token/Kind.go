@@ -62,10 +62,6 @@ const (
 	Greater                           // >
 	LessEqual                         // <=
 	GreaterEqual                      // >=
-	UnsignedLess                      // unsigned <
-	UnsignedGreater                   // unsigned >
-	UnsignedLessEqual                 // unsigned <=
-	UnsignedGreaterEqual              // unsigned >=
 	___END_COMPARISONS___             // </comparisons>
 	___UNARY___                       // <unary>
 	Not                               // ! (unary)
@@ -200,13 +196,13 @@ func (k Kind) String() string {
 		return "^"
 	case Or:
 		return "|"
-	case Greater, UnsignedGreater:
+	case Greater:
 		return ">"
-	case Less, UnsignedLess:
+	case Less:
 		return "<"
-	case GreaterEqual, UnsignedGreaterEqual:
+	case GreaterEqual:
 		return ">="
-	case LessEqual, UnsignedLessEqual:
+	case LessEqual:
 		return "<="
 	case Equal:
 		return "=="
