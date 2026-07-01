@@ -11,8 +11,8 @@ import (
 
 var examples = []run{
 	{"hello", nil, "", "Hello\n", 0},
-	{"factorial", nil, "", "120", 0},
-	{"fibonacci", nil, "", "55", 0},
+	{"factorial", nil, "", "1\n2\n6\n24\n120\n720\n5040\n40320\n362880\n3628800\n39916800\n479001600\n6227020800\n87178291200\n", 0},
+	{"fibonacci", nil, "", "1\n1\n2\n3\n5\n8\n13\n21\n34\n55\n89\n144\n233\n377\n", 0},
 	{"fizzbuzz", nil, "", "1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz", 0},
 	{"gcd", nil, "", "21", 0},
 	{"collatz", nil, "", "12 6 3 10 5 16 8 4 2 1", 0},

@@ -1,10 +1,12 @@
 import io
 
 main() {
-	io.write(fibonacci(10))
+	loop i := 1..15 {
+		io.writeLine(fibonacci(i))
+	}
 }
 
-fibonacci(n int) -> int {
+fibonacci(n uint) -> uint {
 	if n <= 1 {
 		return n
 	}
