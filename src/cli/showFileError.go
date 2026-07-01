@@ -18,6 +18,10 @@ func showFileError(fileError *errors.FileError) {
 	source := fileError.Source()
 	length := int(source.End() - source.Start())
 
+	if offset+length > len(line) {
+		length = len(line) - offset
+	}
+
 	if length > 0 {
 		ansi.Reset.Printf("    %s", line[:offset])
 		ansi.Red.Print(line[offset : offset+length])
