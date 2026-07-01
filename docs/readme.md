@@ -4,11 +4,11 @@
 	<p>
 		<a href="#features">Features</a> |
 		<a href="#motivation">Motivation</a> |
+		<a href="#news">News</a> |
 		<a href="#installation">Installation</a> |
 		<a href="#usage">Usage</a> |
 		<a href="#examples">Examples</a> |
 		<a href="#reference">Reference</a> |
-		<a href="#news">News</a> |
 		<a href="#faq">FAQ</a>
 	</p>
 	<p>Q is a minimal, dependency-free programming language and compiler targeting x86-64 and arm64 with ultra-fast builds and tiny binaries.</p>
@@ -41,13 +41,43 @@ Q is also a code generation framework that aims to produce raw machine code for 
 > [!WARNING]
 > Q is [in early development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
-> The compiler currently passes a total of [2800 tests](#how-do-i-run-the-tests).
+> The compiler currently passes a total of [2900 tests](#how-do-i-run-the-tests).
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
+## News
+
+- **2026-06-28**: Mutex synchronization.
+- **2026-06-24**: Fast memory allocations.
+- **2026-06-23**: Automatic deallocation.
+- **2026-06-03**: Method calls.
+- **2026-05-07**: Struct initialization.
+- **2026-05-06**: Command line arguments.
+- **2025-10-10**: Loop control flow.
+- **2025-10-05**: Struct types in fields.
+- **2025-09-30**: Static allocations.
+- **2025-09-22**: Array allocations.
+- **2025-09-09**: Type casts.
+- **2025-09-08**: Function pointers.
+- **2025-09-07**: Pointer safety.
+- **2025-09-03**: Error handling.
+- **2025-08-31**: Constant folding.
+- **2025-08-25**: Resource safety.
+- **2025-08-23**: Function overloading.
+- **2025-08-18**: Slices for strings.
+- **2025-08-17**: Struct allocation by value/reference.
+- **2025-08-16**: Multiple return values.
+- **2025-08-15**: Data structures.
+- **2025-08-14**: Memory load and store instructions.
+- **2025-08-13**: Naive memory allocations.
+- **2025-08-12**: Support for Windows on arm64.
+- **2025-08-11**: Support for Mac on arm64.
+
 ## Installation
 
-Build from source:
+### Build from source
+
+If you have [Go](https://go.dev/) installed, you are 3 steps away from a working compiler:
 
 ```shell
 git clone https://git.urbach.dev/cli/q
@@ -55,7 +85,9 @@ cd q
 go build
 ```
 
-Install via symlink to a directory in your `PATH`:
+### Install via symlink
+
+The above steps produced the `q` binary. To access it from any location, add a symlink to a directory listed in your `PATH` environment variable:
 
 ```shell
 ln -s $PWD/q ~/.local/bin/
@@ -63,19 +95,60 @@ ln -s $PWD/q ~/.local/bin/
 
 ## Usage
 
-Run a file or directory:
+`q` expects a command as its first argument.
+
+### run
+
+If no command was specified, `q` defaults to the `run` command which executes the code in a source file.
+Using it on directories is equivalent to listing the included `.q` files manually.
 
 ```shell
 q examples/hello
 ```
 
-Build an executable:
+### build
+
+The `build` command produces an executable file inside the specified directory:
 
 ```shell
 q build examples/hello
 ```
 
+`q` implements its own assembler and linker. You can easily cross-compile for a different platform:
+
+```shell
+q build examples/hello -os windows
+```
+
+Leaving out the directory starts a build in the current directory:
+
+```shell
+q build
+```
+
+### ssa
+
+Shows the [SSA](https://en.wikipedia.org/wiki/Static_single-assignment_form) form:
+
+```shell
+q ssa examples/hello
+```
+
+You can filter the output by function name with the `-func` option.
+
+### asm
+
+Shows the [assembly code](https://en.wikipedia.org/wiki/Assembly_language):
+
+```shell
+q asm examples/hello
+```
+
+You can filter the output by function name with the `-func` option.
+
 ## Examples
+
+### hello
 
 ```q
 import io
@@ -85,7 +158,9 @@ main() {
 }
 ```
 
-```
+### echo
+
+```q
 echo() {
 	buffer := new(byte, 4096)
 
@@ -101,6 +176,8 @@ echo() {
 }
 ```
 
+### fibonacci
+
 ```q
 fibonacci(n int) -> int {
 	if n <= 1 {
@@ -110,6 +187,8 @@ fibonacci(n int) -> int {
 	return fibonacci(n - 1) + fibonacci(n - 2)
 }
 ```
+
+### fizzbuzz
 
 ```q
 fizzbuzz(x int) {
@@ -141,7 +220,7 @@ The following is a cheat sheet documenting the syntax.
 | Allocate an array                    | `new(int, 10)`               | 🚧 Experimental |
 | Allocate a struct                    | `new(Point)`                 | 🚧 Experimental |
 | Allocate and initialize a struct     | `new(Point){x: 1, y: 2}`     | 🚧 Experimental |
-| Delete an object                     | `delete(p)`                  | 🚧 Experimental |
+| Delete an object                     | `delete(p)`                  | ✔️ Stable       |
 | Define a struct method               | `f(p *Point) {}`             | 🚧 Experimental |
 | Call struct methods                  | `p.f()`                      | ✔️ Stable       |
 | Access struct fields                 | `p.x`                        | ✔️ Stable       |
@@ -166,35 +245,110 @@ The following is a cheat sheet documenting the syntax.
 | Mark a type as a resource            | `!`                          | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
 
-See more in the [reference manual](reference.md).
+### Tokens
 
-## News
+Source files are preprocessed by the tokenizer which groups the individual bytes into several token types:
 
-- **2026-06-28**: Mutex synchronization.
-- **2026-06-24**: Fast memory allocation.
-- **2026-06-23**: Automatic deallocation.
-- **2026-06-03**: Method calls.
-- **2026-05-07**: Struct initialization.
-- **2026-05-06**: Command line arguments.
-- **2025-10-10**: Loop control flow.
-- **2025-10-05**: Struct types in fields.
-- **2025-09-30**: Static allocations.
-- **2025-09-22**: Array allocations.
-- **2025-09-09**: Type casts.
-- **2025-09-08**: Function pointers.
-- **2025-09-07**: Pointer safety.
-- **2025-09-03**: Error handling.
-- **2025-08-31**: Constant folding.
-- **2025-08-25**: Resource safety.
-- **2025-08-23**: Function overloading.
-- **2025-08-18**: Slices for strings.
-- **2025-08-17**: Struct allocation by value/reference.
-- **2025-08-16**: Multiple return values.
-- **2025-08-15**: Data structures.
-- **2025-08-14**: Memory load and store instructions.
-- **2025-08-13**: Naive memory allocations.
-- **2025-08-12**: Support for Windows on arm64.
-- **2025-08-11**: Support for Mac on arm64.
+- [Identifier](#identifiers)
+- [Number](#numbers)
+- [Rune](#runes)
+- [String](#strings)
+- [Comment](#comments)
+- [Operators](#operators)
+- [Keywords](#keywords)
+- [Builtins](#builtins)
+
+### Identifiers
+
+An identifier like `x` is a non-empty sequence of letters, digits, and underscores (`_`).
+The first character of an identifier must not be a digit. Identifiers are case-sensitive.
+
+### Numbers
+
+A number like `42` is a non-empty sequence of digits. It may start with a `-` to indicate negative values. Numbers are decimal by default but the base can be overriden with a `0x` prefix for hexadecimal, `0o` for octal and `0b` for binary. The uppercase letters from `A` to `F` are used to represent digits from 10 to 15 in hexadecimal.
+
+### Runes
+
+A rune literal like `'日'` or `'本'` is an integer representing a Unicode code point. It must be enclosed by `'`. It is equivalent to an integer from the perspective of the compiler. The value of the integer is derived from the Unicode representation of the content.
+
+```q
+assert 'A' == 0x41
+assert 'a' == 0x61
+assert '世' == 0x4E16
+assert '界' == 0x754C
+assert '😀' == 0x1F600
+```
+
+### Strings
+
+A string literal like `"Hello"` is a sequence of bytes enclosed by `"`. Strings are immutable, though the compiler does not enforce this rule in its present state. The following escape sequences starting with `\` can be used in rune and string literals to embed special characters:
+
+```
+assert '\0' == 0
+assert '\t' == 9
+assert '\n' == 10
+assert '\r' == 13
+assert '\"' == 34
+assert '\'' == 39
+assert '\\' == 92
+```
+
+### Comments
+
+A line comment like `// This is a comment` starts with `//` and stops at the end of the line. Comments are ignored by the compiler and can be added to the code for documentation purposes. Multiline comments are not supported.
+
+### Operators
+
+Operators like `+` represent binary or unary operations.
+
+Operator precedence defines the order of operations. An operation with a higher precedence is performed before operations with lower precedence. Precedence levels introduce additional rules that programmers must learn and can lead to hidden mistakes.
+To minimize this complexity, Q is limiting the operators to only 8 precedence levels:
+
+| Precedence | Operators                                                         | Description             |
+| ---------: | ----------------------------------------------------------------- | ----------------------- |
+|          8 | `.` `()` `[]` `{}`                                                | Postfix                 |
+|          7 | `!` `-`                                                           | Unary                   |
+|          6 | `*` `/` `%`                                                       | Multiplicative          |
+|          5 | `+` `-` `&` `\|` `^` `<<` `>>` `as`                               | Additive, bitwise, cast |
+|          4 | `==` `!=` `<` `>` `<=` `>=`                                       | Comparison              |
+|          3 | `&&` `\|\|`                                                       | Logical                 |
+|          2 | `..` `,`                                                          | Range, separator        |
+|          1 | `:=` `=` `+=` `-=` `*=` `/=` `%=` `&=` `\|=` `^=` `<<=` `>>=` `:` | Assignment              |
+
+### Keywords
+
+| Keyword    | Description                                                | Stability       |
+| ---------- | ---------------------------------------------------------- | --------------- |
+| `assert`   | Tests conditions at runtime                                | ✔️ Stable       |
+| `const`    | Defines constant expressions                               | ✔️ Stable       |
+| `else`     | Failure branch for if statements                           | ✔️ Stable       |
+| `extern`   | Foreign function definitions                               | ✔️ Stable       |
+| `global`   | Global variables (discouraged but required in stdlib)      | ✔️ Stable       |
+| `go`       | Asynchronous function calls                                | 🚧 Experimental |
+| `if`       | Branches based on a condition                              | ✔️ Stable       |
+| `import`   | Allows access to other packages                            | ✔️ Stable       |
+| `loop`     | Repeatable code                                            | ✔️ Stable       |
+| `return`   | Ends the function and returns values to the caller         | ✔️ Stable       |
+| `switch`   | Multiple branches executing the first true condition block | ✔️ Stable       |
+
+### Builtins
+
+| Function   | Description                                                | Stability       |
+| ---------- | ---------------------------------------------------------- | --------------- |
+| `cas`      | Atomic compare and swap                                    | 🚧 Experimental |
+| `delete`   | Frees memory                                               | ✔️ Stable       |
+| `new`      | Allocates memory                                           | 🚧 Experimental |
+| `syscall`  | Calls a kernel function                                    | ✔️ Stable       |
+
+### Packages
+
+A package is defined by a directory.
+All files in that directory belong to the same package and share access to its identifiers.
+Subdirectories form separate packages.
+
+Within each package, a function named `init` is executed automatically at program startup,
+while a function named `exit` runs before the program terminates.
+This feature is intended primarily for the standard library and is generally discouraged in application code.
 
 ## Resources
 
