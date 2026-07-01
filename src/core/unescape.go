@@ -32,6 +32,8 @@ func unescape(t token.Token, file *fs.File) ([]byte, error) {
 			tmp = append(tmp, '\n')
 		case 'r':
 			tmp = append(tmp, '\r')
+		case 'b':
+			tmp = append(tmp, '\b')
 		case '"':
 			tmp = append(tmp, '"')
 		case '\'':
