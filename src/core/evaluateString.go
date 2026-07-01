@@ -8,8 +8,11 @@ import (
 
 // evaluateString converts a string expression to an SSA value.
 func (f *Function) evaluateString(expr *expression.Expression) (ssa.Value, error) {
-	data := expr.Token.Bytes(f.File.Bytes)
-	data = unescape(data)
+	data, err := unescape(expr.Token, f.File)
+
+	if err != nil {
+		return nil, err
+	}
 
 	length := f.Append(&ssa.Int{
 		Int:    len(data),

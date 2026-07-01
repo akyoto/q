@@ -54,8 +54,11 @@ func toNumber(t token.Token, file *fs.File) (int, error) {
 		return int(signed), nil
 
 	case token.Rune:
-		r := t.Bytes(file.Bytes)
-		r = unescape(r)
+		r, err := unescape(t, file)
+
+		if err != nil {
+			return 0, err
+		}
 
 		if len(r) == 0 {
 			return 0, errors.New(InvalidRune, file, t)

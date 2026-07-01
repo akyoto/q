@@ -44,6 +44,7 @@ var errs = []struct {
 	{"IdenticalExpressions11.q", &core.IdenticalExpressions{Operator: ">"}},
 	{"IdenticalExpressions12.q", &core.IdenticalExpressions{Operator: ">="}},
 	{"InvalidCondition.q", core.InvalidCondition},
+	{"InvalidEscapeSequence.q", core.InvalidEscapeSequence},
 	{"InvalidExpression.q", core.InvalidExpression},
 	{"InvalidExpression2.q", core.InvalidExpression},
 	{"InvalidExpression3.q", core.InvalidExpression},
