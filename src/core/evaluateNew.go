@@ -3,6 +3,7 @@ package core
 import (
 	"unsafe"
 
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
@@ -10,6 +11,10 @@ import (
 
 // evaluateNew converts a new call to an SSA value.
 func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
+	if len(expr.Children) == 1 {
+		return nil, errors.NewAt(MissingType, f.File, expr.Children[0].Token.End()+1)
+	}
+
 	right := (*expression.TypeExpression)(unsafe.Pointer(expr.Children[1]))
 	typ, err := f.Env.TypeFromTokens(right.Tokens, f.File)
 

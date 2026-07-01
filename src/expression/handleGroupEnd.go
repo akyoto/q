@@ -36,10 +36,19 @@ func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, gro
 			separator := tokens[groupPosition:i].IndexKind(token.Separator)
 
 			if separator != -1 {
-				node.AddChild(&newTypeExpression(tokens[groupPosition : groupPosition+uint(separator)]).Expression)
+				typeTokens := tokens[groupPosition : groupPosition+uint(separator)]
+
+				if len(typeTokens) > 0 {
+					node.AddChild(&newTypeExpression(typeTokens).Expression)
+				}
+
 				node.AddChild(Parse(tokens[groupPosition+uint(separator)+1 : i]))
 			} else {
-				node.AddChild(&newTypeExpression(tokens[groupPosition:i]).Expression)
+				typeTokens := tokens[groupPosition:i]
+
+				if len(typeTokens) > 0 {
+					node.AddChild(&newTypeExpression(typeTokens).Expression)
+				}
 			}
 		} else {
 			parameters := NewList(tokens[groupPosition:i])

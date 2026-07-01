@@ -64,6 +64,7 @@ var errs = []struct {
 	{"MissingObject.q", core.MissingObject},
 	{"MissingObject2.q", core.MissingObject},
 	{"MissingOperand.q", core.MissingOperand},
+	{"MissingType.q", core.MissingType},
 	{"NoMatchingFunction.q", &core.NoMatchingFunction{Function: "main.f"}},
 	{"NotDataStruct.q", &core.NotDataStruct{TypeName: "int"}},
 	{"NotDataStruct2.q", &core.NotDataStruct{TypeName: "int64"}},
