@@ -9,10 +9,14 @@ import (
 
 // TypeFromTokens returns the type with the given tokens or `nil` if it doesn't exist.
 func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.Type, error) {
-	var union *types.Union
+	var (
+		union *types.Union
+		i     uint
+	)
 
-	for i, t := range tokens {
-		if t.Kind != token.Or {
+	for i < uint(len(tokens)) {
+		if tokens[i].Kind != token.Or {
+			i++
 			continue
 		}
 
@@ -30,6 +34,7 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 
 		union.Types = append(union.Types, typ)
 		tokens = tokens[i+1:]
+		i = 0
 	}
 
 	if union != nil {
