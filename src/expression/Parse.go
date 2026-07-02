@@ -16,6 +16,17 @@ loop:
 	for i < uint(len(tokens)) {
 		t := tokens[i]
 
+		if startsType(t.Kind) {
+			j, isType := parseType(tokens, i)
+
+			if isType {
+				typeToken := makeTypeToken(tokens[i:j])
+				root, cursor = handleLiteral(root, cursor, typeToken)
+				i = j
+				t = tokens[i]
+			}
+		}
+
 		switch t.Kind {
 		case token.GroupStart, token.ArrayStart, token.BlockStart:
 			i++
@@ -46,7 +57,13 @@ loop:
 
 		switch {
 		case cursor != nil && cursor.Token.Kind == token.Cast && len(cursor.Children) < 2:
-			cursor.AddChild(&newTypeExpression(tokens[i:]).Expression)
+			typ := tokens[i:]
+
+			if len(typ) > 0 {
+				typeToken := makeTypeToken(typ)
+				cursor.AddChild(newLeaf(typeToken))
+			}
+
 			return root
 
 		case t.Kind.IsLiteral():

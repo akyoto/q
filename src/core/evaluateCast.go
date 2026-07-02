@@ -1,8 +1,6 @@
 package core
 
 import (
-	"unsafe"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -17,8 +15,8 @@ func (f *Function) evaluateCast(expr *expression.Expression) (ssa.Value, error) 
 		return nil, err
 	}
 
-	right := (*expression.TypeExpression)(unsafe.Pointer(expr.Children[1]))
-	typ, err := f.Env.TypeFromTokens(right.Tokens, f.File)
+	right := expr.Children[1]
+	typ, err := f.Env.TypeFromToken(right.Token, f.File)
 
 	if err != nil {
 		return nil, err

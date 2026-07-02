@@ -13,6 +13,7 @@ const (
 	String                            // String is an uninterpreted series of characters in the source code.
 	Comment                           // Comment is a comment.
 	Script                            // Script is a shebang line.
+	Type                              // Type is a virtual token used for type expressions.
 	GroupStart                        // (
 	GroupEnd                          // )
 	BlockStart                        // {

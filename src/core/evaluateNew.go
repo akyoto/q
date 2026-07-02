@@ -1,8 +1,6 @@
 package core
 
 import (
-	"unsafe"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -15,8 +13,7 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 		return nil, errors.NewAt(MissingType, f.File, expr.Children[0].Token.End()+1)
 	}
 
-	right := (*expression.TypeExpression)(unsafe.Pointer(expr.Children[1]))
-	typ, err := f.Env.TypeFromTokens(right.Tokens, f.File)
+	typ, err := f.Env.TypeFromToken(expr.Children[1].Token, f.File)
 
 	if err != nil {
 		return nil, err

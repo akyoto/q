@@ -8,10 +8,10 @@ func isComplete(expr *Expression) bool {
 		return false
 	}
 
-	if expr.Token.Kind == token.Call || expr.Token.Kind == token.Struct {
+	if expr.Token.Kind == token.Call || expr.Token.Kind == token.Struct || expr.Token.Kind == token.Type {
 		// Even though token.Call is an operator and could be handled by the upcoming branch,
 		// the number of operands is variable.
-		// Therefore we consider every single call expression as complete.
+		// Therefore, we consider every single call expression as complete.
 		return true
 	}
 

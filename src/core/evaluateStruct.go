@@ -14,7 +14,7 @@ func (f *Function) evaluateStruct(expr *expression.Expression) (ssa.Value, error
 		return f.evaluateNewStruct(expr)
 	}
 
-	typ, err := f.Env.TypeFromTokens(token.List{expr.Children[0].Token}, f.File)
+	typ, err := f.Env.TypeFromToken(expr.Children[0].Token, f.File)
 
 	if err != nil {
 		return nil, err
