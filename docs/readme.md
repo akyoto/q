@@ -463,15 +463,16 @@ The `error` type is currently defined to be an integer, though this is expected 
 
 ## Security
 
-Recent events such as the `xz` backdoor and several attacks on `npm` have shown that supply chain attacks continue to grow in frequency and impact.
-Q reduces these risks by enforcing a strict permissions model, ensuring that external dependencies operate with the least privilege necessary.
-Access to sensitive resources such as the network or the file system must be explicitly declared in a module's definition,
-preventing unexpected or hidden behaviors.
-Any change in a module's permissions automatically requires review during updates, making it harder for malicious code to slip through unnoticed.
+Recent incidents such as the `xz` backdoor and attacks on the `npm` ecosystem have shown that supply chain attacks remain one of the software industry's biggest security challenges.
+
+Q helps mitigate these risks by enforcing the principle of least privilege. Every module must explicitly declare which sensitive resources it requires, such as network or file system access. Any permission changes become part of the review process during updates, making unexpected behavior much more visible. If `leftpad` suddenly requests access to `net`, that should immediately raise suspicion.
+
+While this cannot eliminate supply chain attacks entirely, it significantly reduces the chances of your system being compromised.
 
 Q also hardens executables at the binary level:
 
 - All executables are built as position-independent executables (PIE) with dynamic base addresses so that an attacker can't use precalculated addresses.
+- The call stack where return addresses are located is isolated from the regular memory stack, eliminating an entire class of control-flow attacks.
 - The W^X (write xor execute) policy is enforced for all memory pages: memory can be writable or executable, but never both.
 
 ## Syntax
