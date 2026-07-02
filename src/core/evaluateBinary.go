@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/optimizer"
@@ -64,7 +62,6 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 	}
 
 	if leftIsStruct || rightIsStruct {
-		fmt.Println(leftValue.Type().Name(), rightValue.Type().Name())
 		return nil, errors.New(InvalidStructOperation, f.File, expr.Token)
 	}
 
