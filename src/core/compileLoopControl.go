@@ -19,6 +19,11 @@ func (f *Function) compileLoopControl(control *ast.LoopControl) error {
 	}
 
 	loop := f.loopStack.Current()
+
+	if loop == nil {
+		return errors.New(LoopControlWithoutLoop, f.File, control.Expression.Source())
+	}
+
 	name := call.Children[0].Token.StringFrom(f.File.Bytes)
 
 	switch name {

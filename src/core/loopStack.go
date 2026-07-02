@@ -5,8 +5,12 @@ type loopStack struct {
 	loops []*Loop
 }
 
-// Current returns the innermost loop.
+// Current returns the innermost loop or nil if there is none.
 func (s *loopStack) Current() *Loop {
+	if len(s.loops) == 0 {
+		return nil
+	}
+
 	return s.loops[len(s.loops)-1]
 }
 

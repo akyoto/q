@@ -22,6 +22,7 @@ var (
 	InvalidNumber             = errors.String("Invalid number")
 	InvalidRune               = errors.String("Invalid rune")
 	InvalidStructOperation    = errors.String("Invalid operation on structs")
+	LoopControlWithoutLoop    = errors.String("Loop control without a loop")
 	MissingCommaBetweenFields = errors.String("Missing ',' between struct fields")
 	MissingFieldName          = errors.String("Missing field name")
 	MissingObject             = errors.String("Missing object or identifier")

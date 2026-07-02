@@ -59,6 +59,7 @@ var errs = []struct {
 	{"InvalidLoopHeader.q", core.InvalidLoopHeader},
 	{"InvalidStructOperation.q", core.InvalidStructOperation},
 	{"InvalidStructOperation2.q", core.InvalidStructOperation},
+	{"LoopControlWithoutLoop.q", core.LoopControlWithoutLoop},
 	{"MissingFieldName.q", core.MissingFieldName},
 	{"MissingFieldName2.q", core.MissingFieldName},
 	{"MissingObject.q", core.MissingObject},
