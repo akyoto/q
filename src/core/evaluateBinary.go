@@ -35,10 +35,10 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 		return nil, err
 	}
 
-	_, leftIsStruct := types.Unwrap(leftValue.Type()).(*types.Struct)
-	_, rightIsStruct := types.Unwrap(rightValue.Type()).(*types.Struct)
+	leftStructType, leftIsStruct := types.Unwrap(leftValue.Type()).(*types.Struct)
+	rightStructType, rightIsStruct := types.Unwrap(rightValue.Type()).(*types.Struct)
 
-	if leftIsStruct && rightIsStruct {
+	if leftIsStruct && rightIsStruct && leftStructType == types.String && rightStructType == types.String {
 		switch expr.Token.Kind {
 		case token.Add:
 			return f.evaluateStringOp("concat", leftValue, rightValue, expr.Source())
