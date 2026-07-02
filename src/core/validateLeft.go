@@ -13,42 +13,46 @@ import (
 func (f *Function) validateLeft(left *expression.Expression, right *expression.Expression, name string, rightType types.Type, isAssign bool) (ssa.Value, error) {
 	leftValue, exists := f.Block().FindIdentifier(name)
 
-	if isAssign {
-		if !exists {
-			name := left.Token.StringFrom(f.File.Bytes)
-			pkg := f.Env.Packages[f.File.Package]
-			global, isGlobal := pkg.Globals[name]
-
-			if isGlobal {
-				v := f.Append(&ssa.Global{
-					Label:  f.File.Package + "." + global.Name,
-					Typ:    f.Env.Pointer(global.Typ),
-					Source: left.Source(),
-				})
-
-				return v, nil
-			}
-
-			return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source())
+	if !isAssign {
+		if exists {
+			return nil, errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source())
 		}
 
-		phi, isPhi := leftValue.(*ssa.Phi)
+		return leftValue, nil
+	}
 
-		if isPhi && phi.IsPartiallyUndefined() {
-			return nil, errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, left.Source())
+	if !exists {
+		name := left.Token.StringFrom(f.File.Bytes)
+		pkg := f.Env.Packages[f.File.Package]
+		global, isGlobal := pkg.Globals[name]
+
+		if isGlobal {
+			v := f.Append(&ssa.Global{
+				Label:  f.File.Package + "." + global.Name,
+				Typ:    f.Env.Pointer(global.Typ),
+				Source: left.Source(),
+			})
+
+			return v, nil
 		}
 
-		if !types.Is(rightType, leftValue.Type()) {
-			return nil, errors.New(&TypeMismatch{Encountered: rightType.Name(), Expected: leftValue.Type().Name()}, f.File, right.Source())
-		}
+		return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source())
+	}
 
-		resource, leftIsResource := leftValue.Type().(*types.Resource)
+	phi, isPhi := leftValue.(*ssa.Phi)
 
-		if leftIsResource {
-			return nil, errors.New(&ResourceNotConsumed{TypeName: resource.Name()}, f.File, left.Source())
-		}
-	} else if exists {
-		return nil, errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source())
+	if isPhi && phi.IsPartiallyUndefined() {
+		return nil, errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, left.Source())
+	}
+
+	if !types.Is(rightType, leftValue.Type()) {
+		return nil, errors.New(&TypeMismatch{Encountered: rightType.Name(), Expected: leftValue.Type().Name()}, f.File, right.Source())
+	}
+
+	resource, leftIsResource := leftValue.Type().(*types.Resource)
+
+	if leftIsResource {
+		return nil, errors.New(&ResourceNotConsumed{TypeName: resource.Name()}, f.File, left.Source())
 	}
 
 	return leftValue, nil
