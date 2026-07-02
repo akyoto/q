@@ -477,13 +477,14 @@ Q also hardens executables at the binary level:
 
 ## Syntax
 
-Q encourages code editors to implement multiple syntaxes for editing. A view of the code should be seen as a substantially different format than the underlying model that is saved to disk.
+Q encourages code editors to implement multiple syntaxes for editing.
 
-Although a binary on-disk format was considered, I figured this would be too disruptive for existing workflows and doesn't offer any significant benefits over a text based format. Text based formats also stand the test of time because of their simplicity. But even if the on-disk format for your code is very similar to what your editor shows you, it's important to conceptually realize that one is just a temporary view for editing and the other is just a form of persistent data storage.
+A view of the code can be substantially different from the underlying model that is saved to disk.
+It's important to conceptually realize that one is just a temporary view for editing and the other is a form of persistent data storage.
 
-It is absolutely possible that an editor could offer editing in a Python-like whitespace-significant view while saving the file in the standard format using curly braces `{}` to denote the start and end of code blocks, should the programmer wish to do so.
-
-It is also possible to offer visual editing with a node-based system similar to Scratch or Unreal Engine blueprints while saving the code in the standard text based format.
+It is absolutely possible that an editor could offer editing in a Python-like whitespace-significant view.
+It is also possible to offer visual editing with a node-based system similar to Scratch or Unreal Engine blueprints.
+In all cases the code that is saved to disk would still use the standard text-based format.
 
 ## Source
 
