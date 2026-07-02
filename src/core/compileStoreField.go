@@ -58,12 +58,12 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		})
 	}
 
-	switch pointer := types.Unwrap(addressValue.Type()).(type) {
+	switch addressType := types.Unwrap(addressValue.Type()).(type) {
 	case *types.Pointer:
-		structType, isStructType := pointer.To.(*types.Struct)
+		structType, isStructType := addressType.To.(*types.Struct)
 
 		if !isStructType {
-			return errors.New(&NotDataStruct{TypeName: pointer.To.Name()}, f.File, address.Source())
+			return errors.New(&NotDataStruct{TypeName: addressType.To.Name()}, f.File, address.Source())
 		}
 
 		field := structType.FieldByName(fieldName)
@@ -80,10 +80,10 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		return f.store(memory, rightValue)
 
 	case *types.Struct:
-		field := pointer.FieldByName(fieldName)
+		field := addressType.FieldByName(fieldName)
 
 		if field == nil {
-			return errors.New(&UnknownStructField{StructName: pointer.Name(), FieldName: fieldName}, f.File, fieldExpr.Source())
+			return errors.New(&UnknownStructField{StructName: addressType.Name(), FieldName: fieldName}, f.File, fieldExpr.Source())
 		}
 
 		structure, isStruct := addressValue.(*ssa.Struct)
@@ -98,6 +98,6 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		return f.store(memory, rightValue)
 
 	default:
-		panic("unknown memory store")
+		return errors.New(&NotDataStruct{TypeName: addressType.Name()}, f.File, address.Source())
 	}
 }
