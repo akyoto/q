@@ -42,6 +42,7 @@ const (
 	Struct                            // x{}
 	Cast                              // as
 	Separator                         // ,
+	StructField                       // :
 	___ASSIGNMENTS___                 // <assignments>
 	Assign                            // =
 	AddAssign                         // +=
@@ -54,7 +55,6 @@ const (
 	XorAssign                         // ^=
 	ShlAssign                         // <<=
 	ShrAssign                         // >>=
-	FieldAssign                       // :
 	___END_ASSIGNMENTS___             // </assignments>
 	___COMPARISONS___                 // <comparisons>
 	Equal                             // ==
@@ -241,7 +241,7 @@ func (k Kind) String() string {
 		return ">>="
 	case ShlAssign:
 		return "<<="
-	case FieldAssign:
+	case StructField:
 		return ":"
 	case Cast:
 		return "as"

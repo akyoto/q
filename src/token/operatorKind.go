@@ -56,7 +56,7 @@ func operatorKind(op []byte, next byte) (Kind, bool) {
 		case '=':
 			return Define, true
 		default:
-			return FieldAssign, false
+			return StructField, false
 		}
 	case "<":
 		switch next {

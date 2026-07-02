@@ -17,7 +17,7 @@ func (f *Function) extractField(structType *types.Struct, definition *expression
 	left := definition.Children[0]
 
 	if left.Token.Kind != token.Identifier {
-		if left.Token.Kind == token.FieldAssign {
+		if left.Token.Kind == token.StructField {
 			return nil, nil, errors.New(MissingCommaBetweenFields, f.File, left.Source())
 		}
 

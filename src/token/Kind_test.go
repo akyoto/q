@@ -57,7 +57,7 @@ func TestTokenKindString(t *testing.T) {
 	assert.Equal(t, token.XorAssign.String(), "^=")
 	assert.Equal(t, token.ShrAssign.String(), ">>=")
 	assert.Equal(t, token.ShlAssign.String(), "<<=")
-	assert.Equal(t, token.FieldAssign.String(), ":")
+	assert.Equal(t, token.StructField.String(), ":")
 	assert.Equal(t, token.Cast.String(), "as")
 	assert.Equal(t, token.Invalid.String(), "")
 }

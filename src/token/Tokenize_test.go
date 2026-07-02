@@ -142,7 +142,7 @@ func TestOperator(t *testing.T) {
 }
 
 func TestOperatorAssign(t *testing.T) {
-	tokens := token.Tokenize([]byte(`a = b += c -= d *= e /= f %= g &= h |= i ^= j <<= k >>= l : m`))
+	tokens := token.Tokenize([]byte(`a = b += c -= d *= e /= f %= g &= h |= i ^= j <<= k >>= l`))
 
 	expected := []token.Kind{
 		token.Identifier,
@@ -167,8 +167,6 @@ func TestOperatorAssign(t *testing.T) {
 		token.ShlAssign,
 		token.Identifier,
 		token.ShrAssign,
-		token.Identifier,
-		token.FieldAssign,
 		token.Identifier,
 		token.EOF,
 	}
@@ -430,6 +428,25 @@ func TestSeparator(t *testing.T) {
 		token.Separator,
 		token.Identifier,
 		token.Separator,
+		token.Identifier,
+		token.EOF,
+	}
+
+	for i, kind := range expected {
+		assert.Equal(t, tokens[i].Kind, kind)
+	}
+}
+
+func TestStructField(t *testing.T) {
+	tokens := token.Tokenize([]byte("a:b,c:d"))
+
+	expected := []token.Kind{
+		token.Identifier,
+		token.StructField,
+		token.Identifier,
+		token.Separator,
+		token.Identifier,
+		token.StructField,
 		token.Identifier,
 		token.EOF,
 	}

@@ -30,7 +30,7 @@ func Complexity(expr *expression.Expression) int {
 
 		return complexityKeepAlive(expr.Children[1:])
 
-	case token.FieldAssign:
+	case token.StructField:
 		return Complexity(expr.Children[1])
 
 	case token.Cast:

@@ -59,7 +59,7 @@ var Operators = [256]operator{
 	token.XorAssign:   {1, 2},
 	token.ShrAssign:   {1, 2},
 	token.ShlAssign:   {1, 2},
-	token.FieldAssign: {1, 2},
+	token.StructField: {1, 2},
 }
 
 func numOperands(symbol token.Kind) int {

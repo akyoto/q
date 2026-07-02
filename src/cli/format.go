@@ -19,7 +19,7 @@ func format(args []string) int {
 		token.GroupStart,
 		token.GroupEnd,
 		token.Separator,
-		token.FieldAssign,
+		token.StructField,
 		token.Range,
 	}
 
