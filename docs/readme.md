@@ -265,7 +265,7 @@ The first character of an identifier must not be a digit. Identifiers are case-s
 
 ### Numbers
 
-A number like `42` is a non-empty sequence of digits. It may start with a `-` to indicate negative values. Numbers are decimal by default but the base can be overriden with a `0x` prefix for hexadecimal, `0o` for octal and `0b` for binary. The uppercase letters from `A` to `F` are used to represent digits from 10 to 15 in hexadecimal.
+A number like `42` is a non-empty sequence of digits. It may start with a `-` to indicate negative values. Numbers are decimal by default but the base can be overridden with a `0x` prefix for hexadecimal, `0o` for octal and `0b` for binary. The uppercase letters from `A` to `F` are used to represent digits from 10 to 15 in hexadecimal.
 
 ### Runes
 
@@ -428,7 +428,7 @@ The standard library currently makes use of this feature in two packages:
 - `mem.alloc` must be followed by `mem.free`
 
 For memory allocations of slices and pointers `delete` is called automatically on all exit points of the identifier's scope.
-Non-pointer types like `!int` currently do not support automatic lifecycle management and require an explicit free call, e.g. an `fs.close` for `!int` file handles.
+Non-pointer types like `!int` currently do not support automatic life cycle management and require an explicit free call, e.g. an `fs.close` for `!int` file handles.
 
 ## Errors
 
@@ -499,7 +499,7 @@ The source code structure uses a flat layout without nesting:
 - [config](../src/config) - Build configuration
 - [core](../src/core) - Defines `Function` and compiles tokens to SSA
 - [cpu](../src/cpu) - Types to represent a generic CPU
-- [data](../src/data) - Data container that can re-use existing data
+- [data](../src/data) - Data container that can reuse existing data
 - [dll](../src/dll) - DLL support for Windows systems
 - [elf](../src/elf) - ELF format for Linux executables
 - [errors](../src/errors) - Error handling that reports lines and columns
