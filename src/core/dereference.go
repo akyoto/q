@@ -11,16 +11,25 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 	case *ssa.Global:
 		zero := f.Append(&ssa.Int{Int: 0})
 
-		load := f.Append(&ssa.Load{
-			Memory: &ssa.Memory{
-				Address: value,
-				Index:   zero,
-				Typ:     value.Typ.(*types.Pointer).To,
-			},
-			Source: value.Source,
-		})
+		memory := &ssa.Memory{
+			Address: value,
+			Index:   zero,
+			Typ:     value.Typ.(*types.Pointer).To,
+		}
 
-		return load
+		switch typ := value.Typ.(*types.Pointer).To.(type) {
+		case *types.Struct:
+			structure := f.loadFields(memory, typ, value.Source)
+			return structure
+
+		default:
+			load := f.Append(&ssa.Load{
+				Memory: memory,
+				Source: value.Source,
+			})
+
+			return load
+		}
 
 	case *ssa.Memory:
 		switch typ := value.Typ.(type) {
