@@ -5,6 +5,13 @@ free(buffer ![]byte) {
 		return
 	}
 
+	if heap.current == heap.min {
+		freePtr := heap.min - 32
+		freeSize := (heap.max - freePtr) as uint
+		heap = [freePtr as *Heap]
+		rawFree(freePtr, freeSize)
+	}
+
 	aligned := (buffer.len + 15) & -16
 
 	if buffer.ptr + aligned != heap.current {
