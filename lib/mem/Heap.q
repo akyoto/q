@@ -7,7 +7,7 @@ global {
 }
 
 Heap {
-	last *uint8
-	current *uint8
-	next *uint8
+	min *byte
+	current *byte
+	max *byte
 }
