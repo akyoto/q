@@ -5,6 +5,9 @@ import "git.urbach.dev/cli/q/src/types"
 // Void is the absence of a value.
 type Void struct{}
 
+// Force interface implementation.
+var _ HasUsers = (*Void)(nil)
+
 // AddUser does nothing because a void value cannot be used as a dependency.
 func (v *Void) AddUser(Value) {}
 

@@ -5,6 +5,9 @@ type Liveness struct {
 	users []Value
 }
 
+// Force interface implementation.
+var _ HasUsers = (*Liveness)(nil)
+
 // AddUser adds a new user of the value.
 func (l *Liveness) AddUser(user Value) {
 	l.users = append(l.users, user)
