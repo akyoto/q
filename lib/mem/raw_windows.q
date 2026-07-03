@@ -1,7 +1,7 @@
 import run
 
 rawAlloc(length uint) -> *uint8 {
-	x := kernel32.VirtualAlloc(0, length, commit|reserve, readwrite)
+	x := kernel32.VirtualAlloc(0, length, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE)
 
 	if x == 0 {
 		run.crash()
@@ -10,8 +10,8 @@ rawAlloc(length uint) -> *uint8 {
 	return x
 }
 
-rawFree(ptr *any, len uint) {
-	kernel32.VirtualFree(ptr, len, decommit)
+rawFree(ptr *any, _len uint) {
+	kernel32.VirtualFree(ptr, 0, MEM_RELEASE)
 }
 
 extern {

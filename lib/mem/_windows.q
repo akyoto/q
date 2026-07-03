@@ -1,6 +1,6 @@
 const {
-	readwrite = 0x0004
-	commit = 0x1000
-	reserve = 0x2000
-	decommit = 0x4000
+	MEM_COMMIT = 0x1000
+	MEM_RESERVE = 0x2000
+	MEM_RELEASE = 0x8000
+	PAGE_READWRITE = 0x0004
 }
