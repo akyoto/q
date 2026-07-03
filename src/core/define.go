@@ -72,17 +72,14 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 	if isGlobal {
 		zero := f.Append(&ssa.Int{Int: 0})
 
-		f.Append(&ssa.Store{
-			Memory: &ssa.Memory{
-				Typ:     global.Typ,
-				Address: global,
-				Index:   zero,
-				Source:  global.Source,
-			},
-			Value: rightValue,
-		})
+		memory := &ssa.Memory{
+			Typ:     global.Typ.(*types.Pointer).To,
+			Address: global,
+			Index:   zero,
+			Source:  global.Source,
+		}
 
-		return nil
+		return f.store(memory, rightValue)
 	}
 
 	if !isCall {

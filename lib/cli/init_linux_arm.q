@@ -1,6 +1,6 @@
 init() {
-	stack := asm.sp as *uint
-	argc = [stack]
-	argv = stack + 8
-	envp = argv + argc * 8 + 8
+	stack := asm.sp
+	argc = [stack as *uint]
+	argv = stack + 8 as **byte
+	envp = argv + argc * 8 + 8 as **byte
 }
