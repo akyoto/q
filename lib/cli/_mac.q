@@ -1,0 +1,3 @@
+const {
+	TIOCGETA = 0x40487413
+}

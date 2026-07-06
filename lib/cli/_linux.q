@@ -1,0 +1,3 @@
+const {
+	TCGETS2 = 0x802C542A
+}
