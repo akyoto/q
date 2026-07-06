@@ -547,17 +547,26 @@ An online view of analytic tools can be found here:
 ### How tiny is a Hello World?
 
 |            | arm64    | x86-64  |
-| ---------- | -------- | ------- |
-| 🐧 Linux   |  0.6 KiB | 0.6 KiB |
+| ---------- | -------: | ------: |
+| 🐧 Linux   |  0.7 KiB | 0.7 KiB |
 | 🍏 Mac     | 32.3 KiB | 8.2 KiB |
 | 🪟 Windows |  1.7 KiB | 1.7 KiB |
 
 ### Are there any runtime benchmarks?
 
-Recursive Fibonacci benchmark (`n = 35`):
+#### Rewrite of `fnl` in Q:
+
+A rewrite of [fnl](https://git.urbach.dev/cli/fnl) from Rust to Q resulted in a smaller executable with better performance characteristics:
+
+|               | Lines of code | Binary size | Syscalls | CPU cycles | Time                    |
+| ------------- | ------------: | ----------: | -------: | ---------: | ----------------------: |
+| `fnl` in Q    | 108           |     3.8 KiB | 22       | ~8k        | **270.2 µs** ± 171.6 µs |
+| `fnl` in Rust | 111           |   477.2 KiB | 85       | ~500k      | **416.3 µs** ± 224.9 µs |
+
+#### Recursive Fibonacci benchmark (`n = 35`):
 
 |                   | arm64                | x86-64               |
-| ----------------- | -------------------- | -------------------- |
+| ----------------- | -------------------: | -------------------: |
 | C (-O3, gcc 15)   | **41.4 ms** ± 1.4 ms | **24.5 ms** ± 3.2 ms |
 | Q (2025-08-20)    | **54.2 ms** ± 1.6 ms | **34.8 ms** ± 2.3 ms |
 | Go (1.25, new GC) | **57.7 ms** ± 1.4 ms | **37.9 ms** ± 6.9 ms |
@@ -570,7 +579,7 @@ While the current results lag behind optimized C, this is an expected stage of d
 The table below shows latency numbers on a 2015 Macbook:
 
 |                 | x86-64                  |
-| --------------- | ----------------------- |
+| --------------- | ----------------------: |
 | q               |   **78.6 ms** ±  2.3 ms |
 | go @1.25        |  **364.5 ms** ±  3.3 ms |
 | clang @17.0.0   |  **395.9 ms** ±  3.3 ms |
@@ -584,7 +593,7 @@ Latency measures the time it takes a compiler to create an executable file with 
 Advanced benchmarks for throughput have not been conducted yet, but the following table shows timings in an extremely simplified test parsing 1000 Fibonacci functions named `fib0` to `fib999`:
 
 |                 | x86-64                  |
-| --------------- | ----------------------- |
+| --------------- | ----------------------: |
 | q               |   **89.5 ms** ±  2.4 ms |
 | go @1.25        |  **372.2 ms** ±  5.3 ms |
 | clang @17.0.0   |  **550.8 ms** ±  3.8 ms |
