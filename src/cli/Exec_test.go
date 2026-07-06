@@ -20,6 +20,7 @@ func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry", "-no-lint"}), 0)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-dry", "-no-optimize"}), 0)
 	assert.Equal(t, cli.Exec([]string{"files", "../../examples/hello"}), 0)
+	assert.Equal(t, cli.Exec([]string{"functions", "../../examples/hello"}), 0)
 	assert.Equal(t, cli.Exec([]string{"format", "../../examples/hello/hello.q"}), 0)
 	assert.Equal(t, cli.Exec([]string{"help"}), 0)
 	assert.Equal(t, cli.Exec([]string{"keywords"}), 0)

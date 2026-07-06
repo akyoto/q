@@ -5,7 +5,7 @@ import (
 	"git.urbach.dev/cli/q/src/verbose"
 )
 
-// files shows the entire list of files that are used in a build.
+// files shows the list of files that are used in a build.
 func files(args []string) int {
 	b, err := newBuild(args)
 

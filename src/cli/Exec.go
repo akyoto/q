@@ -19,6 +19,9 @@ func Exec(args []string) int {
 	case "format":
 		return format(args[1:])
 
+	case "functions":
+		return functions(args[1:])
+
 	case "help":
 		return help()
 
