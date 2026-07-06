@@ -19,6 +19,7 @@ var examples = []run{
 	{"prime", nil, "", "2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97", 0},
 	{"point", nil, "", "Point: 1, 2", 0},
 	{"echo", nil, "Echo", "Echo", 0},
+	{"fnl", []string{"-remove"}, "Hello\n", "Hello", 0},
 	{"clock", nil, "", "", -1},
 	{"raylib", nil, "", "", -1},
 	{"readfile", nil, "", "", -1},
