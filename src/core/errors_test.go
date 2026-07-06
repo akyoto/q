@@ -101,6 +101,8 @@ var errs = []struct {
 	{"TypeMismatch12.q", &core.TypeMismatch{Encountered: "string", Expected: "int64"}},
 	{"TypeMismatch13.q", &core.TypeMismatch{Encountered: "int", Expected: "bool"}},
 	{"TypeMismatch14.q", &core.TypeMismatch{Encountered: "int", Expected: "function"}},
+	{"TypeMismatch15.q", &core.TypeMismatch{Encountered: "string", Expected: "int"}},
+	{"TypeMismatch16.q", &core.TypeMismatch{Encountered: "string", Expected: "int"}},
 	{"UndefinedStructField.q", &core.UndefinedStructField{Identifier: "p", FieldName: "y"}},
 	{"UnknownIdentifier.q", &core.UnknownIdentifier{Name: "x"}},
 	{"UnknownIdentifier2.q", &core.UnknownIdentifier{Name: "x"}},

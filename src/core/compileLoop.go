@@ -5,6 +5,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // compileLoop compiles an endless loop.
@@ -38,6 +39,10 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 			return err
 		}
 
+		if !types.Is(fromValue.Type(), types.AnyInt) {
+			return errors.New(&TypeMismatch{Encountered: fromValue.Type().Name(), Expected: types.AnyInt.Name()}, f.File, from.Source())
+		}
+
 		if f.Block().IsIdentified(fromValue) {
 			fromValue = f.copy(fromValue, from.Source())
 		}
@@ -54,6 +59,10 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 
 		if err != nil {
 			return err
+		}
+
+		if !types.Is(toValue.Type(), fromValue.Type()) {
+			return errors.New(&TypeMismatch{Encountered: toValue.Type().Name(), Expected: fromValue.Type().Name()}, f.File, to.Source())
 		}
 
 		condition := f.Append(&ssa.BinaryOp{
