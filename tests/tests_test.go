@@ -173,6 +173,7 @@ var tests = []run{
 	{"cas", nil, "", "", 0},
 	{"mutex", nil, "", "", 0},
 	{"spill-call", nil, "", "", 0},
+	{"zero-alloc", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {

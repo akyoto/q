@@ -1,8 +1,4 @@
 alloc(length uint) -> (buffer ![]byte) {
-	if length == 0 {
-		return []byte{ptr: 0 as *byte, len: 0}
-	}
-
 	aligned := (length + 15) & -16
 
 	if heap.current + aligned > heap.max {

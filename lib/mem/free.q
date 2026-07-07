@@ -1,7 +1,7 @@
 import run
 
 free(buffer ![]byte) {
-	if buffer.ptr == 0 {
+	if buffer.len == 0 {
 		return
 	}
 
