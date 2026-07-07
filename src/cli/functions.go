@@ -20,6 +20,6 @@ func functions(args []string) int {
 		return exit(err)
 	}
 
-	verbose.Functions(env.Init)
+	verbose.Functions(env)
 	return success
 }

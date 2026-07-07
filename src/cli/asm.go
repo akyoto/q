@@ -20,6 +20,6 @@ func asm(args []string) int {
 		return exit(err)
 	}
 
-	verbose.ASM(env.Init)
+	verbose.ASM(env)
 	return success
 }

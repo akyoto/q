@@ -11,14 +11,14 @@ import (
 )
 
 // ASM shows the assembly code.
-func ASM(root *core.Function) {
-	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
-		if filter(f.FullName, f.Env.Build.Filter) {
-			return
+func ASM(env *core.Environment) {
+	for f := range env.LiveFunctions() {
+		if filter(f.FullName, env.Build.Filter) {
+			continue
 		}
 
 		printAssembly(f)
-	})
+	}
 }
 
 // printAssembly shows the assembly instructions.

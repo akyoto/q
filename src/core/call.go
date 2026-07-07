@@ -13,6 +13,7 @@ func (f *Function) call(fn *ssa.Function, args []ssa.Value, source ssa.Source) s
 		Source:    source,
 	})
 
+	f.Dependencies.Add(fn.FunctionRef.(*Function))
 	typ := call.Type()
 	structure, isStructType := types.Unwrap(typ).(*types.Struct)
 

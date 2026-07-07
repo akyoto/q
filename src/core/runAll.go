@@ -29,13 +29,11 @@ func (f *Function) runAll(funcName string) {
 			continue
 		}
 
-		f.Dependencies.Add(fn)
+		ssaFunc := &ssa.Function{
+			FunctionRef: fn,
+			Typ:         fn.Type,
+		}
 
-		f.Block().Append(&ssa.Call{
-			Func: &ssa.Function{
-				FunctionRef: fn,
-				Typ:         fn.Type,
-			},
-		})
+		f.call(ssaFunc, nil, ssa.Source{})
 	}
 }

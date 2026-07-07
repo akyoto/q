@@ -13,10 +13,10 @@ import (
 )
 
 // SSA shows the SSA IR.
-func SSA(root *core.Function) {
-	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
-		if filter(f.FullName, f.Env.Build.Filter) {
-			return
+func SSA(env *core.Environment) {
+	for f := range env.LiveFunctions() {
+		if filter(f.FullName, env.Build.Filter) {
+			continue
 		}
 
 		tmpColor := ansi.Green
@@ -104,5 +104,5 @@ func SSA(root *core.Function) {
 		}
 
 		fmt.Println()
-	})
+	}
 }

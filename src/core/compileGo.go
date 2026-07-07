@@ -22,5 +22,6 @@ func (f *Function) compileGo(g *ast.Go) error {
 	})
 
 	f.Dependencies.Add(createThread)
+	f.Dependencies.Add(threadFunc.(*ssa.Function).FunctionRef.(*Function))
 	return nil
 }

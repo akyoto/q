@@ -20,6 +20,6 @@ func ssa(args []string) int {
 		return exit(err)
 	}
 
-	verbose.SSA(env.Init)
+	verbose.SSA(env)
 	return success
 }

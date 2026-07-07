@@ -63,8 +63,6 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 
 		if fn.IsExtern() {
 			f.Assembler.Libraries.Append(fn.Package(), fn.Name())
-		} else {
-			f.Dependencies.Add(fn)
 		}
 
 		v := &ssa.Function{

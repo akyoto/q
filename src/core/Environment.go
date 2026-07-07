@@ -91,16 +91,34 @@ func (env *Environment) Globals() iter.Seq[*Global] {
 // starting with `run.init` and all of its dependencies.
 func (env *Environment) LiveFunctions() iter.Seq[*Function] {
 	return func(yield func(*Function) bool) {
-		running := true
-		traversed := make(map[*Function]bool, env.NumFunctions)
+		var (
+			exit      []*Function
+			running   = true
+			traversed = make(map[*Function]bool, env.NumFunctions)
+		)
 
 		env.Init.EachDependency(traversed, func(f *Function) {
 			if !running {
 				return
 			}
 
+			if f.FullName == "run.crash" || f.FullName == "run.exit" {
+				exit = append(exit, f)
+				return
+			}
+
 			running = yield(f)
 		})
+
+		if !running {
+			return
+		}
+
+		for _, f := range exit {
+			if !yield(f) {
+				return
+			}
+		}
 	}
 }
 

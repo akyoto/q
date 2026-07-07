@@ -7,8 +7,8 @@ import (
 )
 
 // Functions shows the list of live functions.
-func Functions(root *core.Function) {
-	root.EachDependency(make(map[*core.Function]bool), func(f *core.Function) {
+func Functions(env *core.Environment) {
+	for f := range env.LiveFunctions() {
 		fmt.Println(f.FullName)
-	})
+	}
 }
