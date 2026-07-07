@@ -87,6 +87,8 @@ var errs = []struct {
 	{"ReturnCountMismatch2.q", &core.ReturnCountMismatch{Count: 1, ExpectedCount: 2}},
 	{"ReturnCountMismatch3.q", &core.ReturnCountMismatch{Count: 0, ExpectedCount: 1}},
 	{"ReturnCountMismatch4.q", &core.ReturnCountMismatch{Count: 0, ExpectedCount: 1}},
+	{"TypeCastNotAllowed.q", &core.TypeCastNotAllowed{From: "string", To: "int64"}},
+	{"TypeCastNotAllowed2.q", &core.TypeCastNotAllowed{From: "int", To: "string"}},
 	{"TypeMismatch.q", &core.TypeMismatch{Encountered: "string", Expected: "int64", ParameterName: "x", IsReturn: false}},
 	{"TypeMismatch2.q", &core.TypeMismatch{Encountered: "string", Expected: "int64", ParameterName: "y", IsReturn: true}},
 	{"TypeMismatch3.q", &core.TypeMismatch{Encountered: "string", Expected: "int64"}},

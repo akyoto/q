@@ -13,7 +13,8 @@ type BinaryOp struct {
 	Right Value
 	Liveness
 	Source
-	Op token.Kind
+	Op      token.Kind
+	Swapped bool
 }
 
 // Equals returns true if the binary operations are equal.
@@ -65,6 +66,10 @@ func (op *BinaryOp) String() string {
 func (op *BinaryOp) Type() types.Type {
 	if op.Op.IsComparison() {
 		return types.Bool
+	}
+
+	if op.Swapped {
+		return op.Right.Type()
 	}
 
 	return op.Left.Type()

@@ -168,6 +168,16 @@ func (err *ReturnCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough return values (expected %d)", err.ExpectedCount)
 }
 
+// TypeCastNotAllowed error is created when a type cast is not allowed.
+type TypeCastNotAllowed struct {
+	From string
+	To   string
+}
+
+func (err *TypeCastNotAllowed) Error() string {
+	return fmt.Sprintf("Type cast from '%s' to '%s' is not allowed", err.From, err.To)
+}
+
 // TypeMismatch represents an error where a type requirement was not met.
 type TypeMismatch struct {
 	Encountered   string

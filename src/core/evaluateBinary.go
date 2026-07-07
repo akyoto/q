@@ -13,6 +13,7 @@ import (
 func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error) {
 	left := expr.Children[0]
 	right := expr.Children[1]
+	swapped := false
 
 	if expr.Token.Kind.IsCommutative() {
 		leftComplexity := optimizer.Complexity(left)
@@ -20,6 +21,7 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 
 		if rightComplexity > leftComplexity {
 			left, right = right, left
+			swapped = true
 		}
 	}
 
@@ -66,10 +68,11 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 	}
 
 	v := &ssa.BinaryOp{
-		Left:   leftValue,
-		Right:  rightValue,
-		Op:     expr.Token.Kind,
-		Source: expr.Source(),
+		Left:    leftValue,
+		Right:   rightValue,
+		Op:      expr.Token.Kind,
+		Swapped: swapped,
+		Source:  expr.Source(),
 	}
 
 	if v.Op.IsComparison() {
