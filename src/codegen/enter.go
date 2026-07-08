@@ -7,13 +7,12 @@ import (
 	"git.urbach.dev/cli/q/src/asm"
 )
 
-const (
-	alignFunction = 0x20
-)
-
 // enter sets up the stack frame.
 func (f *Function) enter() {
-	f.Assembler.Append(&asm.Label{Name: f.FullName, Align: alignFunction})
+	f.Assembler.Append(&asm.Label{
+		Name:  f.FullName,
+		Align: f.alignment(),
+	})
 
 	if f.Preserved.Count() > 0 && !f.isInit {
 		f.Assembler.Append(&asm.Push{Registers: f.Preserved.Slice()})
