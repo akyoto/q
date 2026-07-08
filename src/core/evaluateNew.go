@@ -37,10 +37,10 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 		sliceType = f.Env.Slice(typ)
 		elementSize := typ.Size()
 		sizeInBytes = f.multiplySize(numElements, elementSize)
-		mallocType = &types.Pointer{To: typ}
+		mallocType = f.Env.Pointer(typ)
 	} else {
 		sizeInBytes = f.Append(&ssa.Int{Int: typ.Size()})
-		mallocType = &types.Resource{Of: &types.Pointer{To: typ}}
+		mallocType = f.Env.Resource(f.Env.Pointer(typ))
 	}
 
 	malloc := f.Env.Function("mem", "alloc")
