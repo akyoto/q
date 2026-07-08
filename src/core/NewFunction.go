@@ -12,9 +12,11 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 	fullName := pkg + "." + name
 
 	return &Function{
-		name: name,
-		pkg:  pkg,
-		File: file,
+		functionIdentity: functionIdentity{
+			name: name,
+			pkg:  pkg,
+			File: file,
+		},
 		IR: ssa.IR{
 			Blocks: []*ssa.Block{
 				{
