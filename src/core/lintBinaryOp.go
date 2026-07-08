@@ -111,11 +111,27 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 		}
 	}
 
+	leftType := binOp.Left.Type()
+	rightType := binOp.Right.Type()
+	leftIsUnsigned := types.IsUnsigned(leftType)
+	rightIsUnsigned := types.IsUnsigned(rightType)
+
+	switch binOp.Op {
+	case token.Div, token.Mod, token.Shr, token.Greater, token.GreaterEqual, token.Less, token.LessEqual:
+		if leftIsUnsigned && !rightIsUnsigned && rightType != types.AnyInt {
+			return errors.New(&MixedSignedUnsigned{Signed: rightType.Name(), Unsigned: leftType.Name()}, f.File, binOp.Source)
+		}
+
+		if !leftIsUnsigned && rightIsUnsigned && leftType != types.AnyInt {
+			return errors.New(&MixedSignedUnsigned{Signed: leftType.Name(), Unsigned: rightType.Name()}, f.File, binOp.Source)
+		}
+	}
+
 	if !binOp.Op.IsComparison() {
 		return nil
 	}
 
-	if types.IsUnsigned(binOp.Left.Type()) {
+	if leftIsUnsigned {
 		rightInt, rightIsInt := binOp.Right.(*ssa.Int)
 
 		if rightIsInt {
@@ -139,7 +155,7 @@ func (f *Function) lintBinaryOp(binOp *ssa.BinaryOp) error {
 		}
 	}
 
-	if types.IsUnsigned(binOp.Right.Type()) {
+	if rightIsUnsigned {
 		leftInt, leftIsInt := binOp.Left.(*ssa.Int)
 
 		if leftIsInt {

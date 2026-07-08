@@ -61,6 +61,7 @@ var errs = []struct {
 	{"InvalidStructOperation2.q", core.InvalidStructOperation},
 	{"InvalidStructOperation3.q", core.InvalidStructOperation},
 	{"LoopControlWithoutLoop.q", core.LoopControlWithoutLoop},
+	{"MixedSignedUnsigned.q", &core.MixedSignedUnsigned{Signed: "int64", Unsigned: "uint64"}},
 	{"MissingFieldName.q", core.MissingFieldName},
 	{"MissingFieldName2.q", core.MissingFieldName},
 	{"MissingObject.q", core.MissingObject},

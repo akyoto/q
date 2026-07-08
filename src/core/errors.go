@@ -168,6 +168,16 @@ func (err *ReturnCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough return values (expected %d)", err.ExpectedCount)
 }
 
+// MixedSignedUnsigned represents an error where unsigned and signed types are used.
+type MixedSignedUnsigned struct {
+	Signed   string
+	Unsigned string
+}
+
+func (err *MixedSignedUnsigned) Error() string {
+	return fmt.Sprintf("Mixed signed '%s' and unsigned '%s'", err.Signed, err.Unsigned)
+}
+
 // TypeCastNotAllowed error is created when a type cast is not allowed.
 type TypeCastNotAllowed struct {
 	From string
