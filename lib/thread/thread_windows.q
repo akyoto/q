@@ -1,5 +1,5 @@
 create(func any) -> int {
-	return kernel32.CreateThread(0, 4096, func, 0)
+	return kernel32.CreateThread(0, STACK_SIZE, func, 0)
 }
 
 extern {
