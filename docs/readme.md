@@ -554,15 +554,6 @@ An online view of analytic tools can be found here:
 
 ### Are there any runtime benchmarks?
 
-#### Rewrite of `fnl` in Q:
-
-A rewrite of [fnl](https://git.urbach.dev/cli/fnl) from Rust to Q resulted in a smaller executable with better performance characteristics:
-
-|               | Lines of code | Binary size | Syscalls | CPU cycles | Time                    |
-| ------------- | ------------: | ----------: | -------: | ---------: | ----------------------: |
-| `fnl` in Q    | 108           |     3.8 KiB | 22       | ~8k        | **270.2 µs** ± 171.6 µs |
-| `fnl` in Rust | 111           |   477.2 KiB | 85       | ~500k      | **416.3 µs** ± 224.9 µs |
-
 #### Recursive Fibonacci benchmark (`n = 35`):
 
 |                   | arm64                | x86-64               |
@@ -573,6 +564,18 @@ A rewrite of [fnl](https://git.urbach.dev/cli/fnl) from Rust to Q resulted in a 
 | C (-O0, gcc 15)   | **66.4 ms** ± 1.5 ms | **47.8 ms** ± 4.4 ms |
 
 While the current results lag behind optimized C, this is an expected stage of development. I am actively working to improve the compiler's code generation to a level that can rival optimized C, and I expect a significant performance boost as this work progresses.
+
+#### Rewrite of `fnl` in Q:
+
+A rewrite of [fnl](https://git.urbach.dev/cli/fnl) from Rust to Q resulted in a smaller executable with better performance characteristics.
+
+|                            | Lines of code | Binary size | Syscalls | CPU cycles | Time                    |
+| -------------------------- | ------------: | ----------: | -------: | ---------: | ----------------------: |
+| `fnl` in Q    - 2026-07-08 | 108           |     3.8 KiB | 22       | ~8k        | **270.2 µs** ± 171.6 µs |
+| `fnl` in Rust - 2026-06-26 | 111           |   477.2 KiB | 85       | ~500k      | **416.3 µs** ± 224.9 µs |
+
+Note that this is not a 100% fair comparison as the implementation details differ.
+Do not trust benchmark data without validating the results yourself.
 
 ### Are there any compiler benchmarks?
 
@@ -606,6 +609,15 @@ Advanced benchmarks for throughput have not been conducted yet, but the followin
 
 The backend is built on a [Static Single Assignment (SSA)](https://en.wikipedia.org/wiki/Static_single-assignment_form) intermediate representation, the same approach used by mature compilers such as `gcc`, `go`, and `llvm`. SSA greatly simplifies the implementation of common optimization passes, allowing the compiler to produce relatively high-quality assembly code despite the project's early stage of development.
 
+### Can I write programs for Raspberry Pi?
+
+|                          | CPU        | ARM version | Supported |
+| ------------------------ | ---------- | ----------- | --------- |
+| 🔲 Raspberry Pi 5        | Cortex-A76 | 8.2-A       | ✔️        |
+| 🔲 Raspberry Pi 4        | Cortex-A72 | 8.0-A       | ❌        |
+| 🔲 Raspberry Pi 3        | Cortex-A53 | 8.0-A       | ❌        |
+| 🔲 Raspberry Pi Zero 2 W | Cortex-A53 | 8.0-A       | ❌        |
+
 ### Can I use it in scripts?
 
 Yes. The compiler can build an entire script within a few microseconds.
@@ -632,19 +644,27 @@ You need to create a file with the contents above and add execution permissions 
 Because of readability and great tools for concurrency.
 The implementation will be replaced by a self-hosted compiler in the future.
 
-### I can't contribute but can I donate to the project?
+### How do I pronounce the name?
 
-- [Bmac](https://buymeacoffee.com/akyoto)
-- [GitHub](https://github.com/sponsors/akyoto)
-- [Kofi](https://ko-fi.com/akyoto)
+/ˈkjuː/ just like `Q` in the English alphabet.
+
+### Uppercase "Q" or lowercase "q"?
+
+The language is `Q`, the compiler is `q`.
+
+### Can I donate to the project?
+
+[GitHub](https://github.com/sponsors/akyoto) is the preferred platform for donations.
+
+[Kofi](https://ko-fi.com/akyoto) is another option in case GitHub Sponsors is not available in your country.
 
 ### If I donate, what will my money be used for?
 
 Continuous development, testing infrastructure and support for new platforms and architectures.
 
-### How do I pronounce the name?
+### Can I donate hardware directly?
 
-/ˈkjuː/ just like `Q` in the English alphabet.
+Please contact me via E-Mail. Note that remote access is often enough for reverse engineering and testing.
 
 ## FAQ: Contributors
 
