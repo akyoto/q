@@ -23,6 +23,10 @@ func encode(code []byte, mod AddressMode, reg cpu.Register, rm cpu.Register, len
 		code = append(code, 0x66)
 	}
 
+	if opCode&0xFF000000 != 0 {
+		code = append(code, byte(opCode>>24))
+	}
+
 	if w != 0 || r != 0 || b != 0 || (length == 1 && reg >= SP && reg <= R7) {
 		code = append(code, REX(w, r, 0, b))
 	}
