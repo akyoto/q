@@ -62,6 +62,10 @@ type (
 		Label       string
 		Destination cpu.Register
 	}
+	MoveThreadLocal struct {
+		Offset      int
+		Destination cpu.Register
+	}
 	MoveNumber             rn
 	Multiply               rrr
 	Negate                 rr

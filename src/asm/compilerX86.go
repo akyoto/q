@@ -308,6 +308,8 @@ func (c *compilerX86) Compile(instr Instruction) {
 		if instr.Destination != x86.R2 {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, x86.R2)
 		}
+	case *Move:
+		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 	case *MoveLabel:
 		c.code = x86.LoadAddress(c.code, instr.Destination, 0)
 		patch := c.PatchLast4Bytes()
@@ -323,10 +325,11 @@ func (c *compilerX86) Compile(instr Instruction) {
 			binary.LittleEndian.PutUint32(code, uint32(offset))
 			return code
 		}
-	case *Move:
-		c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)
 	case *MoveNumber:
 		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
+	case *MoveThreadLocal:
+		c.code = x86.SegmentBaseFS(c.code)
+		c.code = x86.LoadAddressAbs(c.code, instr.Destination, instr.Offset)
 	case *Multiply:
 		if instr.Destination == instr.Operand {
 			panic("multiply destination register cannot be equal to the operand register")
