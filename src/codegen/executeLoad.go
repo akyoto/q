@@ -24,7 +24,7 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 			Destination: step.Register,
 			Scale:       memory.Scale,
 			Length:      byte(elementSize),
-			Signed:      !types.IsUnsigned(elementType),
+			Signed:      types.IsSigned(elementType),
 		})
 	} else {
 		f.Assembler.Append(&asm.Load{
@@ -33,7 +33,7 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 			Destination: step.Register,
 			Scale:       memory.Scale,
 			Length:      byte(elementSize),
-			Signed:      !types.IsUnsigned(elementType),
+			Signed:      types.IsSigned(elementType),
 		})
 	}
 }

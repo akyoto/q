@@ -21,7 +21,7 @@ func (f *Function) loadSpill(step *Step, destination cpu.Register) {
 		Destination: destination,
 		Length:      8,
 		Scale:       false,
-		Signed:      !types.IsUnsigned(step.Value.Type()),
+		Signed:      types.IsSigned(step.Value.Type()),
 	})
 }
 
