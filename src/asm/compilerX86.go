@@ -327,9 +327,6 @@ func (c *compilerX86) Compile(instr Instruction) {
 		}
 	case *MoveNumber:
 		c.code = x86.MoveRegisterNumber(c.code, instr.Destination, instr.Number)
-	case *MoveThreadLocal:
-		c.code = x86.SegmentBaseFS(c.code)
-		c.code = x86.LoadAddressAbs(c.code, instr.Destination, instr.Offset)
 	case *Multiply:
 		if instr.Destination == instr.Operand {
 			panic("multiply destination register cannot be equal to the operand register")
@@ -365,6 +362,15 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *Push:
 		for _, register := range instr.Registers {
 			c.code = x86.PushRegister(c.code, register)
+		}
+	case *ReadSystemRegister:
+		switch instr.SystemRegister {
+		case x86.FS:
+			c.code = x86.ReadFS(c.code, instr.Destination)
+		case x86.GS:
+			c.code = x86.ReadGS(c.code, instr.Destination)
+		default:
+			panic("unknown system register")
 		}
 	case *Return:
 		c.code = x86.Return(c.code)
@@ -445,6 +451,15 @@ func (c *compilerX86) Compile(instr Instruction) {
 		c.code = x86.SubRegisterNumber(c.code, instr.Destination, instr.Number)
 	case *Syscall:
 		c.code = x86.Syscall(c.code)
+	case *WriteSystemRegister:
+		switch instr.SystemRegister {
+		case x86.FS:
+			c.code = x86.WriteFS(c.code, instr.Source)
+		case x86.GS:
+			c.code = x86.WriteGS(c.code, instr.Source)
+		default:
+			panic("unknown system register")
+		}
 	case *Xor:
 		if instr.Destination != instr.Source {
 			c.code = x86.MoveRegisterRegister(c.code, instr.Destination, instr.Source)

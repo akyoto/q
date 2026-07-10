@@ -62,17 +62,17 @@ type (
 		Label       string
 		Destination cpu.Register
 	}
-	MoveThreadLocal struct {
-		Offset      int
-		Destination cpu.Register
+	MoveNumber         rn
+	Multiply           rrr
+	Negate             rr
+	Or                 rrr
+	OrNumber           rrn
+	Pop                struct{ Registers []cpu.Register }
+	Push               struct{ Registers []cpu.Register }
+	ReadSystemRegister struct {
+		Destination    cpu.Register
+		SystemRegister cpu.SystemRegister
 	}
-	MoveNumber             rn
-	Multiply               rrr
-	Negate                 rr
-	Or                     rrr
-	OrNumber               rrn
-	Pop                    struct{ Registers []cpu.Register }
-	Push                   struct{ Registers []cpu.Register }
 	Return                 struct{}
 	ShiftLeft              rrr
 	ShiftLeftNumber        rrn
@@ -114,8 +114,12 @@ type (
 		FramePointer bool
 		ExternCalls  bool
 	}
-	StackFrameEnd struct{ FramePointer bool }
-	Syscall       struct{}
-	Xor           rrr
-	XorNumber     rrn
+	StackFrameEnd       struct{ FramePointer bool }
+	Syscall             struct{}
+	WriteSystemRegister struct {
+		SystemRegister cpu.SystemRegister
+		Source         cpu.Register
+	}
+	Xor       rrr
+	XorNumber rrn
 )

@@ -21,6 +21,11 @@ const (
 	R15
 )
 
+const (
+	FS cpu.SystemRegister = iota
+	GS
+)
+
 var (
 	LinuxCPU = cpu.CPU{
 		General: []cpu.Register{

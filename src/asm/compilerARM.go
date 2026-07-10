@@ -276,6 +276,13 @@ func (c *compilerARM) Compile(instr Instruction) {
 				c.append(arm.StoreFixedOffsetRegister(registers[i], arm.SP, arm.PreIndex, -16, 8))
 			}
 		}
+	case *ReadSystemRegister:
+		switch instr.SystemRegister {
+		case arm.TPIDR_EL0:
+			c.append(arm.LoadTLS(instr.Destination))
+		default:
+			panic("unknown system register")
+		}
 	case *Return:
 		c.append(arm.Return())
 	case *ShiftLeft:
@@ -323,6 +330,13 @@ func (c *compilerARM) Compile(instr Instruction) {
 			c.append(arm.Syscall(0x80))
 		default:
 			c.append(arm.Syscall(0))
+		}
+	case *WriteSystemRegister:
+		switch instr.SystemRegister {
+		case arm.TPIDR_EL0:
+			c.append(arm.StoreTLS(instr.Source))
+		default:
+			panic("unknown system register")
 		}
 	case *Xor:
 		c.append(arm.XorRegisterRegister(instr.Destination, instr.Source, instr.Operand))

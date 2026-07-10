@@ -41,6 +41,10 @@ const (
 	ZR = SP // Zero register uses the same numerical value as SP
 )
 
+const (
+	TPIDR_EL0 cpu.SystemRegister = iota
+)
+
 var (
 	LinuxCPU = cpu.CPU{
 		General: []cpu.Register{
