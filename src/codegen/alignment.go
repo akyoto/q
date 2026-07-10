@@ -6,7 +6,7 @@ const (
 
 // alignment determines the machine code alignment of the entry point.
 func (f *Function) alignment() uint8 {
-	if f.FullName == "run.crash" || f.FullName == "run.exit" {
+	if f.FullName == "run.init" || f.FullName == "run.exit" || f.FullName == "run.crash" {
 		return 0
 	}
 
