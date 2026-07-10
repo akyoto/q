@@ -9,6 +9,7 @@ import (
 
 // scanGlobal scans a global.
 func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, error) {
+	threadLocal := tokens[i].Kind == token.Local
 	i++
 
 	if tokens[i].Kind != token.BlockStart {
@@ -28,9 +29,10 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
 				global := &core.Global{
-					Name:   tokens[start].StringFrom(file.Bytes),
-					Tokens: tokens[start:i],
-					File:   file,
+					Name:        tokens[start].StringFrom(file.Bytes),
+					Tokens:      tokens[start:i],
+					File:        file,
+					ThreadLocal: threadLocal,
 				}
 
 				s.globals <- global

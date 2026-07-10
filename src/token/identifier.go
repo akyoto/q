@@ -35,6 +35,8 @@ func identifier(tokens List, buffer []byte, i Position) (List, Position) {
 		kind = Go
 	case "import":
 		kind = Import
+	case "local":
+		kind = Local
 	case "loop":
 		kind = Loop
 	case "new":

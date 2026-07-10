@@ -2,7 +2,7 @@ const {
 	pageSize = 0x200000
 }
 
-global {
+local {
 	heap Heap
 }
 

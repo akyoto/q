@@ -11,6 +11,7 @@ type Global struct {
 	Independent
 	Liveness
 	Source
+	ThreadLocal bool
 }
 
 // Equals returns true if the data labels are equal.

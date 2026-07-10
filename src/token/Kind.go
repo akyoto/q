@@ -80,6 +80,7 @@ const (
 	Extern                            // extern
 	Global                            // global
 	If                                // if
+	Local                             // local
 	Loop                              // loop
 	Switch                            // switch
 	___END_BLOCKS___                  // </blocks>

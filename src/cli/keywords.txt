@@ -6,6 +6,7 @@ global
 go
 if
 import
+local
 loop
 return
 switch
