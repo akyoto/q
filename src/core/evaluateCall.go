@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // evaluateCall converts a call expression to an SSA value.
@@ -23,6 +24,12 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 	ssaFunc, isFunction := funcValue.(*ssa.Function)
 
 	if !isFunction {
+		_, isFunctionPointer := funcValue.Type().(*types.Function)
+
+		if isFunctionPointer {
+			return f.evaluateCallPointer(funcValue, expr.Source())
+		}
+
 		return nil, errors.New(&TypeMismatch{Expected: "function", Encountered: funcValue.Type().Name()}, f.File, identifier.Source())
 	}
 

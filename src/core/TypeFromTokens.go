@@ -78,6 +78,10 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 		return env.Slice(typ), nil
 	}
 
+	if len(tokens) >= 2 && tokens[0].Kind == token.GroupStart && tokens[1].Kind == token.GroupEnd {
+		return &types.Function{}, nil
+	}
+
 	if tokens[0].Kind != token.Identifier {
 		return nil, errors.New(&UnknownType{Name: tokens.StringFrom(file.Bytes)}, file, tokens[0])
 	}

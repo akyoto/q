@@ -1,5 +1,5 @@
-clone3(args *CloneArgs, size uint) -> int {
-	return syscall(_clone3, args, size)
+const {
+	CLONE_ARGS_SIZE = 88
 }
 
 CloneArgs {

@@ -7,5 +7,5 @@ fork() -> int {
 		exit_signal: SIGCHLD
 	}
 
-	return clone3(args, 88)
+	return syscall(_clone3, args, CLONE_ARGS_SIZE)
 }
