@@ -10,7 +10,7 @@ create(func any) -> (tid int) {
 	args := entry - 88 as *process.CloneArgs
 	args.flags = CLONE_THREAD | CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_IO | CLONE_SIGHAND | CLONE_SETTLS
 	args.stack = stack as uint64
-	args.stack_size = STACK_SIZE - 48
+	args.stack_size = STACK_SIZE - 32 - 16
 	args.tls = tls as uint64
 	return process.clone3(args, 88)
 }
