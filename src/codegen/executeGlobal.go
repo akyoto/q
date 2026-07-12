@@ -8,6 +8,11 @@ import (
 	"git.urbach.dev/cli/q/src/x86"
 )
 
+const (
+	WindowsTLSOffset = 0x1480
+	WindowsTLSSize   = 0x200
+)
+
 func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 	if instr.ThreadLocal {
 		switch f.build.OS {
@@ -43,7 +48,7 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 			f.Assembler.Append(&asm.AddNumber{
 				Destination: step.Register,
 				Source:      step.Register,
-				Number:      0x1480 + 0x20,
+				Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
 			})
 		default:
 			f.Assembler.Append(&asm.MoveLabel{
