@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	WindowsTLSOffset = 0x1480
+	WindowsTLSOffset = 0x480
 	WindowsTLSSize   = 0x200
 )
 
@@ -33,9 +33,16 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 		case config.Windows:
 			switch f.build.Arch {
 			case config.ARM:
-				f.Assembler.Append(&asm.Move{
+				f.Assembler.Append(&asm.AddNumber{
 					Destination: step.Register,
 					Source:      arm.X18,
+					Number:      0x1000,
+				})
+
+				f.Assembler.Append(&asm.AddNumber{
+					Destination: step.Register,
+					Source:      arm.X18,
+					Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
 				})
 
 			case config.X86:
@@ -43,13 +50,14 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 					Destination:    step.Register,
 					SystemRegister: x86.GS,
 				})
+
+				f.Assembler.Append(&asm.AddNumber{
+					Destination: step.Register,
+					Source:      step.Register,
+					Number:      0x1000 + WindowsTLSOffset + WindowsTLSSize - 0x20,
+				})
 			}
 
-			f.Assembler.Append(&asm.AddNumber{
-				Destination: step.Register,
-				Source:      step.Register,
-				Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
-			})
 		default:
 			f.Assembler.Append(&asm.MoveLabel{
 				Destination: step.Register,
