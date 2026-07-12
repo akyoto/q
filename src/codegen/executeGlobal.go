@@ -25,6 +25,26 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 					SystemRegister: x86.FS,
 				})
 			}
+		case config.Windows:
+			switch f.build.Arch {
+			case config.ARM:
+				f.Assembler.Append(&asm.Move{
+					Destination: step.Register,
+					Source:      arm.X18,
+				})
+
+			case config.X86:
+				f.Assembler.Append(&asm.ReadSystemRegister{
+					Destination:    step.Register,
+					SystemRegister: x86.GS,
+				})
+			}
+
+			f.Assembler.Append(&asm.AddNumber{
+				Destination: step.Register,
+				Source:      step.Register,
+				Number:      0x1480,
+			})
 		default:
 			f.Assembler.Append(&asm.MoveLabel{
 				Destination: step.Register,
