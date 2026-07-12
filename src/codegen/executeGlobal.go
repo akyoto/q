@@ -43,7 +43,7 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 			f.Assembler.Append(&asm.AddNumber{
 				Destination: step.Register,
 				Source:      step.Register,
-				Number:      0x1480,
+				Number:      0x1480 + 0x20,
 			})
 		default:
 			f.Assembler.Append(&asm.MoveLabel{
