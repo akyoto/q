@@ -512,6 +512,7 @@ The source code structure uses a flat layout without nesting:
 - [memfile](../src/memfile) - Memory backed file descriptors
 - [optimizer](../src/optimizer) - Code optimization
 - [pe](../src/pe) - PE format for Windows executables
+- [resolver](../src/resolver) - Type token resolver
 - [scanner](../src/scanner) - Scanner that parses top-level instructions
 - [set](../src/set) - Generic set implementation
 - [ssa](../src/ssa) - Static single assignment types

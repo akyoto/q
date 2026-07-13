@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
+	"git.urbach.dev/cli/q/src/resolver"
 	"git.urbach.dev/cli/q/src/scanner"
 )
 
@@ -35,7 +36,7 @@ func Compile(build *config.Build) (*core.Environment, error) {
 
 	// Resolve all types so that we have type information ready
 	// for all functions before parallel compilation starts.
-	err = env.ResolveTypes()
+	err = resolver.ResolveTypes(env)
 
 	if err != nil {
 		return nil, err

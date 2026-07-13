@@ -139,23 +139,6 @@ func (env *Environment) Package(name string, file *fs.File) *Package {
 	return pkg
 }
 
-// ResolveTypes resolves all the type tokens in structs, globals and function parameters.
-func (env *Environment) ResolveTypes() error {
-	err := env.parseStructs(env.Structs())
-
-	if err != nil {
-		return err
-	}
-
-	err = env.parseGlobals(env.Globals())
-
-	if err != nil {
-		return err
-	}
-
-	return env.parseParameters(env.Functions())
-}
-
 // Structs returns an iterator over all structs.
 func (env *Environment) Structs() iter.Seq[*types.Struct] {
 	return func(yield func(*types.Struct) bool) {

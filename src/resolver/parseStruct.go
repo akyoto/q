@@ -1,13 +1,14 @@
-package core
+package resolver
 
 import (
+	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // parseStruct parses the field tokens of a single struct.
-func (env *Environment) parseStruct(structure *types.Struct, processed map[*types.Struct]recursionState) error {
+func parseStruct(env *core.Environment, structure *types.Struct, processed map[*types.Struct]recursionState) error {
 	if processed[structure] == finished {
 		return nil
 	}
@@ -28,13 +29,13 @@ func (env *Environment) parseStruct(structure *types.Struct, processed map[*type
 		if isStruct {
 			switch processed[dependency] {
 			case notStarted:
-				err := env.parseStruct(dependency, processed)
+				err := parseStruct(env, dependency, processed)
 
 				if err != nil {
 					return err
 				}
 			case started:
-				return errors.New(&CycleDetected{A: structure.Name(), B: dependency.Name()}, file, field.Tokens[1:])
+				return errors.New(&core.CycleDetected{A: structure.Name(), B: dependency.Name()}, file, field.Tokens[1:])
 			case finished:
 			}
 		}

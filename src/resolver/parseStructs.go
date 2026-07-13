@@ -1,17 +1,18 @@
-package core
+package resolver
 
 import (
 	"iter"
 
+	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // parseStructs parses the tokens of the struct field types.
-func (env *Environment) parseStructs(structs iter.Seq[*types.Struct]) error {
+func parseStructs(env *core.Environment, structs iter.Seq[*types.Struct]) error {
 	processed := map[*types.Struct]recursionState{types.String: finished}
 
 	for structure := range structs {
-		err := env.parseStruct(structure, processed)
+		err := parseStruct(env, structure, processed)
 
 		if err != nil {
 			return err

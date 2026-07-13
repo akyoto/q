@@ -1,4 +1,4 @@
-package core
+package resolver
 
 // recursionState represents the processing state while parsing struct types.
 // It is used to detect cycles when a struct references another struct that is
