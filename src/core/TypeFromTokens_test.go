@@ -6,7 +6,6 @@ import (
 	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/cli/q/src/fs"
-	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 	"git.urbach.dev/go/assert"
 )
@@ -45,10 +44,9 @@ func TestTypeFromTokens(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.Source, func(t *testing.T) {
 			src := []byte(test.Source)
-			tokens := token.Tokenize(src)
-			file := &fs.File{Tokens: tokens, Bytes: src}
+			file := fs.NewFile("", "", src)
 			env := core.NewEnvironment(config.New())
-			typ, _ := env.TypeFromTokens(tokens, file)
+			typ, _ := env.TypeFromTokens(file.Tokens, file)
 			assert.True(t, types.Is(typ, test.ExpectedType))
 		})
 	}

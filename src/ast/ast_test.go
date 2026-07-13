@@ -75,7 +75,6 @@ func TestReturnValues(t *testing.T) {
 
 func parse(code string) (ast.AST, error) {
 	src := []byte(code)
-	tokens := token.Tokenize(src)
-	file := &fs.File{Bytes: src, Tokens: tokens}
-	return ast.Parse(tokens, file)
+	file := fs.NewFile("", "", src)
+	return ast.Parse(file.Tokens, file)
 }

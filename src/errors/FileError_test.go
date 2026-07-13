@@ -36,14 +36,8 @@ func TestString(t *testing.T) {
 func test(t *testing.T, path string) *errors.FileError {
 	contents, oserr := os.ReadFile(path)
 	assert.Nil(t, oserr)
-	tokens := token.Tokenize(contents)
 
-	file := &fs.File{
-		Path:   path,
-		Bytes:  contents,
-		Tokens: tokens,
-	}
-
+	file := fs.NewFile(path, "", contents)
 	main := token.Position(bytes.Index(contents, []byte("main()")))
 	err := errors.NewAt(io.EOF, file, main)
 	assert.NotNil(t, err)

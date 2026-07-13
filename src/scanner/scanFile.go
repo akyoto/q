@@ -14,17 +14,9 @@ func (s *scanner) scanFile(path string, pkg string) error {
 		return err
 	}
 
-	tokens := token.Tokenize(contents)
-
-	file := &fs.File{
-		Path:    path,
-		Package: pkg,
-		Bytes:   contents,
-		Tokens:  tokens,
-		Imports: make(map[string]*fs.Import, 4),
-	}
-
+	file := fs.NewFile(path, pkg, contents)
 	s.files <- file
+	tokens := file.Tokens
 
 	for i := 0; i < len(tokens); i++ {
 		switch tokens[i].Kind {
