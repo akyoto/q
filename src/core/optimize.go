@@ -2,6 +2,7 @@ package core
 
 import (
 	"git.urbach.dev/cli/q/src/errors"
+	"git.urbach.dev/cli/q/src/linter"
 	"git.urbach.dev/cli/q/src/optimizer"
 	"git.urbach.dev/cli/q/src/ssa"
 )
@@ -28,7 +29,7 @@ func (f *Function) optimize() error {
 	// Lint binary operations that can often be reduced to
 	// simpler expressions.
 	if f.Env.Build.LintBinaryOps {
-		err := f.lintBinaryOps()
+		err := linter.LintBinaryOps(f.IR, f.File)
 
 		if err != nil {
 			return err

@@ -7,9 +7,6 @@ import (
 )
 
 var (
-	AlwaysFalse               = errors.String("Condition is always false")
-	AlwaysTrue                = errors.String("Condition is always true")
-	DivisionByZero            = errors.String("Division by zero")
 	ExpectedFunctionCall      = errors.String("Expected function call")
 	ExpectedPackageMember     = errors.String("Expected package member")
 	ExpectedStructField       = errors.String("Expected struct field")
@@ -68,16 +65,6 @@ type ErrorNotChecked struct {
 
 func (err *ErrorNotChecked) Error() string {
 	return fmt.Sprintf("Error must be checked before accessing '%s'", err.Identifier)
-}
-
-// IdenticalExpressions error is created when a binary operation uses identical expressions
-// with an operator that makes the entire operation pointless.
-type IdenticalExpressions struct {
-	Operator string
-}
-
-func (err *IdenticalExpressions) Error() string {
-	return fmt.Sprintf("Identical expressions to the left and right of the '%s' operator", err.Operator)
 }
 
 // InvalidLoopControl represents invalid loop control statements.
@@ -168,16 +155,6 @@ func (err *ReturnCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough return values (expected %d)", err.ExpectedCount)
 }
 
-// MixedSignedUnsigned represents an error where unsigned and signed types are used.
-type MixedSignedUnsigned struct {
-	Signed   string
-	Unsigned string
-}
-
-func (err *MixedSignedUnsigned) Error() string {
-	return fmt.Sprintf("Mixed signed '%s' and unsigned '%s'", err.Signed, err.Unsigned)
-}
-
 // TypeCastNotAllowed error is created when a type cast is not allowed.
 type TypeCastNotAllowed struct {
 	From string
@@ -250,15 +227,6 @@ type UndefinedStructField struct {
 
 func (err *UndefinedStructField) Error() string {
 	return fmt.Sprintf("Struct field '%s' of '%s' has an undefined value", err.FieldName, err.Identifier)
-}
-
-// Simplify error is created when a value can be replaced with another one.
-type Simplify struct {
-	To string
-}
-
-func (err *Simplify) Error() string {
-	return fmt.Sprintf("Can be simplified to '%s'", err.To)
 }
 
 // UnknownStructField represents unknown struct fields.

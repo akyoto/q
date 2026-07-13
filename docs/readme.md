@@ -508,6 +508,7 @@ The source code structure uses a flat layout without nesting:
 - [fs](../src/fs) - File system access
 - [global](../src/global) - Global variables like the working directory
 - [linker](../src/linker) - Frontend for generating executable files
+- [linter](../src/linter) - Linter that catches common mistakes
 - [macho](../src/macho) - Mach-O format for Mac executables
 - [memfile](../src/memfile) - Memory backed file descriptors
 - [optimizer](../src/optimizer) - Code optimization
