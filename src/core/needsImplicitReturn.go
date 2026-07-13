@@ -2,9 +2,9 @@ package core
 
 import "git.urbach.dev/cli/q/src/ssa"
 
-// needsReturn returns true if it needs to end with a return statement.
-func (f *Function) needsReturn() bool {
-	if f == f.Env.Init || f.FullName == "run.exit" {
+// needsImplicitReturn returns true if it needs to end with a return statement.
+func (f *Function) needsImplicitReturn() bool {
+	if f == f.Env.Init || f.FullName == "run.crash" || f.FullName == "run.exit" {
 		return false
 	}
 
