@@ -102,7 +102,7 @@ func (env *Environment) LiveFunctions() iter.Seq[*Function] {
 				return
 			}
 
-			if f.FullName == "run.crash" || f.FullName == "run.exit" {
+			if f.IsExit && f != env.Init {
 				exit = append(exit, f)
 				return
 			}

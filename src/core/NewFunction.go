@@ -27,6 +27,7 @@ func NewFunction(name string, pkg string, file *fs.File) *Function {
 		},
 		Function: codegen.Function{
 			FullName: fullName,
+			IsExit:   fullName == "run.init" || fullName == "run.crash" || fullName == "run.exit",
 			Assembler: asm.Assembler{
 				Instructions: make([]asm.Instruction, 0, 8),
 			},

@@ -14,12 +14,14 @@ func (f *Function) enter() {
 		Align: f.alignment(),
 	})
 
-	if f.Preserved.Count() > 0 && !f.isInit {
-		f.Assembler.Append(&asm.Push{Registers: f.Preserved.Slice()})
-	}
+	if !f.IsExit {
+		if f.Preserved.Count() > 0 {
+			f.Assembler.Append(&asm.Push{Registers: f.Preserved.Slice()})
+		}
 
-	if f.hasStackFrame || f.hasExternCalls {
-		f.Assembler.Append(&asm.StackFrameStart{FramePointer: f.needsFramePointer, ExternCalls: f.hasExternCalls})
+		if f.hasStackFrame || f.hasExternCalls {
+			f.Assembler.Append(&asm.StackFrameStart{FramePointer: f.needsFramePointer, ExternCalls: f.hasExternCalls})
+		}
 	}
 
 	if f.stackSize > 0 {

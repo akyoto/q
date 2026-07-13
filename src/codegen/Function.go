@@ -17,8 +17,7 @@ type Function struct {
 	Preserved         set.Ordered[cpu.Register]
 	Count             count
 	stackSize         uint
-	isInit            bool
-	isExit            bool
+	IsExit            bool
 	needsFramePointer bool
 	hasStackFrame     bool
 	hasExternCalls    bool

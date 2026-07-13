@@ -6,7 +6,7 @@ import (
 
 // leave cleans up the stack and returns to the caller.
 func (f *Function) leave() {
-	if f.isExit {
+	if f.IsExit {
 		return
 	}
 
@@ -20,10 +20,6 @@ func (f *Function) leave() {
 
 	if f.hasStackFrame || f.hasExternCalls {
 		f.Assembler.Append(&asm.StackFrameEnd{FramePointer: f.needsFramePointer})
-	}
-
-	if f.isInit {
-		return
 	}
 
 	if f.Preserved.Count() > 0 {

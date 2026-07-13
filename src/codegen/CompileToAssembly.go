@@ -9,11 +9,9 @@ import (
 
 // CompileToAssembly converts the SSA IR to assembler instructions.
 func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFrame bool, hasExternCalls bool) {
-	f.isInit = f.FullName == "run.init"
-	f.isExit = f.FullName == "run.exit"
 	f.hasStackFrame = hasStackFrame
 	f.hasExternCalls = hasExternCalls
-	f.needsFramePointer = (hasStackFrame || hasExternCalls) && !f.isInit && !f.isExit
+	f.needsFramePointer = (hasStackFrame || hasExternCalls) && !f.IsExit
 	f.build = build
 	f.IR = createSteps(ir)
 
