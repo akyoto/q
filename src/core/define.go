@@ -22,6 +22,24 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		return nil
 	}
 
+	root := left.Parent
+
+	if isAssign && root.Token.Kind != token.Assign {
+		operator := removeAssign(root.Token.Kind)
+		leftValueDeref, err := f.evaluateRight(left)
+
+		if err != nil {
+			return err
+		}
+
+		rightValue = f.Append(&ssa.BinaryOp{
+			Op:     operator,
+			Left:   leftValueDeref,
+			Right:  rightValue,
+			Source: root.Source(),
+		})
+	}
+
 	leftValue, err := f.validateLeft(left, right, name, rightValue.Type(), isAssign)
 
 	if err != nil {
@@ -47,24 +65,6 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		} else {
 			rightValue = f.copy(rightValue, left.Source())
 		}
-	}
-
-	root := left.Parent
-
-	if isAssign && root.Token.Kind != token.Assign {
-		operator := removeAssign(root.Token.Kind)
-		leftValueDeref, err := f.evaluateRight(left)
-
-		if err != nil {
-			return err
-		}
-
-		rightValue = f.Append(&ssa.BinaryOp{
-			Op:     operator,
-			Left:   leftValueDeref,
-			Right:  rightValue,
-			Source: root.Source(),
-		})
 	}
 
 	global, isGlobal := leftValue.(*ssa.Global)

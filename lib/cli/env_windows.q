@@ -16,7 +16,7 @@ env(name string) -> (value string, err error) {
 			return value, 0
 		}
 
-		ptr = ptr + current.len + 1
+		ptr += current.len + 1
 	}
 }
 

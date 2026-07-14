@@ -19,7 +19,7 @@ env(name string) -> (value string, err error) {
 			return value, 0
 		}
 
-		cur = cur + 8
+		cur += 8
 	}
 }
 

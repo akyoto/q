@@ -25,7 +25,7 @@ parseInt(s string) -> (int, error) {
 
 		if c >= '0' && c <= '9' {
 			result = result * 10 + (c - '0')
-			ptr = ptr + 1
+			ptr += 1
 			loop.next()
 		}
 
