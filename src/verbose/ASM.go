@@ -256,6 +256,11 @@ func printAssembly(f *core.Function) {
 				}
 				register.Print(reg)
 			}
+		case *asm.ReadSystemRegister:
+			mnemonic.Print("  move ")
+			register.Print(instr.Destination)
+			other.Print(", ")
+			register.Print(instr.SystemRegister)
 		case *asm.Return:
 			mnemonic.Print("  return")
 		case *asm.ShiftLeft:
@@ -380,6 +385,11 @@ func printAssembly(f *core.Function) {
 			}
 		case *asm.Syscall:
 			mnemonic.Print("  syscall")
+		case *asm.WriteSystemRegister:
+			mnemonic.Print("  move ")
+			register.Print(instr.SystemRegister)
+			other.Print(", ")
+			register.Print(instr.Source)
 		case *asm.Xor:
 			mnemonic.Print("  xor ")
 			register.Print(instr.Destination)
