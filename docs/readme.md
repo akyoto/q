@@ -327,6 +327,7 @@ To minimize this complexity, Q is limiting the operators to only 8 precedence le
 | `go`       | Asynchronous function calls                                | 🚧 Experimental |
 | `if`       | Branches based on a condition                              | ✔️ Stable       |
 | `import`   | Allows access to other packages                            | ✔️ Stable       |
+| `local`    | Thread-local variables                                     | 🚧 Experimental |
 | `loop`     | Repeatable code                                            | ✔️ Stable       |
 | `return`   | Ends the function and returns values to the caller         | ✔️ Stable       |
 | `switch`   | Multiple branches executing the first true condition block | ✔️ Stable       |
@@ -432,10 +433,7 @@ Non-pointer types like `!int` currently do not support automatic life cycle mana
 
 ## Errors
 
-> [!NOTE]
-> Algebraic data types for error handling will be considered at a later point but as of now there are no final decisions on the matter.
-
-Any function can currently define an `error` type return value at the end:
+Any function can define an `error` type return value at the end:
 
 ```
 a, b, err := canFail()
@@ -463,13 +461,13 @@ The `error` type is currently defined to be an integer, though this is expected 
 
 ## Security
 
-Recent incidents such as the `xz` backdoor and attacks on the `npm` ecosystem have shown that supply chain attacks remain one of the software industry's biggest security challenges.
+Recent incidents such as the `xz` backdoor and attacks on the `npm` ecosystem have shown that supply chain attacks remain one of the biggest problems in the software industry.
 
-Q helps mitigate these risks by enforcing the principle of least privilege. Every module must explicitly declare which sensitive resources it requires, such as network or file system access. Any permission changes become part of the review process during updates, making unexpected behavior much more visible. If `leftpad` suddenly requests access to `net`, that should immediately raise suspicion.
+The build system helps mitigate these risks by enforcing the principle of least privilege. Every module must explicitly declare which resources it requires, such as network or file system access. Any permission change becomes part of the review process during updates, making supply chain attacks much more visible. If `leftpad` suddenly requests access to `net`, that should immediately raise suspicion.
 
-While this cannot eliminate supply chain attacks entirely, it significantly reduces the chances of your system being compromised.
+While this cannot eliminate supply chain attacks entirely, it significantly reduces the chances of being compromised.
 
-Q also hardens executables at the binary level:
+The compiler also hardens executables at the binary level:
 
 - All executables are built as position-independent executables (PIE) with dynamic base addresses so that an attacker can't use precalculated addresses.
 - The call stack where return addresses are located is isolated from the regular memory stack, eliminating an entire class of control-flow attacks.
@@ -611,18 +609,15 @@ Advanced benchmarks for throughput have not been conducted yet, but the followin
 
 The backend is built on a [Static Single Assignment (SSA)](https://en.wikipedia.org/wiki/Static_single-assignment_form) intermediate representation, the same approach used by mature compilers such as `gcc`, `go`, and `llvm`. SSA greatly simplifies the implementation of common optimization passes, allowing the compiler to produce relatively high-quality assembly code despite the project's early stage of development.
 
-### Can I write programs for Raspberry Pi?
+### Any editor extensions?
 
-|                          | CPU        | ARM version | Supported |
-| ------------------------ | ---------- | ----------- | --------- |
-| 🔲 Raspberry Pi 5        | Cortex-A76 | 8.2-A       | ✔️        |
-| 🔲 Raspberry Pi 4        | Cortex-A72 | 8.0-A       | ❌        |
-| 🔲 Raspberry Pi 3        | Cortex-A53 | 8.0-A       | ❌        |
-| 🔲 Raspberry Pi Zero 2 W | Cortex-A53 | 8.0-A       | ❌        |
+- ~~**Neovim**~~: Planned.
+- **VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
+- ~~**Zed**~~: Planned.
 
-### Can I use it in scripts?
+### Can I use it for scripting?
 
-Yes. The compiler can build an entire script within a few microseconds.
+Yes. The compiler can run an entire script within a few microseconds.
 
 ```q
 #!/usr/bin/env q
@@ -635,11 +630,19 @@ main() {
 
 You need to create a file with the contents above and add execution permissions via `chmod +x`. Now you can run the script without an explicit compiler build. The generated machine code runs directly from RAM if the OS supports it.
 
-### Any editor extensions?
+### What's the minimum supported version of...?
 
-- ~~**Neovim**~~: Planned.
-- **VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
-- ~~**Zed**~~: Planned.
+|                          | Version       | Year | Reason                |
+| ------------------------ | ------------- | ---- | --------------------- |
+| 🐧 Linux                 | 5.16          | 2022 | futex2                |
+| 🍏 Mac                   | 11.0          | 2020 | Chained fixups        |
+| 🪟 Windows               | 8.1           | 2013 | FSGSBASE              |
+| 🔲 x86-64 (Intel)        | Ivy Bridge    | 2012 | FSGSBASE              |
+| 🔲 x86-64 (AMD)          | Excavator     | 2015 | FSGSBASE              |
+| 🔲 arm64                 | 8.1-A         | 2014 | CAS                   |
+| 💻 Raspberry Pi          | 5             | 2023 | CAS                   |
+
+If you need support for older hardware and software, feel free to send a PR with the required fallback mechanisms.
 
 ### Why is it written in Go and not language X?
 
@@ -650,15 +653,14 @@ The implementation will be replaced by a self-hosted compiler in the future.
 
 /ˈkjuː/ just like `Q` in the English alphabet.
 
-### Uppercase "Q" or lowercase "q"?
+### Q or q?
 
 The language is `Q`, the compiler is `q`.
 
 ### Can I donate to the project?
 
-[GitHub](https://github.com/sponsors/akyoto) is the preferred platform for donations.
-
-[Kofi](https://ko-fi.com/akyoto) is another option in case GitHub Sponsors is not available in your country.
+- [GitHub](https://github.com/sponsors/akyoto)
+- [Kofi](https://ko-fi.com/akyoto)
 
 ### If I donate, what will my money be used for?
 
@@ -713,7 +715,7 @@ This is needed because tests often assert "obvious" facts that the linter would 
 
 ### How do I analyze a problem with the compiler?
 
-Replace `q build` with `q ssa` or `q asm` to see the intermediate stages which reveal how the compiler understands your program code.
+Replace the `build` command with `ssa` or `asm` to see the intermediate stages which reveal how the compiler understands your program code.
 Use `-func` to filter out specific functions.
 
 If that doesn't reveal any bugs, you can also use the excellent [blinkenlights](https://justine.lol/blinkenlights/) from Justine Tunney to step through x86-64 executables one instruction at a time.
