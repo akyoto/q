@@ -8,6 +8,8 @@ import (
 
 // moveValuesToRegisters moves the values to the destination registers.
 func (f *Function) moveValuesToRegisters(values []ssa.Value, registers []cpu.Register) {
+	start := len(f.Assembler.Instructions)
+
 	for i, arg := range values {
 		sourceStep := f.ValueToStep[arg]
 		source := sourceStep.Register
@@ -27,4 +29,6 @@ func (f *Function) moveValuesToRegisters(values []ssa.Value, registers []cpu.Reg
 			Source:      source,
 		})
 	}
+
+	reorderMoves(f.Assembler.Instructions[start:])
 }

@@ -11,7 +11,5 @@ func (f *Function) executeReturn(instr *ssa.Return) {
 		return
 	}
 
-	start := len(f.Assembler.Instructions)
 	f.moveValuesToRegisters(instr.Arguments, f.CPU.Call.Out)
-	reorderMoves(f.Assembler.Instructions[start:])
 }

@@ -6,15 +6,7 @@ import (
 )
 
 func (f *Function) executeSyscall(step *Step, instr *ssa.Syscall) {
-	for i, arg := range instr.Arguments {
-		if f.ValueToStep[arg].Register != f.CPU.Syscall.In[i] {
-			f.Assembler.Append(&asm.Move{
-				Destination: f.CPU.Syscall.In[i],
-				Source:      f.ValueToStep[arg].Register,
-			})
-		}
-	}
-
+	f.moveValuesToRegisters(instr.Arguments, f.CPU.Syscall.In)
 	f.Assembler.Append(&asm.Syscall{})
 
 	if step.Register == -1 || step.Register == f.CPU.Syscall.Out[0] {
