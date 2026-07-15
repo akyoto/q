@@ -10,34 +10,42 @@ import (
 )
 
 func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
-	var op token.Kind
-	binaryOp, isBinaryOp := instr.Condition.(*ssa.BinaryOp)
-	cas, isCas := instr.Condition.(*ssa.Cas)
-	unsigned := false
+	var (
+		op            token.Kind
+		unsigned      bool
+		conditionStep = f.ValueToStep[instr.Condition]
+	)
 
-	if isBinaryOp && binaryOp.Op.IsComparison() {
-		op = binaryOp.Op
-		unsigned = types.IsUnsigned(binaryOp.Left.Type()) || types.IsUnsigned(binaryOp.Right.Type())
-	} else if isCas {
-		op = token.Equal
-
-		dest := f.ValueToStep[cas.Arguments[1]].Register
-
-		if f.build.Arch == config.X86 {
-			dest = x86.R0
-		}
-
-		f.Assembler.Append(&asm.CompareNumber{
-			Destination: dest,
-			Number:      cas.Arguments[1].(*ssa.Int).Int,
-		})
-	} else {
+	if conditionStep.Register != -1 {
 		op = token.NotEqual
 
 		f.Assembler.Append(&asm.CompareNumber{
-			Destination: f.ValueToStep[instr.Condition].Register,
+			Destination: conditionStep.Register,
 			Number:      0,
 		})
+	} else {
+		switch condition := instr.Condition.(type) {
+		case *ssa.BinaryOp:
+			if condition.Op.IsComparison() {
+				op = condition.Op
+				unsigned = types.IsUnsigned(condition.Left.Type()) || types.IsUnsigned(condition.Right.Type())
+			} else {
+				panic("condition using a binary operation not assigned to a register")
+			}
+
+		case *ssa.Cas:
+			op = token.Equal
+			dest := f.ValueToStep[condition.Arguments[1]].Register
+
+			if f.build.Arch == config.X86 {
+				dest = x86.R0
+			}
+
+			f.Assembler.Append(&asm.CompareNumber{
+				Destination: dest,
+				Number:      condition.Arguments[1].(*ssa.Int).Int,
+			})
+		}
 	}
 
 	f.insertPhiMoves(step)

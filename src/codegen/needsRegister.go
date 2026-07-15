@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -39,7 +41,13 @@ func (f *Function) needsRegister(s *Step) bool {
 
 	switch instr := s.Value.(type) {
 	case *ssa.BinaryOp:
-		return !instr.Op.IsComparison()
+		if instr.Op.IsComparison() {
+			next := f.Steps[s.Index+1]
+			branch, isBranch := next.Value.(*ssa.Branch)
+			return !isBranch || !slices.Contains(branch.Inputs(), s.Value)
+		}
+
+		return true
 	case *ssa.Cas:
 		return false
 	case *ssa.Int:

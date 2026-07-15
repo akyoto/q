@@ -1,11 +1,5 @@
 fromInt(x int, base int, buffer []byte) -> []byte {
-	// TODO: Fix the bug that prevents generating boolean values directly from a condition
-	negative := false
-
-	if x < 0 {
-		negative = true
-	}
-
+	negative := x < 0
 	end := buffer.ptr + buffer.len
 	tmp := end
 
