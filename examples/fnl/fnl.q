@@ -98,8 +98,6 @@ processFile(path string, mode int) {
 			io.writeLine("no final newline")
 		}
 	}
-
-	delete(source)
 }
 
 addNewline(content string) -> !string {

@@ -151,7 +151,7 @@ func (b *Block) AddSuccessor(successor *Block) {
 	for _, name := range modifiedStructs {
 		structure := successor.IdentifiersBefore[name].(*Struct)
 		structType := types.Unwrap(structure.Typ).(*types.Struct)
-		newStruct := &Struct{Typ: structType, Arguments: make(Arguments, len(structure.Arguments))}
+		newStruct := &Struct{Typ: structure.Typ, Arguments: make(Arguments, len(structure.Arguments))}
 
 		for i, field := range structType.Fields {
 			newStruct.Arguments[i] = successor.IdentifiersBefore[name+"."+field.Name]
