@@ -1,15 +1,25 @@
-write(n int) {
-	if n < 0 {
-		write("-")
-	}
+import strings
 
-	writeDigits(n, 10)
+const {
+	SIZE_SIGNED_10 = 20
+	SIZE_UNSIGNED_10 = 19
+	SIZE_UNSIGNED_16 = 16
+}
+
+write(n int) {
+	buffer := new(byte, SIZE_SIGNED_10)
+	num := strings.fromInt(n, 10, buffer)
+	write(num)
 }
 
 write(n uint) {
-	writeDigits(n, 10)
+	buffer := new(byte, SIZE_UNSIGNED_10)
+	num := strings.fromInt(n, 10, buffer)
+	write(num)
 }
 
 write(n *any) {
-	writeDigits(n as uint, 16)
+	buffer := new(byte, SIZE_UNSIGNED_16)
+	num := strings.fromInt(n as uint, 16, buffer)
+	write(num)
 }

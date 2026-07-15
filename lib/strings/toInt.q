@@ -1,6 +1,6 @@
 import errors
 
-parseInt(s string) -> (int, error) {
+toInt(s string) -> (int, error) {
 	if s.len == 0 {
 		return 0, errors.invalidArgument
 	}
