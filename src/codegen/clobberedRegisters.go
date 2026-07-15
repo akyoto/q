@@ -25,7 +25,7 @@ func (f *Function) clobberedRegisters(instr ssa.Value) []cpu.Register {
 	case *ssa.Cas:
 		return f.CPU.CasClobbered
 	case *ssa.Syscall:
-		return f.CPU.Syscall.Clobbered
+		return append(f.CPU.Syscall.Clobbered, f.CPU.Syscall.In[:min(len(instr.Arguments), len(f.CPU.Syscall.In))]...)
 	default:
 		return nil
 	}
