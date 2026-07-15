@@ -1,5 +1,6 @@
 import io
 import process
+import run
 import strings
 
 main() {
@@ -20,8 +21,12 @@ main() {
 }
 
 execute(path string) {
-	if path.len == 0 {
+	if path == "" {
 		return
+	}
+
+	if path == "exit" {
+		run.exit(0)
 	}
 
 	err := process.run(path)
