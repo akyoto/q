@@ -41,7 +41,7 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 
 				f.Assembler.Append(&asm.AddNumber{
 					Destination: step.Register,
-					Source:      arm.X18,
+					Source:      step.Register,
 					Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
 				})
 
