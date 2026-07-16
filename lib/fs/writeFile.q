@@ -1,11 +1,10 @@
 import c
 import io
-import mem
 
 writeFile(path string, buffer string) -> error {
 	cpath := c.string(path)
 	fd, err := openWrite(cpath.ptr)
-	mem.free(cpath)
+	delete(cpath)
 
 	if err != 0 {
 		return err

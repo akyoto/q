@@ -1,5 +1,4 @@
 import c
-import mem
 
 run(path string) -> error {
 	startInfo := new(StartupInfo) {
@@ -9,7 +8,7 @@ run(path string) -> error {
 	processInfo := new(ProcessInformation)
 	cpath := c.string(path)
 	success := kernel32.CreateProcessA(0, cpath.ptr, 0, 0, false, 0, 0, 0, startInfo, processInfo)
-	mem.free(cpath)
+	delete(cpath)
 
 	if !success {
 		return -1

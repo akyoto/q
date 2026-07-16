@@ -1,11 +1,10 @@
 import c
 import io
-import mem
 
 readFile(path string) -> (!string, error) {
 	cpath := c.string(path)
 	fd, err := openRead(cpath.ptr)
-	mem.free(cpath)
+	delete(cpath)
 
 	if err != 0 {
 		return "", err
@@ -23,14 +22,14 @@ readFile(path string) -> (!string, error) {
 		return "", -1
 	}
 
-	buffer := mem.alloc(fileSize)
+	buffer := new(byte, fileSize)
 	pos := 0
 
 	loop {
 		n, err := io.readFrom(fd, buffer[pos..])
 
 		if err != 0 {
-			mem.free(buffer)
+			delete(buffer)
 			close(fd)
 			return "", err
 		}

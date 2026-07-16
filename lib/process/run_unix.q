@@ -1,5 +1,4 @@
 import c
-import mem
 import run
 
 run(path string) -> error {
@@ -11,7 +10,7 @@ run(path string) -> error {
 		argv.path = cpath.ptr
 		err := execve(cpath.ptr, argv, 0)
 		delete(argv)
-		mem.free(cpath)
+		delete(cpath)
 		run.exit(err)
 	}
 
