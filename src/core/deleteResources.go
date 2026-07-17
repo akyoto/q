@@ -8,17 +8,30 @@ import (
 )
 
 // deleteResources inserts delete calls for all resources.
-func (f *Function) deleteResources() {
-	identifiers := f.Block().Identifiers.After
+func (f *Function) deleteResources(filter map[string]ssa.Value) {
+	var (
+		names       []string
+		identifiers = f.Block().Identifiers.After
+	)
 
 	if len(identifiers) == 0 {
 		return
 	}
 
-	names := make([]string, 0, len(identifiers))
+	for name := range identifiers {
+		if filter != nil {
+			_, inherited := filter[name]
 
-	for k := range identifiers {
-		names = append(names, k)
+			if inherited {
+				continue
+			}
+		}
+
+		if names == nil {
+			names = make([]string, 0, len(identifiers))
+		}
+
+		names = append(names, name)
 	}
 
 	slices.SortFunc(names, func(a string, b string) int {

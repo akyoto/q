@@ -8,7 +8,6 @@ connect() -> (!uint, error) {
 	}
 
 	socket, err := unix.connect(path)
-	delete(path)
 
 	if err != 0 {
 		return 0, err

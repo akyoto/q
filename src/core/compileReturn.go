@@ -25,7 +25,7 @@ func (f *Function) compileReturn(node *ast.Return) error {
 	}
 
 	if len(node.Values) == 0 {
-		f.deleteResources()
+		f.deleteResources(nil)
 		f.Append(&ssa.Return{})
 		return nil
 	}
@@ -36,7 +36,7 @@ func (f *Function) compileReturn(node *ast.Return) error {
 		return err
 	}
 
-	f.deleteResources()
+	f.deleteResources(nil)
 	f.Append(&ssa.Return{Arguments: args})
 	return nil
 }

@@ -13,12 +13,14 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 
 	for i, branch := range s.Cases {
 		if branch.Condition == nil {
+			before := f.Block().Identifiers.Before
 			err := f.compileAST(branch.Body)
 
 			if err != nil {
 				return err
 			}
 
+			f.deleteResources(before)
 			f.jump(exitBlock)
 			f.AddBlock(exitBlock)
 			break
@@ -43,12 +45,14 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 		}
 
 		f.AddBlock(thenBlock)
+		before := f.Block().Identifiers.Before
 		err = f.compileAST(branch.Body)
 
 		if err != nil {
 			return err
 		}
 
+		f.deleteResources(before)
 		f.jump(exitBlock)
 		f.AddBlock(elseBlock)
 	}

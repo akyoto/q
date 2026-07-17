@@ -22,7 +22,7 @@ func (f *Function) optimize() error {
 			return errors.New(&ReturnCountMismatch{Count: 0, ExpectedCount: len(f.Output)}, f.File, f.Output[0].Source)
 		}
 
-		f.deleteResources()
+		f.deleteResources(nil)
 		f.Block().Append(&ssa.Return{})
 	}
 

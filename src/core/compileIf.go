@@ -22,12 +22,14 @@ func (f *Function) compileIf(branch *ast.If) error {
 
 		// Append the if.then block
 		f.AddBlock(thenBlock)
+		before := f.Block().Identifiers.Before
 		err = f.compileAST(branch.Body)
 
 		if err != nil {
 			return err
 		}
 
+		f.deleteResources(before)
 		f.jump(exitBlock)
 	} else {
 		elseLabel := f.CreateLabel("if.else", f.Count.Branch)
@@ -38,6 +40,8 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
+		before := f.Block().Identifiers.After
+
 		// Append the if.then block
 		f.AddBlock(thenBlock)
 		err = f.compileAST(branch.Body)
@@ -46,6 +50,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
+		f.deleteResources(before)
 		f.jump(exitBlock)
 
 		// Append the if.else block
@@ -56,6 +61,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
+		f.deleteResources(before)
 		f.jump(exitBlock)
 	}
 

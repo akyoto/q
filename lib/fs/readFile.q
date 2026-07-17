@@ -29,7 +29,6 @@ readFile(path string) -> (!string, error) {
 		n, err := io.readFrom(fd, buffer[pos..])
 
 		if err != 0 {
-			delete(buffer)
 			close(fd)
 			return "", err
 		}

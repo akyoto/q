@@ -93,7 +93,6 @@ processFile(path string, mode int) {
 			io.writeLine("final newline [added]")
 			newSource := addNewline(source)
 			fs.writeFile(path, newSource)
-			delete(newSource)
 		} else {
 			io.writeLine("no final newline")
 		}
