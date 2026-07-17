@@ -59,7 +59,7 @@ func (i *Identifiers) IsIdentified(value Value) bool {
 }
 
 // ReplaceIdentifier replaces an existing identifier.
-func (i *Identifiers) ReplaceIdentifier(name string, oldValue, newValue Value) {
+func (i *Identifiers) ReplaceIdentifier(name string, oldValue Value, newValue Value) {
 	i.Before[name] = newValue
 
 	if i.After[name] == oldValue {
