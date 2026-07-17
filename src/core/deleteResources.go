@@ -9,7 +9,7 @@ import (
 
 // deleteResources inserts delete calls for all resources.
 func (f *Function) deleteResources() {
-	identifiers := f.Block().IdentifiersAfter
+	identifiers := f.Block().Identifiers.After
 
 	if len(identifiers) == 0 {
 		return

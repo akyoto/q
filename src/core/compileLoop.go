@@ -148,7 +148,7 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 						continue
 					}
 
-					for name, value := range jumpBlock.IdentifiersBefore {
+					for name, value := range jumpBlock.Identifiers.Before {
 						if value == oldValue {
 							jumpBlock.ReplaceIdentifier(name, oldValue, phi)
 						} else {

@@ -9,7 +9,7 @@ import (
 // verifyDeallocation verifies that all resources have been deallocated.
 func (f *Function) verifyDeallocation() error {
 	for exitBlock := range f.ExitBlocks {
-		for _, value := range exitBlock.IdentifiersAfter {
+		for _, value := range exitBlock.Identifiers.After {
 			if value == nil {
 				continue
 			}
