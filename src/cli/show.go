@@ -5,6 +5,7 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/go/color/ansi"
 )
 
@@ -16,15 +17,7 @@ func show(text string) {
 		for start != -1 {
 			end := strings.IndexByte(line, '}')
 			key := line[start+1 : end]
-			value := ""
-
-			switch key {
-			case "commit":
-				value = buildInfo("vcs.revision")
-			case "date":
-				value = buildInfo("vcs.time")
-			}
-
+			value := buildSetting(key)
 			line = line[:start] + value + line[end+1:]
 			start = strings.IndexByte(line, '{')
 		}
@@ -69,8 +62,36 @@ func show(text string) {
 	}
 }
 
-// buildInfo retrieves information about the build.
-func buildInfo(key string) string {
+// buildSetting retrieves information about the build.
+func buildSetting(key string) string {
+	switch key {
+	case "arch":
+		return config.New().Arch.String()
+	case "commit":
+		hash := debugBuildSetting("vcs.revision")
+
+		if len(hash) >= 7 {
+			return hash[:7]
+		}
+
+		return hash
+	case "date":
+		date := debugBuildSetting("vcs.time")
+
+		if len(date) >= 10 {
+			return date[:10]
+		}
+
+		return date
+	case "os":
+		return config.New().OS.String()
+	default:
+		return ""
+	}
+}
+
+// debugBuildSetting retrieves build data that Go saved within the binary.
+func debugBuildSetting(key string) string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, setting := range info.Settings {
 			if setting.Key == key {

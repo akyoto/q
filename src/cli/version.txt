@@ -1,3 +1,2 @@
-{date}
-{commit}
+{date}-{commit}-{os}-{arch}
 EOF
