@@ -12,15 +12,15 @@ Compiler for the Q programming language.
 
         q build [file]
 
-    List build details:
-
-        q files [file]
-        q functions [file]
-
     Show intermediate stages:
 
         q ssa [file]
         q asm [file]
+
+    List build details:
+
+        q files [file]
+        q functions [file]
 
     Query information:
 
