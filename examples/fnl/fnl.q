@@ -4,23 +4,23 @@ import io
 import mem
 import run
 
-const {
-	MODE_STATUS = 0
-	MODE_ADD = 1
-	MODE_REMOVE = 2
+Mode const {
+	Status = 0
+	Add = 1
+	Remove = 2
 }
 
 main() {
-	mode := MODE_STATUS
+	mode := Mode.Status
 	args := cli.args()
 
 	loop i := 0..args.len {
 		switch {
 			args[i] == "-add" {
-				mode = MODE_ADD
+				mode = Mode.Add
 			}
 			args[i] == "-remove" {
-				mode = MODE_REMOVE
+				mode = Mode.Remove
 			}
 			_ {
 				processFile(args[i], mode)
@@ -43,11 +43,11 @@ processStdin(mode int) {
 
 		if n == 0 {
 			switch {
-				mode == MODE_ADD && pos < buffer.len && buffer[pos-1] != '\n' {
+				mode == Mode.Add && pos < buffer.len && buffer[pos-1] != '\n' {
 					buffer[pos] = '\n'
 					pos += 1
 				}
-				mode == MODE_REMOVE && pos > 0 && buffer[pos-1] == '\n' {
+				mode == Mode.Remove && pos > 0 && buffer[pos-1] == '\n' {
 					pos -= 1
 				}
 			}
@@ -83,14 +83,14 @@ processFile(path string, mode int) {
 	io.write(": ")
 
 	if source[source.len-1] == '\n' {
-		if mode == MODE_REMOVE {
+		if mode == Mode.Remove {
 			io.writeLine("no final newline [removed]")
 			fs.writeFile(path, source[..source.len-1])
 		} else {
 			io.writeLine("final newline")
 		}
 	} else {
-		if mode == MODE_ADD {
+		if mode == Mode.Add {
 			io.writeLine("final newline [added]")
 			newSource := addNewline(source)
 			fs.writeFile(path, newSource)

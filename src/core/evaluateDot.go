@@ -3,6 +3,7 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
+	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -62,7 +63,16 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 			return nil, errors.New(&UnknownEnumMember{EnumName: enumValue.Typ.Name(), MemberName: rightText}, f.File, right.Source())
 		}
 
-		return f.evaluateRight(constExpr.(*expression.Expression))
+		tmp := f.File
+		f.File = enumValue.Typ.File().(*fs.File)
+		value, err := f.evaluateRight(constExpr.(*expression.Expression))
+		f.File = tmp
+
+		if err != nil {
+			return nil, err
+		}
+
+		return value, nil
 	}
 
 	if expr.Parent != nil && expr.Parent.Token.Kind == token.Call && expr.Parent.Children[0] == expr {

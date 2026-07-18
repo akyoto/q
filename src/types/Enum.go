@@ -4,14 +4,16 @@ package types
 type Enum struct {
 	pkg     string
 	name    string
+	file    any
 	members map[string]any
 }
 
 // NewEnum creates a new enum type.
-func NewEnum(pkg string, name string) *Enum {
+func NewEnum(pkg string, name string, file any) *Enum {
 	return &Enum{
 		pkg:     pkg,
 		name:    name,
+		file:    file,
 		members: make(map[string]any),
 	}
 }
@@ -19,6 +21,11 @@ func NewEnum(pkg string, name string) *Enum {
 // AddMember adds a named member to the enum.
 func (e *Enum) AddMember(name string, value any) {
 	e.members[name] = value
+}
+
+// File returns the file where the enum was defined.
+func (e *Enum) File() any {
+	return e.file
 }
 
 // Member returns the value for the given member name, or nil if not found.

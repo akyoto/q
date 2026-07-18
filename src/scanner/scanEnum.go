@@ -17,7 +17,7 @@ func (s *scanner) scanEnum(file *fs.File, tokens token.List, i int) (int, error)
 		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)
 	}
 
-	enum := types.NewEnum(file.Package, enumName)
+	enum := types.NewEnum(file.Package, enumName, file)
 	i++
 	start := -1
 	blockLevel := 1

@@ -11,17 +11,17 @@
 //
 
 const {
-	canvasWidth = 1280
-	canvasHeight = 720
+	CANVAS_WIDTH = 1280
+	CANVAS_HEIGHT = 720
 }
 
 main() {
-	raylib.InitWindow(canvasWidth, canvasHeight, "raylib example\0".ptr)
+	raylib.InitWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "raylib example\0".ptr)
 	raylib.SetTargetFPS(1000)
 
 	player := new(Player) {
-		x: canvasWidth / 2,
-		y: canvasHeight / 2,
+		x: CANVAS_WIDTH / 2,
+		y: CANVAS_HEIGHT / 2,
 		width: 10,
 		height: 10,
 	}
@@ -39,19 +39,19 @@ main() {
 }
 
 input(player *Player) {
-	if raylib.IsKeyDown(KEY_RIGHT) {
+	if raylib.IsKeyDown(Key.Right) {
 		player.x += 1
 	}
 
-	if raylib.IsKeyDown(KEY_LEFT) {
+	if raylib.IsKeyDown(Key.Left) {
 		player.x -= 1
 	}
 
-	if raylib.IsKeyDown(KEY_DOWN) {
+	if raylib.IsKeyDown(Key.Down) {
 		player.y += 1
 	}
 
-	if raylib.IsKeyDown(KEY_UP) {
+	if raylib.IsKeyDown(Key.Up) {
 		player.y -= 1
 	}
 }
@@ -63,7 +63,7 @@ update(player *Player) {
 		player.x = minX
 	}
 
-	maxX := canvasWidth - minX
+	maxX := CANVAS_WIDTH - minX
 
 	if player.x > maxX {
 		player.x = maxX
@@ -75,7 +75,7 @@ update(player *Player) {
 		player.y = minY
 	}
 
-	maxY := canvasHeight - minY
+	maxY := CANVAS_HEIGHT - minY
 
 	if player.y > maxY {
 		player.y = maxY

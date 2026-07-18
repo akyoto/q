@@ -1,8 +1,8 @@
-const {
-	KEY_RIGHT = 262
-	KEY_LEFT = 263
-	KEY_DOWN = 264
-	KEY_UP = 265
+Key const {
+	Right = 262
+	Left = 263
+	Down = 264
+	Up = 265
 }
 
 extern {
