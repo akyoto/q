@@ -34,6 +34,8 @@ func (s *scanner) scanFile(path string, pkg string) error {
 				i, err = s.scanFunction(file, tokens, i)
 			case token.BlockStart:
 				i, err = s.scanStruct(file, tokens, i)
+			case token.Const:
+				i, err = s.scanEnum(file, tokens, i)
 			case token.GroupEnd:
 				return errors.NewAt(MissingGroupStart, file, next.Position)
 			case token.BlockEnd:

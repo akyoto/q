@@ -30,6 +30,7 @@ func (env *Environment) AddPackage(name string, isExtern bool) *Package {
 		pkg = &Package{
 			Name:      name,
 			Constants: make(map[string]*Constant),
+			Enums:     make(map[string]*types.Enum),
 			Functions: make(map[string]*Function, 8),
 			Structs:   make(map[string]*types.Struct),
 			Globals:   make(map[string]*Global),

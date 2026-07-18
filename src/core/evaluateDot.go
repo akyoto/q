@@ -48,6 +48,23 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return f.evaluatePackageMember(pkg, rightText, expr)
 	}
 
+	enumValue, isEnum := leftValue.(*ssa.Enum)
+
+	if isEnum {
+		if right.Token.Kind != token.Identifier {
+			return nil, errors.New(ExpectedEnumMember, f.File, right.Source())
+		}
+
+		rightText := right.Token.StringFrom(f.File.Bytes)
+		constExpr, exists := enumValue.Typ.Member(rightText)
+
+		if !exists {
+			return nil, errors.New(&UnknownEnumMember{EnumName: enumValue.Typ.Name(), MemberName: rightText}, f.File, right.Source())
+		}
+
+		return f.evaluateRight(constExpr.(*expression.Expression))
+	}
+
 	if expr.Parent != nil && expr.Parent.Token.Kind == token.Call && expr.Parent.Children[0] == expr {
 		f.Block().Instructions = f.Block().Instructions[:reset]
 		return f.evaluateMethod(leftValue, left, right, expr)

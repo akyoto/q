@@ -14,6 +14,7 @@ import (
 func Scan(build *config.Build) (*core.Environment, error) {
 	s := scanner{
 		constants: make(chan *core.Constant, 128),
+		enums:     make(chan *types.Enum, 128),
 		functions: make(chan *core.Function, 128),
 		files:     make(chan *fs.File, 128),
 		structs:   make(chan *types.Struct, 128),
@@ -28,6 +29,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		s.queue(build.Files...)
 		s.group.Wait()
 		close(s.constants)
+		close(s.enums)
 		close(s.functions)
 		close(s.files)
 		close(s.structs)
@@ -37,7 +39,7 @@ func Scan(build *config.Build) (*core.Environment, error) {
 
 	env := core.NewEnvironment(build)
 
-	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.globals != nil || s.errors != nil {
+	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.enums != nil || s.globals != nil || s.errors != nil {
 		select {
 		case f, ok := <-s.functions:
 			if !ok {
@@ -70,6 +72,14 @@ func Scan(build *config.Build) (*core.Environment, error) {
 			}
 
 			env.ReceiveConstant(constant)
+
+		case enum, ok := <-s.enums:
+			if !ok {
+				s.enums = nil
+				continue
+			}
+
+			env.ReceiveEnum(enum)
 
 		case global, ok := <-s.globals:
 			if !ok {

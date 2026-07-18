@@ -12,6 +12,7 @@ import (
 // scanner is used to scan files before the actual compilation step.
 type scanner struct {
 	constants chan *core.Constant
+	enums     chan *types.Enum
 	functions chan *core.Function
 	files     chan *fs.File
 	structs   chan *types.Struct

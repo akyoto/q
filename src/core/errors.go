@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	ExpectedEnumMember        = errors.String("Expected enum member")
 	ExpectedFunctionCall      = errors.String("Expected function call")
 	ExpectedPackageMember     = errors.String("Expected package member")
 	ExpectedStructField       = errors.String("Expected struct field")
@@ -227,6 +228,21 @@ type UndefinedStructField struct {
 
 func (err *UndefinedStructField) Error() string {
 	return fmt.Sprintf("Struct field '%s' of '%s' has an undefined value", err.FieldName, err.Identifier)
+}
+
+// UnknownEnumMember represents unknown enum members.
+type UnknownEnumMember struct {
+	EnumName          string
+	MemberName        string
+	CorrectMemberName string
+}
+
+func (err *UnknownEnumMember) Error() string {
+	if err.CorrectMemberName != "" {
+		return fmt.Sprintf("Unknown enum member '%s' in '%s', did you mean '%s'?", err.MemberName, err.EnumName, err.CorrectMemberName)
+	}
+
+	return fmt.Sprintf("Unknown enum member '%s' in '%s'", err.MemberName, err.EnumName)
 }
 
 // UnknownStructField represents unknown struct fields.
