@@ -24,6 +24,7 @@ main() {
 			}
 			_ {
 				processFile(args[i], mode)
+				return
 			}
 		}
 	}
