@@ -8,13 +8,26 @@ import (
 // compileSwitch compiles a multi-branch instruction.
 func (f *Function) compileSwitch(s *ast.Switch) error {
 	f.Count.Switch++
-	exitLabel := f.CreateLabel("switch.exit", f.Count.Switch)
-	exitBlock := ssa.NewBlock(exitLabel)
+
+	var (
+		head      ssa.Value
+		err       error
+		exitLabel = f.CreateLabel("switch.exit", f.Count.Switch)
+		exitBlock = ssa.NewBlock(exitLabel)
+	)
+
+	if s.Head != nil {
+		head, err = f.evaluateRight(s.Head)
+
+		if err != nil {
+			return err
+		}
+	}
 
 	for i, branch := range s.Cases {
 		if branch.Condition == nil {
 			before := f.Block().Identifiers.Before
-			err := f.compileAST(branch.Body)
+			err = f.compileAST(branch.Body)
 
 			if err != nil {
 				return err
@@ -38,10 +51,34 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 			elseBlock = exitBlock
 		}
 
-		err := f.compileCondition(branch.Condition, thenBlock, elseBlock)
+		if head != nil {
+			caseValue, err := f.evaluateRight(branch.Condition)
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
+
+			condition, err := f.equal(head, caseValue, branch.Condition.Source())
+
+			if err != nil {
+				return err
+			}
+
+			block := f.Block()
+			block.AddSuccessor(thenBlock)
+			block.AddSuccessor(elseBlock)
+
+			block.Append(&ssa.Branch{
+				Condition: condition,
+				Then:      thenBlock,
+				Else:      elseBlock,
+			})
+		} else {
+			err = f.compileCondition(branch.Condition, thenBlock, elseBlock)
+
+			if err != nil {
+				return err
+			}
 		}
 
 		f.AddBlock(thenBlock)

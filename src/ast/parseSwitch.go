@@ -2,13 +2,17 @@ package ast
 
 import (
 	"git.urbach.dev/cli/q/src/errors"
+	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
 )
 
 func parseSwitch(tokens token.List, file *fs.File) (Node, error) {
-	blockStart := tokens.IndexKind(token.BlockStart)
-	blockEnd := tokens.LastIndexKind(token.BlockEnd)
+	var (
+		head       *expression.Expression
+		blockStart = tokens.IndexKind(token.BlockStart)
+		blockEnd   = tokens.LastIndexKind(token.BlockEnd)
+	)
 
 	if blockStart == -1 {
 		return nil, errors.NewAt(MissingBlockStart, file, tokens[0].End())
@@ -18,6 +22,12 @@ func parseSwitch(tokens token.List, file *fs.File) (Node, error) {
 		return nil, errors.NewAt(MissingBlockEnd, file, tokens[len(tokens)-1].End())
 	}
 
+	headTokens := tokens[1:blockStart]
+
+	if len(headTokens) > 0 {
+		head = expression.Parse(headTokens)
+	}
+
 	body := tokens[blockStart+1 : blockEnd]
 
 	if len(body) == 0 {
@@ -25,5 +35,5 @@ func parseSwitch(tokens token.List, file *fs.File) (Node, error) {
 	}
 
 	cases, err := parseCases(body, file)
-	return &Switch{Cases: cases}, err
+	return &Switch{Head: head, Cases: cases}, err
 }

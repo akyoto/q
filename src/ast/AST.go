@@ -47,6 +47,7 @@ type (
 		Token  token.Token
 	}
 	Switch struct {
+		Head  *expression.Expression
 		Cases []Case
 	}
 )
