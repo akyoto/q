@@ -351,6 +351,43 @@ Within each package, a function named `init` is executed automatically at progra
 while a function named `exit` runs before the program terminates.
 This feature is intended primarily for the standard library and is generally discouraged in application code.
 
+### Library
+
+| Function            | Description                                                          |
+| ------------------- | -------------------------------------------------------------------- |
+| `bits.rotateLeft`   | Rotate bits left                                                     |
+| `c.length`          | Compute the length of a 0-terminated string (C style)                |
+| `c.string`          | Create a 0-terminated string (C style)                               |
+| `cli.args`          | Slice of arguments passed to the program (excluding executable path) |
+| `cli.env`           | Look up environment variables                                        |
+| `cli.isTerminal`    | Check if the file handle is a terminal                               |
+| `fs.readFile`       | Read a file                                                          |
+| `fs.writeFile`      | Write a file                                                         |
+| `io.read`           | Read from stdin                                                      |
+| `io.readFrom`       | Read from a file handle                                              |
+| `io.write`          | Write to stdout                                                      |
+| `io.writeTo`        | Write to a file handle                                               |
+| `math.newRandom`    | Create a new random number generator                                 |
+| `math.sqrt`         | Calculate the square root                                            |
+| `mem.alloc`         | Allocate a slice of bytes                                            |
+| `mem.copy`          | Copy a slice of bytes                                                |
+| `mem.free`          | Free a slice of bytes                                                |
+| `mem.zero`          | Zero a slice of bytes                                                |
+| `process.id`        | Return the process identifier                                        |
+| `process.run`       | Runs the given command as a new process                              |
+| `run.exit`          | Exit with an exit code                                               |
+| `strings.cut`       | Cut a string in two at a separator                                   |
+| `strings.fromInt`   | Convert an integer to a string                                       |
+| `strings.index`     | Find a substring                                                     |
+| `strings.toInt`     | Convert a string to an integer (base 10)                             |
+| `strings.trim`      | Trim whitespace left and right                                       |
+| `strings.trimLeft`  | Trim whitespace left                                                 |
+| `strings.trimRight` | Trim whitespace right                                                |
+| `thread.id`         | Return the thread identifier                                         |
+| `time.now`          | Read the current timestamp                                           |
+| `time.since`        | Calculate the time passed                                            |
+| `time.sleep`        | Sleep the current thread for the given amount of time                |
+
 ## Resources
 
 > [!WARNING]
