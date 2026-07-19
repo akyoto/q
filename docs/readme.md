@@ -47,6 +47,9 @@ Q is also a code generation framework that aims to produce raw machine code for 
 
 ## News
 
+- **2026-07-19**: Switch expressions.
+- **2026-07-18**: Enum types.
+- **2026-07-12**: Thread-local storage.
 - **2026-06-28**: Mutex synchronization.
 - **2026-06-24**: Fast memory allocations.
 - **2026-06-23**: Automatic deallocation.
