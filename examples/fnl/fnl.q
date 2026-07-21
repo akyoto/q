@@ -19,7 +19,16 @@ main() {
 			"-add"    { mode = Mode.Add }
 			"-remove" { mode = Mode.Remove }
 			_ {
-				processFile(args[i], mode)
+				err := processFile(args[i], mode)
+
+				if err != 0 {
+					io.write("error processing file '")
+					io.write(args[i])
+					io.write("': ")
+					io.writeLine(err)
+					run.exit(1)
+				}
+
 				return
 			}
 		}
@@ -62,27 +71,24 @@ processStdin(mode int) {
 	}
 }
 
-processFile(path string, mode int) {
+processFile(path string, mode int) -> error {
 	source, err := fs.readFile(path)
 
 	if err != 0 {
-		io.write("error reading file: ")
-		io.writeLine(path)
-		run.exit(err)
+		return err
 	}
 
 	if source.len == 0 {
-		return
+		return 0
 	}
 
 	io.write(path)
 	io.write(": ")
-	err := 0 as error
 
 	if source[source.len-1] == '\n' {
 		if mode == Mode.Remove {
 			io.writeLine("no final newline [removed]")
-			err = fs.writeFile(path, source[..source.len-1])
+			return fs.writeFile(path, source[..source.len-1])
 		} else {
 			io.writeLine("final newline")
 		}
@@ -90,16 +96,13 @@ processFile(path string, mode int) {
 		if mode == Mode.Add {
 			io.writeLine("final newline [added]")
 			newSource := addNewline(source)
-			err = fs.writeFile(path, newSource)
+			return fs.writeFile(path, newSource)
 		} else {
 			io.writeLine("no final newline")
 		}
 	}
 
-	if err != 0 {
-		io.write("error writing file: ")
-		io.writeLine(err)
-	}
+	return 0
 }
 
 addNewline(content string) -> !string {
