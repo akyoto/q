@@ -15,13 +15,9 @@ main() {
 	args := cli.args()
 
 	loop i := 0..args.len {
-		switch {
-			args[i] == "-add" {
-				mode = Mode.Add
-			}
-			args[i] == "-remove" {
-				mode = Mode.Remove
-			}
+		switch args[i] {
+			"-add"    { mode = Mode.Add }
+			"-remove" { mode = Mode.Remove }
 			_ {
 				processFile(args[i], mode)
 				return
@@ -81,11 +77,12 @@ processFile(path string, mode int) {
 
 	io.write(path)
 	io.write(": ")
+	err := 0 as error
 
 	if source[source.len-1] == '\n' {
 		if mode == Mode.Remove {
 			io.writeLine("no final newline [removed]")
-			fs.writeFile(path, source[..source.len-1])
+			err = fs.writeFile(path, source[..source.len-1])
 		} else {
 			io.writeLine("final newline")
 		}
@@ -93,10 +90,15 @@ processFile(path string, mode int) {
 		if mode == Mode.Add {
 			io.writeLine("final newline [added]")
 			newSource := addNewline(source)
-			fs.writeFile(path, newSource)
+			err = fs.writeFile(path, newSource)
 		} else {
 			io.writeLine("no final newline")
 		}
+	}
+
+	if err != 0 {
+		io.write("error writing file: ")
+		io.writeLine(err)
 	}
 }
 
