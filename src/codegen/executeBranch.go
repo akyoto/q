@@ -18,9 +18,10 @@ func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 
 	if conditionStep.Register != -1 {
 		op = token.NotEqual
+		operand := f.resolveOperand(conditionStep, step.Live)
 
 		f.Assembler.Append(&asm.CompareNumber{
-			Destination: conditionStep.Register,
+			Destination: operand,
 			Number:      0,
 		})
 	} else {
@@ -35,14 +36,14 @@ func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 
 		case *ssa.Cas:
 			op = token.Equal
-			dest := f.ValueToStep[condition.Arguments[1]].Register
+			operand := f.ValueToStep[condition.Arguments[1]].Register
 
 			if f.build.Arch == config.X86 {
-				dest = x86.R0
+				operand = x86.R0
 			}
 
 			f.Assembler.Append(&asm.CompareNumber{
-				Destination: dest,
+				Destination: operand,
 				Number:      condition.Arguments[1].(*ssa.Int).Int,
 			})
 		}

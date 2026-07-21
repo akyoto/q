@@ -1,9 +1,6 @@
 package codegen
 
 import (
-	"fmt"
-	"os"
-
 	"git.urbach.dev/cli/q/src/asm"
 )
 
@@ -23,7 +20,6 @@ func (f *Function) enter() {
 	}
 
 	if f.stackSize > 0 {
-		fmt.Fprintf(os.Stderr, "%s warning: register spills to memory are not fully implemented yet (try to use less live values)\n", f.FullName)
 		f.stackSize = (f.stackSize + 15) &^ 15
 
 		f.Assembler.Append(&asm.SubtractNumber{

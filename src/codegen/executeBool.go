@@ -3,10 +3,13 @@ package codegen
 import (
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 func (f *Function) executeBool(step *Step, instr *ssa.Bool) {
-	if step.Register == -1 {
+	destination := step.Register
+
+	if destination == -1 {
 		return
 	}
 
@@ -16,8 +19,15 @@ func (f *Function) executeBool(step *Step, instr *ssa.Bool) {
 		number = 1
 	}
 
+	isSpilled := f.isSpilled(destination)
+
+	if isSpilled {
+		f.storeSpillNumber(step, types.Bool, number)
+		return
+	}
+
 	f.Assembler.Append(&asm.MoveNumber{
-		Destination: step.Register,
+		Destination: destination,
 		Number:      number,
 	})
 }

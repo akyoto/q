@@ -7,13 +7,20 @@ import (
 
 func (f *Function) executeField(step *Step, instr *ssa.Field) {
 	source := f.CPU.Call.Out[instr.Index]
+	destination := step.Register
+	isSpilled := f.isSpilled(destination)
 
-	if step.Register == source {
+	if destination == source {
+		return
+	}
+
+	if isSpilled {
+		f.storeSpill(step, source)
 		return
 	}
 
 	f.Assembler.Append(&asm.Move{
-		Destination: step.Register,
+		Destination: destination,
 		Source:      source,
 	})
 }

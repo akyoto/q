@@ -12,12 +12,21 @@ func (f *Function) executeCall(step *Step, instr *ssa.Call) {
 		Label: instr.Func.String(),
 	})
 
-	if step.Register == -1 || step.Register == f.CPU.Call.Out[0] {
+	destination := step.Register
+
+	if destination == -1 || destination == f.CPU.Call.Out[0] {
+		return
+	}
+
+	isSpilled := f.isSpilled(destination)
+
+	if isSpilled {
+		f.storeSpill(step, f.CPU.Call.Out[0])
 		return
 	}
 
 	f.Assembler.Append(&asm.Move{
-		Destination: step.Register,
+		Destination: destination,
 		Source:      f.CPU.Call.Out[0],
 	})
 }

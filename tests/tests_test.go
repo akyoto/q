@@ -174,8 +174,9 @@ var tests = []run{
 	{"enum", nil, "", "", 0},
 	{"cas", nil, "", "", 0},
 	{"mutex", nil, "", "", 0},
-	{"spill-call", nil, "", "", 0},
 	{"zero-alloc", nil, "", "", 0},
+	{"spill-call", nil, "", "", 0},
+	{"spill-call-binary", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {

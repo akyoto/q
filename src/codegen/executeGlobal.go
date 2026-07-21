@@ -14,19 +14,26 @@ const (
 )
 
 func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
+	destination := step.Register
+	isSpilled := f.isSpilled(destination)
+
+	if isSpilled {
+		destination = f.findTempRegister(step.Live)
+	}
+
 	if instr.ThreadLocal {
 		switch f.build.OS {
 		case config.Linux:
 			switch f.build.Arch {
 			case config.ARM:
 				f.Assembler.Append(&asm.ReadSystemRegister{
-					Destination:    step.Register,
+					Destination:    destination,
 					SystemRegister: arm.TPIDR_EL0,
 				})
 
 			case config.X86:
 				f.Assembler.Append(&asm.ReadSystemRegister{
-					Destination:    step.Register,
+					Destination:    destination,
 					SystemRegister: x86.FS,
 				})
 			}
@@ -34,40 +41,44 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 			switch f.build.Arch {
 			case config.ARM:
 				f.Assembler.Append(&asm.AddNumber{
-					Destination: step.Register,
+					Destination: destination,
 					Source:      arm.X18,
 					Number:      0x1000,
 				})
 
 				f.Assembler.Append(&asm.AddNumber{
-					Destination: step.Register,
-					Source:      step.Register,
+					Destination: destination,
+					Source:      destination,
 					Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
 				})
 
 			case config.X86:
 				f.Assembler.Append(&asm.ReadSystemRegister{
-					Destination:    step.Register,
+					Destination:    destination,
 					SystemRegister: x86.GS,
 				})
 
 				f.Assembler.Append(&asm.AddNumber{
-					Destination: step.Register,
-					Source:      step.Register,
+					Destination: destination,
+					Source:      destination,
 					Number:      0x1000 + WindowsTLSOffset + WindowsTLSSize - 0x20,
 				})
 			}
 
 		default:
 			f.Assembler.Append(&asm.MoveLabel{
-				Destination: step.Register,
+				Destination: destination,
 				Label:       instr.Label,
 			})
 		}
 	} else {
 		f.Assembler.Append(&asm.MoveLabel{
-			Destination: step.Register,
+			Destination: destination,
 			Label:       instr.Label,
 		})
+	}
+
+	if isSpilled {
+		f.storeSpill(step, destination)
 	}
 }

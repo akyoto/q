@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -11,13 +10,5 @@ func (f *Function) executeCopy(step *Step, instr *ssa.Copy) {
 	}
 
 	copy := f.ValueToStep[instr.Value]
-
-	if step.Register == copy.Register {
-		return
-	}
-
-	f.Assembler.Append(&asm.Move{
-		Destination: step.Register,
-		Source:      copy.Register,
-	})
+	f.move(step, copy, step)
 }

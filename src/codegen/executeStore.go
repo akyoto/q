@@ -10,11 +10,14 @@ func (f *Function) executeStore(instr *ssa.Store) {
 	address := f.ValueToStep[memory.Address]
 	index := f.ValueToStep[memory.Index]
 	source := f.ValueToStep[instr.Value]
+	baseRegister := f.resolveOperand(address, source.Live)
+	indexRegister := f.resolveOperand(index, source.Live)
+	sourceRegister := f.resolveOperand(source, source.Live)
 
-	if source.Register == -1 {
-		if index.Register == -1 {
+	if sourceRegister == -1 {
+		if indexRegister == -1 {
 			f.Assembler.Append(&asm.StoreFixedOffsetNumber{
-				Base:   address.Register,
+				Base:   baseRegister,
 				Index:  index.Value.(*ssa.Int).Int,
 				Number: int32(source.Value.(*ssa.Int).Int),
 				Scale:  memory.Scale,
@@ -22,27 +25,27 @@ func (f *Function) executeStore(instr *ssa.Store) {
 			})
 		} else {
 			f.Assembler.Append(&asm.StoreNumber{
-				Base:   address.Register,
-				Index:  index.Register,
+				Base:   baseRegister,
+				Index:  indexRegister,
 				Number: int32(source.Value.(*ssa.Int).Int),
 				Scale:  memory.Scale,
 				Length: byte(memory.Typ.Size()),
 			})
 		}
 	} else {
-		if index.Register == -1 {
+		if indexRegister == -1 {
 			f.Assembler.Append(&asm.StoreFixedOffset{
-				Base:   address.Register,
+				Base:   baseRegister,
 				Index:  index.Value.(*ssa.Int).Int,
-				Source: source.Register,
+				Source: sourceRegister,
 				Scale:  memory.Scale,
 				Length: byte(memory.Typ.Size()),
 			})
 		} else {
 			f.Assembler.Append(&asm.Store{
-				Base:   address.Register,
-				Index:  index.Register,
-				Source: source.Register,
+				Base:   baseRegister,
+				Index:  indexRegister,
+				Source: sourceRegister,
 				Scale:  memory.Scale,
 				Length: byte(memory.Typ.Size()),
 			})

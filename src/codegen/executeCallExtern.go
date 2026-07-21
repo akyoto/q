@@ -13,18 +13,21 @@ func (f *Function) executeCallExtern(step *Step, instr *ssa.CallExtern) {
 	var pushed []cpu.Register
 
 	for i, arg := range slices.Backward(args) {
+		argStep := f.ValueToStep[arg]
+		source := f.resolveOperand(argStep, step.Live)
+
 		if i >= len(f.CPU.ExternCall.In) {
-			pushed = append(pushed, f.ValueToStep[arg].Register)
+			pushed = append(pushed, source)
 			continue
 		}
 
-		if f.ValueToStep[arg].Register == f.CPU.ExternCall.In[i] {
+		if source == f.CPU.ExternCall.In[i] {
 			continue
 		}
 
 		f.Assembler.Append(&asm.Move{
 			Destination: f.CPU.ExternCall.In[i],
-			Source:      f.ValueToStep[arg].Register,
+			Source:      source,
 		})
 	}
 
@@ -50,12 +53,21 @@ func (f *Function) executeCallExtern(step *Step, instr *ssa.CallExtern) {
 		f.Assembler.Append(&asm.AddNumber{Destination: f.CPU.StackPointer, Source: f.CPU.StackPointer, Number: 8})
 	}
 
-	if step.Register == -1 || step.Register == f.CPU.ExternCall.Out[0] {
+	destination := step.Register
+
+	if destination == -1 || destination == f.CPU.ExternCall.Out[0] {
+		return
+	}
+
+	isSpilled := f.isSpilled(destination)
+
+	if isSpilled {
+		f.storeSpill(step, f.CPU.ExternCall.Out[0])
 		return
 	}
 
 	f.Assembler.Append(&asm.Move{
-		Destination: step.Register,
+		Destination: destination,
 		Source:      f.CPU.ExternCall.Out[0],
 	})
 }

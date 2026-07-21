@@ -6,17 +6,21 @@ import (
 )
 
 func (f *Function) executeInt(step *Step, instr *ssa.Int) {
-	if step.Register == -1 {
+	destination := step.Register
+
+	if destination == -1 {
 		return
 	}
 
-	if f.isSpilled(step.Register) {
-		f.storeSpillNumber(step, instr)
+	isSpilled := f.isSpilled(destination)
+
+	if isSpilled {
+		f.storeSpillNumber(step, instr.Type(), instr.Int)
 		return
 	}
 
 	f.Assembler.Append(&asm.MoveNumber{
-		Destination: step.Register,
+		Destination: destination,
 		Number:      instr.Int,
 	})
 }

@@ -3,7 +3,6 @@ package codegen
 import (
 	"slices"
 
-	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
@@ -25,14 +24,7 @@ func (f *Function) insertPhiMoves(step *Step) {
 				continue
 			}
 
-			if live.Register == phi.Register {
-				continue
-			}
-
-			f.Assembler.Append(&asm.Move{
-				Destination: phi.Register,
-				Source:      live.Register,
-			})
+			f.move(phi, live, step)
 		}
 	}
 
