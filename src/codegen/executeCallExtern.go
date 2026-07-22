@@ -53,21 +53,5 @@ func (f *Function) executeCallExtern(step *Step, instr *ssa.CallExtern) {
 		f.Assembler.Append(&asm.AddNumber{Destination: f.CPU.StackPointer, Source: f.CPU.StackPointer, Number: 8})
 	}
 
-	destination := step.Register
-
-	if destination == -1 || destination == f.CPU.ExternCall.Out[0] {
-		return
-	}
-
-	isSpilled := f.isSpilled(destination)
-
-	if isSpilled {
-		f.storeSpill(step, f.CPU.ExternCall.Out[0])
-		return
-	}
-
-	f.Assembler.Append(&asm.Move{
-		Destination: destination,
-		Source:      f.CPU.ExternCall.Out[0],
-	})
+	f.moveCallResult(step, f.CPU.ExternCall.Out[0])
 }

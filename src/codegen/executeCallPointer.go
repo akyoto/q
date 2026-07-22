@@ -14,21 +14,5 @@ func (f *Function) executeCallPointer(step *Step, instr *ssa.CallPointer) {
 		Address: address,
 	})
 
-	destination := step.Register
-
-	if destination == -1 || destination == f.CPU.Call.Out[0] {
-		return
-	}
-
-	isSpilled := f.isSpilled(destination)
-
-	if isSpilled {
-		f.storeSpill(step, f.CPU.Call.Out[0])
-		return
-	}
-
-	f.Assembler.Append(&asm.Move{
-		Destination: destination,
-		Source:      f.CPU.Call.Out[0],
-	})
+	f.moveCallResult(step, f.CPU.Call.Out[0])
 }
