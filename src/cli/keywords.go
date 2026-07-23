@@ -9,6 +9,6 @@ var keywordsText string
 
 // keywords shows the entire list of keywords.
 func keywords() int {
-	show(keywordsText)
+	render(keywordsText)
 	return success
 }

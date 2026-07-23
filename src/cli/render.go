@@ -9,8 +9,8 @@ import (
 	"git.urbach.dev/go/color/ansi"
 )
 
-// show parses the text and prints it with colors.
-func show(text string) {
+// render parses the text and prints it with colors.
+func render(text string) {
 	for line := range strings.Lines(text) {
 		start := strings.IndexByte(line, '{')
 

@@ -1,6 +1,8 @@
 package cli
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // ExpectedParameter is created when a command line parameter is missing.
 type ExpectedParameter struct {

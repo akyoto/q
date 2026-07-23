@@ -9,6 +9,6 @@ var versionText string
 
 // version shows the commit date and hash.
 func version() int {
-	show(versionText)
+	render(versionText)
 	return success
 }
