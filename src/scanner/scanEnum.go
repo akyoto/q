@@ -64,7 +64,7 @@ func (s *scanner) scanEnum(file *fs.File, tokens token.List, i int) (int, error)
 			}
 
 			if tokens[i].Kind == token.BlockEnd {
-				s.enums <- enum
+				s.items <- enum
 				return i, nil
 			}
 

@@ -8,7 +8,7 @@ func (s *scanner) queue(files ...string) {
 		stat, err := os.Stat(file)
 
 		if err != nil {
-			s.errors <- err
+			s.items <- err
 			return
 		}
 

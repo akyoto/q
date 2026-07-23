@@ -20,6 +20,6 @@ func (s *scanner) scanFunction(file *fs.File, tokens token.List, i int) (int, er
 	}
 
 	function.SetBody(bodyStart, i)
-	s.functions <- function
+	s.items <- function
 	return i, nil
 }

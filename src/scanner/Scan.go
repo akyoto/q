@@ -13,14 +13,8 @@ import (
 // Scan scans all the files included in the build.
 func Scan(build *config.Build) (*core.Environment, error) {
 	s := scanner{
-		constants: make(chan *core.Constant, 128),
-		enums:     make(chan *types.Enum, 128),
-		functions: make(chan *core.Function, 128),
-		files:     make(chan *fs.File, 128),
-		structs:   make(chan *types.Struct, 128),
-		globals:   make(chan *core.Global, 128),
-		errors:    make(chan error),
-		build:     build,
+		items: make(chan any, 512),
+		build: build,
 	}
 
 	go func() {
@@ -28,74 +22,27 @@ func Scan(build *config.Build) (*core.Environment, error) {
 		s.queueDirectory(filepath.Join(global.Library, "strings"), "strings")
 		s.queue(build.Files...)
 		s.group.Wait()
-		close(s.constants)
-		close(s.enums)
-		close(s.functions)
-		close(s.files)
-		close(s.structs)
-		close(s.globals)
-		close(s.errors)
+		close(s.items)
 	}()
 
 	env := core.NewEnvironment(build)
 
-	for s.functions != nil || s.files != nil || s.structs != nil || s.constants != nil || s.enums != nil || s.globals != nil || s.errors != nil {
-		select {
-		case f, ok := <-s.functions:
-			if !ok {
-				s.functions = nil
-				continue
-			}
-
-			env.ReceiveFunction(f)
-
-		case file, ok := <-s.files:
-			if !ok {
-				s.files = nil
-				continue
-			}
-
-			env.ReceiveFile(file)
-
-		case structure, ok := <-s.structs:
-			if !ok {
-				s.structs = nil
-				continue
-			}
-
-			env.ReceiveStruct(structure)
-
-		case constant, ok := <-s.constants:
-			if !ok {
-				s.constants = nil
-				continue
-			}
-
-			env.ReceiveConstant(constant)
-
-		case enum, ok := <-s.enums:
-			if !ok {
-				s.enums = nil
-				continue
-			}
-
-			env.ReceiveEnum(enum)
-
-		case global, ok := <-s.globals:
-			if !ok {
-				s.globals = nil
-				continue
-			}
-
-			env.ReceiveGlobal(global)
-
-		case err, ok := <-s.errors:
-			if !ok {
-				s.errors = nil
-				continue
-			}
-
-			return env, err
+	for item := range s.items {
+		switch v := item.(type) {
+		case *core.Function:
+			env.ReceiveFunction(v)
+		case *fs.File:
+			env.ReceiveFile(v)
+		case *types.Struct:
+			env.ReceiveStruct(v)
+		case *core.Constant:
+			env.ReceiveConstant(v)
+		case *types.Enum:
+			env.ReceiveEnum(v)
+		case *core.Global:
+			env.ReceiveGlobal(v)
+		case error:
+			return env, v
 		}
 	}
 

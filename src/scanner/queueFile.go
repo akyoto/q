@@ -6,7 +6,7 @@ func (s *scanner) queueFile(file string, pkg string) {
 		err := s.scanFile(file, pkg)
 
 		if err != nil {
-			s.errors <- err
+			s.items <- err
 		}
 	})
 }

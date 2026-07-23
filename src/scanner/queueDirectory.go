@@ -62,6 +62,6 @@ func (s *scanner) queueDirectory(directory string, pkg string) {
 	})
 
 	if err != nil {
-		s.errors <- err
+		s.items <- err
 	}
 }

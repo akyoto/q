@@ -55,7 +55,7 @@ func (s *scanner) scanExternLibrary(file *fs.File, tokens token.List, i int) (in
 			}
 
 			i = j
-			s.functions <- function
+			s.items <- function
 
 		case token.BlockEnd:
 			return i, nil

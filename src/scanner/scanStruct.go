@@ -38,7 +38,7 @@ func (s *scanner) scanStruct(file *fs.File, tokens token.List, i int) (int, erro
 			}
 
 			if tokens[i].Kind == token.BlockEnd {
-				s.structs <- structure
+				s.items <- structure
 				return i, nil
 			}
 

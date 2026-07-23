@@ -15,7 +15,7 @@ func (s *scanner) scanFile(path string, pkg string) error {
 	}
 
 	file := fs.NewFile(path, pkg, contents)
-	s.files <- file
+	s.items <- file
 	tokens := file.Tokens
 
 	for i := 0; i < len(tokens); i++ {

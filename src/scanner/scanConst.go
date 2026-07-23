@@ -58,7 +58,7 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 					return i, errors.New(InvalidExpression, file, valueTokens)
 				}
 
-				s.constants <- &core.Constant{
+				s.items <- &core.Constant{
 					Name:  name,
 					File:  file,
 					Value: value,

@@ -35,7 +35,7 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 					ThreadLocal: threadLocal,
 				}
 
-				s.globals <- global
+				s.items <- global
 			}
 
 			if tokens[i].Kind == token.BlockEnd {
