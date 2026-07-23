@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"strings"
 
 	"git.urbach.dev/cli/q/src/errors"
 )
@@ -17,7 +18,14 @@ type MultiError struct {
 }
 
 func (err *MultiError) Error() string {
-	return ""
+	tmp := strings.Builder{}
+
+	for _, single := range err.Errors {
+		tmp.WriteString(single.Error())
+		tmp.WriteByte('\n')
+	}
+
+	return tmp.String()
 }
 
 // UnusedImport error is created when an import is never used.

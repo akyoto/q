@@ -7,6 +7,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/config"
+	"git.urbach.dev/cli/q/src/core"
 	"git.urbach.dev/go/assert"
 )
 
@@ -15,6 +16,10 @@ var errs = []struct {
 	ExpectedError error
 }{
 	{"MissingMainFunction.q", compiler.MissingMainFunction},
+	{"MultiError.q", &compiler.MultiError{Errors: []error{
+		&core.UnknownIdentifier{Name: "unknown1"},
+		&core.UnknownIdentifier{Name: "unknown2"},
+	}}},
 	{"UnusedImport.q", &compiler.UnusedImport{Package: "run"}},
 }
 
