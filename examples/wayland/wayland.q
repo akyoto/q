@@ -45,22 +45,52 @@ communicate(state *wayland.State, buffer string) -> error {
 		return -1
 	}
 
+	// wl_compositor
 	state.wl_compositor = wayland.newId(state)
-	err := bindCompositor(state, buffer, "wl_compositor")
+
+	request := new(wayland.BindRequest) {
+		interface: "wl_compositor",
+		version: 4,
+		name: state.wl_compositor_name,
+		id: state.wl_compositor,
+	}
+
+	err := wayland.bind(state, buffer, request)
+	delete(request)
 
 	if err != 0 {
 		return err
 	}
 
+	// wl_shm
 	state.wl_shm = wayland.newId(state)
-	err := bindShm(state, buffer, "wl_shm")
+
+	request := new(wayland.BindRequest) {
+		interface: "wl_shm",
+		version: 1,
+		name: state.wl_shm_name,
+		id: state.wl_shm,
+	}
+
+	err := wayland.bind(state, buffer, request)
+	delete(request)
 
 	if err != 0 {
 		return err
 	}
 
+	// xdg_wm_base
 	state.xdg_wm_base = wayland.newId(state)
-	err := bindXdgWmBase(state, buffer, "xdg_wm_base")
+
+	request := new(wayland.BindRequest) {
+		interface: "xdg_wm_base",
+		version: 2,
+		name: state.xdg_wm_base_name,
+		id: state.xdg_wm_base,
+	}
+
+	err := wayland.bind(state, buffer, request)
+	delete(request)
 
 	if err != 0 {
 		return err
@@ -131,16 +161,10 @@ handleGlobal(state *wayland.State, name uint32, interface string, _version uint3
 	io.write(interface)
 	io.write("\n")
 
-	switch {
-		interface == "wl_compositor" {
-			state.wl_compositor_name = name
-		}
-		interface == "wl_shm" {
-			state.wl_shm_name = name
-		}
-		interface == "xdg_wm_base" {
-			state.xdg_wm_base_name = name
-		}
+	switch interface {
+		"wl_compositor" { state.wl_compositor_name = name }
+		"wl_shm"        { state.wl_shm_name = name }
+		"xdg_wm_base"   { state.xdg_wm_base_name = name }
 	}
 }
 
@@ -168,68 +192,4 @@ createPool(state *wayland.State, buffer string) -> error {
 	// TODO: Send fd as ancillary data
 	_, err := io.writeTo(state.socket, buffer[..w.len])
 	return err
-}
-
-bindCompositor(state *wayland.State, buffer string, interface string) -> error {
-	padded := wayland.pad(interface.len + 1)
-	size := bindSize(padded)
-
-	if size > buffer.len {
-		return -1
-	}
-
-	w := wayland.newWriter(buffer.ptr, buffer.len)
-	w = wayland.write32(w, state.wl_registry)
-	w = wayland.write16(w, wayland.wl_registry_bind)
-	w = wayland.write16(w, size)
-	w = wayland.write32(w, state.wl_compositor_name)
-	w = wayland.writeString(w, interface)
-	w = wayland.write32(w, 4)
-	w = wayland.write32(w, state.wl_compositor)
-	_, err := io.writeTo(state.socket, buffer[..w.len])
-	return err
-}
-
-bindShm(state *wayland.State, buffer string, interface string) -> error {
-	padded := wayland.pad(interface.len + 1)
-	size := bindSize(padded)
-
-	if size > buffer.len {
-		return -1
-	}
-
-	w := wayland.newWriter(buffer.ptr, buffer.len)
-	w = wayland.write32(w, state.wl_registry)
-	w = wayland.write16(w, wayland.wl_registry_bind)
-	w = wayland.write16(w, size)
-	w = wayland.write32(w, state.wl_shm_name)
-	w = wayland.writeString(w, interface)
-	w = wayland.write32(w, 1)
-	w = wayland.write32(w, state.wl_shm)
-	_, err := io.writeTo(state.socket, buffer[..w.len])
-	return err
-}
-
-bindXdgWmBase(state *wayland.State, buffer string, interface string) -> error {
-	padded := wayland.pad(interface.len + 1)
-	size := bindSize(padded)
-
-	if size > buffer.len {
-		return -1
-	}
-
-	w := wayland.newWriter(buffer.ptr, buffer.len)
-	w = wayland.write32(w, state.wl_registry)
-	w = wayland.write16(w, wayland.wl_registry_bind)
-	w = wayland.write16(w, size)
-	w = wayland.write32(w, state.xdg_wm_base_name)
-	w = wayland.writeString(w, interface)
-	w = wayland.write32(w, 2)
-	w = wayland.write32(w, state.xdg_wm_base)
-	_, err := io.writeTo(state.socket, buffer[..w.len])
-	return err
-}
-
-bindSize(padded uint) -> uint16 {
-	return wayland.header_size + 4 + 4 + padded + 4 + 4
 }
