@@ -16,6 +16,7 @@ var errs = []struct {
 	ExpectedError error
 }{
 	{"EmptySwitch.q", ast.EmptySwitch},
+	{"ExpectedBlock.q", ast.ExpectedBlock},
 	{"ExpectedIfBeforeElse.q", ast.ExpectedIfBeforeElse},
 	{"ExpectedIfBeforeElse2.q", ast.ExpectedIfBeforeElse},
 	{"InvalidInstruction.q", ast.InvalidInstruction},
@@ -24,6 +25,7 @@ var errs = []struct {
 	{"InvalidInstruction4.q", ast.InvalidInstruction},
 	{"MissingOperand.q", ast.MissingOperand},
 	{"MissingOperand2.q", ast.MissingOperand},
+	{"NoElseIf.q", ast.NoElseIf},
 }
 
 func TestErrors(t *testing.T) {

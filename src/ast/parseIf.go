@@ -8,6 +8,11 @@ import (
 
 func parseIf(tokens token.List, file *fs.File) (Node, error) {
 	blockStart, _, body, err := block(tokens, file)
+
+	if err != nil {
+		return nil, err
+	}
+
 	condition := expression.Parse(tokens[1:blockStart])
-	return &If{Condition: condition, Body: body}, err
+	return &If{Condition: condition, Body: body}, nil
 }
