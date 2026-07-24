@@ -61,5 +61,5 @@ func (s *scanner) scanEnum(file *fs.File, tokens token.List, i int) (int, error)
 		i++
 	}
 
-	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i-1].End())
 }

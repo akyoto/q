@@ -31,7 +31,7 @@ func (s *scanner) scanExtern(file *fs.File, tokens token.List, i int) (int, erro
 		i++
 	}
 
-	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i-1].End())
 }
 
 // scanExternLibrary scans a block of external function declarations.
@@ -64,5 +64,5 @@ func (s *scanner) scanExternLibrary(file *fs.File, tokens token.List, i int) (in
 		i++
 	}
 
-	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i-1].End())
 }

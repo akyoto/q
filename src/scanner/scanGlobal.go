@@ -48,5 +48,5 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 		i++
 	}
 
-	return i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)
+	return i, errors.NewAt(MissingBlockEnd, file, tokens[i-1].End())
 }
