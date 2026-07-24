@@ -2,7 +2,6 @@ package scanner
 
 import (
 	"git.urbach.dev/cli/q/src/errors"
-	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
@@ -42,22 +41,10 @@ func (s *scanner) scanEnum(file *fs.File, tokens token.List, i int) (int, error)
 			}
 
 			if start != -1 {
-				name := tokens[start].StringFrom(file.Bytes)
+				name, value, err := scanAssignment(tokens, start, i, file)
 
-				if tokens[start+1].Kind != token.Assign {
-					return i, errors.NewAt(MissingAssign, file, tokens[start+1].Position)
-				}
-
-				valueTokens := tokens[start+2 : i]
-
-				if len(valueTokens) == 0 {
-					return i, errors.NewAt(MissingExpression, file, tokens[start+1].End())
-				}
-
-				value := expression.Parse(valueTokens)
-
-				if value.Token.Kind == token.Invalid {
-					return i, errors.New(InvalidExpression, file, valueTokens)
+				if err != nil {
+					return i, err
 				}
 
 				enum.AddMember(name, value)
