@@ -18,15 +18,13 @@ func (f *Function) call(fn *ssa.Function, args []ssa.Value, source ssa.Source) s
 	structure, isStructType := types.Unwrap(typ).(*types.Struct)
 
 	if isStructType {
-		var fields []ssa.Value
+		fields := make([]ssa.Value, len(structure.Fields))
 
-		for _, field := range structure.Fields {
-			ssaField := f.Append(&ssa.Field{
+		for i := range fields {
+			fields[i] = f.Append(&ssa.Field{
 				Tuple: call,
-				Index: int(field.Index),
+				Index: i,
 			})
-
-			fields = append(fields, ssaField)
 		}
 
 		return f.makeStruct(typ, fields, source)
