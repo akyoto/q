@@ -9,7 +9,7 @@ import (
 // delete frees an allocated value.
 func (f *Function) delete(value ssa.Value) (ssa.Value, error) {
 	free := f.Env.Function("mem", "free")
-	f.Dependencies.Add(free)
+	f.Calls.Add(free)
 	f.Block().Unidentify(value)
 
 	switch valueType := types.Unwrap(value.Type()).(type) {

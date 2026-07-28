@@ -6,7 +6,7 @@ func (f *Function) EachDependency(traversed map[*Function]bool, call func(*Funct
 	call(f)
 	traversed[f] = true
 
-	for dep := range f.Dependencies.All() {
+	for dep := range f.Calls.All() {
 		if traversed[dep] {
 			continue
 		}

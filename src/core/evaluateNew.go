@@ -44,7 +44,7 @@ func (f *Function) evaluateNew(expr *expression.Expression) (ssa.Value, error) {
 	}
 
 	malloc := f.Env.Function("mem", "alloc")
-	f.Dependencies.Add(malloc)
+	f.Calls.Add(malloc)
 
 	fn := &ssa.Function{
 		FunctionRef: malloc,

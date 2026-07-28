@@ -45,7 +45,7 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 			Source:      expr.Source(),
 		})
 
-		f.Dependencies.Add(variants)
+		f.Calls.Add(variants)
 		return v, nil
 	}
 
@@ -79,6 +79,8 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 	global, exists := pkg.Globals[rightText]
 
 	if exists {
+		f.Globals.Add(global)
+
 		v := f.Append(&ssa.Global{
 			Label:       pkg.Name + "." + global.Name,
 			Typ:         f.Env.Pointer(global.Typ),

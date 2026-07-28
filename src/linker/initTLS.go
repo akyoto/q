@@ -15,6 +15,10 @@ func initTLS(program *asm.Assembler, env *core.Environment) {
 	tls := ""
 
 	for global := range env.Globals() {
+		if global.Used.Load() == 0 {
+			continue
+		}
+
 		label := global.File.Package + "." + global.Name
 		data := bytes.Repeat([]byte{0}, global.Typ.Size())
 		program.Data.SetMutable(label, data)
@@ -23,6 +27,10 @@ func initTLS(program *asm.Assembler, env *core.Environment) {
 		if global.ThreadLocal && tls == "" {
 			tls = label
 		}
+	}
+
+	if tls == "" {
+		return
 	}
 
 	switch env.Build.OS {

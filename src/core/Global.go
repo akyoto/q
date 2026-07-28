@@ -1,6 +1,8 @@
 package core
 
 import (
+	"sync/atomic"
+
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
@@ -12,5 +14,6 @@ type Global struct {
 	Typ         types.Type
 	Tokens      token.List
 	File        *fs.File
+	Used        atomic.Uint64
 	ThreadLocal bool
 }

@@ -21,7 +21,7 @@ func (f *Function) compileGo(g *ast.Go) error {
 		Arguments: []ssa.Value{threadFunc},
 	})
 
-	f.Dependencies.Add(createThread)
-	f.Dependencies.Add(threadFunc.(*ssa.Function).FunctionRef.(*Function))
+	f.Calls.Add(createThread)
+	f.Calls.Add(threadFunc.(*ssa.Function).FunctionRef.(*Function))
 	return nil
 }

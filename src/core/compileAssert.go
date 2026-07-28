@@ -27,7 +27,7 @@ func (f *Function) compileAssert(assert *ast.Assert) error {
 	}
 
 	f.call(fn, nil, assert.Condition.Source())
-	f.Dependencies.Add(crash)
+	f.Calls.Add(crash)
 	f.AddBlock(thenBlock)
 	return nil
 }

@@ -7,7 +7,7 @@ import (
 // evaluateStringOp calls a function with two strings.
 func (f *Function) evaluateStringOp(op string, left ssa.Value, right ssa.Value, source ssa.Source) (ssa.Value, error) {
 	concat := f.Env.Function("strings", op)
-	f.Dependencies.Add(concat)
+	f.Calls.Add(concat)
 	leftStruct := left.(*ssa.Struct)
 	rightStruct := right.(*ssa.Struct)
 
