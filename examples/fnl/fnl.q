@@ -40,20 +40,24 @@ main() {
 }
 
 processStdin(mode int) {
-	buffer := new(byte, 0x4000)
+	buffer := new(byte, 0x10000)
 	pos := 0
 
 	loop {
 		n, _ := io.read(buffer[pos..])
 
 		if n == 0 {
-			switch {
-				mode == Mode.Add && pos < buffer.len && buffer[pos-1] != '\n' {
-					buffer[pos] = '\n'
-					pos += 1
+			switch mode {
+				Mode.Add {
+					if pos < buffer.len && buffer[pos-1] != '\n' {
+						buffer[pos] = '\n'
+						pos += 1
+					}
 				}
-				mode == Mode.Remove && pos > 0 && buffer[pos-1] == '\n' {
-					pos -= 1
+				Mode.Remove {
+					if pos > 0 && buffer[pos-1] == '\n' {
+						pos -= 1
+					}
 				}
 			}
 
