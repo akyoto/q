@@ -18,7 +18,8 @@ type ELF struct {
 
 // Write writes the ELF64 format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), false, codeBytes, dataBytes)
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), false)
+	x.AddSections(codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
 

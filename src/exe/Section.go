@@ -1,9 +1,9 @@
 package exe
 
-// Section represents some data within the executable that will also be loaded into memory.
+// Section represents some data within the executable.
 type Section struct {
 	Bytes        []byte
-	FileOffset   int
 	Padding      int
+	FileOffset   int
 	MemoryOffset int
 }

@@ -34,7 +34,8 @@ func (c *compiler) AddDataLabels() {
 		headerEnd = pe.HeaderEnd
 	}
 
-	x := exe.New(headerEnd, c.build.FileAlign(), c.build.MemoryAlign(), c.build.Congruent(), embedHeaders, c.code, c.data, nil)
+	x := exe.New(headerEnd, c.build.FileAlign(), c.build.MemoryAlign(), c.build.Congruent(), embedHeaders)
+	x.AddSections(c.code, c.data, nil)
 	dataSectionOffset := x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset
 
 	for dataLabel, address := range c.dataLabels {

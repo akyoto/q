@@ -11,30 +11,35 @@ type Executable struct {
 }
 
 // New creates a new executable.
-func New(headerEnd int, fileAlign int, memoryAlign int, congruent bool, embedHeaders bool, raw ...[]byte) *Executable {
-	exe := &Executable{
-		Sections:     make([]*Section, len(raw)),
+func New(headerEnd int, fileAlign int, memoryAlign int, congruent bool, embedHeaders bool) *Executable {
+	return &Executable{
 		headerEnd:    headerEnd,
 		fileAlign:    fileAlign,
 		memoryAlign:  memoryAlign,
 		congruent:    congruent,
 		embedHeaders: embedHeaders,
 	}
-
-	for i, section := range raw {
-		if len(section) == 0 {
-			section = []byte{0}
-		}
-
-		exe.Sections[i] = &Section{Bytes: section}
-	}
-
-	exe.Update()
-	return exe
 }
 
-// Update recalculates all section offsets.
-func (exe *Executable) Update() {
+// AddSections adds the given byte slices as sections to the executable.
+func (exe *Executable) AddSections(raw ...[]byte) {
+	if exe.Sections == nil {
+		exe.Sections = make([]*Section, len(raw))
+	}
+
+	for i, data := range raw {
+		if len(data) == 0 {
+			data = []byte{0}
+		}
+
+		exe.Sections[i] = &Section{Bytes: data}
+	}
+
+	exe.update()
+}
+
+// update recalculates all section offsets.
+func (exe *Executable) update() {
 	first := exe.Sections[0]
 
 	if exe.embedHeaders {

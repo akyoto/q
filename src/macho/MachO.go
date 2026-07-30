@@ -29,7 +29,8 @@ type MachO struct {
 
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true, codeBytes, dataBytes, createLinkeditSegment())
+	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true)
+	x.AddSections(codeBytes, dataBytes, createLinkeditSegment())
 	code := x.Sections[0]
 	data := x.Sections[1]
 	linked := x.Sections[2]
