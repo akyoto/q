@@ -18,12 +18,7 @@ func (data *Data) appendMutable(final []byte, positions map[string]int) []byte {
 
 	for _, key := range keys {
 		content := data.Mutable[key]
-		_, padding := exe.AlignPad(len(final), len(content))
-
-		for range padding {
-			final = append(final, 0)
-		}
-
+		final = exe.PadSlice(final, len(content))
 		positions[key] = len(final)
 		final = append(final, content...)
 	}
