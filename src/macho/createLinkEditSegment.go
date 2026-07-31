@@ -10,8 +10,8 @@ const (
 	chainedFixupsSize    = ChainedFixupsHeaderSize + ChainedStartsInImageSize + codeSignaturePadding
 )
 
-// createLinkeditSegment creates the contents of the __LINKEDIT segment.
-func createLinkeditSegment() []byte {
+// createLinkEditSegment creates the contents of the __LINKEDIT segment.
+func createLinkEditSegment() []byte {
 	buffer := bytes.Buffer{}
 
 	// Chained fixups

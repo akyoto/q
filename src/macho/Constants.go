@@ -9,7 +9,7 @@ const (
 		UuidSize +
 		MainSize +
 		BuildVersionSize +
-		LinkeditDataCommandSize*2 +
+		LinkEditDataCommandSize*2 +
 		DylinkerCommandSize + len(LinkerString) +
 		DylibCommandSize + len(LibSystemString)
 	HashPageSize = 4096

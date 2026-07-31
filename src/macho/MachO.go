@@ -23,21 +23,21 @@ type MachO struct {
 	BuildVersion  BuildVersion
 	Linker        DylinkerCommand
 	LibSystem     DylibCommand
-	ChainedFixups LinkeditDataCommand
-	CodeSignature LinkeditDataCommand
+	ChainedFixups LinkEditDataCommand
+	CodeSignature LinkEditDataCommand
 }
 
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
 	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true)
-	x.AddSections(codeBytes, dataBytes, createLinkeditSegment())
+	x.AddSections(codeBytes, dataBytes, createLinkEditSegment())
 	code := x.Sections[0]
 	data := x.Sections[1]
 	linked := x.Sections[2]
-	arch, microArch := Arch(build.Arch)
 	rawFileSize := linked.FileOffset + len(linked.Bytes)
 	identifier := []byte("\000")
 	codeSignature := NewCodeSignature(rawFileSize, identifier, code)
+	arch, microArch := Arch(build.Arch)
 
 	m := &MachO{
 		Executable: x,
@@ -140,15 +140,15 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Length:      uint32(DylibCommandSize + len(LibSystemString)),
 			Name:        DylibCommandSize,
 		},
-		ChainedFixups: LinkeditDataCommand{
+		ChainedFixups: LinkEditDataCommand{
 			LoadCommand: LcDyldChainedFixups,
-			Length:      LinkeditDataCommandSize,
+			Length:      LinkEditDataCommandSize,
 			DataOffset:  uint32(linked.FileOffset),
 			DataSize:    uint32(chainedFixupsSize),
 		},
-		CodeSignature: LinkeditDataCommand{
+		CodeSignature: LinkEditDataCommand{
 			LoadCommand: LcCodeSignature,
-			Length:      LinkeditDataCommandSize,
+			Length:      LinkEditDataCommandSize,
 			DataOffset:  uint32(linked.FileOffset + chainedFixupsSize),
 			DataSize:    codeSignature.size(),
 		},
