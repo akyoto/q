@@ -28,7 +28,7 @@ func (c *compiler) AddDataLabels() {
 	case config.Linux:
 		headerEnd = elf.HeaderEnd
 	case config.Mac:
-		headerEnd = macho.HeaderEnd
+		headerEnd = macho.HeaderEnd(c.libraries)
 		embedHeaders = true
 	case config.Windows:
 		headerEnd = pe.HeaderEnd

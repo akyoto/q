@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"git.urbach.dev/cli/q/src/config"
+	"git.urbach.dev/cli/q/src/dll"
 	"git.urbach.dev/cli/q/src/exe"
 )
 
@@ -22,14 +23,14 @@ type MachO struct {
 	Main          Main
 	BuildVersion  BuildVersion
 	Linker        DylinkerCommand
-	LibSystem     DylibCommand
+	Libs          []Dylib
 	ChainedFixups LinkEditDataCommand
 	CodeSignature LinkEditDataCommand
 }
 
 // Write writes the Mach-O format to the given writer.
-func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
-	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), true)
+func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte, libs dll.List) {
+	x := exe.New(HeaderEnd(libs), build.FileAlign(), build.MemoryAlign(), build.Congruent(), true)
 	x.AddSections(codeBytes, dataBytes, createLinkEditSegment())
 	code := x.Sections[0]
 	data := x.Sections[1]
@@ -46,8 +47,8 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Architecture:      arch,
 			MicroArchitecture: microArch,
 			Type:              TypeExecute,
-			NumCommands:       NumCommands,
-			SizeCommands:      uint32(SizeCommands),
+			NumCommands:       uint32(NumCommands(libs)),
+			SizeCommands:      uint32(SizeCommands(libs)),
 			Flags:             FlagNoUndefs | FlagDyldLink | FlagTwoLevel | FlagPIE | FlagNoHeapExecution,
 		},
 		PageZero: Segment64{
@@ -135,11 +136,6 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			Length:      uint32(DylinkerCommandSize + len(LinkerString)),
 			Name:        DylinkerCommandSize,
 		},
-		LibSystem: DylibCommand{
-			LoadCommand: LcLoadDylib,
-			Length:      uint32(DylibCommandSize + len(LibSystemString)),
-			Name:        DylibCommandSize,
-		},
 		ChainedFixups: LinkEditDataCommand{
 			LoadCommand: LcDyldChainedFixups,
 			Length:      LinkEditDataCommandSize,
@@ -152,6 +148,19 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			DataOffset:  uint32(linked.FileOffset + chainedFixupsSize),
 			DataSize:    codeSignature.size(),
 		},
+	}
+
+	for lib := range libs.All() {
+		paddedName := exe.PadSlice([]byte(lib.Name+"\000"), 8)
+
+		m.Libs = append(m.Libs, Dylib{
+			DylibCommand: DylibCommand{
+				LoadCommand: LcLoadDylib,
+				Length:      uint32(DylibCommandSize + len(paddedName)),
+				Name:        DylibCommandSize,
+			},
+			Name: paddedName,
+		})
 	}
 
 	buffer := bytes.Buffer{}
@@ -174,8 +183,12 @@ func (m *MachO) WriteRaw(writer io.Writer, seek bool) {
 	binary.Write(writer, binary.LittleEndian, &m.BuildVersion)
 	binary.Write(writer, binary.LittleEndian, &m.Linker)
 	writer.Write([]byte(LinkerString))
-	binary.Write(writer, binary.LittleEndian, &m.LibSystem)
-	writer.Write([]byte(LibSystemString))
+
+	for _, lib := range m.Libs {
+		binary.Write(writer, binary.LittleEndian, &lib.DylibCommand)
+		writer.Write(lib.Name)
+	}
+
 	binary.Write(writer, binary.LittleEndian, &m.ChainedFixups)
 	binary.Write(writer, binary.LittleEndian, &m.CodeSignature)
 

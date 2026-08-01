@@ -1,17 +1,42 @@
 package macho
 
+import (
+	"git.urbach.dev/cli/q/src/dll"
+	"git.urbach.dev/cli/q/src/exe"
+)
+
 const (
 	BaseAddress  = 0x100000000
-	NumCommands  = 11
 	NumSegments  = 4
-	SizeCommands = NumSegments*Segment64Size +
+	HashPageSize = 4096
+	numCommands  = 10
+	sizeCommands = NumSegments*Segment64Size +
 		Section64Size +
 		UuidSize +
 		MainSize +
 		BuildVersionSize +
-		LinkEditDataCommandSize*2 +
 		DylinkerCommandSize + len(LinkerString) +
-		DylibCommandSize + len(LibSystemString)
-	HashPageSize = 4096
-	HeaderEnd    = HeaderSize + SizeCommands
+		LinkEditDataCommandSize*2
 )
+
+// HeaderEnd returns the end of the headers.
+func HeaderEnd(libs dll.List) int {
+	return HeaderSize + SizeCommands(libs)
+}
+
+// NumCommands returns the number of load commands.
+func NumCommands(libs dll.List) int {
+	return numCommands + libs.Count()
+}
+
+// SizeCommands returns the size of load commands.
+func SizeCommands(libs dll.List) int {
+	size := sizeCommands
+
+	for lib := range libs.All() {
+		size += DylibCommandSize
+		size += exe.Align(len(lib.Name)+1, 8)
+	}
+
+	return size
+}

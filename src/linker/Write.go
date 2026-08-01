@@ -35,7 +35,7 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 	case config.Linux:
 		elf.Write(writer, build, code, data)
 	case config.Mac:
-		macho.Write(writer, build, code, data)
+		macho.Write(writer, build, code, data, libs)
 	case config.Windows:
 		pe.Write(writer, build, code, data, libs)
 	}
