@@ -153,7 +153,8 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	}
 
 	for lib := range libs.All() {
-		paddedName := exe.PadSlice([]byte(lib.Name+"\000"), 8)
+		libName := resolveLibName(lib.Name)
+		paddedName := exe.PadSlice([]byte(libName), 8)
 
 		m.Libs = append(m.Libs, Dylib{
 			DylibCommand: DylibCommand{

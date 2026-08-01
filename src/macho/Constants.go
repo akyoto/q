@@ -34,8 +34,9 @@ func SizeCommands(libs dll.List) int {
 	size := sizeCommands
 
 	for lib := range libs.All() {
+		libName := resolveLibName(lib.Name)
 		size += DylibCommandSize
-		size += exe.Align(len(lib.Name)+1, 8)
+		size += exe.Align(len(libName), 8)
 	}
 
 	return size

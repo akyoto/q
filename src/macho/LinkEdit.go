@@ -50,7 +50,7 @@ func createLinkEditSegment(libs dll.List, data *exe.Section, pageSize int) []byt
 	numFunctions := libs.CountFunctions()
 	linkEditSize := ChainedFixupsHeaderSize + ChainedStartsInImageSize + ChainedStartsInSegmentSize
 	importsOffset := exe.Align(linkEditSize, 16)
-	importsSize := numFunctions * 8
+	importsSize := numFunctions * 4
 	symbolsOffset := exe.Align(importsOffset+importsSize, 16)
 
 	linkEdit := LinkEdit{
@@ -87,16 +87,32 @@ func createLinkEditSegment(libs dll.List, data *exe.Section, pageSize int) []byt
 	exe.PadBuffer(&buffer, 16)
 	symbols := strings.Builder{}
 	libOrdinal := 1
+	ordinal := 0
 
 	for lib := range libs.All() {
 		for _, name := range lib.Functions {
+			// Imports table
 			nameOffset := symbols.Len()
+			symbols.WriteByte('_')
 			symbols.WriteString(name)
 			symbols.WriteByte(0)
 			weakImport := 0
 			dyldChainedImport := (nameOffset << 9) + (weakImport << 8) + libOrdinal
-			binary.Write(&buffer, binary.LittleEndian, dyldChainedImport)
-			data.Bytes = binary.LittleEndian.AppendUint64(data.Bytes, 0)
+			binary.Write(&buffer, binary.LittleEndian, uint64(dyldChainedImport))
+
+			// Actual address location
+			addend := 0
+			reserved := 0
+			next := 2
+
+			if ordinal == numFunctions-1 {
+				next = 0
+			}
+
+			bind := 1
+			dyldChainedPtr64Bind := bind<<63 + next<<51 + reserved<<32 + addend<<24 + ordinal
+			data.Bytes = binary.LittleEndian.AppendUint64(data.Bytes, uint64(dyldChainedPtr64Bind))
+			ordinal++
 		}
 
 		libOrdinal++
