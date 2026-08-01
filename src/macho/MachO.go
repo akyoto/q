@@ -31,9 +31,11 @@ type MachO struct {
 // Write writes the Mach-O format to the given writer.
 func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte, libs dll.List) {
 	x := exe.New(HeaderEnd(libs), build.FileAlign(), build.MemoryAlign(), build.Congruent(), true)
-	x.AddSections(codeBytes, dataBytes, createLinkEditSegment())
+	x.AddSections(codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
+	linkEditBytes := createLinkEditSegment(libs, data, build.MemoryAlign())
+	x.AddSections(linkEditBytes)
 	linked := x.Sections[2]
 	rawFileSize := linked.FileOffset + len(linked.Bytes)
 	identifier := []byte("\000")
@@ -140,12 +142,12 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 			LoadCommand: LcDyldChainedFixups,
 			Length:      LinkEditDataCommandSize,
 			DataOffset:  uint32(linked.FileOffset),
-			DataSize:    uint32(chainedFixupsSize),
+			DataSize:    uint32(len(linked.Bytes)),
 		},
 		CodeSignature: LinkEditDataCommand{
 			LoadCommand: LcCodeSignature,
 			Length:      LinkEditDataCommandSize,
-			DataOffset:  uint32(linked.FileOffset + chainedFixupsSize),
+			DataOffset:  uint32(linked.FileOffset + len(linked.Bytes)),
 			DataSize:    codeSignature.size(),
 		},
 	}

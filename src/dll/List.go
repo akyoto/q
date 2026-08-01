@@ -55,6 +55,17 @@ func (list *List) Count() int {
 	return len(list.libs)
 }
 
+// Count returns the number of functions.
+func (list *List) CountFunctions() int {
+	count := 0
+
+	for _, dll := range list.libs {
+		count += len(dll.Functions)
+	}
+
+	return count
+}
+
 // Index returns the position of the given function name.
 func (list *List) Index(dllName string, funcName string) int {
 	index := 0

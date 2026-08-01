@@ -27,11 +27,6 @@ const (
 	CS_MAGIC_EMBEDDED_SIGNATURE = 0xFADE0CC0
 	CS_SUPPORTSEXECSEG          = 0x20400
 	CS_EXECSEG_MAIN_BINARY      = 0x1
-
-	// Dyld
-	DYLD_CHAINED_IMPORT         = 1
-	DYLD_CHAINED_PTR_64         = 2
-	DYLD_CHAINED_PTR_START_NONE = 0xFFFF
 )
 
 // CodeSignature is the last section in the MachO binary and hashes all contents written before it.

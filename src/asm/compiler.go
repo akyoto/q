@@ -42,7 +42,10 @@ func (c *compiler) AddDataLabels() {
 		c.labels[dataLabel] = dataSectionOffset + address
 	}
 
-	if c.build.OS == config.Windows {
+	switch c.build.OS {
+	case config.Mac:
+		c.importsStart = (x.Sections[1].MemoryOffset - x.Sections[0].MemoryOffset) + exe.Align(len(x.Sections[1].Bytes), 16)
+	case config.Windows:
 		c.importsStart = x.Sections[2].MemoryOffset - x.Sections[0].MemoryOffset
 	}
 }

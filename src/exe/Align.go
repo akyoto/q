@@ -1,5 +1,9 @@
 package exe
 
+import (
+	"bytes"
+)
+
 // Align calculates the next aligned address (alignment must be a power of 2).
 func Align[T Integer](n T, alignment T) T {
 	return (n + (alignment - 1)) & ^(alignment - 1)
@@ -14,6 +18,15 @@ func AlignPad[T Integer](n T, alignment T) (T, T) {
 // Pad calculates the padding (alignment must be a power of 2).
 func Pad[T Integer](n T, alignment T) T {
 	return -n & (alignment - 1)
+}
+
+// PadBuffer pads the buffer to the given alignment (alignment must be a power of 2).
+func PadBuffer[T Integer](b *bytes.Buffer, alignment T) {
+	padding := Pad(T(b.Len()), alignment)
+
+	if padding > 0 {
+		b.Write(make([]byte, padding))
+	}
 }
 
 // PadSlice pads the slice to the given alignment (alignment must be a power of 2).
