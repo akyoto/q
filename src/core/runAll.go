@@ -19,6 +19,10 @@ func (f *Function) runAll(funcName string) {
 	for _, name := range keys {
 		pkg := f.Env.Packages[name]
 
+		if pkg.IsExtern {
+			continue
+		}
+
 		if pkg.Name == "run" {
 			continue
 		}
