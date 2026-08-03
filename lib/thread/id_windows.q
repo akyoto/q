@@ -1,5 +1,5 @@
-id() -> int {
-	return kernel32.GetCurrentThreadId()
+id() -> uint {
+	return kernel32.GetCurrentThreadId() as uint
 }
 
 extern {

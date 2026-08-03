@@ -1,6 +1,11 @@
-import io
+id() -> uint {
+	tid := new(uint)
+	libc.pthread_threadid_np(0, tid)
+	return [tid]
+}
 
-id() -> int {
-	io.write("thread.id: not implemented on Mac\n")
-	return 0
+extern {
+	libc {
+		pthread_threadid_np(thread *any|nil, tid *uint) -> int
+	}
 }
