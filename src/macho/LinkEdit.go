@@ -98,7 +98,7 @@ func createLinkEditSegment(libs dll.List, data *exe.Section, pageSize int) []byt
 			symbols.WriteByte(0)
 			weakImport := 0
 			dyldChainedImport := (nameOffset << 9) + (weakImport << 8) + libOrdinal
-			binary.Write(&buffer, binary.LittleEndian, uint64(dyldChainedImport))
+			binary.Write(&buffer, binary.LittleEndian, uint32(dyldChainedImport))
 
 			// Actual address location
 			addend := 0
