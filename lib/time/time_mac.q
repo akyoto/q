@@ -18,11 +18,11 @@ sleep(nanoseconds int) {
 		nanoseconds: nanoseconds,
 	}
 
-	libc.nanosleep(duration, 0)
+	System.nanosleep(duration, 0)
 }
 
 extern {
-	libc {
+	System {
 		nanosleep(requested *Timespec, remaining *Timespec|nil) -> int
 	}
 }
