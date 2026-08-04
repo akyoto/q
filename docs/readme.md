@@ -41,12 +41,13 @@ Q is also a code generation framework that aims to produce raw machine code for 
 > [!WARNING]
 > Q is [in early development](https://lobste.rs/s/t7osqo/q_programming_language) and not ready for production yet.
 >
-> The compiler currently passes a total of [2900 tests](#how-do-i-run-the-tests).
+> The compiler currently passes a total of [3000 tests](#how-do-i-run-the-tests).
 >
 > Feel free to [contact me](https://urbach.dev/contact) if you are interested in contributing.
 
 ## News
 
+- **2026-08-03**: Extern calls for Mac.
 - **2026-07-19**: Switch expressions.
 - **2026-07-18**: Enum types.
 - **2026-07-12**: Thread-local storage.
@@ -692,10 +693,6 @@ The implementation will be replaced by a self-hosted compiler in the future.
 ### How do I pronounce the name?
 
 /ˈkjuː/ just like `Q` in the English alphabet.
-
-### Q or q?
-
-The language is `Q`, the compiler is `q`.
 
 ### Can I donate to the project?
 
