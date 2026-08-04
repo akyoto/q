@@ -3,5 +3,6 @@ const {
 	_close = 57
 	_fstat = 80
 	_ftruncate = 46
+	_getdents64 = 61
 	_memfd_create = 279
 }

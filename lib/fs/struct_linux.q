@@ -20,3 +20,11 @@ FileStat {
 	_ int64
 	_ int64
 }
+
+Dirent64 {
+	d_ino uint64
+	d_off int64
+	d_reclen uint16
+	d_type uint8
+	// d_name follows
+}
