@@ -205,7 +205,7 @@ fizzbuzz(x int) {
 }
 ```
 
-See more in the [examples](../examples) directory.
+See more in the [examples](../examples) directory. You can also read the [design](design.md) rationale.
 
 ## Reference
 
