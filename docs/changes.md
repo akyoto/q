@@ -1,0 +1,31 @@
+# Changes
+
+- **2026-08-03**: Extern calls for Mac.
+- **2026-07-19**: Switch expressions.
+- **2026-07-18**: Enum types.
+- **2026-07-12**: Thread-local storage.
+- **2026-06-28**: Mutex synchronization.
+- **2026-06-24**: Fast memory allocations.
+- **2026-06-23**: Automatic deallocation.
+- **2026-06-03**: Method calls.
+- **2026-05-07**: Struct initialization.
+- **2026-05-06**: Command line arguments.
+- **2025-10-10**: Loop control flow.
+- **2025-10-05**: Struct types in fields.
+- **2025-09-30**: Static allocations.
+- **2025-09-22**: Array allocations.
+- **2025-09-09**: Type casts.
+- **2025-09-08**: Function pointers.
+- **2025-09-07**: Pointer safety.
+- **2025-09-03**: Error handling.
+- **2025-08-31**: Constant folding.
+- **2025-08-25**: Resource safety.
+- **2025-08-23**: Function overloading.
+- **2025-08-18**: Slices for strings.
+- **2025-08-17**: Struct allocation by value/reference.
+- **2025-08-16**: Multiple return values.
+- **2025-08-15**: Data structures.
+- **2025-08-14**: Memory load and store instructions.
+- **2025-08-13**: Naive memory allocations.
+- **2025-08-12**: Support for Windows on arm64.
+- **2025-08-11**: Support for Mac on arm64.
