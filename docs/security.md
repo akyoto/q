@@ -2,7 +2,7 @@
 
 ## Versions
 
-Security updates are provided for the latest development version of this project.
+Security updates are provided for the latest development version.
 Older releases may not receive fixes.
 
 ## Reporting

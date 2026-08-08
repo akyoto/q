@@ -14,19 +14,19 @@
 
 ## Features
 
-- High performance (comparable to C and Go)
-- Fast compilation (5-10x faster than most compilers)
-- Lightweight executables (1 KB for simple programs)
-- Static analysis (integrated linter catches common mistakes)
-- Pointer safety (pointers cannot be nil)
-- Resource safety (use-after-free is a compile error)
-- Simple syntax (control flow is easily understood)
-- Friendly errors (clear and concise compiler messages)
-- General purpose (apps, servers, games, kernels, etc.)
-- Multiple architectures (x86-64 and arm64)
-- Multiple platforms (Linux, Mac and Windows)
-- Readable source (less than 1% of LLVM's code size)
-- Zero dependencies (no external tools or libraries)
+- 🚄 High performance (comparable to C and Go)
+- 🚀 Fast compilation (5-10x faster than most compilers)
+- 📦 Lightweight executables (1 KB for simple programs)
+- 🔍 Static analysis (integrated linter catches common mistakes)
+- 🛡️ Pointer safety (pointers cannot be nil)
+- ♻️ Resource safety (use-after-free is a compile error)
+- 🧠 Simple syntax (control flow is easily understood)
+- 💬 Friendly errors (clear and concise compiler messages)
+- 🌐 General purpose (apps, servers, games, kernels, etc.)
+- 🧩 Multiple architectures (x86-64 and arm64)
+- 🖥️ Multiple platforms (Linux, Mac and Windows)
+- 📖 Readable source (less than 1% of LLVM's code size)
+- 🧘 Zero dependencies (no external tools or libraries)
 
 ## Quickstart
 
@@ -134,8 +134,8 @@ See more in the [examples](../examples) directory.
 
 ## Community
 
-- **IRC**: [#q](ircs://irc.urbach.dev:6697/#q) on [irc.urbach.dev](https://irc.urbach.dev)
-- **Discord**: [Q community](https://discord.gg/4q3DJFsTvB)
+- [IRC](https://irc.urbach.dev/#q)
+- [Discord](https://discord.gg/4q3DJFsTvB)
 
 ## Donate
 
