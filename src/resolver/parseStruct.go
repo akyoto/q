@@ -18,6 +18,7 @@ func parseStruct(env *core.Environment, structure *types.Struct, processed map[*
 	file, isFile := structure.File.(*fs.File)
 
 	if !isFile {
+		processed[structure] = finished
 		return nil
 	}
 
