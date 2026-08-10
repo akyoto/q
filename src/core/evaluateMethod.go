@@ -17,9 +17,12 @@ func (f *Function) evaluateMethod(leftValue ssa.Value, left *expression.Expressi
 	}
 
 	call := expr.Parent
-	call.Children = append(call.Children, nil)
-	copy(call.Children[2:], call.Children[1:])
-	call.Children[1] = left
+
+	if len(call.Children) < 2 || call.Children[1] != left {
+		call.Children = append(call.Children, nil)
+		copy(call.Children[2:], call.Children[1:])
+		call.Children[1] = left
+	}
 
 	pkg := f.File.Package
 	structure, isStructPointer := leftUnwrapped.(*types.Struct)

@@ -174,6 +174,7 @@ var tests = []run{
 	{"method-local-field", nil, "", "1\n2\n", 0},
 	{"method-local-struct", nil, "", "1\n2\n", 0},
 	{"method-local-struct-pointer", nil, "", "1\n2\n", 0},
+	{"method-local-parameters", nil, "", "", 0},
 	{"random", nil, "", "", 0},
 	{"sqrt", nil, "", "", 0},
 	{"fold", nil, "", "", 0},
