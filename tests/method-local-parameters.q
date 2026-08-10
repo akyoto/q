@@ -1,5 +1,5 @@
 main() {
-	n := new(Number){value: 1}
+	n := Number{value: 1}
 	assert n.plus(0) == 1
 	assert n.plus(1) == 2
 	assert n.plus(2) == 3
@@ -10,6 +10,6 @@ Number {
 	value int
 }
 
-plus(n *Number, amount int) -> int {
+plus(n Number, amount int) -> int {
 	return n.value + amount
 }
