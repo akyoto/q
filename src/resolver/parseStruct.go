@@ -15,9 +15,13 @@ func parseStruct(env *core.Environment, structure *types.Struct, processed map[*
 
 	processed[structure] = started
 	offset := 0
+	file, isFile := structure.File.(*fs.File)
+
+	if !isFile {
+		return nil
+	}
 
 	for i, field := range structure.Fields {
-		file := structure.File.(*fs.File)
 		typ, err := env.TypeFromTokens(field.Tokens[1:], file)
 
 		if err != nil {
