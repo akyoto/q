@@ -30,9 +30,13 @@ func (f *Function) evaluateIdentifier(expr *expression.Expression) (ssa.Value, e
 		return v, nil
 	}
 
-	value, exists := f.Block().FindIdentifier(name)
+	value, exists, partial := f.findIdentifier(name)
 
 	if exists {
+		if partial {
+			return nil, errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, expr.Source())
+		}
+
 		for _, p := range f.Block().Protected {
 			if slices.Contains(p, value) {
 				return nil, errors.New(&ErrorNotChecked{Identifier: name}, f.File, expr.Source())

@@ -11,10 +11,10 @@ import (
 // For a definition it expects that the name does not exist yet.
 // For an assignment it expects that the name exists and the type matches.
 func (f *Function) validateLeft(left *expression.Expression, right *expression.Expression, name string, rightType types.Type, isAssign bool) (ssa.Value, error) {
-	leftValue, exists := f.Block().FindIdentifier(name)
+	leftValue, exists, partial := f.findIdentifier(name)
 
 	if !isAssign {
-		if exists {
+		if exists && !partial {
 			return nil, errors.New(&VariableAlreadyExists{Name: name}, f.File, left.Source())
 		}
 
@@ -42,9 +42,7 @@ func (f *Function) validateLeft(left *expression.Expression, right *expression.E
 		return nil, errors.New(&UnknownIdentifier{Name: name}, f.File, left.Source())
 	}
 
-	phi, isPhi := leftValue.(*ssa.Phi)
-
-	if isPhi && phi.IsPartiallyUndefined() {
+	if partial {
 		return nil, errors.New(&PartiallyUnknownIdentifier{Name: name}, f.File, left.Source())
 	}
 

@@ -8,7 +8,7 @@ import (
 // loopNext starts the next iteration of the loop.
 func (f *Function) loopNext(loop *Loop) {
 	if loop.IteratorName != "" {
-		endOfLoopValue, _ := f.Block().FindIdentifier(loop.IteratorName)
+		endOfLoopValue, _, _ := f.findIdentifier(loop.IteratorName)
 		one := f.Append(&ssa.Int{Int: 1})
 
 		nextIteration := f.Append(&ssa.BinaryOp{
