@@ -1,11 +1,11 @@
 package cli
 
 import (
-	"runtime"
 	"strings"
 
 	"git.urbach.dev/cli/q/src/compiler"
 	"git.urbach.dev/cli/q/src/config"
+	"git.urbach.dev/cli/q/src/global"
 	"git.urbach.dev/cli/q/src/linker"
 )
 
@@ -105,11 +105,11 @@ func newBuild(args []string) (*config.Build, error) {
 	}
 
 	if build.OS == config.UnknownOS {
-		return nil, &InvalidValue{Value: runtime.GOOS, Parameter: "os"}
+		return nil, &InvalidValue{Value: global.OS, Parameter: "os"}
 	}
 
 	if build.Arch == config.UnknownArch {
-		return nil, &InvalidValue{Value: runtime.GOARCH, Parameter: "arch"}
+		return nil, &InvalidValue{Value: global.Arch, Parameter: "arch"}
 	}
 
 	if len(build.Files) == 0 {

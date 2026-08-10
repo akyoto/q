@@ -1,9 +1,11 @@
 package cli_test
 
 import (
+	"runtime"
 	"testing"
 
 	"git.urbach.dev/cli/q/src/cli"
+	"git.urbach.dev/cli/q/src/global"
 	"git.urbach.dev/go/assert"
 )
 
@@ -46,4 +48,16 @@ func TestExecWrongParameters(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-os", "invalid-os"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-arch"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-arch", "invalid-arch"}), 2)
+}
+
+func TestUnknownArch(t *testing.T) {
+	global.Arch = "unknown"
+	assert.Equal(t, cli.Exec([]string{"build"}), 2)
+	global.Arch = runtime.GOARCH
+}
+
+func TestUnknownOS(t *testing.T) {
+	global.OS = "unknown"
+	assert.Equal(t, cli.Exec([]string{"build"}), 2)
+	global.OS = runtime.GOOS
 }
