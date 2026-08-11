@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -45,7 +47,26 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return nil, err
 	}
 
-	fn := ssaFunc.FunctionRef.(*Function)
+	variants := ssaFunc.FunctionRef.(*Function)
+	fn, err := f.selectFunction(variants, values, identifier)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if fn == nil {
+		typeNames := make([]string, len(values))
+
+		for i := range values {
+			typeNames[i] = values[i].Type().Name()
+		}
+
+		rawName, _, _ := strings.Cut(variants.FullName, "[")
+		return nil, errors.New(&NoMatchingFunction{Function: rawName, Types: strings.Join(typeNames, ",")}, f.File, identifier.Source())
+	}
+
+	ssaFunc.FunctionRef = fn
+	ssaFunc.Typ = fn.Type
 
 	for i, value := range values {
 		given := value.Type()
@@ -77,6 +98,7 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 			Source:    expr.Source(),
 		}})
 
+		f.Assembler.Libraries.Append(fn.Package(), fn.Name())
 		return v, nil
 	}
 

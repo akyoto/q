@@ -85,10 +85,15 @@ func (err *InvalidLoopControl) Error() string {
 // NoMatchingFunction is created when a function is not defined for the given type.
 type NoMatchingFunction struct {
 	Function string
+	Types    string
 }
 
 func (err *NoMatchingFunction) Error() string {
-	return fmt.Sprintf("No matching function for call to '%s'", err.Function)
+	if err.Types == "" {
+		return fmt.Sprintf("No matching function for call to '%s'", err.Function)
+	}
+
+	return fmt.Sprintf("No matching function for call to '%s' with types [%s]", err.Function, err.Types)
 }
 
 // NotDataStruct is created when accessing field of a non-struct type.
