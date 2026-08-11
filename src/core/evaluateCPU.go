@@ -6,8 +6,8 @@ import (
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-// evaluateAsm converts an assembly instruction to an SSA value.
-func (f *Function) evaluateAsm(expr *expression.Expression) (ssa.Value, error) {
+// evaluateCPU converts a CPU register name to an SSA value.
+func (f *Function) evaluateCPU(expr *expression.Expression) (ssa.Value, error) {
 	name := expr.Token.StringFrom(f.File.Bytes)
 
 	switch name {

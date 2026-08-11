@@ -14,15 +14,16 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 		return nil, errors.NewAt(MissingFieldName, f.File, expr.Source().End())
 	}
 
-	right := expr.Children[1]
 	left := expr.Children[0]
 
 	if left.Token.Kind == token.Invalid {
 		return nil, errors.NewAt(MissingObject, f.File, left.Source().Start())
 	}
 
-	if left.Token.Kind == token.Identifier && left.Token.StringFrom(f.File.Bytes) == "asm" {
-		return f.evaluateAsm(right)
+	right := expr.Children[1]
+
+	if left.Token.Kind == token.Identifier && left.Token.StringFrom(f.File.Bytes) == "_cpu" {
+		return f.evaluateCPU(right)
 	}
 
 	reset := len(f.Block().Instructions)

@@ -1,5 +1,5 @@
 init() {
-	stack := asm.sp
+	stack := _cpu.sp
 	argc = [stack as *uint]
 	argv = stack + 8 as **byte
 	envp = argv + argc * 8 + 8
