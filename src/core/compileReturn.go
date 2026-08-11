@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/types"
 )
 
 // compileReturn compiles a return instruction.
@@ -30,7 +31,47 @@ func (f *Function) compileReturn(node *ast.Return) error {
 		return nil
 	}
 
-	args, err := f.decompose(node.Values, f.Output, true)
+	values, err := f.evaluateAll(node.Values)
+
+	if err != nil {
+		return err
+	}
+
+	for i, value := range values {
+		given := value.Type()
+		expected := f.Output[i].Typ
+		_, givenIsResource := given.(*types.Resource)
+		expectedResource, expectedIsResource := expected.(*types.Resource)
+
+		if givenIsResource && expectedIsResource {
+			f.Block().Unidentify(value)
+		}
+
+		if types.Is(given, expected) {
+			continue
+		}
+
+		if expectedIsResource && types.Is(given, expectedResource.Of) {
+			continue
+		}
+
+		_, isSyscall := value.(*ssa.Syscall)
+
+		if isSyscall {
+			continue
+		}
+
+		typeMismatch := &TypeMismatch{
+			Encountered:   given.Name(),
+			Expected:      expected.Name(),
+			ParameterName: f.Output[i].Name,
+			IsReturn:      true,
+		}
+
+		return errors.New(typeMismatch, f.File, node.Values[i].Source())
+	}
+
+	args, err := f.decompose(values)
 
 	if err != nil {
 		return err

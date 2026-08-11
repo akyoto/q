@@ -13,7 +13,13 @@ func (f *Function) evaluateSyscall(expr *expression.Expression) (ssa.Value, erro
 		return nil, errors.New(SyscallNotAvailable, f.File, expr.Children[0].Source())
 	}
 
-	args, err := f.decompose(expr.Children[1:], nil, false)
+	values, err := f.evaluateAll(expr.Children[1:])
+
+	if err != nil {
+		return nil, err
+	}
+
+	args, err := f.decompose(values)
 
 	if err != nil {
 		return nil, err

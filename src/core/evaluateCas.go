@@ -7,7 +7,13 @@ import (
 
 // evaluateCas converts a CAS call to an SSA value.
 func (f *Function) evaluateCas(expr *expression.Expression) (ssa.Value, error) {
-	args, err := f.decompose(expr.Children[1:], nil, false)
+	values, err := f.evaluateAll(expr.Children[1:])
+
+	if err != nil {
+		return nil, err
+	}
+
+	args, err := f.decompose(values)
 
 	if err != nil {
 		return nil, err

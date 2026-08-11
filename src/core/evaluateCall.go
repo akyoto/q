@@ -33,12 +33,41 @@ func (f *Function) evaluateCall(expr *expression.Expression) (ssa.Value, error) 
 		return nil, errors.New(&TypeMismatch{Expected: "function", Encountered: funcValue.Type().Name()}, f.File, identifier.Source())
 	}
 
-	fn := ssaFunc.FunctionRef.(*Function)
-	inputExpressions := expr.Children[1:]
-	args, err := f.decompose(inputExpressions, fn.Input, false)
+	values, err := f.evaluateAll(expr.Children[1:])
 
 	if err != nil {
 		return nil, err
+	}
+
+	args, err := f.decompose(values)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fn := ssaFunc.FunctionRef.(*Function)
+
+	for i, value := range values {
+		given := value.Type()
+		expected := fn.Input[i].Typ
+		_, givenIsResource := given.(*types.Resource)
+		_, expectedIsResource := expected.(*types.Resource)
+
+		if givenIsResource && expectedIsResource {
+			f.Block().Unidentify(value)
+		}
+
+		if types.Is(given, expected) {
+			continue
+		}
+
+		typeMismatch := &TypeMismatch{
+			Encountered:   given.Name(),
+			Expected:      expected.Name(),
+			ParameterName: fn.Input[i].Name,
+		}
+
+		return nil, errors.New(typeMismatch, f.File, expr.Children[1+i].Source())
 	}
 
 	if fn.IsExtern() {
