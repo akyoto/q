@@ -108,10 +108,11 @@ You need to create a file with the contents above and add execution permissions 
 
 If you need support for older hardware and software, feel free to send a PR with the required fallback mechanisms.
 
-## Why is it written in Go and not language X?
+## Why is it written in Go?
 
-Because of readability and great tools for concurrency.
-The implementation will be replaced by a self-hosted compiler in the future.
+Because of its readability and excellent support for concurrency.
+
+It is also syntactically similar to Q, which will make things easier when the compiler is replaced by a self-hosted compiler in the future.
 
 ## How do I pronounce the name?
 

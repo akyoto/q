@@ -14,7 +14,7 @@ Every line of code added to this repository must be fully understood by the cont
 You should be prepared to explain what you're changing, how it affects the rest of the codebase, and what behavioral or performance implications it introduces.
 For these reasons, the use of generative AI to produce code contributions is strongly discouraged.
 
-## FAQ: Contributors
+## FAQ
 
 ### How do I run the tests?
 
@@ -47,7 +47,7 @@ go tool pprof -http=:8080 ./cpu.out
 go tool pprof -http=:8080 ./mem.out
 ```
 
-## How do I run a single file in `tests`?
+### How do I run a single file in `tests`?
 
 To run a single test file, linter errors must be disabled using the `-no-lint` flag:
 
@@ -57,7 +57,7 @@ q tests/add.q -no-lint
 
 This is needed because tests often assert "obvious" facts that the linter would not allow in normal programs.
 
-## How do I analyze a problem with the compiler?
+### How do I analyze a problem with the compiler?
 
 Replace the `build` command with `ssa` or `asm` to see the intermediate stages which reveal how the compiler understands your program code.
 Use `-func` to filter out specific functions.
