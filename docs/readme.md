@@ -30,6 +30,9 @@
 
 ## Quickstart
 
+> [!WARNING]
+> Q is in early development. Design and implementation are changing continuously.
+
 ### Install
 
 ```shell
