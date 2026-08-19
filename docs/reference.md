@@ -112,29 +112,29 @@ To minimize this complexity, Q is limiting the operators to only 8 precedence le
 
 ## Keywords
 
-| Keyword    | Description                                                | Stability       |
-| ---------- | ---------------------------------------------------------- | --------------- |
-| `assert`   | Tests conditions at runtime                                | ✔️ Stable       |
-| `const`    | Defines constant expressions                               | ✔️ Stable       |
-| `else`     | Failure branch for if statements                           | ✔️ Stable       |
-| `extern`   | Foreign function definitions                               | ✔️ Stable       |
-| `global`   | Global variables (discouraged but required in stdlib)      | ✔️ Stable       |
-| `go`       | Asynchronous function calls                                | 🚧 Experimental |
-| `if`       | Branches based on a condition                              | ✔️ Stable       |
-| `import`   | Allows access to other packages                            | ✔️ Stable       |
-| `local`    | Thread-local variables                                     | 🚧 Experimental |
-| `loop`     | Repeatable code                                            | ✔️ Stable       |
-| `return`   | Ends the function and returns values to the caller         | ✔️ Stable       |
-| `switch`   | Multiple branches executing the first true condition block | ✔️ Stable       |
+| Keyword  | Description                                                | Stability       |
+| -------- | ---------------------------------------------------------- | --------------- |
+| `assert` | Tests conditions at runtime                                | ✔️ Stable       |
+| `const`  | Defines constant expressions                               | ✔️ Stable       |
+| `else`   | Failure branch for if statements                           | ✔️ Stable       |
+| `extern` | Foreign function definitions                               | ✔️ Stable       |
+| `global` | Global variables (discouraged but required in stdlib)      | ✔️ Stable       |
+| `go`     | Asynchronous function calls                                | 🚧 Experimental |
+| `if`     | Branches based on a condition                              | ✔️ Stable       |
+| `import` | Allows access to other packages                            | ✔️ Stable       |
+| `local`  | Thread-local variables                                     | 🚧 Experimental |
+| `loop`   | Repeatable code                                            | ✔️ Stable       |
+| `return` | Ends the function and returns values to the caller         | ✔️ Stable       |
+| `switch` | Multiple branches executing the first true condition block | ✔️ Stable       |
 
 ## Builtins
 
-| Function   | Description                                                | Stability       |
-| ---------- | ---------------------------------------------------------- | --------------- |
-| `cas`      | Atomic compare and swap                                    | 🚧 Experimental |
-| `delete`   | Frees memory                                               | ✔️ Stable       |
-| `new`      | Allocates memory                                           | 🚧 Experimental |
-| `syscall`  | Calls a kernel function                                    | ✔️ Stable       |
+| Function  | Description             | Stability       |
+| --------- | ----------------------- | --------------- |
+| `cas`     | Atomic compare and swap | 🚧 Experimental |
+| `delete`  | Frees memory            | ✔️ Stable       |
+| `new`     | Allocates memory        | 🚧 Experimental |
+| `syscall` | Calls a kernel function | ✔️ Stable       |
 
 ## Packages
 

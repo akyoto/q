@@ -10,7 +10,7 @@
 
 ## How tiny is a Hello World?
 
-|            | arm64    | x86-64  |
+|            |    arm64 |  x86-64 |
 | ---------- | -------: | ------: |
 | 🐧 Linux   |  0.7 KiB | 0.7 KiB |
 | 🍏 Mac     | 32.3 KiB | 8.2 KiB |
@@ -20,7 +20,7 @@
 
 ### Recursive Fibonacci benchmark (`n = 35`):
 
-|                   | arm64                | x86-64               |
+|                   |                arm64 |               x86-64 |
 | ----------------- | -------------------: | -------------------: |
 | C (-O3, gcc 15)   | **41.4 ms** ± 1.4 ms | **24.5 ms** ± 3.2 ms |
 | Q (2025-08-20)    | **54.2 ms** ± 1.6 ms | **34.8 ms** ± 2.3 ms |
@@ -33,10 +33,10 @@ While the current results lag behind optimized C, this is an expected stage of d
 
 A rewrite of [fnl](https://git.urbach.dev/cli/fnl) from Rust to Q resulted in a smaller executable with better performance characteristics.
 
-|                            | Lines of code | Binary size | Syscalls | CPU cycles | Time                    |
+|                            | Lines of code | Binary size | Syscalls | CPU cycles |                    Time |
 | -------------------------- | ------------: | ----------: | -------: | ---------: | ----------------------: |
-| `fnl` in Q    - 2026-07-08 | 108           |     3.8 KiB | 22       | ~8k        | **270.2 µs** ± 171.6 µs |
-| `fnl` in Rust - 2026-06-26 | 111           |   477.2 KiB | 85       | ~500k      | **416.3 µs** ± 224.9 µs |
+| `fnl` in Q - 2026-07-08    |           108 |     3.8 KiB |       22 |        ~8k | **270.2 µs** ± 171.6 µs |
+| `fnl` in Rust - 2026-06-26 |           111 |   477.2 KiB |       85 |      ~500k | **416.3 µs** ± 224.9 µs |
 
 Note that this is not a 100% fair comparison as the implementation details differ.
 Do not trust benchmark data without validating the results yourself.
@@ -45,29 +45,29 @@ Do not trust benchmark data without validating the results yourself.
 
 The table below shows latency numbers on a 2015 Macbook:
 
-|                 | x86-64                  |
+|                 |                  x86-64 |
 | --------------- | ----------------------: |
-| q               |   **78.6 ms** ±  2.3 ms |
-| go @1.25        |  **364.5 ms** ±  3.3 ms |
-| clang @17.0.0   |  **395.9 ms** ±  3.3 ms |
-| rustc @1.89.0   |  **639.9 ms** ±  3.1 ms |
-| v @0.4.11       | **1117.0 ms** ±  3.0 ms |
+| q               |    **78.6 ms** ± 2.3 ms |
+| go @1.25        |   **364.5 ms** ± 3.3 ms |
+| clang @17.0.0   |   **395.9 ms** ± 3.3 ms |
+| rustc @1.89.0   |   **639.9 ms** ± 3.1 ms |
+| v @0.4.11       |  **1117.0 ms** ± 3.0 ms |
 | zig @0.15.1     | **1315.0 ms** ± 12.0 ms |
-| odin @accdd7c2a | **1748.0 ms** ±  8.0 ms |
+| odin @accdd7c2a |  **1748.0 ms** ± 8.0 ms |
 
 Latency measures the time it takes a compiler to create an executable file with a nearly empty main function. It should not be confused with throughput.
 
 Advanced benchmarks for throughput have not been conducted yet, but the following table shows timings in an extremely simplified test parsing 1000 Fibonacci functions named `fib0` to `fib999`:
 
-|                 | x86-64                  |
+|                 |                  x86-64 |
 | --------------- | ----------------------: |
-| q               |   **89.5 ms** ±  2.4 ms |
-| go @1.25        |  **372.2 ms** ±  5.3 ms |
-| clang @17.0.0   |  **550.8 ms** ±  3.8 ms |
-| rustc @1.89.0   | **1101.0 ms** ±  4.0 ms |
-| v @0.4.11       | **1256.0 ms** ±  4.0 ms |
+| q               |    **89.5 ms** ± 2.4 ms |
+| go @1.25        |   **372.2 ms** ± 5.3 ms |
+| clang @17.0.0   |   **550.8 ms** ± 3.8 ms |
+| rustc @1.89.0   |  **1101.0 ms** ± 4.0 ms |
+| v @0.4.11       |  **1256.0 ms** ± 4.0 ms |
 | zig @0.15.1     | **1407.0 ms** ± 12.0 ms |
-| odin @accdd7c2a | **1770.0 ms** ±  7.0 ms |
+| odin @accdd7c2a |  **1770.0 ms** ± 7.0 ms |
 
 ## What is the compiler based on?
 
@@ -96,15 +96,15 @@ You need to create a file with the contents above and add execution permissions 
 
 ## What's the minimum supported version of...?
 
-|                          | Version       | Year | Reason                |
-| ------------------------ | ------------- | ---- | --------------------- |
-| 🐧 Linux                 | 5.16          | 2022 | futex2                |
-| 🍏 Mac                   | 11.0          | 2020 | Chained fixups        |
-| 🪟 Windows               | 8.1           | 2013 | FSGSBASE              |
-| 🔲 x86-64 (Intel)        | Ivy Bridge    | 2012 | FSGSBASE              |
-| 🔲 x86-64 (AMD)          | Excavator     | 2015 | FSGSBASE              |
-| 🔲 arm64                 | 8.1-A         | 2014 | CAS                   |
-| 💻 Raspberry Pi          | 5             | 2023 | CAS                   |
+|                   | Version    | Year | Reason         |
+| ----------------- | ---------- | ---- | -------------- |
+| 🐧 Linux          | 5.16       | 2022 | futex2         |
+| 🍏 Mac            | 11.0       | 2020 | Chained fixups |
+| 🪟 Windows        | 8.1        | 2013 | FSGSBASE       |
+| 🔲 x86-64 (Intel) | Ivy Bridge | 2012 | FSGSBASE       |
+| 🔲 x86-64 (AMD)   | Excavator  | 2015 | FSGSBASE       |
+| 🔲 arm64          | 8.1-A      | 2014 | CAS            |
+| 💻 Raspberry Pi   | 5          | 2023 | CAS            |
 
 If you need support for older hardware and software, feel free to send a PR with the required fallback mechanisms.
 
