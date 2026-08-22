@@ -92,11 +92,15 @@ func buildSetting(key string) string {
 
 // debugBuildSetting retrieves build data that Go saved within the binary.
 func debugBuildSetting(key string) string {
-	if info, ok := debug.ReadBuildInfo(); ok {
-		for _, setting := range info.Settings {
-			if setting.Key == key {
-				return setting.Value
-			}
+	info, ok := debug.ReadBuildInfo()
+
+	if !ok {
+		return ""
+	}
+
+	for _, setting := range info.Settings {
+		if setting.Key == key {
+			return setting.Value
 		}
 	}
 

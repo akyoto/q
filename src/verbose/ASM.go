@@ -246,6 +246,7 @@ func printAssembly(f *core.Function) {
 				if i != 0 {
 					other.Print(", ")
 				}
+
 				register.Print(reg)
 			}
 		case *asm.Push:
@@ -254,6 +255,7 @@ func printAssembly(f *core.Function) {
 				if i != 0 {
 					other.Print(", ")
 				}
+
 				register.Print(reg)
 			}
 		case *asm.ReadSystemRegister:

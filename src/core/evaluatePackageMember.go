@@ -69,5 +69,4 @@ func (f *Function) evaluatePackageMember(pkg *Package, rightText string, expr *e
 	}
 
 	return nil, errors.New(&UnknownIdentifier{Name: rightText}, f.File, expr.Source())
-
 }

@@ -99,7 +99,6 @@ func TestLoadZeroExtend(t *testing.T) {
 		Scale          x86.Scale
 		Code           []byte
 	}{
-
 		{x86.R15, 2, x86.R0, x86.R15, x86.Scale1, []byte{0x4E, 0x0F, 0xB7, 0x3C, 0x38}},
 		{x86.R15, 1, x86.R0, x86.R15, x86.Scale1, []byte{0x4E, 0x0F, 0xB6, 0x3C, 0x38}},
 		{x86.R14, 2, x86.R1, x86.R14, x86.Scale1, []byte{0x4E, 0x0F, 0xB7, 0x34, 0x31}},
