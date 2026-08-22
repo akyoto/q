@@ -127,7 +127,7 @@ so we'll add symbols for the start and end of the function block to make it imme
 
 The `.` prefix (or `func` in Go, or `fn` in Rust and Zig) is no longer required because Q expects function definitions by default:
 
-```
+```q
 sum(a int, b int) -> (sum int) {
 	return a + b
 }
@@ -135,7 +135,7 @@ sum(a int, b int) -> (sum int) {
 
 You can optionally leave out the names for the return values if the function name already conveys the same information:
 
-```
+```q
 sum(a int, b int) -> int {
 	return a + b
 }

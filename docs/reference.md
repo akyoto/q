@@ -78,7 +78,7 @@ assert '😀' == 0x1F600
 
 A string literal like `"Hello"` is a sequence of bytes enclosed by `"`. Strings are immutable, though the compiler does not enforce this rule in its present state. The following escape sequences starting with `\` can be used in rune and string literals to embed special characters:
 
-```
+```q
 assert '\0' == 0
 assert '\t' == 9
 assert '\n' == 10
@@ -193,7 +193,7 @@ Resources are shared objects such as files, memory or network sockets. The use o
 
 Any type, even integers, can be turned into a resource by prefixing the type with `!`. For example, consider these minimal functions:
 
-```
+```q
 alloc() -> !int { return 1 }
 use(_ int) {}
 free(_ !int) {}
@@ -201,12 +201,12 @@ free(_ !int) {}
 
 With this, forgetting to call `free` becomes impossible:
 
-```
+```q
 x := alloc()
 use(x)
 ```
 
-```
+```q
 x := alloc()
      ┬
      ╰─ Resource of type '!int' not consumed
@@ -214,13 +214,13 @@ x := alloc()
 
 Attempting a use-after-free is also rejected:
 
-```
+```q
 x := alloc()
 free(x)
 use(x)
 ```
 
-```
+```q
 use(x)
     ┬
     ╰─ Unknown identifier 'x'
@@ -228,13 +228,13 @@ use(x)
 
 Likewise, a double-free is disallowed:
 
-```
+```q
 x := alloc()
 free(x)
 free(x)
 ```
 
-```
+```q
 free(x)
 free(x)
      ┬
@@ -243,7 +243,7 @@ free(x)
 
 The compiler only accepts the correct usage order:
 
-```
+```q
 x := alloc()
 use(x)
 free(x)
@@ -263,7 +263,7 @@ Non-pointer types like `!int` currently do not support automatic life cycle mana
 
 Any function can define an `error` type return value at the end:
 
-```
+```q
 a, b, err := canFail()
 ```
 
@@ -271,7 +271,7 @@ An error value protects all the return values to the left of it.
 The protected values `a` and `b` can not be accessed without checking `err` first.
 Additionally, error variables like `err` are invalidated after the branch that checked them.
 
-```
+```q
 a, b, err := canFail()
 
 // ❌ a and b are inaccessible
