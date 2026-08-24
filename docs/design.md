@@ -70,6 +70,14 @@ This is already a significant upgrade, but how does a developer know that this f
 This is where function signatures come into play:
 
 ```
+.sum(in0, in1) (out0):
+	add out0, in0, in1
+	ret
+```
+
+For clarity, we will separate the input and output parameters with an arrow:
+
+```
 .sum(in0, in1) -> (out0):
 	add out0, in0, in1
 	ret
@@ -79,7 +87,7 @@ The added information allows the compiler to check that the function is called w
 However, the `add` instruction operates on integers only and would fail if we tried to get the sum of an integer and a float.
 
 We need an enforced restriction which guarantees that the operand registers have contents that make sense for the instructions we're using.
-We'll call these restrictions "types" and `int` will be one such type, representing integers.
+We will call these restrictions "types" and `int` will be one such type, representing integers.
 They make it clear for the compiler that the function can only be called with integers and that the result register contains an integer.
 
 ```
@@ -99,7 +107,7 @@ Here is a possible abstraction using the first keyword `return` and a symbolic e
 
 While symbolic expressions are perfect for computers, code should be easily understood by humans.
 Code that is hard to understand often leads to software bugs.
-We want to prevent these, so we'll stick to the proven math notation that humans have been using for centuries:
+We want to prevent these, so we will stick to the proven math notation that humans have been using for centuries:
 
 ```
 .sum(in0 int, in1 int) -> (out0 int):
@@ -117,7 +125,7 @@ We no longer need to number the registers because they are implied by the order 
 
 This is almost the final design of how functions are written in Q.
 Notice that the end of the function is not clearly visible,
-so we'll add symbols for the start and end of the function block to make it immediately clear from just glancing at the function where it ends:
+so we will add symbols for the start and end of the function block to make it immediately clear from just glancing at the function where it ends:
 
 ```
 .sum(a int, b int) -> (sum int) {
