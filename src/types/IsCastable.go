@@ -2,7 +2,7 @@ package types
 
 // IsCastable returns true if the `a` type can be casted to the `b` type using an explicit cast.
 func IsCastable(a Type, b Type) bool {
-	if a == Any {
+	if a == b || a == Any {
 		return true
 	}
 

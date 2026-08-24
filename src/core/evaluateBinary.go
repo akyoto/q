@@ -37,8 +37,10 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 		return nil, err
 	}
 
-	leftStructType, leftIsStruct := types.Unwrap(leftValue.Type()).(*types.Struct)
-	rightStructType, rightIsStruct := types.Unwrap(rightValue.Type()).(*types.Struct)
+	leftType := leftValue.Type()
+	rightType := rightValue.Type()
+	leftStructType, leftIsStruct := types.Unwrap(leftType).(*types.Struct)
+	rightStructType, rightIsStruct := types.Unwrap(rightType).(*types.Struct)
 
 	if leftIsStruct && rightIsStruct && leftStructType == types.String && rightStructType == types.String {
 		switch expr.Token.Kind {
@@ -65,6 +67,10 @@ func (f *Function) evaluateBinary(expr *expression.Expression) (ssa.Value, error
 
 	if leftIsStruct || rightIsStruct {
 		return nil, errors.New(InvalidStructOperation, f.File, expr.Token)
+	}
+
+	if !types.IsCastable(leftType, rightType) && !types.IsCastable(rightType, leftType) {
+		return nil, errors.New(&TypeMismatch{Encountered: leftType.Name(), Expected: rightType.Name()}, f.File, left.Source())
 	}
 
 	v := &ssa.BinaryOp{
