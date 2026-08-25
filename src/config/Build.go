@@ -5,7 +5,6 @@ type Build struct {
 	Files         []string
 	Arch          Arch
 	OS            OS
-	Filter        string
 	Dry           bool
 	Fold          bool
 	Reorder       bool

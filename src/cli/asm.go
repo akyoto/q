@@ -7,6 +7,12 @@ import (
 
 // asm shows the assembly code.
 func asm(args []string) int {
+	pattern, args, err := filter(args)
+
+	if err != nil {
+		return exit(err)
+	}
+
 	b, err := newBuild(args)
 
 	if err != nil {
@@ -20,6 +26,6 @@ func asm(args []string) int {
 		return exit(err)
 	}
 
-	verbose.ASM(env)
+	verbose.ASM(env, pattern)
 	return success
 }

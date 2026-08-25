@@ -11,9 +11,9 @@ import (
 )
 
 // ASM shows the assembly code.
-func ASM(env *core.Environment) {
+func ASM(env *core.Environment, pattern string) {
 	for f := range env.LiveFunctions() {
-		if filter(f.FullName, env.Build.Filter) {
+		if filter(f.FullName, pattern) {
 			continue
 		}
 

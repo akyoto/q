@@ -29,6 +29,8 @@ func TestExec(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"operators"}), 0)
 	assert.Equal(t, cli.Exec([]string{"run", "../../examples/hello"}), 0)
 	assert.Equal(t, cli.Exec([]string{"ssa", "../../examples/hello"}), 0)
+	assert.Equal(t, cli.Exec([]string{"ssa", "../../examples/hello", "-func", "main"}), 0)
+	assert.Equal(t, cli.Exec([]string{"asm", "../../examples/hello", "-func", "main"}), 0)
 	assert.Equal(t, cli.Exec([]string{"version"}), 0)
 	assert.Equal(t, cli.Exec([]string{"../../tests/script.q"}), 0)
 }
@@ -48,6 +50,8 @@ func TestExecWrongParameters(t *testing.T) {
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-os", "invalid-os"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-arch"}), 2)
 	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-arch", "invalid-arch"}), 2)
+	assert.Equal(t, cli.Exec([]string{"build", "../../examples/hello", "-func", "main"}), 2)
+	assert.Equal(t, cli.Exec([]string{"run", "../../examples/hello", "-func", "main"}), 2)
 }
 
 func TestUnknownArch(t *testing.T) {

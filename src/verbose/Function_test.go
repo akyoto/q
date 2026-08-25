@@ -61,8 +61,8 @@ func test(t *testing.T, b *config.Build) {
 			channel <- string(out)
 		}()
 
-		verbose.ASM(env)
-		verbose.SSA(env)
+		verbose.ASM(env, "")
+		verbose.SSA(env, "")
 
 		writer.Close()
 		color.Redirect(stdout)

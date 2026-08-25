@@ -7,6 +7,12 @@ import (
 
 // ssa shows the SSA form.
 func ssa(args []string) int {
+	pattern, args, err := filter(args)
+
+	if err != nil {
+		return exit(err)
+	}
+
 	b, err := newBuild(args)
 
 	if err != nil {
@@ -20,6 +26,6 @@ func ssa(args []string) int {
 		return exit(err)
 	}
 
-	verbose.SSA(env)
+	verbose.SSA(env, pattern)
 	return success
 }

@@ -13,9 +13,9 @@ import (
 )
 
 // SSA shows the SSA IR.
-func SSA(env *core.Environment) {
+func SSA(env *core.Environment, pattern string) {
 	for f := range env.LiveFunctions() {
-		if filter(f.FullName, env.Build.Filter) {
+		if filter(f.FullName, pattern) {
 			continue
 		}
 
