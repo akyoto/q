@@ -14,19 +14,19 @@
 
 ## Features
 
-- 🚄 High performance (comparable to C and Go)
-- 🚀 Fast compilation (5-10x faster than most compilers)
-- 📦 Lightweight executables (1 KB for simple programs)
-- 🔍 Static analysis (integrated linter catches common mistakes)
-- 🛡️ Pointer safety (pointers cannot be nil)
-- ♻️ Resource safety (use-after-free is a compile error)
-- 🧠 Simple syntax (control flow is easily understood)
-- 💬 Friendly errors (clear and concise compiler messages)
-- 🌐 General purpose (apps, servers, games, kernels, etc.)
-- 🧩 Multiple architectures (x86-64 and arm64)
-- 🖥️ Multiple platforms (Linux, Mac and Windows)
-- 📖 Readable source (less than 1% of LLVM's code size)
-- 🧘 Zero dependencies (no external tools or libraries)
+- 🚄 **High performance** - <small>comparable to Rust and Zig.</small>
+- 🚀 **Fast compilation** - <small>5-10x faster than most compilers.</small>
+- 📦 **Lightweight executables** - <small>1 KB for simple programs.</small>
+- 🔍 **Static analysis** - <small>integrated linter catches common mistakes.</small>
+- 🛡️ **Pointer safety** - <small>pointers cannot be nil.</small>
+- ♻️ **Resource safety** - <small>use-after-free is a compile error.</small>
+- 🧠 **Simple syntax** - <small>control flow is easily understood.</small>
+- 💬 **Friendly errors** - <small>clear and concise compiler messages.</small>
+- 🌐 **General purpose** - <small>apps, servers, games, kernels, etc.</small>
+- 🧩 **Multiple architectures** - <small>x86-64 and arm64.</small>
+- 🖥️ **Multiple platforms** - <small>Linux, Mac and Windows.</small>
+- 📖 **Readable source** - <small>less than 1% of LLVM's code size.</small>
+- 🧘 **Zero dependencies** - <small>no external tools or libraries.</small>
 
 ## Quickstart
 
