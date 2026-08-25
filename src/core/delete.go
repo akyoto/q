@@ -28,7 +28,6 @@ func (f *Function) delete(value ssa.Value) (ssa.Value, error) {
 		args := []ssa.Value{value, size}
 		call := f.call(fn, args, ssa.Source{})
 		return call, nil
-
 	case *types.Struct:
 		structure := value.(*ssa.Struct)
 		ptr := structure.Arguments[0]
@@ -48,7 +47,6 @@ func (f *Function) delete(value ssa.Value) (ssa.Value, error) {
 		block.Unidentify(ptr)
 		block.Unidentify(numElements)
 		return call, nil
-
 	default:
 		return nil, errors.New(&TypeMismatch{Encountered: valueType.Name(), Expected: types.AnyPointer.Name()}, f.File, value.(errors.Source))
 	}

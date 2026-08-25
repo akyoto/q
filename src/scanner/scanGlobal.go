@@ -25,7 +25,6 @@ func (s *scanner) scanGlobal(file *fs.File, tokens token.List, i int) (int, erro
 			if start == -1 {
 				start = i
 			}
-
 		case token.NewLine, token.BlockEnd:
 			if start != -1 {
 				global := &core.Global{

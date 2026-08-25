@@ -12,10 +12,8 @@ func (f *Function) evaluateLeaf(expr *expression.Expression) (ssa.Value, error) 
 	switch expr.Token.Kind {
 	case token.Identifier:
 		return f.evaluateIdentifier(expr)
-
 	case token.Number, token.Rune:
 		return f.evaluateNumber(expr)
-
 	case token.String:
 		return f.evaluateString(expr)
 	}

@@ -88,10 +88,8 @@ func (f *Function) evaluateDot(expr *expression.Expression) (ssa.Value, error) {
 	switch leftValue := leftValue.(type) {
 	case *ssa.Struct:
 		return f.fieldFromStruct(leftValue, left, right)
-
 	case *ssa.Call:
 		return f.fieldFromCall(leftValue, left, right, expr)
-
 	default:
 		return f.fieldFromMemory(leftValue, left, right, expr)
 	}

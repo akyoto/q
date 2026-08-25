@@ -12,7 +12,6 @@ func parseInstruction(tokens token.List, file *fs.File, nodes AST) (Node, error)
 	switch {
 	case tokens[0].Kind.IsKeyword():
 		return parseKeyword(tokens, file, nodes)
-
 	case tokens[0].Kind == token.Comment:
 		return nil, nil
 	}
@@ -22,21 +21,18 @@ func parseInstruction(tokens token.List, file *fs.File, nodes AST) (Node, error)
 	switch {
 	case expr.Token.Kind == token.Call:
 		return &Call{Expression: expr}, nil
-
 	case expr.Token.Kind == token.Define:
 		if len(expr.Children) < 2 {
 			return nil, errors.NewAt(MissingOperand, file, expr.Token.End())
 		}
 
 		return &Define{Expression: expr}, nil
-
 	case expr.Token.Kind.IsAssignment():
 		if len(expr.Children) < 2 {
 			return nil, errors.NewAt(MissingOperand, file, expr.Token.End())
 		}
 
 		return &Assign{Expression: expr}, nil
-
 	default:
 		return nil, errors.New(InvalidInstruction, file, tokens)
 	}

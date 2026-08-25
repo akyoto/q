@@ -20,13 +20,10 @@ func (f *Function) move(destinationStep *Step, sourceStep *Step, step *Step) {
 			Destination: destination,
 			Source:      source,
 		})
-
 	case sourceIsSpilled && !destinationIsSpilled:
 		f.loadSpill(sourceStep, destination)
-
 	case !sourceIsSpilled && destinationIsSpilled:
 		f.storeSpill(destinationStep, source)
-
 	case sourceIsSpilled && destinationIsSpilled:
 		source = f.resolveOperand(sourceStep, step.Live)
 		f.storeSpill(destinationStep, source)

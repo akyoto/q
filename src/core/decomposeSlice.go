@@ -20,10 +20,8 @@ func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type
 		pointer := structure.Arguments[0]
 		length := structure.Arguments[1]
 		return pointer, pointer.Type(), length, nil
-
 	case *types.Pointer:
 		return addressValue, addressType, nil, nil
-
 	default:
 		panic("not implemented")
 	}

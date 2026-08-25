@@ -23,16 +23,12 @@ func (list List) Instructions(yield func(List) bool) {
 			}
 
 			start = i + 1
-
 		case GroupStart:
 			groupLevel++
-
 		case GroupEnd:
 			groupLevel--
-
 		case BlockStart:
 			blockLevel++
-
 		case BlockEnd:
 			blockLevel--
 
@@ -49,7 +45,6 @@ func (list List) Instructions(yield func(List) bool) {
 			}
 
 			start = i + 1
-
 		case EOF:
 			if start < i {
 				yield(list[start:i])

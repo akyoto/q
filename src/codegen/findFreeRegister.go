@@ -73,7 +73,6 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 						usedRegisters.Set(reg)
 					}
 				}
-
 			case token.Shl, token.Shr:
 				if current == step {
 					for _, reg := range f.CPU.ShiftRestricted {
@@ -102,7 +101,6 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 				if isFieldFromCall && live.Index > current.Index {
 					usedRegisters.Set(f.CPU.Call.Out[instr.Index])
 				}
-
 			case *ssa.Parameter:
 				if live.Index > current.Index {
 					usedRegisters.Set(f.CPU.Call.In[instr.Index])

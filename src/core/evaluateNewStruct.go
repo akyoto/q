@@ -41,10 +41,8 @@ func (f *Function) evaluateNewStruct(expr *expression.Expression) (ssa.Value, er
 				return nil, err
 			}
 		}
-
 	case *types.Struct:
 		return nil, errors.New(&NotImplemented{Subject: "struct initialization for arrays"}, f.File, expr.Source())
-
 	default:
 		panic("invalid struct initialization type")
 	}

@@ -23,7 +23,6 @@ func (f *Function) evaluateSlice(expr *expression.Expression, index *expression.
 		}
 
 		return f.makeSlice(address, from, length, expr.Source()), nil
-
 	case 2:
 		if index.Children[0].Token.Kind == token.Invalid {
 			to, err := f.evaluateRight(index.Children[1])

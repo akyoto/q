@@ -20,7 +20,6 @@ func (f *Function) evaluateIdentifier(expr *expression.Expression) (ssa.Value, e
 		})
 
 		return v, nil
-
 	case "true":
 		v := f.Append(&ssa.Bool{
 			Bool:   true,

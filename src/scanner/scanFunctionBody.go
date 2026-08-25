@@ -27,7 +27,6 @@ func (s *scanner) scanFunctionBody(file *fs.File, tokens token.List, i int) (int
 			}
 
 			continue
-
 		case token.BlockEnd:
 			blockLevel--
 
@@ -41,16 +40,12 @@ func (s *scanner) scanFunctionBody(file *fs.File, tokens token.List, i int) (int
 
 			i++
 			continue
-
 		case token.Go:
 			s.queueDirectory(filepath.Join(global.Library, "thread"), "thread")
-
 		case token.New, token.Delete:
 			s.queueDirectory(filepath.Join(global.Library, "mem"), "mem")
-
 		case token.Invalid:
 			return bodyStart, i, errors.New(&InvalidCharacter{Character: tokens[i].StringFrom(file.Bytes)}, file, tokens[i])
-
 		case token.EOF:
 			if blockLevel > 0 {
 				return bodyStart, i, errors.NewAt(MissingBlockEnd, file, tokens[i].Position)

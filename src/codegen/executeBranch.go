@@ -33,7 +33,6 @@ func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 			} else {
 				panic("condition using a binary operation not assigned to a register")
 			}
-
 		case *ssa.Cas:
 			op = token.Equal
 			operand := f.ValueToStep[condition.Arguments[1]].Register

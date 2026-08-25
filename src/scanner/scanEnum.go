@@ -27,10 +27,8 @@ func (s *scanner) scanEnum(file *fs.File, tokens token.List, i int) (int, error)
 			if start == -1 {
 				start = i
 			}
-
 		case token.BlockStart:
 			blockLevel++
-
 		case token.NewLine, token.BlockEnd:
 			if tokens[i].Kind == token.BlockEnd {
 				blockLevel--

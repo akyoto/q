@@ -9,37 +9,26 @@ func Exec(args []string) int {
 	switch args[0] {
 	case "asm":
 		return asm(args[1:])
-
 	case "build":
 		return build(args[1:])
-
 	case "files":
 		return files(args[1:])
-
 	case "format":
 		return format(args[1:])
-
 	case "functions":
 		return functions(args[1:])
-
 	case "help":
 		return help()
-
 	case "keywords":
 		return keywords()
-
 	case "operators":
 		return operators()
-
 	case "run":
 		return run(args[1:])
-
 	case "ssa":
 		return ssa(args[1:])
-
 	case "version":
 		return version()
-
 	default:
 		return run(args)
 	}

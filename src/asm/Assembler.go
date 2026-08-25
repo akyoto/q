@@ -53,7 +53,6 @@ func (a *Assembler) Compile(build *config.Build) (code []byte, data []byte, libs
 		for _, instr := range a.Instructions {
 			armc.Compile(instr)
 		}
-
 	case config.X86:
 		x86c := compilerX86{compiler: &c}
 
@@ -129,7 +128,6 @@ func (a *Assembler) Skip(instr Instruction) bool {
 			a.SetLast(instr)
 			return true
 		}
-
 	case *Move:
 		// A move following a move with inverted operands is unnecessary
 		i := len(a.Instructions) - 1
@@ -152,7 +150,6 @@ func (a *Assembler) Skip(instr Instruction) bool {
 
 			i--
 		}
-
 	case *Return:
 		// Call + Return can be replaced by a single Jump
 		call, isCall := a.Last().(*Call)

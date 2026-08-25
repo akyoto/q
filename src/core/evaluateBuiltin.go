@@ -11,16 +11,12 @@ func (f *Function) evaluateBuiltin(expr *expression.Expression) (ssa.Value, erro
 	switch expr.Children[0].Token.Kind {
 	case token.Cas:
 		return f.evaluateCas(expr)
-
 	case token.Delete:
 		return f.evaluateDelete(expr)
-
 	case token.New:
 		return f.evaluateNew(expr)
-
 	case token.Syscall:
 		return f.evaluateSyscall(expr)
-
 	default:
 		panic("not implemented")
 	}

@@ -65,18 +65,14 @@ loop:
 			}
 
 			return root
-
 		case t.Kind.IsLiteral():
 			root, cursor = handleLiteral(root, cursor, t)
-
 		case !t.Kind.IsOperator():
 			// do nothing
-
 		case cursor == nil:
 			cursor = newLeaf(t)
 			cursor.precedence = precedence(t.Kind)
 			root = cursor
-
 		default:
 			node := newLeaf(t)
 			node.precedence = precedence(t.Kind)

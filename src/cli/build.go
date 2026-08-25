@@ -52,10 +52,8 @@ func newBuild(args []string) (*config.Build, error) {
 			default:
 				return nil, &InvalidValue{Value: args[i], Parameter: "arch"}
 			}
-
 		case "-dry":
 			build.Dry = true
-
 		case "-func":
 			i++
 
@@ -64,19 +62,14 @@ func newBuild(args []string) (*config.Build, error) {
 			}
 
 			build.Filter = args[i]
-
 		case "-no-fold":
 			build.Fold = false
-
 		case "-no-lint":
 			build.Lint(false)
-
 		case "-no-optimize":
 			build.Optimize(false)
-
 		case "-no-reorder":
 			build.Reorder = false
-
 		case "-os":
 			i++
 
@@ -94,7 +87,6 @@ func newBuild(args []string) (*config.Build, error) {
 			default:
 				return nil, &InvalidValue{Value: args[i], Parameter: "os"}
 			}
-
 		default:
 			if strings.HasPrefix(args[i], "-") {
 				return nil, &UnknownParameter{Parameter: args[i]}

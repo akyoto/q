@@ -12,7 +12,6 @@ func (build *Build) MemoryAlign() int {
 		default:
 			return 0x1000
 		}
-
 	default:
 		return 0x1000
 	}

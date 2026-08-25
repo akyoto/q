@@ -23,7 +23,6 @@ func (s *scanner) scanExtern(file *fs.File, tokens token.List, i int) (int, erro
 			if err != nil {
 				return i, err
 			}
-
 		case token.BlockEnd:
 			return i, nil
 		}
@@ -56,7 +55,6 @@ func (s *scanner) scanExternLibrary(file *fs.File, tokens token.List, i int) (in
 
 			i = j
 			s.items <- function
-
 		case token.BlockEnd:
 			return i, nil
 		}

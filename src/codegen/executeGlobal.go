@@ -30,7 +30,6 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 					Destination:    destination,
 					SystemRegister: arm.TPIDR_EL0,
 				})
-
 			case config.X86:
 				f.Assembler.Append(&asm.ReadSystemRegister{
 					Destination:    destination,
@@ -51,7 +50,6 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 					Source:      destination,
 					Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
 				})
-
 			case config.X86:
 				f.Assembler.Append(&asm.ReadSystemRegister{
 					Destination:    destination,
@@ -64,7 +62,6 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 					Number:      0x1000 + WindowsTLSOffset + WindowsTLSSize - 0x20,
 				})
 			}
-
 		default:
 			f.Assembler.Append(&asm.MoveLabel{
 				Destination: destination,

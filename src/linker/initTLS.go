@@ -46,7 +46,6 @@ func initTLS(program *asm.Assembler, env *core.Environment) {
 				SystemRegister: arm.TPIDR_EL0,
 				Source:         arm.X0,
 			})
-
 		case config.X86:
 			program.Append(&asm.MoveLabel{
 				Destination: x86.R0,

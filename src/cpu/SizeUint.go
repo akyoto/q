@@ -9,13 +9,10 @@ func SizeUint[T uint | uint8 | uint16 | uint32 | uint64 | int | int8 | int16 | i
 	switch {
 	case x <= math.MaxUint8:
 		return 1
-
 	case x <= math.MaxUint16:
 		return 2
-
 	case x <= math.MaxUint32:
 		return 4
-
 	default:
 		return 8
 	}

@@ -98,7 +98,6 @@ func foldBinaryOp(ir ssa.IR, block *ssa.Block, i int, binaryOp *ssa.BinaryOp, fo
 	case !leftIsBinOp && !rightIsBinOp:
 		block.Instructions[i] = constant
 		ir.ReplaceAll(binaryOp, constant)
-
 	case leftIsBinOp && !rightIsBinOp:
 		folded[leftBinOp] = struct{}{}
 
@@ -110,7 +109,6 @@ func foldBinaryOp(ir ssa.IR, block *ssa.Block, i int, binaryOp *ssa.BinaryOp, fo
 
 		binaryOp.Right = constant
 		block.InsertAt(i, constant)
-
 	case !leftIsBinOp && rightIsBinOp:
 		folded[rightBinOp] = struct{}{}
 		binaryOp.Left = constant

@@ -33,7 +33,6 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		right := condition.Children[1]
 		err = f.compileCondition(right, thenBlock, elseBlock)
 		return err
-
 	case token.LogicalAnd:
 		f.Count.SubBranch++
 		leftSuccessLabel := f.CreateLabel("and", f.Count.SubBranch)
@@ -53,7 +52,6 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 		right := condition.Children[1]
 		err = f.compileCondition(right, thenBlock, elseBlock)
 		return err
-
 	case token.Equal, token.NotEqual, token.Greater, token.Less, token.GreaterEqual, token.LessEqual:
 		conditionValue, err := f.evaluateRight(condition)
 
@@ -98,10 +96,8 @@ func (f *Function) compileCondition(condition *expression.Expression, thenBlock 
 
 		f.Append(branch)
 		return nil
-
 	case token.Not:
 		return f.compileCondition(condition.Children[0], elseBlock, thenBlock)
-
 	default:
 		if condition.Token.Kind.IsAssignment() {
 			return errors.New(InvalidCondition, f.File, condition.Token)

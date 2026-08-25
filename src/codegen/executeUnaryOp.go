@@ -22,7 +22,6 @@ func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
 			Destination: destination,
 			Source:      source,
 		})
-
 	case token.Not:
 		f.Assembler.Append(&asm.CompareNumber{
 			Destination: source,
@@ -30,7 +29,6 @@ func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
 		})
 
 		f.conditionalSet(destination, token.Equal, false)
-
 	default:
 		panic("not implemented: " + instr.String())
 	}

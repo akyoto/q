@@ -78,7 +78,6 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 		memory := f.structField(addressValue, field)
 		return f.store(memory, rightValue)
-
 	case *types.Struct:
 		field := addressType.FieldByName(fieldName)
 
@@ -96,7 +95,6 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 
 		memory := f.structField(addressValue, field)
 		return f.store(memory, rightValue)
-
 	default:
 		return errors.New(&NotDataStruct{TypeName: addressType.Name()}, f.File, address.Source())
 	}

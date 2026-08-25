@@ -42,10 +42,8 @@ func (list List) Split(yield func(Position, List) bool) {
 		switch t.Kind {
 		case GroupStart, ArrayStart, BlockStart:
 			groupLevel++
-
 		case GroupEnd, ArrayEnd, BlockEnd:
 			groupLevel--
-
 		case Separator:
 			if groupLevel > 0 {
 				continue

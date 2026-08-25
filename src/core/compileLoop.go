@@ -155,7 +155,6 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 							value.Replace(oldValue, phi)
 						}
 					}
-
 				default:
 					instr.Replace(oldValue, phi)
 				}

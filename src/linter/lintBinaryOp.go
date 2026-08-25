@@ -35,7 +35,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		if rightIsInt && right.Int == 0 {
 			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
 		}
-
 	case token.And:
 		if leftIsInt && left.Int == 0 {
 			return errors.New(&Simplify{To: "0"}, file, binOp.Source)
@@ -44,7 +43,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		if rightIsInt && right.Int == 0 {
 			return errors.New(&Simplify{To: "0"}, file, binOp.Source)
 		}
-
 	case token.Mul:
 		if leftIsInt && left.Int == 0 {
 			return errors.New(&Simplify{To: "0"}, file, binOp.Source)
@@ -61,7 +59,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		if rightIsInt && right.Int == 1 {
 			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
 		}
-
 	case token.Div:
 		if rightIsInt && right.Int == 0 {
 			return errors.New(DivisionByZero, file, binOp.Source)
@@ -74,7 +71,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		if rightIsInt && right.Int == 1 {
 			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
 		}
-
 	case token.Mod:
 		if rightIsInt && right.Int == 0 {
 			return errors.New(DivisionByZero, file, binOp.Source)
@@ -87,7 +83,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		if rightIsInt && right.Int == 1 {
 			return errors.New(&Simplify{To: "0"}, file, binOp.Source)
 		}
-
 	case token.Or:
 		if leftIsInt && left.Int == 0 {
 			return errors.New(&Simplify{To: binOp.Right.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
@@ -96,12 +91,10 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		if rightIsInt && right.Int == 0 {
 			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
 		}
-
 	case token.Shl, token.Shr:
 		if rightIsInt && right.Int == 0 {
 			return errors.New(&Simplify{To: binOp.Left.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
 		}
-
 	case token.Xor:
 		if leftIsInt && left.Int == 0 {
 			return errors.New(&Simplify{To: binOp.Right.(errors.Source).StringFrom(file.Bytes)}, file, binOp.Source)
@@ -144,7 +137,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 				case token.GreaterEqual:
 					return errors.New(AlwaysTrue, file, binOp.Source)
 				}
-
 			case rightInt.Int < 0 && strings.HasPrefix(rightInt.StringFrom(file.Bytes), "-"):
 				switch binOp.Op {
 				case token.Equal, token.LessEqual, token.Less:
@@ -168,7 +160,6 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 				case token.LessEqual:
 					return errors.New(AlwaysTrue, file, binOp.Source)
 				}
-
 			case leftInt.Int < 0 && strings.HasPrefix(leftInt.StringFrom(file.Bytes), "-"):
 				switch binOp.Op {
 				case token.Equal, token.GreaterEqual, token.Greater:

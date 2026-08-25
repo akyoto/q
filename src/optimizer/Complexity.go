@@ -16,23 +16,18 @@ func Complexity(expr *expression.Expression) int {
 	switch expr.Token.Kind {
 	case token.Call:
 		return complexityKeepAlive(expr.Children[1:])
-
 	case token.Dot:
 		return Complexity(expr.Children[0])
-
 	case token.Array:
 		return complexityKeepAlive(expr.Children)
-
 	case token.Struct:
 		if expr.Parent != nil && expr.Parent.Token.Kind == token.New {
 			return complexityNoKeepAlive(expr.Children[1:])
 		}
 
 		return complexityKeepAlive(expr.Children[1:])
-
 	case token.StructField:
 		return Complexity(expr.Children[1])
-
 	case token.Cast:
 		return Complexity(expr.Children[0])
 	}

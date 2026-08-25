@@ -15,16 +15,12 @@ func (f *Function) evaluate(expr *expression.Expression) (ssa.Value, error) {
 	switch expr.Token.Kind {
 	case token.Call:
 		return f.evaluateCall(expr)
-
 	case token.Dot:
 		return f.evaluateDot(expr)
-
 	case token.Array:
 		return f.evaluateArray(expr)
-
 	case token.Struct:
 		return f.evaluateStruct(expr)
-
 	case token.Cast:
 		return f.evaluateCast(expr)
 	}

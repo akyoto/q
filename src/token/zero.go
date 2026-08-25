@@ -16,11 +16,9 @@ func zero(tokens List, buffer []byte, i Position) (List, Position) {
 	case 'x':
 		i++
 		filter = isHexDigit
-
 	case 'b':
 		i++
 		filter = isBinaryDigit
-
 	case 'o':
 		i++
 		filter = isOctalDigit

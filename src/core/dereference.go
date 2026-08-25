@@ -21,7 +21,6 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 		case *types.Struct:
 			structure := f.loadFields(memory, typ, value.Source)
 			return structure
-
 		default:
 			load := f.Append(&ssa.Load{
 				Memory: memory,
@@ -30,13 +29,11 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 
 			return load
 		}
-
 	case *ssa.Memory:
 		switch typ := value.Typ.(type) {
 		case *types.Struct:
 			structure := f.loadFields(value, typ, value.Source)
 			return structure
-
 		default:
 			load := f.Append(&ssa.Load{
 				Memory: value,
@@ -45,7 +42,6 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 
 			return load
 		}
-
 	default:
 		return value
 	}
