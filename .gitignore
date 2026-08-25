@@ -2,9 +2,9 @@
 !*/
 !*.q
 !*.go
-!*.mod
-!*.sum
-!*.md
-!*.txt
-!*.svg
+!go.mod
+!go.sum
+!docs/*.md
+!docs/*.svg
+!src/cli/*.txt
 !.gitignore
