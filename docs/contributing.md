@@ -14,6 +14,39 @@ Every line of code added to this repository must be fully understood by the cont
 You should be prepared to explain what you're changing, how it affects the rest of the codebase, and what behavioral or performance implications it introduces.
 For these reasons, the use of generative AI to produce code contributions is strongly discouraged.
 
+## Style
+
+### Documentation
+
+Documentation and comments must be written in a format that can be properly understood by looking at the raw text contents.
+This especially applies to tables which must include spaces for indentation using a monospace font.
+
+### Lines
+
+There is no arbitrary maximum line length.
+
+Sentences start on a new line in markdown files.
+
+Files must not include final newlines.
+
+Blocks starting with `{` and ending with `}` have a blank line before and after the block unless they have a preceding comment or they are the first or last block on their indentation level.
+
+### Switch
+
+Switch cases must be compact.
+A case body directly follows the last line of the previous one, without a blank line in between.
+
+```go
+switch args[0] {
+	case "build":
+		return build(args[1:])
+	case "run":
+		return run(args[1:])
+	default:
+		return run(args)
+}
+```
+
 ## FAQ
 
 ### How do I run the tests?
