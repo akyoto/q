@@ -151,7 +151,7 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 					for name, value := range jumpBlock.Identifiers.Before {
 						if value == oldValue {
 							jumpBlock.ReplaceIdentifier(name, oldValue, phi)
-						} else {
+						} else if jumpBlock.Index(value) != -1 {
 							value.Replace(oldValue, phi)
 						}
 					}
