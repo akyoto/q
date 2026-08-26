@@ -159,6 +159,12 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 					instr.Replace(oldValue, phi)
 				}
 			}
+
+			for i := 1; i < len(phi.Arguments); i++ {
+				if phi.Arguments[i] == oldValue {
+					phi.Arguments[i] = phi
+				}
+			}
 		}
 	}
 
