@@ -9,12 +9,12 @@ func Fold(ir ssa.IR) map[ssa.Value]struct{} {
 	var folded map[ssa.Value]struct{}
 
 	for _, block := range ir.Blocks {
-		for i, value := range block.Instructions {
+		for _, value := range block.Instructions {
 			switch op := value.(type) {
 			case *ssa.BinaryOp:
-				folded = foldBinaryOp(ir, block, i, op, folded)
+				folded = foldBinaryOp(ir, block, op, folded)
 			case *ssa.UnaryOp:
-				folded = foldUnaryOp(ir, block, i, op, folded)
+				folded = foldUnaryOp(ir, block, op, folded)
 			}
 		}
 	}

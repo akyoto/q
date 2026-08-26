@@ -6,8 +6,14 @@ import (
 )
 
 // foldBinaryOp folds the values for binary operations.
-func foldBinaryOp(ir ssa.IR, block *ssa.Block, i int, binaryOp *ssa.BinaryOp, folded map[ssa.Value]struct{}) map[ssa.Value]struct{} {
+func foldBinaryOp(ir ssa.IR, block *ssa.Block, binaryOp *ssa.BinaryOp, folded map[ssa.Value]struct{}) map[ssa.Value]struct{} {
 	if binaryOp.Op.IsComparison() {
+		return folded
+	}
+
+	i := block.Index(binaryOp)
+
+	if i == -1 {
 		return folded
 	}
 
