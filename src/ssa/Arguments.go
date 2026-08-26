@@ -2,7 +2,6 @@ package ssa
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 )
 
@@ -22,11 +21,6 @@ func (a Arguments) Equals(b Arguments) bool {
 	}
 
 	return true
-}
-
-// Index returns the position of the value within the slice.
-func (v Arguments) Index(search Value) int {
-	return slices.Index(v, search)
 }
 
 // Inputs is the arguments list itself.

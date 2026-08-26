@@ -75,6 +75,8 @@ var tests = []run{
 	{"loop-modify-struct", nil, "", "12345", 0},
 	{"loop-infinite-lifetime", nil, "", "", -1},
 	{"loop-next", nil, "", "0\n2\n4\n6\n8\n", 0},
+	{"loop-next-2", nil, "", "", 0},
+	{"loop-next-3", nil, "", "", 0},
 	{"loop-stop", nil, "", "", 0},
 	{"loop-stop-2", nil, "", "", 0},
 	{"loop-stop-3", nil, "", "f: 1", 0},

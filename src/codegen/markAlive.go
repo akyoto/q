@@ -13,9 +13,12 @@ func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step, first bool
 		phi, isPhi := use.Value.(*ssa.Phi)
 
 		if isPhi {
-			index := phi.Arguments.Index(live.Value)
-			pre := block.Predecessors[index]
-			f.markAlive(live, pre, use, false)
+			for index, value := range phi.Arguments {
+				if value == live.Value {
+					f.markAlive(live, block.Predecessors[index], use, false)
+				}
+			}
+
 			return
 		}
 	}

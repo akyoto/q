@@ -23,13 +23,22 @@ func (f *Function) insertPhiMoves(step *Step) {
 
 	for _, live := range step.Live {
 		for phi := range live.Phis.All() {
-			if !slices.Contains(phi.Block.Predecessors, step.Block) {
+			predecessors := phi.Block.Predecessors
+
+			if !slices.Contains(predecessors, step.Block) {
 				continue
 			}
 
-			index := phi.Value.(*ssa.Phi).Arguments.Index(live.Value)
+			matches := false
 
-			if phi.Block.Predecessors[index] != step.Block {
+			for index, value := range phi.Value.(*ssa.Phi).Arguments {
+				if value == live.Value && predecessors[index] == step.Block {
+					matches = true
+					break
+				}
+			}
+
+			if !matches {
 				continue
 			}
 
