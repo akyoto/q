@@ -24,14 +24,16 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 	}
 
 	phi, isPhi := value.(*ssa.Phi)
+	deadPhi := phi
 
-	if isPhi {
+	for isPhi {
 		if phi.IsPartiallyUndefined() {
 			block.RemoveAt(i)
 			return nil
 		}
 
 		value = phi.FirstDefined()
+		phi, isPhi = value.(*ssa.Phi)
 	}
 
 	structure, isFieldOfStruct := f.valueToStruct[value]
@@ -57,6 +59,14 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 	if source.Start() == 0 && source.End() == 0 {
 		block.RemoveAt(i)
 		return nil
+	}
+
+	if deadPhi != nil {
+		for _, user := range value.Users() {
+			if user != deadPhi {
+				return nil
+			}
+		}
 	}
 
 	if f.Env.Build.LintDeadCode {
