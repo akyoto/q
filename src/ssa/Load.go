@@ -24,10 +24,11 @@ func (a *Load) Equals(v Value) bool {
 	return a.Memory == b.Memory
 }
 
-// IsPure returns false because loads read from memory
-// and two equal loads may yield different values.
+// IsPure returns true because loads have no side effects.
+// Dead loads can be removed and two equal loads only deduplicate if
+// nothing between them modifies the memory.
 func (l *Load) IsPure() bool {
-	return false
+	return true
 }
 
 // Inputs returns the memory address of the load.

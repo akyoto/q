@@ -60,10 +60,11 @@ func (b *Block) FindExisting(instr Value) Value {
 			return existing
 		}
 
-		// If we encounter a call, we can't be sure that the value is still the same.
-		// TODO: This is a bit too conservative. We could check if the call affects the value.
+		// If we encounter an instruction with side effects,
+		// we can't be sure that the value is still the same.
+		// TODO: This is a bit too conservative. We could check if the instruction affects the value.
 		switch existing.(type) {
-		case *Call, *CallExtern:
+		case *Call, *CallExtern, *CallPointer, *Store, *Syscall, *Cas:
 			return nil
 		}
 	}

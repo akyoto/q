@@ -50,7 +50,6 @@ var tests = []run{
 	{"jump-near", nil, "", "", 0},
 	{"switch", nil, "", "", 0},
 	{"switch-expression", nil, "", "", 0},
-	{"switch-dead-value", nil, "", "", 0},
 	{"phi", nil, "", "", 0},
 	{"phi-simple", nil, "", "", 0},
 	{"phi-advanced", nil, "", "", 0},
@@ -193,6 +192,8 @@ var tests = []run{
 	{"zero-alloc", nil, "", "", 0},
 	{"spill-call", nil, "", "", 0},
 	{"spill-call-binary", nil, "", "", 0},
+	{"dead-value", nil, "", "", 0},
+	{"dead-value-load", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {
