@@ -48,7 +48,7 @@ func (f *Function) execute(step *Step) {
 	case *ssa.Return:
 		f.executeReturn(step, instr)
 	case *ssa.Store:
-		f.executeStore(instr)
+		f.executeStore(step, instr)
 	case *ssa.Syscall:
 		f.executeSyscall(step, instr)
 	case *ssa.UnaryOp:

@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
@@ -11,13 +13,14 @@ import (
 func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 	left := f.ValueToStep[instr.Left]
 	right := f.ValueToStep[instr.Right]
-	source := f.resolveOperand(left, step.Live)
-	operand := f.resolveOperand(right, step.Live)
+	live := slices.Concat(step.Live, []*Step{left, right})
+	source := f.resolveOperand(left, live)
+	operand := f.resolveOperand(right, live)
 	destination := step.Register
 	isSpilled := f.isSpilled(destination)
 
 	if isSpilled {
-		destination = f.findTempRegister(step.Live)
+		destination = f.findTempRegister(live)
 	}
 
 	if instr.Op.IsComparison() {

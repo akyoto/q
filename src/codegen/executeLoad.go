@@ -1,6 +1,8 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
@@ -16,13 +18,14 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 	index := f.ValueToStep[memory.Index]
 	elementType := step.Value.Type()
 	elementSize := elementType.Size()
-	baseRegister := f.resolveOperand(address, step.Live)
-	indexRegister := f.resolveOperand(index, step.Live)
+	live := slices.Concat(step.Live, []*Step{address, index})
+	baseRegister := f.resolveOperand(address, live)
+	indexRegister := f.resolveOperand(index, live)
 	destination := step.Register
 	isSpilled := f.isSpilled(destination)
 
 	if isSpilled {
-		destination = f.findTempRegister(step.Live)
+		destination = f.findTempRegister(live)
 	}
 
 	if index.Register == -1 {

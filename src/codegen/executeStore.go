@@ -1,18 +1,21 @@
 package codegen
 
 import (
+	"slices"
+
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/ssa"
 )
 
-func (f *Function) executeStore(instr *ssa.Store) {
+func (f *Function) executeStore(step *Step, instr *ssa.Store) {
 	memory := instr.Memory
 	address := f.ValueToStep[memory.Address]
 	index := f.ValueToStep[memory.Index]
 	source := f.ValueToStep[instr.Value]
-	baseRegister := f.resolveOperand(address, source.Live)
-	indexRegister := f.resolveOperand(index, source.Live)
-	sourceRegister := f.resolveOperand(source, source.Live)
+	live := slices.Concat(step.Live, []*Step{address, index, source})
+	baseRegister := f.resolveOperand(address, live)
+	indexRegister := f.resolveOperand(index, live)
+	sourceRegister := f.resolveOperand(source, live)
 
 	if sourceRegister == -1 {
 		if indexRegister == -1 {
