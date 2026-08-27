@@ -6,7 +6,7 @@ import (
 )
 
 func (f *Function) executeCall(step *Step, instr *ssa.Call) {
-	f.moveValuesToRegisters(instr.Arguments, f.CPU.Call.In)
+	f.moveValuesToRegisters(instr.Arguments, f.CPU.Call.In, step.Live)
 
 	f.Assembler.Append(&asm.Call{
 		Label: instr.Func.String(),

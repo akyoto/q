@@ -28,6 +28,29 @@ func (f *Function) findTempRegister(liveSteps []*Step) cpu.Register {
 	panic("no free registers for temporary")
 }
 
+// freeTempRegisters returns the general purpose registers that are not in use by the given steps.
+func (f *Function) freeTempRegisters(steps []*Step) []cpu.Register {
+	usedRegisters := bitSet(0)
+
+	for _, live := range steps {
+		if live.Register == -1 {
+			continue
+		}
+
+		usedRegisters.Set(live.Register)
+	}
+
+	var free []cpu.Register
+
+	for _, reg := range f.CPU.General {
+		if !usedRegisters.Has(reg) {
+			free = append(free, reg)
+		}
+	}
+
+	return free
+}
+
 // isSpilled returns true if it's a virtual register.
 func (f *Function) isSpilled(reg cpu.Register) bool {
 	return reg >= f.CPU.MaxRegisters

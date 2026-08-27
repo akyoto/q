@@ -4,22 +4,19 @@ import (
 	"slices"
 
 	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 )
-
-// phiMove holds temporary data for scheduling moves to Phi target registers.
-type phiMove struct {
-	Destination *Step
-	Source      *Step
-	IsSwap      bool
-	IsHandled   bool
-}
 
 // insertPhiMoves moves all live values that are part of a Phi instruction
 // from their current register to the Phi target register.
 // It must be called right before a Jump instruction.
 func (f *Function) insertPhiMoves(step *Step) {
-	var phiMoves []phiMove
+	var (
+		moves            []*asm.Move
+		sourceSteps      = map[cpu.Register]*Step{}
+		destinationSteps = map[cpu.Register]*Step{}
+	)
 
 	for _, live := range step.Live {
 		for phi := range live.Phis.All() {
@@ -42,66 +39,34 @@ func (f *Function) insertPhiMoves(step *Step) {
 				continue
 			}
 
-			phiMoves = append(phiMoves, phiMove{
-				Destination: phi,
-				Source:      live,
+			destinationSteps[phi.Register] = phi
+			sourceSteps[live.Register] = live
+
+			moves = append(moves, &asm.Move{
+				Destination: phi.Register,
+				Source:      live.Register,
 			})
 		}
 	}
 
-	for i, current := range phiMoves {
-		source := current.Source.Register
-		destination := current.Destination.Register
+	free := f.freeTempRegisters(step.Live)
+	scheduled, ok := ScheduleMoves(moves, free)
 
-		if current.IsSwap || f.isSpilled(source) || f.isSpilled(destination) {
-			continue
-		}
-
-		for j, other := range phiMoves {
-			if j == i {
-				continue
-			}
-
-			if other.Source.Register == destination && other.Destination.Register == source {
-				phiMoves[i].IsSwap = true
-				phiMoves[j].IsSwap = true
-				break
-			}
-		}
+	if !ok {
+		panic("no free register for move scheduling")
 	}
 
-	start := len(f.Assembler.Instructions)
+	for _, move := range scheduled {
+		source := move.Source
+		destination := move.Destination
 
-	for i, move := range phiMoves {
-		if move.IsSwap {
-			continue
+		switch {
+		case f.isSpilled(source):
+			f.loadSpill(sourceSteps[source], destination)
+		case f.isSpilled(destination):
+			f.storeSpill(destinationSteps[destination], source)
+		default:
+			f.Assembler.Append(move)
 		}
-
-		f.move(move.Destination, move.Source, step)
-		phiMoves[i].IsHandled = true
-	}
-
-	end := len(f.Assembler.Instructions)
-	reorderMoves(f.Assembler.Instructions[start:end])
-
-	for i, move := range phiMoves {
-		if !move.IsSwap || move.IsHandled {
-			continue
-		}
-
-		source := move.Source.Register
-		destination := move.Destination.Register
-		tmp := f.findTempRegister(step.Live)
-		f.Assembler.Append(&asm.Move{Destination: tmp, Source: source})
-		f.Assembler.Append(&asm.Move{Destination: source, Source: destination})
-		f.Assembler.Append(&asm.Move{Destination: destination, Source: tmp})
-
-		for j, other := range phiMoves {
-			if other.Source.Register == destination && other.Destination.Register == source {
-				phiMoves[j].IsHandled = true
-			}
-		}
-
-		phiMoves[i].IsHandled = true
 	}
 }

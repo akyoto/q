@@ -6,7 +6,7 @@ import (
 )
 
 func (f *Function) executeCallPointer(step *Step, instr *ssa.CallPointer) {
-	f.moveValuesToRegisters(instr.Arguments[1:], f.CPU.Call.In)
+	f.moveValuesToRegisters(instr.Arguments[1:], f.CPU.Call.In, step.Live)
 	functionPointer := f.ValueToStep[instr.Arguments[0]]
 	address := f.resolveOperand(functionPointer, step.Live)
 

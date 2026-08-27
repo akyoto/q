@@ -55,6 +55,8 @@ var tests = []run{
 	{"phi-advanced", nil, "", "", 0},
 	{"phi-reassign", nil, "", "", 0},
 	{"phi-reassign-output", nil, "", "12345", 0},
+	{"phi-move-cycle", nil, "", "0\n14\n0\n", 0},
+	{"phi-move-reorder", nil, "", "0\n14\n0\n", 0},
 	{"min", nil, "", "", 0},
 	{"max", nil, "", "", 0},
 	{"hello", nil, "", "Hello\nHello\nHello\n", 0},

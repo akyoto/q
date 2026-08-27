@@ -6,7 +6,7 @@ import (
 )
 
 func (f *Function) executeSyscall(step *Step, instr *ssa.Syscall) {
-	f.moveValuesToRegisters(instr.Arguments, f.CPU.Syscall.In)
+	f.moveValuesToRegisters(instr.Arguments, f.CPU.Syscall.In, step.Live)
 	f.Assembler.Append(&asm.Syscall{})
 	f.moveCallResult(step, f.CPU.Syscall.Out[0])
 }

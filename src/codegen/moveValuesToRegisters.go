@@ -7,8 +7,9 @@ import (
 )
 
 // moveValuesToRegisters moves the values to the destination registers.
-func (f *Function) moveValuesToRegisters(values []ssa.Value, registers []cpu.Register) {
-	start := len(f.Assembler.Instructions)
+func (f *Function) moveValuesToRegisters(values []ssa.Value, registers []cpu.Register, live []*Step) {
+	moves := make([]*asm.Move, 0, len(values))
+	sourceSteps := map[cpu.Register]*Step{}
 
 	for i, arg := range values {
 		sourceStep := f.ValueToStep[arg]
@@ -16,19 +17,28 @@ func (f *Function) moveValuesToRegisters(values []ssa.Value, registers []cpu.Reg
 		destination := registers[i]
 
 		if f.isSpilled(source) {
-			f.loadSpill(sourceStep, destination)
-			continue
+			sourceSteps[source] = sourceStep
 		}
 
-		if source == destination {
-			continue
-		}
-
-		f.Assembler.Append(&asm.Move{
+		moves = append(moves, &asm.Move{
 			Destination: destination,
 			Source:      source,
 		})
 	}
 
-	reorderMoves(f.Assembler.Instructions[start:])
+	free := f.freeTempRegisters(live)
+	scheduled, ok := ScheduleMoves(moves, free)
+
+	if !ok {
+		panic("no free register for move scheduling")
+	}
+
+	for _, move := range scheduled {
+		if f.isSpilled(move.Source) {
+			f.loadSpill(sourceSteps[move.Source], move.Destination)
+			continue
+		}
+
+		f.Assembler.Append(move)
+	}
 }
