@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/asm"
+	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/set"
 )
 
@@ -11,21 +12,43 @@ func reorderMoves(moves []asm.Instruction) {
 	futureRegisters := bitSet(0)
 
 	for i, instr := range moves {
-		move, isMove := instr.(*asm.Move)
+		var (
+			source         cpu.Register
+			destination    cpu.Register
+			hasSource      bool
+			hasDestination bool
+		)
 
-		if !isMove {
+		switch instr := instr.(type) {
+		case *asm.Move:
+			source = instr.Source
+			destination = instr.Destination
+			hasSource = true
+			hasDestination = true
+		case *asm.StoreFixedOffset:
+			source = instr.Source
+			hasSource = true
+		case *asm.LoadFixedOffset:
+			destination = instr.Destination
+			hasDestination = true
+		default:
 			continue
 		}
 
-		if futureRegisters.Has(move.Source) {
+		if hasSource && futureRegisters.Has(source) {
 			set.BringToFront(moves[:i+1], i)
 
-			if usedRegisters.Has(move.Destination) {
+			if hasDestination && usedRegisters.Has(destination) {
 				panic("cycle detected while reordering moves")
 			}
 		}
 
-		usedRegisters.Set(move.Source)
-		futureRegisters.Set(move.Destination)
+		if hasSource {
+			usedRegisters.Set(source)
+		}
+
+		if hasDestination {
+			futureRegisters.Set(destination)
+		}
 	}
 }
