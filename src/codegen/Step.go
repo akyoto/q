@@ -19,6 +19,10 @@ type Step struct {
 
 // hint adds a register hint to the step.
 func (s *Step) hint(reg cpu.Register) {
+	if reg == -1 {
+		panic("invalid register hint")
+	}
+
 	if len(s.Hints) == 0 {
 		s.Register = reg
 	}

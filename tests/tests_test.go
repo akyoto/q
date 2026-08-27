@@ -50,6 +50,7 @@ var tests = []run{
 	{"jump-near", nil, "", "", 0},
 	{"switch", nil, "", "", 0},
 	{"switch-expression", nil, "", "", 0},
+	{"switch-dead-value", nil, "", "", 0},
 	{"phi", nil, "", "", 0},
 	{"phi-simple", nil, "", "", 0},
 	{"phi-advanced", nil, "", "", 0},
