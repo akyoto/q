@@ -192,6 +192,7 @@ var tests = []run{
 	{"zero-alloc", nil, "", "", 0},
 	{"spill-call", nil, "", "", 0},
 	{"spill-call-binary", nil, "", "", 0},
+	{"spill-operands", nil, "", "70", 0},
 	{"dead-value", nil, "", "", 0},
 	{"dead-value-load", nil, "", "", 0},
 }

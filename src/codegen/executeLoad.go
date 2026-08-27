@@ -20,12 +20,12 @@ func (f *Function) executeLoad(step *Step, instr *ssa.Load) {
 	elementSize := elementType.Size()
 	live := slices.Concat(step.Live, []*Step{address, index})
 	baseRegister := f.resolveOperand(address, live)
-	indexRegister := f.resolveOperand(index, live)
+	indexRegister := f.resolveOperand(index, live, baseRegister)
 	destination := step.Register
 	isSpilled := f.isSpilled(destination)
 
 	if isSpilled {
-		destination = f.findTempRegister(live)
+		destination = f.findTempRegister(live, baseRegister, indexRegister)
 	}
 
 	if index.Register == -1 {

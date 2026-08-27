@@ -15,12 +15,12 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 	right := f.ValueToStep[instr.Right]
 	live := slices.Concat(step.Live, []*Step{left, right})
 	source := f.resolveOperand(left, live)
-	operand := f.resolveOperand(right, live)
+	operand := f.resolveOperand(right, live, source)
 	destination := step.Register
 	isSpilled := f.isSpilled(destination)
 
 	if isSpilled {
-		destination = f.findTempRegister(live)
+		destination = f.findTempRegister(live, source, operand)
 	}
 
 	if instr.Op.IsComparison() {

@@ -8,7 +8,7 @@ import (
 )
 
 // findTempRegister finds a temporary physical register that is not in use.
-func (f *Function) findTempRegister(liveSteps []*Step) cpu.Register {
+func (f *Function) findTempRegister(liveSteps []*Step, avoid ...cpu.Register) cpu.Register {
 	usedRegisters := bitSet(0)
 
 	for _, live := range liveSteps {
@@ -17,6 +17,14 @@ func (f *Function) findTempRegister(liveSteps []*Step) cpu.Register {
 		}
 
 		usedRegisters.Set(live.Register)
+	}
+
+	for _, reg := range avoid {
+		if reg == -1 {
+			continue
+		}
+
+		usedRegisters.Set(reg)
 	}
 
 	for _, reg := range f.CPU.General {
@@ -70,12 +78,12 @@ func (f *Function) loadSpill(step *Step, destination cpu.Register) {
 
 // resolveOperand returns the register to use for an operand.
 // If the operand is spilled, it loads it from the stack first.
-func (f *Function) resolveOperand(step *Step, liveSteps []*Step) cpu.Register {
+func (f *Function) resolveOperand(step *Step, liveSteps []*Step, avoid ...cpu.Register) cpu.Register {
 	if !f.isSpilled(step.Register) {
 		return step.Register
 	}
 
-	tmp := f.findTempRegister(liveSteps)
+	tmp := f.findTempRegister(liveSteps, avoid...)
 	f.loadSpill(step, tmp)
 	return tmp
 }

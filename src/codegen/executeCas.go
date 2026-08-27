@@ -15,8 +15,8 @@ func (f *Function) executeCas(step *Step, instr *ssa.Cas) {
 	newValue := f.ValueToStep[instr.Arguments[2]]
 	live := slices.Concat(step.Live, []*Step{address, oldValue, newValue})
 	addressRegister := f.resolveOperand(address, live)
-	oldValueRegister := f.resolveOperand(oldValue, live)
-	newValueRegister := f.resolveOperand(newValue, live)
+	oldValueRegister := f.resolveOperand(oldValue, live, addressRegister)
+	newValueRegister := f.resolveOperand(newValue, live, addressRegister, oldValueRegister)
 
 	if f.build.Arch == config.X86 && oldValueRegister != x86.R0 {
 		f.Assembler.Append(&asm.Move{

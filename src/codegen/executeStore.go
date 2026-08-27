@@ -14,8 +14,8 @@ func (f *Function) executeStore(step *Step, instr *ssa.Store) {
 	source := f.ValueToStep[instr.Value]
 	live := slices.Concat(step.Live, []*Step{address, index, source})
 	baseRegister := f.resolveOperand(address, live)
-	indexRegister := f.resolveOperand(index, live)
-	sourceRegister := f.resolveOperand(source, live)
+	indexRegister := f.resolveOperand(index, live, baseRegister)
+	sourceRegister := f.resolveOperand(source, live, baseRegister, indexRegister)
 
 	if sourceRegister == -1 {
 		if indexRegister == -1 {
