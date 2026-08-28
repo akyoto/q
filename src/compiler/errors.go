@@ -36,3 +36,14 @@ type UnusedImport struct {
 func (err *UnusedImport) Error() string {
 	return fmt.Sprintf("Unused import '%s'", err.Package)
 }
+
+// LowAssertionDensity error is created when a package has too few assertions.
+type LowAssertionDensity struct {
+	Package    string
+	Asserts    int
+	Statements int
+}
+
+func (err *LowAssertionDensity) Error() string {
+	return fmt.Sprintf("Package '%s' has %d assertions in %d statements (minimum %d)", err.Package, err.Asserts, err.Statements, err.Statements/MinimumStatements)
+}

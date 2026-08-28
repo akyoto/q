@@ -21,6 +21,7 @@ var errs = []struct {
 		&core.UnknownIdentifier{Name: "unknown2"},
 	}}},
 	{"UnusedImport.q", &compiler.UnusedImport{Package: "run"}},
+	{"LowAssertionDensity.q", &compiler.LowAssertionDensity{Package: "main", Asserts: 0, Statements: 50}},
 }
 
 func TestErrors(t *testing.T) {

@@ -6,6 +6,8 @@ import (
 
 // compileASTNode compiles a node in the AST.
 func (f *Function) compileASTNode(node ast.Node) error {
+	f.Count.Statement++
+
 	switch node := node.(type) {
 	case *ast.Assert:
 		return f.compileAssert(node)

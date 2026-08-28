@@ -65,6 +65,15 @@ func Compile(build *config.Build) (*core.Environment, error) {
 		}
 	}
 
+	// Check that every package has enough assertions
+	if build.LintAssertionDensity {
+		err = lintAssertionDensity(env)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// Now that we know which functions are alive, start parallel
 	// assembly code generation only for the live functions.
 	parallel(env.LiveFunctions(), func(f *core.Function) {
