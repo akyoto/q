@@ -103,6 +103,7 @@ var tests = []run{
 	{"struct-copy", nil, "", "", 0},
 	{"struct-pointer-deref", nil, "", "", 0},
 	{"struct-modify-branch", nil, "", "", 0},
+	{"struct-field-branch", nil, "", "", 0},
 	{"string-by-value", nil, "", "Hello\n", 0},
 	{"circle", nil, "", "", 0},
 	{"circle-pointer", nil, "", "", 0},

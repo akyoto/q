@@ -88,8 +88,8 @@ func (f *Function) compileStoreField(node *ast.Assign) error {
 		structure, isStruct := addressValue.(*ssa.Struct)
 
 		if isStruct {
-			structure.Arguments[field.Index] = rightValue
-			f.Block().Identify(address.SourceString(f.File.Bytes)+"."+fieldName, rightValue)
+			name := address.SourceString(f.File.Bytes)
+			f.updateStruct(structure, field, name, rightValue)
 			return nil
 		}
 
