@@ -1,5 +1,3 @@
-import run
-
 free(buffer ![]byte) {
 	if buffer.len == 0 {
 		return
@@ -13,11 +11,7 @@ free(buffer ![]byte) {
 	}
 
 	aligned := (buffer.len + 15) & -16
-
-	if buffer.ptr + aligned != heap.current {
-		run.crash()
-	}
-
+	assert buffer.ptr + aligned == heap.current
 	zero(buffer)
 	heap.current -= aligned
 }

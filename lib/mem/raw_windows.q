@@ -1,12 +1,6 @@
-import run
-
 rawAlloc(length uint) -> *uint8 {
 	x := kernel32.VirtualAlloc(0, length, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE)
-
-	if x == 0 {
-		run.crash()
-	}
-
+	assert x != 0
 	return x
 }
 
