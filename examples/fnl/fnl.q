@@ -44,6 +44,7 @@ processStdin(mode int) {
 	pos := 0
 
 	loop {
+		assert pos < buffer.len
 		n, _ := io.read(buffer[pos..])
 
 		if n == 0 {

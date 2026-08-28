@@ -1,6 +1,8 @@
 import io
 
 bind(state *State, buffer string, request *BindRequest) -> error {
+	assert buffer.len > 0
+	assert request.interface != ""
 	padded := pad(request.interface.len + 1)
 	size := bindSize(padded)
 

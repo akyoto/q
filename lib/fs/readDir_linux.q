@@ -24,14 +24,16 @@ readDir(path string) -> error {
 		end := buffer.ptr + n
 
 		loop {
+			assert ptr < end
 			cName := ptr + 19
 			cLength := c.length(cName)
+			assert cLength <= 255
 			name := string{ptr: cName, len: cLength}
 			io.writeLine(name)
 			dirent := ptr as *Dirent64
 			ptr += dirent.d_reclen
 
-			if ptr >= end {
+			if ptr == end {
 				loop.stop()
 			}
 		}

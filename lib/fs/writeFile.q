@@ -13,6 +13,7 @@ writeFile(path string, buffer string) -> error {
 	pos := 0
 
 	loop {
+		assert pos < buffer.len
 		n, err := io.writeTo(fd, buffer[pos..])
 
 		if err != 0 {
@@ -22,7 +23,7 @@ writeFile(path string, buffer string) -> error {
 
 		pos += n
 
-		if pos >= buffer.len {
+		if pos == buffer.len {
 			close(fd)
 			return 0
 		}

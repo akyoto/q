@@ -26,6 +26,7 @@ readFile(path string) -> (!string, error) {
 	pos := 0
 
 	loop {
+		assert pos < buffer.len
 		n, err := io.readFrom(fd, buffer[pos..])
 
 		if err != 0 {
@@ -35,7 +36,7 @@ readFile(path string) -> (!string, error) {
 
 		pos += n
 
-		if pos >= buffer.len {
+		if pos == buffer.len {
 			close(fd)
 			return buffer, 0
 		}

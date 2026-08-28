@@ -1,4 +1,6 @@
 fromInt(x int, base int, buffer []byte) -> []byte {
+	assert base >= 2
+	assert base <= 16
 	negative := x < 0
 	end := buffer.ptr + buffer.len
 	tmp := end
@@ -24,6 +26,8 @@ fromInt(x int, base int, buffer []byte) -> []byte {
 }
 
 fromInt(x uint, base uint, buffer []byte) -> []byte {
+	assert base >= 2
+	assert base <= 16
 	end := buffer.ptr + buffer.len
 	tmp := end
 

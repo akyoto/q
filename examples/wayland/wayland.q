@@ -135,7 +135,7 @@ read(state *wayland.State, buffer string) -> error {
 
 handleMessage(state *wayland.State, msg string) -> int {
 	header := msg.ptr as *wayland.Header
-	//assert header.size <= msg.len
+	assert header.size <= msg.len
 
 	if header.id == state.wl_registry {
 		name := [msg.ptr + wayland.header_size as *uint32]
@@ -155,6 +155,8 @@ handleMessage(state *wayland.State, msg string) -> int {
 }
 
 handleGlobal(state *wayland.State, name uint32, interface string, _version uint32) {
+	assert name > 0
+	assert interface != ""
 	io.write("[")
 	io.write(name as int)
 	io.write("] ")
