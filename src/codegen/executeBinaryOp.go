@@ -11,6 +11,10 @@ import (
 )
 
 func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
+	if step.Register == -1 && !instr.Op.IsComparison() {
+		return
+	}
+
 	left := f.ValueToStep[instr.Left]
 	right := f.ValueToStep[instr.Right]
 	live := slices.Concat(step.Live, []*Step{left, right})

@@ -196,6 +196,7 @@ var tests = []run{
 	{"dead-value", nil, "", "", 0},
 	{"dead-value-load", nil, "", "", 0},
 	{"dead-value-orphan", nil, "", "", 0},
+	{"dead-value-call", nil, "", "", 0},
 }
 
 func TestTests(t *testing.T) {

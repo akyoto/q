@@ -6,6 +6,10 @@ import (
 
 // hintDestination recommends the destination register to its inputs.
 func (f *Function) hintDestination(step *Step) {
+	if step.Register == -1 {
+		return
+	}
+
 	switch instr := step.Value.(type) {
 	case *ssa.BinaryOp:
 		if instr.Op.IsComparison() {

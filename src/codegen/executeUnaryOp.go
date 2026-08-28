@@ -7,6 +7,10 @@ import (
 )
 
 func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
+	if step.Register == -1 {
+		return
+	}
+
 	operand := f.ValueToStep[instr.Operand]
 	source := f.resolveOperand(operand, step.Live)
 	destination := step.Register
