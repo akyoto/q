@@ -65,6 +65,7 @@ var tests = []run{
 	{"loop-counter-tail", nil, "", "10\n9\n8\n7\n6\n5\n4\n3\n2\n1\n0\n", 0},
 	{"loop-counter-head", nil, "", "9\n8\n7\n6\n5\n4\n3\n2\n1\n0\n", 0},
 	{"loop-count", nil, "", "", 0},
+	{"loop-count-down", nil, "", "", 0},
 	{"loop-write", nil, "", "..........", 0},
 	{"loop-optimize-single-iterator", nil, "", "", 0},
 	{"loop-limit", nil, "", "", 0},

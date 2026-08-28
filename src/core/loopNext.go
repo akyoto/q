@@ -11,12 +11,13 @@ func (f *Function) loopNext(loop *Loop) {
 		endOfLoopValue, _, _ := f.findIdentifier(loop.IteratorName)
 		one := f.Append(&ssa.Int{Int: 1})
 
-		nextIteration := f.Append(&ssa.BinaryOp{
+		nextIteration := &ssa.BinaryOp{
 			Op:    token.Add,
 			Left:  endOfLoopValue,
 			Right: one,
-		})
+		}
 
+		f.Block().Append(nextIteration)
 		f.Block().Identify(loop.IteratorName, nextIteration)
 	}
 
