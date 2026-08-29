@@ -6,6 +6,7 @@ import (
 
 	"git.urbach.dev/cli/q/src/asm"
 	"git.urbach.dev/cli/q/src/core"
+	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/go/color/ansi"
 )
@@ -32,36 +33,128 @@ func printAssembly(f *core.Function) {
 		register = ansi.Reset
 	)
 
+	rrr := func(name string, d cpu.Register, s cpu.Register, o cpu.Register) {
+		mnemonic.Print("  " + name)
+		register.Print(d)
+		other.Print(", ")
+		register.Print(s)
+		other.Print(", ")
+		register.Print(o)
+	}
+
+	rrn := func(name string, d cpu.Register, s cpu.Register, n int) {
+		mnemonic.Print("  " + name)
+		register.Print(d)
+		other.Print(", ")
+		register.Print(s)
+		other.Print(", ")
+		imm.Print(n)
+	}
+
+	rr := func(name string, d any, s any) {
+		mnemonic.Print("  " + name)
+		register.Print(d)
+		other.Print(", ")
+		register.Print(s)
+	}
+
+	dn := func(name string, d cpu.Register, n int) {
+		mnemonic.Print("  " + name)
+		register.Print(d)
+		other.Print(", ")
+		imm.Print(n)
+	}
+
+	regs := func(name string, registers []cpu.Register) {
+		mnemonic.Print("  " + name)
+
+		for i, reg := range registers {
+			if i != 0 {
+				other.Print(", ")
+			}
+
+			register.Print(reg)
+		}
+	}
+
+	printValue := func(value any) {
+		switch value := value.(type) {
+		case cpu.Register:
+			register.Print(value)
+		case int, int32:
+			imm.Print(value)
+		}
+	}
+
+	load := func(length byte, d cpu.Register, base cpu.Register, index any, scale bool) {
+		mnemonic.Printf("  load %db ", length)
+		register.Print(d)
+		other.Print(", [")
+		register.Print(base)
+		other.Print(" + ")
+		printValue(index)
+
+		if scale {
+			other.Print(" * ")
+			imm.Print(length)
+		}
+
+		other.Print("]")
+	}
+
+	store := func(length byte, base cpu.Register, index any, source any, scale bool) {
+		mnemonic.Printf("  store %db ", length)
+		other.Print("[")
+		register.Print(base)
+		other.Print(" + ")
+		printValue(index)
+
+		if scale {
+			other.Print(" * ")
+			imm.Print(length)
+		}
+
+		other.Print("], ")
+		printValue(source)
+	}
+
+	condition := func(c asm.Condition) string {
+		switch c {
+		case asm.Equal:
+			return "if == "
+		case asm.NotEqual:
+			return "if != "
+		case asm.Greater:
+			return "if.s > "
+		case asm.GreaterEqual:
+			return "if.s >= "
+		case asm.Less:
+			return "if.s < "
+		case asm.LessEqual:
+			return "if.s <= "
+		case asm.UnsignedGreater:
+			return "if.u > "
+		case asm.UnsignedGreaterEqual:
+			return "if.u >= "
+		case asm.UnsignedLess:
+			return "if.u < "
+		case asm.UnsignedLessEqual:
+			return "if.u <= "
+		default:
+			return ""
+		}
+	}
+
 	for _, instr := range f.Assembler.Instructions {
 		switch instr := instr.(type) {
 		case *asm.Add:
-			mnemonic.Print("  add ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("add ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.AddNumber:
-			mnemonic.Print("  add ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("add ", instr.Destination, instr.Source, instr.Number)
 		case *asm.And:
-			mnemonic.Print("  and ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("and ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.AndNumber:
-			mnemonic.Print("  and ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("and ", instr.Destination, instr.Source, instr.Number)
 		case *asm.Call:
 			mnemonic.Print("  call ")
 			label.Print(ssa.CleanLabel(instr.Label))
@@ -69,89 +162,35 @@ func printAssembly(f *core.Function) {
 			mnemonic.Print("  call extern ")
 			label.Print(instr.Library + "." + instr.Function)
 		case *asm.Compare:
-			mnemonic.Print("  compare ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
+			rr("compare ", instr.Destination, instr.Source)
 		case *asm.CompareAndSwap:
-			mnemonic.Print("  cas ")
-			register.Print(instr.OldValue)
-			other.Print(", ")
-			register.Print(instr.NewValue)
-			other.Print(", ")
-			register.Print(instr.Address)
+			rrr("cas ", instr.OldValue, instr.NewValue, instr.Address)
 		case *asm.CompareNumber:
-			mnemonic.Print("  compare ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			dn("compare ", instr.Destination, instr.Number)
 		case *asm.ConditionalSet:
-			switch instr.Condition {
-			case asm.Equal:
-				mnemonic.Print("  set if == ")
-			case asm.NotEqual:
-				mnemonic.Print("  set if != ")
-			case asm.Greater:
-				mnemonic.Print("  set if.s > ")
-			case asm.GreaterEqual:
-				mnemonic.Print("  set if.s >= ")
-			case asm.Less:
-				mnemonic.Print("  set if.s < ")
-			case asm.LessEqual:
-				mnemonic.Print("  set if.s <= ")
-			case asm.UnsignedGreater:
-				mnemonic.Print("  set if.u > ")
-			case asm.UnsignedGreaterEqual:
-				mnemonic.Print("  set if.u >= ")
-			case asm.UnsignedLess:
-				mnemonic.Print("  set if.u < ")
-			case asm.UnsignedLessEqual:
-				mnemonic.Print("  set if.u <= ")
-			default:
+			if suffix := condition(instr.Condition); suffix != "" {
+				mnemonic.Print("  set " + suffix)
+			} else {
 				ansi.Red.Print("  set: unknown condition: " + fmt.Sprint(instr.Condition) + " ")
 			}
 
 			register.Print(instr.Destination)
 		case *asm.Divide:
-			mnemonic.Print("  div.u ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("div.u ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.DivideSigned:
-			mnemonic.Print("  div.s ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("div.s ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.Jump:
 			switch instr.Condition {
-			case asm.Equal:
-				mnemonic.Print("  jump if == ")
-			case asm.NotEqual:
-				mnemonic.Print("  jump if != ")
-			case asm.Greater:
-				mnemonic.Print("  jump if.s > ")
-			case asm.GreaterEqual:
-				mnemonic.Print("  jump if.s >= ")
-			case asm.Less:
-				mnemonic.Print("  jump if.s < ")
-			case asm.LessEqual:
-				mnemonic.Print("  jump if.s <= ")
-			case asm.UnsignedGreater:
-				mnemonic.Print("  jump if.u > ")
-			case asm.UnsignedGreaterEqual:
-				mnemonic.Print("  jump if.u >= ")
-			case asm.UnsignedLess:
-				mnemonic.Print("  jump if.u < ")
-			case asm.UnsignedLessEqual:
-				mnemonic.Print("  jump if.u <= ")
 			case asm.None:
 				mnemonic.Print("  jump ")
 			default:
-				ansi.Red.Print("  jump: unknown condition: " + fmt.Sprint(instr.Condition) + " ")
+				suffix := condition(instr.Condition)
+
+				if suffix != "" {
+					mnemonic.Print("  jump " + suffix)
+				} else {
+					ansi.Red.Print("  jump: unknown condition: " + fmt.Sprint(instr.Condition) + " ")
+				}
 			}
 
 			label.Print(ssa.CleanLabel(instr.Label))
@@ -162,213 +201,62 @@ func printAssembly(f *core.Function) {
 				label.Printf("\n%s:", ssa.CleanLabel(instr.Name))
 			}
 		case *asm.Load:
-			mnemonic.Printf("  load %db ", instr.Length)
-			register.Print(instr.Destination)
-			other.Print(", [")
-			register.Print(instr.Base)
-			other.Print(" + ")
-			register.Print(instr.Index)
-			if instr.Scale {
-				other.Print(" * ")
-				imm.Print(instr.Length)
-			}
-			other.Print("]")
+			load(instr.Length, instr.Destination, instr.Base, instr.Index, instr.Scale)
 		case *asm.LoadFixedOffset:
-			mnemonic.Printf("  load %db ", instr.Length)
-			register.Print(instr.Destination)
-			other.Print(", [")
-			register.Print(instr.Base)
-			other.Print(" + ")
-			imm.Print(instr.Index)
-			if instr.Scale {
-				other.Print(" * ")
-				imm.Print(instr.Length)
-			}
-			other.Print("]")
+			load(instr.Length, instr.Destination, instr.Base, instr.Index, instr.Scale)
 		case *asm.Modulo:
-			mnemonic.Print("  mod.u ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("mod.u ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.ModuloSigned:
-			mnemonic.Print("  mod.s ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("mod.s ", instr.Destination, instr.Source, instr.Operand)
+		case *asm.Move:
+			rr("move ", instr.Destination, instr.Source)
 		case *asm.MoveLabel:
 			mnemonic.Print("  address ")
 			register.Print(instr.Destination)
 			other.Print(", ")
 			label.Print(ssa.CleanLabel(instr.Label))
-		case *asm.Move:
-			mnemonic.Print("  move ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
 		case *asm.MoveNumber:
-			mnemonic.Print("  move ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			dn("move ", instr.Destination, instr.Number)
 		case *asm.Multiply:
-			mnemonic.Print("  mul ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("mul ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.Negate:
-			mnemonic.Print("  neg ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
+			rr("neg ", instr.Destination, instr.Source)
 		case *asm.Or:
-			mnemonic.Print("  or ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("or ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.OrNumber:
-			mnemonic.Print("  or ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("or ", instr.Destination, instr.Source, instr.Number)
 		case *asm.Pop:
-			mnemonic.Print("  pop ")
-			for i, reg := range instr.Registers {
-				if i != 0 {
-					other.Print(", ")
-				}
-
-				register.Print(reg)
-			}
+			regs("pop ", instr.Registers)
 		case *asm.Push:
-			mnemonic.Print("  push ")
-			for i, reg := range instr.Registers {
-				if i != 0 {
-					other.Print(", ")
-				}
-
-				register.Print(reg)
-			}
+			regs("push ", instr.Registers)
 		case *asm.ReadSystemRegister:
-			mnemonic.Print("  move ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.SystemRegister)
+			rr("move ", instr.Destination, instr.SystemRegister)
 		case *asm.Return:
 			mnemonic.Print("  return")
 		case *asm.ShiftLeft:
-			mnemonic.Print("  shift << ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("shift << ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.ShiftLeftNumber:
-			mnemonic.Print("  shift << ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("shift << ", instr.Destination, instr.Source, instr.Number)
 		case *asm.ShiftRight:
-			mnemonic.Print("  shift.u >> ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("shift.u >> ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.ShiftRightNumber:
-			mnemonic.Print("  shift.u >> ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("shift.u >> ", instr.Destination, instr.Source, instr.Number)
 		case *asm.ShiftRightSigned:
-			mnemonic.Print("  shift.s >> ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("shift.s >> ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.ShiftRightSignedNumber:
-			mnemonic.Print("  shift.s >> ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("shift.s >> ", instr.Destination, instr.Source, instr.Number)
 		case *asm.Store:
-			mnemonic.Printf("  store %db ", instr.Length)
-			other.Print("[")
-			register.Print(instr.Base)
-			other.Print(" + ")
-			register.Print(instr.Index)
-			if instr.Scale {
-				other.Print(" * ")
-				imm.Print(instr.Length)
-			}
-			other.Print("], ")
-			register.Print(instr.Source)
+			store(instr.Length, instr.Base, instr.Index, instr.Source, instr.Scale)
 		case *asm.StoreFixedOffset:
-			mnemonic.Printf("  store %db ", instr.Length)
-			other.Print("[")
-			register.Print(instr.Base)
-			other.Print(" + ")
-			imm.Print(instr.Index)
-			if instr.Scale {
-				other.Print(" * ")
-				imm.Print(instr.Length)
-			}
-			other.Print("], ")
-			register.Print(instr.Source)
+			store(instr.Length, instr.Base, instr.Index, instr.Source, instr.Scale)
 		case *asm.StoreFixedOffsetNumber:
-			mnemonic.Printf("  store %db ", instr.Length)
-			other.Print("[")
-			register.Print(instr.Base)
-			other.Print(" + ")
-			imm.Print(instr.Index)
-			if instr.Scale {
-				other.Print(" * ")
-				imm.Print(instr.Length)
-			}
-			other.Print("], ")
-			imm.Print(instr.Number)
+			store(instr.Length, instr.Base, instr.Index, instr.Number, instr.Scale)
 		case *asm.StoreNumber:
-			mnemonic.Printf("  store %db ", instr.Length)
-			other.Print("[")
-			register.Print(instr.Base)
-			other.Print(" + ")
-			register.Print(instr.Index)
-			if instr.Scale {
-				other.Print(" * ")
-				imm.Print(instr.Length)
-			}
-			other.Print("], ")
-			imm.Print(instr.Number)
+			store(instr.Length, instr.Base, instr.Index, instr.Number, instr.Scale)
 		case *asm.Subtract:
-			mnemonic.Print("  sub ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("sub ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.SubtractNumber:
-			mnemonic.Print("  sub ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("sub ", instr.Destination, instr.Source, instr.Number)
 		case *asm.StackFrameStart:
 			mnemonic.Print("  frame start ")
 
@@ -388,24 +276,11 @@ func printAssembly(f *core.Function) {
 		case *asm.Syscall:
 			mnemonic.Print("  syscall")
 		case *asm.WriteSystemRegister:
-			mnemonic.Print("  move ")
-			register.Print(instr.SystemRegister)
-			other.Print(", ")
-			register.Print(instr.Source)
+			rr("move ", instr.SystemRegister, instr.Source)
 		case *asm.Xor:
-			mnemonic.Print("  xor ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			register.Print(instr.Operand)
+			rrr("xor ", instr.Destination, instr.Source, instr.Operand)
 		case *asm.XorNumber:
-			mnemonic.Print("  xor ")
-			register.Print(instr.Destination)
-			other.Print(", ")
-			register.Print(instr.Source)
-			other.Print(", ")
-			imm.Print(instr.Number)
+			rrn("xor ", instr.Destination, instr.Source, instr.Number)
 		default:
 			ansi.Red.Print("  unknown: " + reflect.TypeOf(instr).String())
 		}
