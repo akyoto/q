@@ -46,6 +46,8 @@ func TestNil(t *testing.T) {
 	assert.False(t, types.Is(types.Nil, types.AnyPointer))
 	assert.False(t, types.Is(types.AnyInt, types.AnyPointer))
 	assert.True(t, types.Is(types.AnyInt, types.Nil))
+	assert.True(t, types.Is(types.Nil, types.AnyInt))
+	assert.True(t, types.Is(types.Nil, types.Error))
 }
 
 func TestUnions(t *testing.T) {
