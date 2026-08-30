@@ -57,6 +57,7 @@ var errs = []struct {
 	{"ParameterCountMismatch.q", &core.ParameterCountMismatch{Function: "main.f", Count: 0, ExpectedCount: 1}},
 	{"ParameterCountMismatch2.q", &core.ParameterCountMismatch{Function: "main.f", Count: 2, ExpectedCount: 1}},
 	{"PartiallyUnknownIdentifier.q", &core.PartiallyUnknownIdentifier{Name: "x"}},
+	{"RegisterLimitExceeded.q", &core.RegisterLimitExceeded{Function: "fn", Required: 8, Available: core.MaxInputRegisters}},
 	{"ResourceAlreadyConsumed.q", &core.UnknownIdentifier{Name: "x"}},
 	{"ResourceAlreadyConsumed2.q", &core.UnknownIdentifier{Name: "x"}},
 	{"ResourceAlreadyConsumed3.q", &core.UnknownIdentifier{Name: "x"}},

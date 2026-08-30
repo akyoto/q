@@ -6,7 +6,12 @@ import (
 
 // Compile translates tokens to SSA form.
 func (f *Function) Compile() {
-	f.compileInputs()
+	err := f.compileInputs()
+
+	if err != nil {
+		f.Err = err
+		return
+	}
 
 	// From the body tokens we generate the AST which is
 	// a list of top-level instructions.

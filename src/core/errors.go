@@ -129,6 +129,17 @@ func (err *ParameterCountMismatch) Error() string {
 	return fmt.Sprintf("Not enough parameters in '%s' function call", err.Function)
 }
 
+// RegisterLimitExceeded error is created when a function's inputs exceed the portable register limit.
+type RegisterLimitExceeded struct {
+	Function  string
+	Required  int
+	Available int
+}
+
+func (err *RegisterLimitExceeded) Error() string {
+	return fmt.Sprintf("Function '%s' requires %d argument registers but the portable limit is %d", err.Function, err.Required, err.Available)
+}
+
 // ResourceNotConsumed error is created when a resource has not been consumed in an exit block.
 type ResourceNotConsumed struct {
 	TypeName string
