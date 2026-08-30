@@ -22,7 +22,7 @@ func (f *Function) compileInputs() error {
 
 		if strings.HasPrefix(input.Name, "_") {
 			if isStructType {
-				offset += len(structType.Fields) - 1
+				offset += inputRegisterCount(input) - 1
 			}
 
 			continue
