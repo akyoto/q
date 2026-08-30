@@ -8,4 +8,3 @@ main() {
 
 	assert a[0] == 1
 }
-

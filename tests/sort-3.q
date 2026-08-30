@@ -12,4 +12,3 @@ main() {
 	assert a[1] == 2
 	assert a[2] == 3
 }
-

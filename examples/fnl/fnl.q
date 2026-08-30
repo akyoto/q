@@ -28,8 +28,6 @@ main() {
 					io.writeLine(err)
 					run.exit(1)
 				}
-
-				return
 			}
 		}
 	}
