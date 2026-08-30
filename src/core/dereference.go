@@ -7,42 +7,32 @@ import (
 
 // dereference loads from memory if the value was a memory address, otherwise returns the raw value.
 func (f *Function) dereference(value ssa.Value) ssa.Value {
-	switch value := value.(type) {
+	var memory *ssa.Memory
+
+	switch v := value.(type) {
 	case *ssa.Global:
 		zero := f.Append(&ssa.Int{Int: 0})
 
-		memory := &ssa.Memory{
-			Address: value,
+		memory = &ssa.Memory{
+			Address: v,
 			Index:   zero,
-			Typ:     value.Typ.(*types.Pointer).To,
-		}
-
-		switch typ := value.Typ.(*types.Pointer).To.(type) {
-		case *types.Struct:
-			structure := f.loadFields(memory, typ, value.Source)
-			return structure
-		default:
-			load := f.Append(&ssa.Load{
-				Memory: memory,
-				Source: value.Source,
-			})
-
-			return load
+			Typ:     v.Typ.(*types.Pointer).To,
+			Source:  v.Source,
 		}
 	case *ssa.Memory:
-		switch typ := value.Typ.(type) {
-		case *types.Struct:
-			structure := f.loadFields(value, typ, value.Source)
-			return structure
-		default:
-			load := f.Append(&ssa.Load{
-				Memory: value,
-				Source: value.Source,
-			})
-
-			return load
-		}
+		memory = v
 	default:
 		return value
 	}
+
+	typ, isStruct := memory.Typ.(*types.Struct)
+
+	if isStruct {
+		return f.loadFields(memory, typ, memory.Source)
+	}
+
+	return f.Append(&ssa.Load{
+		Memory: memory,
+		Source: memory.Source,
+	})
 }
