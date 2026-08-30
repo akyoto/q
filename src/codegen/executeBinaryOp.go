@@ -59,9 +59,9 @@ func (f *Function) emitArithmeticImmediate(left *Step, source cpu.Register, dest
 	switch op {
 	case token.Add:
 		f.Assembler.Append(&asm.AddNumber{Destination: destination, Source: source, Number: number})
-	case token.And:
+	case token.And, token.LogicalAnd:
 		f.Assembler.Append(&asm.AndNumber{Destination: destination, Source: source, Number: number})
-	case token.Or:
+	case token.Or, token.LogicalOr:
 		f.Assembler.Append(&asm.OrNumber{Destination: destination, Source: source, Number: number})
 	case token.Sub:
 		f.Assembler.Append(&asm.SubtractNumber{Destination: destination, Source: source, Number: number})
@@ -85,9 +85,9 @@ func (f *Function) emitArithmeticRegister(left *Step, source cpu.Register, opera
 		f.Assembler.Append(&asm.Subtract{Destination: destination, Source: source, Operand: operand})
 	case token.Mul:
 		f.Assembler.Append(&asm.Multiply{Destination: destination, Source: source, Operand: operand})
-	case token.And:
+	case token.And, token.LogicalAnd:
 		f.Assembler.Append(&asm.And{Destination: destination, Source: source, Operand: operand})
-	case token.Or:
+	case token.Or, token.LogicalOr:
 		f.Assembler.Append(&asm.Or{Destination: destination, Source: source, Operand: operand})
 	case token.Xor:
 		f.Assembler.Append(&asm.Xor{Destination: destination, Source: source, Operand: operand})

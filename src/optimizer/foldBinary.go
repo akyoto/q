@@ -7,7 +7,7 @@ func foldBinary(op token.Kind, a int, b int) int {
 	switch op {
 	case token.Add:
 		return a + b
-	case token.And:
+	case token.And, token.LogicalAnd:
 		return a & b
 	case token.Div:
 		return a / b
@@ -15,7 +15,7 @@ func foldBinary(op token.Kind, a int, b int) int {
 		return a * b
 	case token.Mod:
 		return a % b
-	case token.Or:
+	case token.Or, token.LogicalOr:
 		return a | b
 	case token.Shl:
 		return a << b
