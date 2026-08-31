@@ -106,6 +106,8 @@ var tests = []run{
 	{"struct-modify-branch", nil, "", "", 0},
 	{"struct-field-branch", nil, "", "", 0},
 	{"struct-param-ignored", nil, "", "", 0},
+	{"struct-param-negative", nil, "", "", 0},
+	{"struct-param-negative-2", nil, "", "", 0},
 	{"string-by-value", nil, "", "Hello\n", 0},
 	{"circle", nil, "", "", 0},
 	{"circle-pointer", nil, "", "", 0},

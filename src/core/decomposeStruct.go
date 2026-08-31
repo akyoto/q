@@ -35,6 +35,8 @@ func (f *Function) decomposeStruct(args []ssa.Value, structure *ssa.Struct) []ss
 			continue
 		}
 
+		cursorMask := f.Append(&ssa.Int{Int: (1 << (size * 8)) - 1})
+		cursor = f.Append(&ssa.BinaryOp{Op: token.And, Left: cursor, Right: cursorMask})
 		sizeValue := f.Append(&ssa.Int{Int: size * 8})
 		shifted := f.Append(&ssa.BinaryOp{Op: token.Shl, Left: field, Right: sizeValue})
 		cursor = f.Append(&ssa.BinaryOp{Op: token.Or, Left: cursor, Right: shifted})

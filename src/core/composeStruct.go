@@ -68,6 +68,13 @@ func (f *Function) composeStruct(structType *types.Struct, input *ssa.Parameter,
 
 			mask := f.Append(&ssa.Int{Int: (1 << (fieldSize * 8)) - 1})
 			fieldValue = f.Append(&ssa.BinaryOp{Op: token.And, Left: shifted, Right: mask, Source: param.Source})
+
+			if types.IsSigned(field.Type) {
+				typed := f.Append(&ssa.Copy{Value: fieldValue, Typ: field.Type, Source: param.Source})
+				shift := f.Append(&ssa.Int{Int: 64 - fieldSize*8})
+				leftShifted := f.Append(&ssa.BinaryOp{Op: token.Shl, Left: typed, Right: shift})
+				fieldValue = f.Append(&ssa.BinaryOp{Op: token.Shr, Left: leftShifted, Right: shift, Source: param.Source})
+			}
 		}
 
 		f.Block().Identify(input.Name+"."+field.Name, fieldValue)
