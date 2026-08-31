@@ -8,6 +8,12 @@ func CompareRegisterNumber(code []byte, register cpu.Register, number int) []byt
 }
 
 // CompareRegisterRegister compares a register with a register and sets the status flags in the EFLAGS register.
-func CompareRegisterRegister(code []byte, registerA cpu.Register, registerB cpu.Register) []byte {
-	return encode(code, AddressDirect, registerB, registerA, 8, 0x39)
+func CompareRegisterRegister(code []byte, registerA cpu.Register, registerB cpu.Register, length byte) []byte {
+	opCode := uint32(0x39)
+
+	if length == 1 {
+		opCode = 0x38
+	}
+
+	return encode(code, AddressDirect, registerB, registerA, length, opCode)
 }

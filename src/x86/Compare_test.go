@@ -58,31 +58,56 @@ func TestCompareRegisterNumber(t *testing.T) {
 
 func TestCompareRegisterRegister(t *testing.T) {
 	usagePatterns := []struct {
-		Left  cpu.Register
-		Right cpu.Register
-		Code  []byte
+		Left   cpu.Register
+		Right  cpu.Register
+		Length byte
+		Code   []byte
 	}{
-		{x86.R0, x86.R15, []byte{0x4C, 0x39, 0xF8}},
-		{x86.R1, x86.R14, []byte{0x4C, 0x39, 0xF1}},
-		{x86.R2, x86.R13, []byte{0x4C, 0x39, 0xEA}},
-		{x86.R3, x86.R12, []byte{0x4C, 0x39, 0xE3}},
-		{x86.SP, x86.R11, []byte{0x4C, 0x39, 0xDC}},
-		{x86.R5, x86.R10, []byte{0x4C, 0x39, 0xD5}},
-		{x86.R6, x86.R9, []byte{0x4C, 0x39, 0xCE}},
-		{x86.R7, x86.R8, []byte{0x4C, 0x39, 0xC7}},
-		{x86.R8, x86.R7, []byte{0x49, 0x39, 0xF8}},
-		{x86.R9, x86.R6, []byte{0x49, 0x39, 0xF1}},
-		{x86.R10, x86.R5, []byte{0x49, 0x39, 0xEA}},
-		{x86.R11, x86.SP, []byte{0x49, 0x39, 0xE3}},
-		{x86.R12, x86.R3, []byte{0x49, 0x39, 0xDC}},
-		{x86.R13, x86.R2, []byte{0x49, 0x39, 0xD5}},
-		{x86.R14, x86.R1, []byte{0x49, 0x39, 0xCE}},
-		{x86.R15, x86.R0, []byte{0x49, 0x39, 0xC7}},
+		// 8-bit
+		{x86.R0, x86.R1, 1, []byte{0x38, 0xC8}},
+		{x86.R2, x86.R3, 1, []byte{0x38, 0xDA}},
+		{x86.R6, x86.R7, 1, []byte{0x40, 0x38, 0xFE}},
+		{x86.SP, x86.R5, 1, []byte{0x40, 0x38, 0xEC}},
+		{x86.R0, x86.SP, 1, []byte{0x40, 0x38, 0xE0}},
+		{x86.R2, x86.SP, 1, []byte{0x40, 0x38, 0xE2}},
+		{x86.R8, x86.R9, 1, []byte{0x45, 0x38, 0xC8}},
+		{x86.R15, x86.R8, 1, []byte{0x45, 0x38, 0xC7}},
+		{x86.R0, x86.R9, 1, []byte{0x44, 0x38, 0xC8}},
+
+		// 16-bit
+		{x86.R0, x86.R1, 2, []byte{0x66, 0x39, 0xC8}},
+		{x86.R2, x86.R3, 2, []byte{0x66, 0x39, 0xDA}},
+		{x86.R6, x86.R7, 2, []byte{0x66, 0x39, 0xFE}},
+		{x86.SP, x86.R5, 2, []byte{0x66, 0x39, 0xEC}},
+
+		// 32-bit
+		{x86.R0, x86.R1, 4, []byte{0x39, 0xC8}},
+		{x86.R2, x86.R3, 4, []byte{0x39, 0xDA}},
+		{x86.R6, x86.R7, 4, []byte{0x39, 0xFE}},
+		{x86.SP, x86.R5, 4, []byte{0x39, 0xEC}},
+
+		// 64-bit
+		{x86.R0, x86.R15, 8, []byte{0x4C, 0x39, 0xF8}},
+		{x86.R1, x86.R14, 8, []byte{0x4C, 0x39, 0xF1}},
+		{x86.R2, x86.R13, 8, []byte{0x4C, 0x39, 0xEA}},
+		{x86.R3, x86.R12, 8, []byte{0x4C, 0x39, 0xE3}},
+		{x86.SP, x86.R11, 8, []byte{0x4C, 0x39, 0xDC}},
+		{x86.R5, x86.R10, 8, []byte{0x4C, 0x39, 0xD5}},
+		{x86.R6, x86.R9, 8, []byte{0x4C, 0x39, 0xCE}},
+		{x86.R7, x86.R8, 8, []byte{0x4C, 0x39, 0xC7}},
+		{x86.R8, x86.R7, 8, []byte{0x49, 0x39, 0xF8}},
+		{x86.R9, x86.R6, 8, []byte{0x49, 0x39, 0xF1}},
+		{x86.R10, x86.R5, 8, []byte{0x49, 0x39, 0xEA}},
+		{x86.R11, x86.SP, 8, []byte{0x49, 0x39, 0xE3}},
+		{x86.R12, x86.R3, 8, []byte{0x49, 0x39, 0xDC}},
+		{x86.R13, x86.R2, 8, []byte{0x49, 0x39, 0xD5}},
+		{x86.R14, x86.R1, 8, []byte{0x49, 0x39, 0xCE}},
+		{x86.R15, x86.R0, 8, []byte{0x49, 0x39, 0xC7}},
 	}
 
 	for _, pattern := range usagePatterns {
-		t.Logf("cmp %s, %s", pattern.Left, pattern.Right)
-		code := x86.CompareRegisterRegister(nil, pattern.Left, pattern.Right)
+		t.Logf("cmp %db %s, %s", pattern.Length, pattern.Left, pattern.Right)
+		code := x86.CompareRegisterRegister(nil, pattern.Left, pattern.Right, pattern.Length)
 		assert.DeepEqual(t, code, pattern.Code)
 	}
 }

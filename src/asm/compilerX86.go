@@ -80,7 +80,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *CallRegister:
 		c.code = x86.CallRegister(c.code, instr.Address)
 	case *Compare:
-		c.code = x86.CompareRegisterRegister(c.code, instr.Destination, instr.Source)
+		c.code = x86.CompareRegisterRegister(c.code, instr.Destination, instr.Source, 8)
 	case *CompareAndSwap:
 		c.code = x86.Lock(c.code)
 		c.code = x86.CompareAndSwapFixedOffset(c.code, instr.Address, 0, instr.Length, instr.NewValue)
