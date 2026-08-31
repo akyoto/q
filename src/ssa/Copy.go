@@ -22,7 +22,7 @@ func (a *Copy) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Value == b.Value
+	return a.Value == b.Value && a.Typ == b.Typ
 }
 
 // Inputs returns the value to be copied.
