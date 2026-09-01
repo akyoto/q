@@ -32,6 +32,7 @@ var tests = []run{
 	{"shift", nil, "", "", 0},
 	{"shift-register", nil, "", "", 0},
 	{"shift-sign", nil, "", "", 0},
+	{"shift-range", nil, "", "", 0},
 	{"modulo", nil, "", "", 0},
 	{"signed", nil, "", "", 0},
 	{"negation", nil, "", "", 0},

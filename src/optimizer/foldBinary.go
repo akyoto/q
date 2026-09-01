@@ -18,9 +18,9 @@ func foldBinary(op token.Kind, a int, b int) int {
 	case token.Or, token.LogicalOr:
 		return a | b
 	case token.Shl:
-		return a << b
+		return a << (b & 63)
 	case token.Shr:
-		return a >> b
+		return a >> (b & 63)
 	case token.Sub:
 		return a - b
 	case token.Xor:
