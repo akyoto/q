@@ -67,6 +67,17 @@ loop:
 			return root
 		case t.Kind.IsLiteral():
 			root, cursor = handleLiteral(root, cursor, t)
+		case t.Kind.IsKeyword():
+			leaf := newLeaf(t)
+			leaf.Token.Kind = token.Invalid
+
+			if cursor == nil {
+				cursor = leaf
+				root = leaf
+			} else {
+				cursor.AddChild(leaf)
+				cursor = leaf
+			}
 		case !t.Kind.IsOperator():
 			// do nothing
 		case cursor == nil:

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -8,6 +9,10 @@ import (
 
 // evaluate converts an expression to an SSA value.
 func (f *Function) evaluate(expr *expression.Expression) (ssa.Value, error) {
+	if expr.Token.Kind == token.Invalid {
+		return nil, errors.New(InvalidExpression, f.File, expr.Source())
+	}
+
 	if expr.IsLeaf() {
 		return f.evaluateLeaf(expr)
 	}
