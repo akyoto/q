@@ -117,7 +117,7 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 
 		// Find all the registers that this instruction
 		// would clobber and mark them as used.
-		for _, reg := range f.clobberedRegisters(current.Value) {
+		for _, reg := range f.clobberedRegisters(current) {
 			usedRegisters.Set(reg)
 		}
 	}

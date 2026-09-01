@@ -7,8 +7,8 @@ import (
 )
 
 // clobberedRegisters returns the registers that are clobbered by the given instruction.
-func (f *Function) clobberedRegisters(instr ssa.Value) []cpu.Register {
-	switch instr := instr.(type) {
+func (f *Function) clobberedRegisters(step *Step) []cpu.Register {
+	switch instr := step.Value.(type) {
 	case *ssa.BinaryOp:
 		switch instr.Op {
 		case token.Div, token.Mod:
@@ -18,6 +18,8 @@ func (f *Function) clobberedRegisters(instr ssa.Value) []cpu.Register {
 		default:
 			return nil
 		}
+	case *ssa.Branch, *ssa.Jump:
+		return phiMoveClobbered(step)
 	case *ssa.Call:
 		return f.CPU.Call.Clobbered
 	case *ssa.CallExtern:

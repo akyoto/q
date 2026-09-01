@@ -20,6 +20,10 @@ func (f *Function) insertPhiMoves(step *Step) {
 
 	for _, live := range step.Live {
 		for phi := range live.Phis.All() {
+			if live.Register == phi.Register {
+				continue
+			}
+
 			predecessors := phi.Block.Predecessors
 
 			if !slices.Contains(predecessors, step.Block) {

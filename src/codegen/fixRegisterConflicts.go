@@ -40,7 +40,7 @@ func (f *Function) fixRegisterConflicts() {
 			}
 		}
 
-		clobbered := f.clobberedRegisters(step.Value)
+		clobbered := f.clobberedRegisters(step)
 
 		for i, live := range step.Live {
 			if live.Register == -1 {
