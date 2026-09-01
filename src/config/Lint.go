@@ -5,4 +5,5 @@ func (build *Build) Lint(enabled bool) {
 	build.LintAssertionDensity = enabled
 	build.LintBinaryOps = enabled
 	build.LintDeadCode = enabled
+	build.LintUnusedImports = enabled
 }

@@ -11,4 +11,5 @@ type Build struct {
 	LintAssertionDensity bool
 	LintBinaryOps        bool
 	LintDeadCode         bool
+	LintUnusedImports    bool
 }
