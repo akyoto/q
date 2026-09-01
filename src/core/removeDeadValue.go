@@ -23,25 +23,11 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 		return nil
 	}
 
-	phi, isPhi := value.(*ssa.Phi)
-	deadPhi := phi
+	_, isPhi := value.(*ssa.Phi)
 
-	for isPhi {
-		if phi.IsPartiallyUndefined() {
-			block.RemoveAt(i)
-			return nil
-		}
-
-		value = phi.FirstDefined()
-		phi, isPhi = value.(*ssa.Phi)
-	}
-
-	if deadPhi != nil {
-		for _, user := range value.Users() {
-			if user != deadPhi {
-				return nil
-			}
-		}
+	if isPhi {
+		block.RemoveAt(i)
+		return nil
 	}
 
 	structure, isFieldOfStruct := f.valueToStruct[value]

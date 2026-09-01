@@ -60,6 +60,7 @@ var tests = []run{
 	{"phi-reassign-copy", nil, "", "", 0},
 	{"phi-move-cycle", nil, "", "0\n14\n0\n", 0},
 	{"phi-move-reorder", nil, "", "0\n14\n0\n", 0},
+	{"phi-dead", nil, "", "", 0},
 	{"min", nil, "", "", 0},
 	{"max", nil, "", "", 0},
 	{"hello", nil, "", "Hello\nHello\nHello\n", 0},
