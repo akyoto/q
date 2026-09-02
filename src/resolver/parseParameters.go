@@ -13,8 +13,9 @@ import (
 func parseParameters(env *core.Environment, functions iter.Seq[*core.Function]) error {
 	for f := range functions {
 		f.Type = &types.Function{
-			Input:  make([]types.Type, len(f.Input)),
-			Output: make([]types.Type, len(f.Output)),
+			Input:    make([]types.Type, len(f.Input)),
+			Output:   make([]types.Type, len(f.Output)),
+			NoReturn: f.IsExit,
 		}
 
 		for i, input := range f.Input {

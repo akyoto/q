@@ -4,8 +4,9 @@ import "strings"
 
 // Function transforms inputs to new outputs.
 type Function struct {
-	Input  []Type
-	Output []Type
+	Input    []Type
+	Output   []Type
+	NoReturn bool
 }
 
 // Name returns the type name.

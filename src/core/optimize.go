@@ -53,6 +53,7 @@ func (f *Function) optimize() error {
 	// of values that are alive at the same time.
 	if f.Env.Build.Reorder {
 		optimizer.Reorder(f.IR)
+		optimizer.ReorderBlocks(&f.IR)
 	}
 
 	// Now that we have the list of users for each instruction,

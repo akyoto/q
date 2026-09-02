@@ -50,6 +50,7 @@ var tests = []run{
 	{"branch-both", nil, "", "", 0},
 	{"logical-values", nil, "", "0\n1\n0\n1\n0\n1\n1\n1\n", 0},
 	{"jump-near", nil, "", "", 0},
+	{"reorder-blocks", nil, "", "CDFH\n", 0},
 	{"switch", nil, "", "", 0},
 	{"switch-expression", nil, "", "", 0},
 	{"phi", nil, "", "", 0},
