@@ -65,6 +65,10 @@ func (f *Function) insertPhiMoves(step *Step) {
 		destination := move.Destination
 
 		switch {
+		case f.isSpilled(source) && f.isSpilled(destination):
+			tmp := f.findTempRegister(step.Live)
+			f.loadSpill(sourceSteps[source], tmp)
+			f.storeSpill(destinationSteps[destination], tmp)
 		case f.isSpilled(source):
 			f.loadSpill(sourceSteps[source], destination)
 		case f.isSpilled(destination):
