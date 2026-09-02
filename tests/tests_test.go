@@ -8,7 +8,7 @@ import (
 
 var tests = []run{
 	{"empty", nil, "", "", 0},
-	{"assert", nil, "", "", 1},
+	{"assert", nil, "", "1 == 0\n", 1},
 	{"binary", nil, "", "", 0},
 	{"octal", nil, "", "", 0},
 	{"hexadecimal", nil, "", "", 0},
@@ -97,7 +97,7 @@ var tests = []run{
 	{"factorial", nil, "", "", 0},
 	{"fibonacci", nil, "", "", 0},
 	{"memory", nil, "", "Hello\n", 0},
-	{"out-of-memory", nil, "", "", 1},
+	{"out-of-memory", nil, "", "(x as int) >= 0x1000\n", 1},
 	{"index-static", nil, "", "", 0},
 	{"index-dynamic", nil, "", "", 0},
 	{"struct", nil, "", "", 0},

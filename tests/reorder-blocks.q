@@ -44,7 +44,7 @@ main() {
 	assert x != 0
 
 	if y == 0 {
-		run.crash()
+		run.crash("y must not be zero")
 	}
 
 	io.write("\n")

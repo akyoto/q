@@ -1,9 +1,12 @@
+import io
+
 init() {
 	main.main()
 	exit(0)
 }
 
-crash() {
+crash(message string) {
+	io.writeLine(message)
 	exit(1)
 }
 

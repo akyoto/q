@@ -26,7 +26,11 @@ func (f *Function) compileAssert(assert *ast.Assert) error {
 		Typ:         crash.Type,
 	}
 
-	f.call(fn, nil, assert.Condition.Source())
+	source := assert.Condition.Source()
+	data := []byte(assert.Condition.SourceString(f.File.Bytes))
+	pointer := f.Append(&ssa.Bytes{Bytes: data, Source: source})
+	length := f.Append(&ssa.Int{Int: len(data), Source: source})
+	f.call(fn, []ssa.Value{pointer, length}, source)
 	f.Calls.Add(crash)
 	f.AddBlock(thenBlock)
 	return nil
