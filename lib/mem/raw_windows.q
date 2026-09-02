@@ -1,6 +1,6 @@
 rawAlloc(length uint) -> *uint8 {
 	x := kernel32.VirtualAlloc(0, length, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE)
-	assert x != 0
+	assert (x as int) >= 0x1000
 	return x
 }
 
