@@ -140,7 +140,11 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 	for reg := f.CPU.MaxRegisters; reg <= 63; reg++ {
 		if !usedRegisters.Has(reg) {
 			stackOffset := uint(reg-f.CPU.MaxRegisters) * 8
-			f.stackSize = stackOffset + 8
+
+			if stackOffset+8 > f.stackSize {
+				f.stackSize = stackOffset + 8
+			}
+
 			return reg
 		}
 	}
