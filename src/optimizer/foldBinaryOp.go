@@ -1,6 +1,8 @@
 package optimizer
 
 import (
+	"math"
+
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -80,8 +82,14 @@ func foldBinaryOp(ir ssa.IR, block *ssa.Block, binaryOp *ssa.BinaryOp, folded ma
 		return folded
 	}
 
-	if (binaryOp.Op == token.Div || binaryOp.Op == token.Mod) && right.Int == 0 {
-		return folded
+	if binaryOp.Op == token.Div || binaryOp.Op == token.Mod {
+		if right.Int == 0 {
+			return folded
+		}
+
+		if left.Int == math.MinInt64 && right.Int == -1 {
+			return folded
+		}
 	}
 
 	if leftIsBinOp && rightIsBinOp {
