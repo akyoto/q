@@ -19,7 +19,13 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 	right := f.ValueToStep[instr.Right]
 	live := slices.Concat(step.Live, []*Step{left, right})
 	source := f.resolveOperand(left, live)
-	operand := f.resolveOperand(right, live, source)
+	avoid := []cpu.Register{source}
+
+	if instr.Op == token.Div || instr.Op == token.Mod {
+		avoid = append(avoid, f.CPU.DivisorRestricted...)
+	}
+
+	operand := f.resolveOperand(right, live, avoid...)
 	destination := step.Register
 	isSpilled := f.isSpilled(destination)
 
