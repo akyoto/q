@@ -21,6 +21,7 @@ var examples = []run{
 	{"echo", nil, "Echo", "Echo", 0},
 	{"fnl", []string{"-remove"}, "Hello\n", "Hello", 0},
 	{"clock", nil, "", "", -1},
+	{"mandelbrot", nil, "", "", -1},
 	{"raylib", nil, "", "", -1},
 	{"readfile", nil, "", "", -1},
 	{"server", nil, "", "", -1},
