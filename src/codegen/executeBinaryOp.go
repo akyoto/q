@@ -30,7 +30,13 @@ func (f *Function) executeBinaryOp(step *Step, instr *ssa.BinaryOp) {
 	isSpilled := f.isSpilled(destination)
 
 	if isSpilled {
-		destination = f.findTempRegister(live, source, operand)
+		avoid = append(avoid, operand)
+
+		if instr.Op == token.Shl || instr.Op == token.Shr {
+			avoid = append(avoid, f.CPU.ShiftRestricted...)
+		}
+
+		destination = f.findTempRegister(live, avoid...)
 	}
 
 	if instr.Op.IsComparison() {
