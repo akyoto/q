@@ -29,11 +29,11 @@ func (a *BinaryOp) Equals(v Value) bool {
 		return false
 	}
 
-	if a.Left.Equals(b.Left) && a.Right.Equals(b.Right) {
+	if a.Left == b.Left && a.Right == b.Right {
 		return true
 	}
 
-	return a.Op.IsCommutative() && a.Left.Equals(b.Right) && a.Right.Equals(b.Left)
+	return a.Op.IsCommutative() && a.Left == b.Right && a.Right == b.Left
 }
 
 // Inputs returns the left and right operands.

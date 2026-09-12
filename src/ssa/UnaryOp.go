@@ -27,7 +27,7 @@ func (a *UnaryOp) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Operand.Equals(b.Operand)
+	return a.Operand == b.Operand
 }
 
 // Inputs returns the operand.
