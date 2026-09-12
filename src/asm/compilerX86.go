@@ -291,6 +291,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 			panic("modulo operand register cannot be R0")
 		}
 
+		if instr.Operand == x86.R2 {
+			panic("modulo operand register cannot be R2")
+		}
+
 		if instr.Source != x86.R0 {
 			c.code = x86.MoveRegisterRegister(c.code, x86.R0, instr.Source)
 		}
@@ -304,6 +308,10 @@ func (c *compilerX86) Compile(instr Instruction) {
 	case *ModuloSigned:
 		if instr.Operand == x86.R0 {
 			panic("modulo operand register cannot be R0")
+		}
+
+		if instr.Operand == x86.R2 {
+			panic("modulo operand register cannot be R2")
 		}
 
 		if instr.Source != x86.R0 {
