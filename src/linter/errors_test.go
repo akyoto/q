@@ -36,6 +36,8 @@ var errs = []struct {
 	{"IdenticalExpressions11.q", &linter.IdenticalExpressions{Operator: ">"}},
 	{"IdenticalExpressions12.q", &linter.IdenticalExpressions{Operator: ">="}},
 	{"MixedSignedUnsigned.q", &linter.MixedSignedUnsigned{Signed: "int64", Unsigned: "uint64"}},
+	{"Simplify.q", &linter.Simplify{To: "42"}},
+	{"Simplify2.q", &linter.Simplify{To: "x"}},
 }
 
 func TestErrors(t *testing.T) {

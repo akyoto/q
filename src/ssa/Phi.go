@@ -3,12 +3,14 @@ package ssa
 import (
 	"fmt"
 
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
 // Phi is the merging point of multiple values for the same name.
 type Phi struct {
-	Typ types.Type
+	Name string
+	Typ  types.Type
 	Arguments
 	Liveness
 }
@@ -24,6 +26,11 @@ func (p *Phi) DefinedArguments(yield func(Value) bool) {
 			return
 		}
 	}
+}
+
+// End returns zero.
+func (p *Phi) End() token.Position {
+	return 0
 }
 
 // Equals returns true if the phi nodes are equal.
@@ -64,9 +71,19 @@ func (p *Phi) IsPartiallyUndefined() bool {
 	return false
 }
 
+// Start returns zero.
+func (p *Phi) Start() token.Position {
+	return 0
+}
+
 // String returns a human-readable representation of the phi node.
 func (p *Phi) String() string {
 	return fmt.Sprintf("phi(%s)", p.Arguments.String())
+}
+
+// StringFrom returns the variable name.
+func (p *Phi) StringFrom([]byte) string {
+	return p.Name
 }
 
 // Type returns the type of the phi node.

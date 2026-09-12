@@ -116,6 +116,7 @@ func mergeOldIdentifier(successor *Block, name string, oldValue Value, newValue 
 	}
 
 	phi := &Phi{
+		Name:      name,
 		Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
 		Typ:       oldValue.Type(),
 	}
@@ -137,6 +138,7 @@ func mergeOldIdentifier(successor *Block, name string, oldValue Value, newValue 
 // mergeNewIdentifier handles the case where only the predecessor has a binding for this name.
 func mergeNewIdentifier(successor *Block, name string, newValue Value) {
 	phi := &Phi{
+		Name:      name,
 		Arguments: make([]Value, len(successor.Predecessors)-1, len(successor.Predecessors)),
 		Typ:       newValue.Type(),
 	}
