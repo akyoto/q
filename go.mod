@@ -5,6 +5,5 @@ go 1.27
 require (
 	git.urbach.dev/go/assert v0.0.0-20250606150337-559d3d3afcda
 	git.urbach.dev/go/color v0.0.0-20260611210405-88230d7d1daa
+	golang.org/x/sys v0.48.0
 )
-
-require golang.org/x/sys v0.47.0
