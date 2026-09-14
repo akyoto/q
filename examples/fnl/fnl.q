@@ -2,7 +2,6 @@ import cli
 import fs
 import io
 import mem
-import run
 
 Mode const {
 	Status = 0
@@ -26,7 +25,6 @@ main() {
 					io.write(args[i])
 					io.write("': ")
 					io.writeLine(err)
-					run.exit(1)
 				}
 			}
 		}
