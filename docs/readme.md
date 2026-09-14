@@ -135,6 +135,11 @@ See more in the [examples](../examples) directory.
 - [Contributing](contributing.md)
 - [FAQ](faq.md)
 
+## Editors
+
+- [VS Code](https://git.urbach.dev/extra/vscode-q)
+- [Zed](https://git.urbach.dev/extra/zed-q)
+
 ## Community
 
 - [IRC](https://irc.urbach.dev/#q)

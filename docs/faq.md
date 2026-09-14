@@ -73,11 +73,6 @@ Advanced benchmarks for throughput have not been conducted yet, but the followin
 
 The backend is built on a [Static Single Assignment (SSA)](https://en.wikipedia.org/wiki/Static_single-assignment_form) intermediate representation, the same approach used by mature compilers such as `gcc`, `go`, and `llvm`. SSA greatly simplifies the implementation of common optimization passes, allowing the compiler to produce relatively high-quality assembly code despite the project's early stage of development.
 
-## Any editor extensions?
-
- - **VS Code**: [vscode-q](https://git.urbach.dev/extra/vscode-q)
-- **Zed**: [zed-q](https://git.urbach.dev/extra/zed-q)
-
 ## Can I use it for scripting?
 
 Yes. The compiler can run an entire script within a few microseconds.
