@@ -75,9 +75,8 @@ The backend is built on a [Static Single Assignment (SSA)](https://en.wikipedia.
 
 ## Any editor extensions?
 
-- **Neovim**: Planned.
-- **VS Code**: Clone the [vscode-q](https://git.urbach.dev/extra/vscode-q) repository into your extensions folder (it enables syntax highlighting).
-- **Zed**: Planned.
+ - **VS Code**: [vscode-q](https://git.urbach.dev/extra/vscode-q)
+- **Zed**: [zed-q](https://git.urbach.dev/extra/zed-q)
 
 ## Can I use it for scripting?
 
