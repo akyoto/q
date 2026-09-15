@@ -5,7 +5,7 @@
 		<a href="#features">Features</a> ·
 		<a href="#quickstart">Quickstart</a> ·
 		<a href="#examples">Examples</a> ·
-		<a href="#docs">Docs</a>
+		<a href="#links">Links</a>
 	</p>
 	<p>
 		A minimal, dependency-free language that compiles to tiny, fast machine code.
@@ -124,35 +124,37 @@ fizzbuzz(x int) {
 
 See more in the [examples](../examples) directory.
 
-## Docs
+## Links
+
+### Docs
 
 - [Motivation](motivation.md)
 - [Design](design.md)
 - [Reference](reference.md)
+- [FAQ](faq.md)
+
+### Project
+
 - [Source](source.md)
 - [Changes](changes.md)
 - [Security](security.md)
 - [Contributing](contributing.md)
-- [FAQ](faq.md)
+- [License](https://urbach.dev/license)
 
-## Editors
+### Editors
 
 - [VS Code](https://git.urbach.dev/extra/vscode-q)
 - [Zed](https://git.urbach.dev/extra/zed-q)
 
-## Community
+### Community
 
 - [IRC](https://irc.urbach.dev/#q)
 - [Discord](https://discord.gg/4q3DJFsTvB)
 
-## Donate
+### Donate
 
 - [GitHub](https://github.com/sponsors/akyoto)
 - [Kofi](https://ko-fi.com/akyoto)
-
-## License
-
-See the [license documentation](https://urbach.dev/license).
 
 ## Copyright
 
