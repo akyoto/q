@@ -21,7 +21,7 @@ func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, gro
 		}
 
 		node.precedence = precedence(node.Token.Kind)
-		node.Token.Position = tokens[groupPosition].Position
+		coverGroup(node, tokens, groupPosition, t)
 		identifier := cursor
 
 		if cursor.Token.Kind.IsOperator() && node.precedence > cursor.precedence {
@@ -66,13 +66,9 @@ func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, gro
 	group := Parse(tokens[groupPosition:i])
 	group.precedence = math.MaxInt8
 
-	if group.Token.Kind == token.Invalid {
-		group.Token.Position = tokens[groupPosition].Position
-	}
-
 	if t.Kind == token.ArrayEnd {
 		array := New()
-		array.Token.Position = tokens[groupPosition].Position
+		coverGroup(array, tokens, groupPosition, t)
 		array.Token.Kind = token.Array
 		array.precedence = precedence(token.Array)
 
@@ -86,6 +82,10 @@ func handleGroupEnd(tokens token.List, root *Expression, cursor *Expression, gro
 		}
 
 		return root, cursor
+	}
+
+	if !group.Token.Kind.IsLiteral() {
+		coverGroup(group, tokens, groupPosition, t)
 	}
 
 	if cursor == nil {

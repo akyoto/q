@@ -108,11 +108,15 @@ func (expr *Expression) Source() token.Source {
 	start := expr.Token.Position
 	end := expr.Token.End()
 
-	for leaf := range expr.Leaves() {
-		if leaf.Token.Position < start {
-			start = leaf.Token.Position
-		} else if leaf.Token.End() > end {
-			end = leaf.Token.End()
+	for _, child := range expr.Children {
+		source := child.Source()
+
+		if source.Start() < start {
+			start = source.Start()
+		}
+
+		if source.End() > end {
+			end = source.End()
 		}
 	}
 
@@ -122,37 +126,7 @@ func (expr *Expression) Source() token.Source {
 // SourceString returns the string that was parsed in this expression.
 func (expr *Expression) SourceString(source []byte) string {
 	region := expr.Source()
-	open := 0
-	left := token.Position(0)
-	right := token.Position(0)
-
-	for i := region.Start(); i < region.End(); i++ {
-		switch source[i] {
-		case '(':
-			open++
-		case ')':
-			if open > 0 {
-				open--
-			} else {
-				left++
-
-				for source[region.Start()-left] != '(' {
-					left++
-				}
-			}
-		}
-	}
-
-	for open > 0 {
-		for source[region.End()+right] != ')' {
-			right++
-		}
-
-		right++
-		open--
-	}
-
-	return string(source[region.Start()-left : region.End()+right])
+	return string(source[region.Start():region.End()])
 }
 
 // String generates a textual representation of the expression.

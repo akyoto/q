@@ -79,10 +79,10 @@ func TestSource(t *testing.T) {
 	assert.Equal(t, expr.SourceString(src), string(src))
 
 	assert.Equal(t, expr.Children[0].String(src), "(- (+ 1 2) (* 3 4))")
-	assert.Equal(t, expr.Children[0].SourceString(src), "1+2-3*4")
+	assert.Equal(t, expr.Children[0].SourceString(src), "(1+2-3*4)")
 
 	assert.Equal(t, expr.Children[1].String(src), "(+ (- (* 5 6) 7) 8)")
-	assert.Equal(t, expr.Children[1].SourceString(src), "5*6-7+8")
+	assert.Equal(t, expr.Children[1].SourceString(src), "(5*6-7+8)")
 
 	assert.Equal(t, expr.Children[0].Children[0].String(src), "(+ 1 2)")
 	assert.Equal(t, expr.Children[0].Children[0].SourceString(src), "1+2")
