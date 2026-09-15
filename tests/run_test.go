@@ -63,9 +63,7 @@ func (test *run) RunBuild(t *testing.T, name string, build *config.Build) {
 		}
 
 		originalHash := uint32(0)
-		tmpDir := os.TempDir()
-		err := os.MkdirAll(tmpDir, 0o755)
-		assert.Nil(t, err)
+		tmpDir := t.TempDir()
 		executable := build.Executable()
 		executable = filepath.Join(tmpDir, filepath.Base(executable))
 
