@@ -17,28 +17,42 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 		usedRegisters.Set(f.CPU.FramePointer)
 	}
 
-	binaryOp, isBinaryOp := step.Value.(*ssa.BinaryOp)
+	switch value := step.Value.(type) {
+	case *ssa.BinaryOp:
+		if !value.Op.IsComparison() {
+			switch f.build.Arch {
+			case config.ARM:
+				if value.Op == token.Mod {
+					left := f.ValueToStep[value.Left]
 
-	if isBinaryOp && !binaryOp.Op.IsComparison() {
-		switch f.build.Arch {
-		case config.ARM:
-			if binaryOp.Op == token.Mod {
-				left := f.ValueToStep[binaryOp.Left]
-				right := f.ValueToStep[binaryOp.Right]
+					if left.Register != -1 {
+						usedRegisters.Set(left.Register)
+					}
 
-				if left.Register != -1 {
-					usedRegisters.Set(left.Register)
+					right := f.ValueToStep[value.Right]
+
+					if right.Register != -1 {
+						usedRegisters.Set(right.Register)
+					}
 				}
+			case config.X86:
+				right := f.ValueToStep[value.Right]
 
 				if right.Register != -1 {
 					usedRegisters.Set(right.Register)
 				}
 			}
-		case config.X86:
-			right := f.ValueToStep[binaryOp.Right]
+		}
+	case *ssa.Phi:
+		for index, pre := range step.Block.Predecessors {
+			region := f.BlockToRegion[pre]
+			last := f.Steps[region.End-1]
+			incoming := value.Arguments[index]
 
-			if right.Register != -1 {
-				usedRegisters.Set(right.Register)
+			for _, live := range last.Live {
+				if live.Register != -1 && live.Value != incoming {
+					usedRegisters.Set(live.Register)
+				}
 			}
 		}
 	}
