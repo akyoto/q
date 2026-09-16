@@ -12,7 +12,7 @@
 
 |            |    arm64 |  x86-64 |
 | ---------- | -------: | ------: |
-| 🐧 Linux   |  0.7 KiB | 0.7 KiB |
+| 🐧 Linux   |  1.0 KiB | 1.0 KiB |
 | 🍏 Mac     | 32.3 KiB | 8.2 KiB |
 | 🪟 Windows |  1.7 KiB | 1.7 KiB |
 
