@@ -135,9 +135,9 @@ func TestAssembler(t *testing.T) {
 	final.Merge(f)
 	final.Merge(g)
 
-	code, _, _ := final.Compile(&config.Build{Arch: config.ARM})
+	code, _, _, _ := final.Compile(&config.Build{Arch: config.ARM})
 	assert.NotNil(t, code)
 
-	code, _, _ = final.Compile(&config.Build{Arch: config.X86})
+	code, _, _, _ = final.Compile(&config.Build{Arch: config.X86})
 	assert.NotNil(t, code)
 }

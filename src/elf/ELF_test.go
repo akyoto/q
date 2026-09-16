@@ -9,7 +9,7 @@ import (
 )
 
 func TestWrite(t *testing.T) {
-	elf.Write(&exe.Discard{}, &config.Build{Arch: config.ARM}, nil, nil)
-	elf.Write(&exe.Discard{}, &config.Build{Arch: config.X86}, nil, nil)
-	elf.Write(&exe.Discard{}, &config.Build{Arch: config.UnknownArch}, nil, nil)
+	elf.Write(&exe.Discard{}, &config.Build{Arch: config.ARM}, nil, nil, nil)
+	elf.Write(&exe.Discard{}, &config.Build{Arch: config.X86}, nil, nil, nil)
+	elf.Write(&exe.Discard{}, &config.Build{Arch: config.UnknownArch}, nil, nil, nil)
 }

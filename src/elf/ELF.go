@@ -17,11 +17,14 @@ type ELF struct {
 }
 
 // Write writes the ELF64 format to the given writer.
-func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte) {
+func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataBytes []byte, labels map[string]int) {
 	x := exe.New(HeaderEnd, build.FileAlign(), build.MemoryAlign(), build.Congruent(), false)
 	x.AddSections(codeBytes, dataBytes)
 	code := x.Sections[0]
 	data := x.Sections[1]
+	symtab, strtab := buildSymbols(int64(code.MemoryOffset), len(code.Bytes), labels)
+	symtabOffset := exe.Align(data.FileOffset+len(data.Bytes), 8)
+	strtabOffset := symtabOffset + len(symtab)
 
 	elf := &ELF{
 		Header: Header{
@@ -65,7 +68,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 		},
 	}
 
-	elf.AddSections()
+	elf.AddSections(int64(symtabOffset), int64(len(symtab)), int64(strtabOffset), int64(len(strtab)))
 	binary.Write(writer, binary.LittleEndian, &elf.Header)
 	binary.Write(writer, binary.LittleEndian, &elf.CodeHeader)
 	binary.Write(writer, binary.LittleEndian, &elf.DataHeader)
@@ -75,4 +78,7 @@ func Write(writer io.WriteSeeker, build *config.Build, codeBytes []byte, dataByt
 	writer.Write(code.Bytes)
 	writer.Seek(int64(data.Padding), io.SeekCurrent)
 	writer.Write(data.Bytes)
+	writer.Seek(int64(symtabOffset-(data.FileOffset+len(data.Bytes))), io.SeekCurrent)
+	writer.Write(symtab)
+	writer.Write(strtab)
 }

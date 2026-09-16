@@ -29,11 +29,17 @@ func Write(writer io.WriteSeeker, env *core.Environment) {
 	}
 
 	build := env.Build
-	code, data, libs := program.Compile(build)
+	code, data, libs, labels := program.Compile(build)
 
 	switch build.OS {
 	case config.Linux:
-		elf.Write(writer, build, code, data)
+		functions := make(map[string]int, 32)
+
+		for f := range env.LiveFunctions() {
+			functions[f.FullName] = labels[f.FullName]
+		}
+
+		elf.Write(writer, build, code, data, functions)
 	case config.Mac:
 		macho.Write(writer, build, code, data, libs)
 	case config.Windows:

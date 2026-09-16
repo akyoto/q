@@ -30,7 +30,7 @@ func (a *Assembler) Last() Instruction {
 }
 
 // Compile compiles the instructions to machine code.
-func (a *Assembler) Compile(build *config.Build) (code []byte, data []byte, libs dll.List) {
+func (a *Assembler) Compile(build *config.Build) (code []byte, data []byte, libs dll.List, labels map[string]int) {
 	data, dataLabels := a.Data.Finalize()
 
 	c := compiler{
@@ -64,7 +64,7 @@ func (a *Assembler) Compile(build *config.Build) (code []byte, data []byte, libs
 	c.ApplyPatches(c.earlyPatches)
 	c.AddDataLabels()
 	c.ApplyPatches(c.latePatches)
-	return c.code, c.data, c.libraries
+	return c.code, c.data, c.libraries, c.labels
 }
 
 // Merge combines the contents of this assembler with another one.
