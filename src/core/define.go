@@ -63,7 +63,7 @@ func (f *Function) define(left *expression.Expression, right *expression.Express
 		if isResource {
 			f.Block().Unidentify(rightValue)
 		} else {
-			rightValue = f.copy(rightValue, left.Source())
+			rightValue = f.copy(rightValue, right.Source())
 		}
 	}
 
