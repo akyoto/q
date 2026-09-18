@@ -4,7 +4,7 @@ sqrt(n uint) -> uint {
 	}
 
 	x := n
-	y := (x + n / x) >> 1
+	y := (x + 1) >> 1
 
 	loop {
 		if y >= x {
