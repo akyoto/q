@@ -4,6 +4,7 @@ import (
 	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/expression"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -18,6 +19,10 @@ func (f *Function) evaluateUnary(expr *expression.Expression) (ssa.Value, error)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if expr.Token.Kind == token.Not && !types.Is(leftValue.Type(), types.Bool) {
+		return nil, errors.New(&TypeMismatch{Encountered: leftValue.Type().Name(), Expected: types.Bool.Name()}, f.File, left.Source())
 	}
 
 	_, isStruct := leftValue.Type().(*types.Struct)
