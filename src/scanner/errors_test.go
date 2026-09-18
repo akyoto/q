@@ -50,6 +50,7 @@ var errs = []struct {
 	{"MissingParameterType.q", scanner.MissingParameterType},
 	{"UnexpectedIdentifier.q", &scanner.UnexpectedIdentifier{Keyword: "func", Name: "main"}},
 	{"UnexpectedIdentifier2.q", &scanner.UnexpectedIdentifier{Keyword: "fn", Name: "main"}},
+	{"UnexpectedIdentifier3.q", &scanner.UnexpectedIdentifier{Keyword: "def", Name: "main"}},
 	{"UnknownImport.q", &scanner.UnknownImport{Package: "unknown"}},
 }
 

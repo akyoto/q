@@ -45,7 +45,7 @@ func (s *scanner) scanFile(path string, pkg string) error {
 			default:
 				name := tokens[i].StringFrom(file.Bytes)
 
-				if name == "func" || name == "fn" {
+				if name == "func" || name == "fn" || name == "def" {
 					return errors.New(&UnexpectedIdentifier{Keyword: name, Name: next.StringFrom(file.Bytes)}, file, tokens[i])
 				}
 
