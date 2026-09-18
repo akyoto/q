@@ -38,6 +38,7 @@ func (f *Function) evaluateCast(expr *expression.Expression) (ssa.Value, error) 
 		Value:  leftValue,
 		Typ:    typ,
 		Source: left.Source(),
+		Read:   true,
 	})
 
 	return v, nil

@@ -44,7 +44,7 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 		}
 
 		if f.Block().IsIdentified(fromValue) {
-			fromValue = f.copy(fromValue, from.Source())
+			fromValue = f.copy(fromValue, from.Source(), isIdentifierRead(from))
 		}
 
 		beforeLoop.Identify(name, fromValue)

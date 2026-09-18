@@ -3,7 +3,7 @@ package core
 import "git.urbach.dev/cli/q/src/ssa"
 
 // copy creates a copy of a value and appends it to the current block.
-func (f *Function) copy(value ssa.Value, source ssa.Source) ssa.Value {
+func (f *Function) copy(value ssa.Value, source ssa.Source, read bool) ssa.Value {
 	structValue, isStruct := value.(*ssa.Struct)
 
 	if isStruct {
@@ -13,7 +13,7 @@ func (f *Function) copy(value ssa.Value, source ssa.Source) ssa.Value {
 		}
 
 		for i, field := range structValue.Arguments {
-			c.Arguments[i] = f.copy(field, source)
+			c.Arguments[i] = f.copy(field, source, read)
 		}
 
 		return c
@@ -23,6 +23,7 @@ func (f *Function) copy(value ssa.Value, source ssa.Source) ssa.Value {
 		Value:  value,
 		Typ:    value.Type(),
 		Source: source,
+		Read:   read,
 	}
 
 	f.Block().Append(c)

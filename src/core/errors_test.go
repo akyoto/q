@@ -117,6 +117,8 @@ var errs = []struct {
 	{"UnusedValue4.q", &core.UnusedValue{Value: "1"}},
 	{"UnusedValue5.q", &core.UnusedValue{Value: "x - 1"}},
 	{"UnusedValue6.q", &core.UnusedValue{Value: "x"}},
+	{"UnusedValue7.q", &core.UnusedValue{Value: "1"}},
+	{"UnusedValue8.q", &core.UnusedValue{Value: "1 + 1"}},
 	{"VariableAlreadyExists.q", &core.VariableAlreadyExists{Name: "x"}},
 	{"VariableAlreadyExists2.q", &core.VariableAlreadyExists{Name: "x"}},
 }

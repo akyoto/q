@@ -12,6 +12,7 @@ type Copy struct {
 	Typ   types.Type
 	Liveness
 	Source
+	Read bool
 }
 
 // Equals returns true if the copies are equal.

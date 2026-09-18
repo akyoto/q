@@ -12,7 +12,7 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 		return nil
 	}
 
-	if len(value.Users()) > 0 {
+	if f.hasLiveUser(value) {
 		return nil
 	}
 
@@ -51,7 +51,12 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 	source := value.(errors.Source)
 
 	if !f.Env.Build.LintDeadCode || source.Start() == 0 || source.End() == 0 {
-		block.RemoveAt(i)
+		copy, isCopy := value.(*ssa.Copy)
+
+		if !isCopy || copy.Read {
+			block.RemoveAt(i)
+		}
+
 		return nil
 	}
 
