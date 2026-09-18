@@ -16,7 +16,7 @@ func lintBinaryOp(binOp *ssa.BinaryOp, file *fs.File) error {
 		return nil
 	}
 
-	if binOp.Left == binOp.Right {
+	if isIdentical(binOp.Left, binOp.Right) {
 		switch binOp.Op {
 		case token.Sub, token.Div, token.Mod, token.And, token.Or, token.Xor, token.Equal, token.NotEqual, token.Less, token.LessEqual, token.Greater, token.GreaterEqual:
 			return errors.New(&IdenticalExpressions{Operator: binOp.Op.String()}, file, binOp.Source)
