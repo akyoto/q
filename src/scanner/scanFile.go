@@ -43,6 +43,12 @@ func (s *scanner) scanFile(path string, pkg string) error {
 			case token.Invalid:
 				return errors.New(&InvalidCharacter{Character: next.StringFrom(file.Bytes)}, file, next)
 			default:
+				name := tokens[i].StringFrom(file.Bytes)
+
+				if name == "func" || name == "fn" {
+					return errors.New(&UnexpectedIdentifier{Keyword: name, Name: next.StringFrom(file.Bytes)}, file, tokens[i])
+				}
+
 				return errors.NewAt(InvalidFunctionDefinition, file, next.Position)
 			}
 		case token.Const:

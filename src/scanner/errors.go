@@ -42,6 +42,16 @@ func (err *IsNotDirectory) Error() string {
 	return fmt.Sprintf("'%s' is not a directory", err.Path)
 }
 
+// UnexpectedIdentifier error is created when 'func' or 'fn' is found at the top level.
+type UnexpectedIdentifier struct {
+	Keyword string
+	Name    string
+}
+
+func (err *UnexpectedIdentifier) Error() string {
+	return fmt.Sprintf("Q does not use the '%s' keyword: write %s() {} instead", err.Keyword, err.Name)
+}
+
 // UnknownImport error is created when a package import failed.
 type UnknownImport struct {
 	Package string
