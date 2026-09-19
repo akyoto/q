@@ -152,6 +152,7 @@ var tests = []run{
 	{"function-pointer", nil, "", "", 0},
 	{"cast", nil, "", "", 0},
 	{"cast-deduplication", nil, "", "", 0},
+	{"array-assign", nil, "", "", 0},
 	{"array-int", nil, "", "", 0},
 	{"array-int-custom", nil, "", "", 0},
 	{"array-int-parameter", nil, "", "", 0},

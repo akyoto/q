@@ -3,6 +3,7 @@ package core
 import (
 	"git.urbach.dev/cli/q/src/ast"
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 )
 
 // compileStoreArray compiles an assignment to an element in an array.
@@ -25,6 +26,17 @@ func (f *Function) compileStoreArray(node *ast.Assign) error {
 
 	if !isMemory {
 		panic("not a memory address")
+	}
+
+	if node.Expression.Token.Kind != token.Assign {
+		leftValue = f.dereference(memory)
+
+		rightValue = f.Append(&ssa.BinaryOp{
+			Op:     removeAssign(node.Expression.Token.Kind),
+			Left:   leftValue,
+			Right:  rightValue,
+			Source: node.Expression.Source(),
+		})
 	}
 
 	return f.store(memory, rightValue)
