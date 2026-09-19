@@ -29,6 +29,10 @@ func (a *BinaryOp) Equals(v Value) bool {
 		return false
 	}
 
+	if a.Type() != b.Type() {
+		return false
+	}
+
 	if a.Left == b.Left && a.Right == b.Right {
 		return true
 	}
