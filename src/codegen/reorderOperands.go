@@ -22,6 +22,7 @@ func (f *Function) reorderOperands(step *Step, instr *ssa.BinaryOp) {
 
 	if rightStep.Register == step.Register {
 		instr.Left, instr.Right = instr.Right, instr.Left
+		instr.Swapped = !instr.Swapped
 		return
 	}
 
@@ -33,6 +34,7 @@ func (f *Function) reorderOperands(step *Step, instr *ssa.BinaryOp) {
 
 			if !leftIsCall || rightStep.Index > leftStep.Index {
 				instr.Left, instr.Right = instr.Right, instr.Left
+				instr.Swapped = !instr.Swapped
 				return
 			}
 		}
@@ -43,6 +45,7 @@ func (f *Function) reorderOperands(step *Step, instr *ssa.BinaryOp) {
 
 	if leftIsInt && !rightIsInt {
 		instr.Left, instr.Right = instr.Right, instr.Left
+		instr.Swapped = !instr.Swapped
 		return
 	}
 }
