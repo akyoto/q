@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/set"
 )
@@ -11,7 +10,7 @@ import (
 type Function struct {
 	IR
 	CPU               *cpu.CPU
-	build             *config.Build
+	arch              arch
 	FullName          string
 	Assembler         asm.Assembler
 	Preserved         set.Ordered[cpu.Register]

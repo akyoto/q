@@ -62,7 +62,7 @@ func (f *Function) emitComparison(step *Step, left *Step, right *Step, source cp
 
 	if step.Register != -1 {
 		unsigned := types.IsUnsigned(left.Value.Type()) || types.IsUnsigned(right.Value.Type())
-		f.conditionalSet(destination, op, unsigned)
+		f.arch.conditionalSet(f, destination, op, unsigned)
 	}
 }
 

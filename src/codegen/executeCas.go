@@ -4,9 +4,7 @@ import (
 	"slices"
 
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
-	"git.urbach.dev/cli/q/src/x86"
 )
 
 func (f *Function) executeCas(step *Step, instr *ssa.Cas) {
@@ -17,15 +15,7 @@ func (f *Function) executeCas(step *Step, instr *ssa.Cas) {
 	addressRegister := f.resolveOperand(address, live)
 	oldValueRegister := f.resolveOperand(oldValue, live, addressRegister)
 	newValueRegister := f.resolveOperand(newValue, live, addressRegister, oldValueRegister)
-
-	if f.build.Arch == config.X86 && oldValueRegister != x86.R0 {
-		f.Assembler.Append(&asm.Move{
-			Destination: x86.R0,
-			Source:      oldValueRegister,
-		})
-
-		oldValueRegister = x86.R0
-	}
+	oldValueRegister = f.arch.casOldValue(f, oldValueRegister)
 
 	f.Assembler.Append(&asm.CompareAndSwap{
 		OldValue: oldValueRegister,

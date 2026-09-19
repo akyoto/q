@@ -3,7 +3,6 @@ package codegen
 import (
 	"slices"
 
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
@@ -19,28 +18,15 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 
 	switch value := step.Value.(type) {
 	case *ssa.BinaryOp:
-		if !value.Op.IsComparison() {
-			switch f.build.Arch {
-			case config.ARM:
-				if value.Op == token.Mod {
-					left := f.ValueToStep[value.Left]
+		for _, operand := range value.Inputs() {
+			if !f.arch.operandConflict(value, operand) {
+				continue
+			}
 
-					if left.Register != -1 {
-						usedRegisters.Set(left.Register)
-					}
+			operandStep := f.ValueToStep[operand]
 
-					right := f.ValueToStep[value.Right]
-
-					if right.Register != -1 {
-						usedRegisters.Set(right.Register)
-					}
-				}
-			case config.X86:
-				right := f.ValueToStep[value.Right]
-
-				if right.Register != -1 {
-					usedRegisters.Set(right.Register)
-				}
+			if operandStep.Register != -1 {
+				usedRegisters.Set(operandStep.Register)
 			}
 		}
 	case *ssa.Phi:
@@ -62,24 +48,11 @@ func (f *Function) findFreeRegister(step *Step) cpu.Register {
 		// If it is used as an operand, the operand restrictions of the architecture apply.
 		binaryOp, isBinaryOp := current.Value.(*ssa.BinaryOp)
 
+		if isBinaryOp && current.Register != -1 && f.arch.operandConflict(binaryOp, step.Value) {
+			usedRegisters.Set(current.Register)
+		}
+
 		if isBinaryOp && !binaryOp.Op.IsComparison() {
-			switch f.build.Arch {
-			case config.ARM:
-				if current.Register != -1 && binaryOp.Op == token.Mod {
-					if binaryOp.Left == step.Value {
-						usedRegisters.Set(current.Register)
-					}
-
-					if binaryOp.Right == step.Value {
-						usedRegisters.Set(current.Register)
-					}
-				}
-			case config.X86:
-				if current.Register != -1 && binaryOp.Right == step.Value {
-					usedRegisters.Set(current.Register)
-				}
-			}
-
 			switch binaryOp.Op {
 			case token.Div, token.Mod:
 				if binaryOp.Right == step.Value {

@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/cpu"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -110,9 +109,7 @@ func (f *Function) storeSpillNumber(step *Step, typ types.Type, number int) {
 		typ = types.Int
 	}
 
-	unsigned := types.IsUnsigned(typ)
-
-	if f.build.Arch == config.X86 && (!unsigned && cpu.SizeInt(number) <= 4 || unsigned && cpu.SizeUint(number) <= 4) {
+	if f.arch.canStoreNumber(typ, number) {
 		f.Assembler.Append(&asm.StoreFixedOffsetNumber{
 			Index:  f.spillOffset(step.Register),
 			Base:   f.CPU.StackPointer,

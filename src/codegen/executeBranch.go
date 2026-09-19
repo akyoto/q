@@ -2,11 +2,9 @@ package codegen
 
 import (
 	"git.urbach.dev/cli/q/src/asm"
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
-	"git.urbach.dev/cli/q/src/x86"
 )
 
 func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
@@ -35,11 +33,7 @@ func (f *Function) executeBranch(step *Step, instr *ssa.Branch) {
 			}
 		case *ssa.Cas:
 			op = token.Equal
-			operand := f.ValueToStep[condition.Arguments[1]].Register
-
-			if f.build.Arch == config.X86 {
-				operand = x86.R0
-			}
+			operand := f.arch.casResultRegister(f.ValueToStep[condition.Arguments[1]].Register)
 
 			f.Assembler.Append(&asm.CompareNumber{
 				Destination: operand,

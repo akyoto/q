@@ -32,7 +32,7 @@ func (f *Function) executeUnaryOp(step *Step, instr *ssa.UnaryOp) {
 			Number:      0,
 		})
 
-		f.conditionalSet(destination, token.Equal, false)
+		f.arch.conditionalSet(f, destination, token.Equal, false)
 	default:
 		panic("not implemented: " + instr.String())
 	}

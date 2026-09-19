@@ -12,7 +12,7 @@ func (f *Function) CompileToAssembly(ir ssa.IR, build *config.Build, hasStackFra
 	f.hasStackFrame = hasStackFrame
 	f.hasExternCalls = hasExternCalls
 	f.needsFramePointer = (hasStackFrame || hasExternCalls) && !f.IsExit
-	f.build = build
+	f.arch = newArch(build)
 	f.IR = createSteps(ir)
 
 	for _, step := range slices.Backward(f.Steps) {

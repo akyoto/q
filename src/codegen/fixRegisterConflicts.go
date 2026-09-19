@@ -3,8 +3,6 @@ package codegen
 import (
 	"slices"
 
-	"git.urbach.dev/cli/q/src/arm"
-	"git.urbach.dev/cli/q/src/config"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/token"
 )
@@ -35,7 +33,7 @@ func (f *Function) fixRegisterConflicts() {
 				}
 			}
 		case *ssa.Register:
-			if f.build.Arch == config.ARM && step.Register == arm.SP {
+			if f.arch.conflictsWithStackPointer(step.Register) {
 				f.assignFreeRegister(step)
 			}
 		}

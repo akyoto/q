@@ -55,7 +55,7 @@ func (f *Function) needsRegister(s *Step) bool {
 			// Check if we can encode single-use integers as immediates
 			// directly embedded in the instruction itself rather than
 			// requiring an extra register and a move.
-			return !f.canEncodeNumber(users[0], instr)
+			return !f.arch.canEncodeNumber(users[0], instr)
 		}
 	case *ssa.Memory:
 		return false
