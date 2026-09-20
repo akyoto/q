@@ -14,7 +14,20 @@ func inputRegisterCount(input *ssa.Parameter) int {
 	}
 
 	if structType.Size() > 16 {
-		return len(structType.Fields)
+		registers := 0
+
+		for _, field := range structType.Fields {
+			nestedType, isNested := types.Unwrap(field.Type).(*types.Struct)
+
+			if isNested {
+				registers += inputRegisterCount(&ssa.Parameter{Typ: nestedType})
+				continue
+			}
+
+			registers++
+		}
+
+		return registers
 	}
 
 	size := 0

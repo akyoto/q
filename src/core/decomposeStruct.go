@@ -10,6 +10,13 @@ import (
 func (f *Function) decomposeStruct(args []ssa.Value, structure *ssa.Struct) []ssa.Value {
 	if structure.Typ.Size() > 16 {
 		for _, field := range structure.Arguments {
+			nested, isNested := field.(*ssa.Struct)
+
+			if isNested {
+				args = f.decomposeStruct(args, nested)
+				continue
+			}
+
 			args = append(args, field)
 		}
 

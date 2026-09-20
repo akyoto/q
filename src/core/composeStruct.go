@@ -12,6 +12,23 @@ func (f *Function) composeStruct(structType *types.Struct, input *ssa.Parameter,
 
 	if structType.Size() > 16 {
 		for _, field := range structType.Fields {
+			nestedType, isNested := types.Unwrap(field.Type).(*types.Struct)
+
+			if isNested {
+				nestedInput := &ssa.Parameter{
+					Name:   input.Name + "." + field.Name,
+					Typ:    nestedType,
+					Tokens: input.Tokens,
+					Source: input.Source,
+				}
+
+				nestedStructure, next := f.composeStruct(nestedType, nestedInput, i, offset)
+				f.Block().Identify(nestedInput.Name, nestedStructure)
+				fields = append(fields, nestedStructure)
+				offset = next + 1
+				continue
+			}
+
 			param := &ssa.Parameter{
 				Index:  uint8(offset + i),
 				Name:   input.Name + "." + field.Name,
