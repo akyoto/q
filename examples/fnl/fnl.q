@@ -3,10 +3,12 @@ import fs
 import io
 import mem
 
-Mode const {
-	Status = 0
-	Add = 1
-	Remove = 2
+const {
+	Mode {
+		Status = 0
+		Add = 1
+		Remove = 2
+	}
 }
 
 main() {

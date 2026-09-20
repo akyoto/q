@@ -1,8 +1,10 @@
-Key const {
-	Right = 262
-	Left = 263
-	Down = 264
-	Up = 265
+const {
+	Key {
+		Right = 262
+		Left = 263
+		Down = 264
+		Up = 265
+	}
 }
 
 extern {

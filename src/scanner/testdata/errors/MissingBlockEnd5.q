@@ -1,1 +1,2 @@
-MyEnum const {
+const {
+	MyEnum {

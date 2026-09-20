@@ -14,6 +14,7 @@ var (
 	InvalidParameterName       = errors.String("Invalid parameter name")
 	InvalidTopLevel            = errors.String("Invalid top level instruction")
 	MissingAssign              = errors.String("Missing '='")
+	MissingAssignOrBlock       = errors.String("Missing '=' or '{'")
 	MissingBlockStart          = errors.String("Missing '{'")
 	MissingBlockEnd            = errors.String("Missing '}'")
 	MissingExpression          = errors.String("Missing expression")

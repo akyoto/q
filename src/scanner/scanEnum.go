@@ -10,7 +10,7 @@ import (
 // scanEnum scans a namespaced block of constants.
 func (s *scanner) scanEnum(file *fs.File, tokens token.List, i int) (int, error) {
 	enumName := tokens[i].StringFrom(file.Bytes)
-	i += 2
+	i++
 
 	if tokens[i].Kind != token.BlockStart {
 		return i, errors.NewAt(MissingBlockStart, file, tokens[i].Position)

@@ -29,6 +29,7 @@ var errs = []struct {
 	{"InvalidTopLevel2.q", scanner.InvalidTopLevel},
 	{"InvalidTopLevel3.q", scanner.InvalidTopLevel},
 	{"MissingAssign.q", scanner.MissingAssign},
+	{"MissingAssignOrBlock.q", scanner.MissingAssignOrBlock},
 	{"MissingBlockEnd.q", scanner.MissingBlockEnd},
 	{"MissingBlockEnd2.q", scanner.MissingBlockEnd},
 	{"MissingBlockEnd3.q", scanner.MissingBlockEnd},

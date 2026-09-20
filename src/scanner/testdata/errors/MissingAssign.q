@@ -1,3 +1,5 @@
 const {
-	x
+	MyEnum {
+		x
+	}
 }

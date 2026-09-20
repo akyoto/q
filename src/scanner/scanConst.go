@@ -7,7 +7,7 @@ import (
 	"git.urbach.dev/cli/q/src/token"
 )
 
-// scanConst scans a block of constants.
+// scanConst scans a block of constants and enums.
 func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error) {
 	i++
 
@@ -23,7 +23,24 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 		switch tokens[i].Kind {
 		case token.Identifier:
 			if start == -1 {
-				start = i
+				next := tokens[i+1]
+
+				switch next.Kind {
+				case token.BlockStart:
+					var err error
+					i, err = s.scanEnum(file, tokens, i)
+
+					if err != nil {
+						return i, err
+					}
+
+					i++
+					continue
+				case token.Assign:
+					start = i
+				default:
+					return i, errors.NewAt(MissingAssignOrBlock, file, next.Position)
+				}
 			}
 		case token.BlockStart:
 			blockLevel++
@@ -48,13 +65,13 @@ func (s *scanner) scanConst(file *fs.File, tokens token.List, i int) (int, error
 					File:  file,
 					Value: value,
 				}
+
+				start = -1
 			}
 
 			if tokens[i].Kind == token.BlockEnd {
 				return i, nil
 			}
-
-			start = -1
 		}
 
 		i++

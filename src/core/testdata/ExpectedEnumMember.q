@@ -1,4 +1,6 @@
-MyEnum const {}
+const {
+	MyEnum {}
+}
 
 main() {
 	MyEnum.1()
