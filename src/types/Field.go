@@ -7,8 +7,8 @@ type Field struct {
 	Type   Type
 	Name   string
 	Tokens token.List
-	Index  uint8
-	Offset uint8
+	Index  uint64
+	Offset uint64
 }
 
 // String returns the name of the struct.

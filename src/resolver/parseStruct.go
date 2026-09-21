@@ -46,8 +46,8 @@ func parseStruct(env *core.Environment, structure *types.Struct, processed map[*
 		}
 
 		field.Type = typ
-		field.Index = uint8(i)
-		field.Offset = uint8(offset)
+		field.Index = uint64(i)
+		field.Offset = uint64(offset)
 		offset += field.Type.Size()
 	}
 
