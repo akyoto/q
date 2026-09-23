@@ -40,6 +40,23 @@
 | Mark a type as a resource            | `!`                          | 🚧 Experimental |
 | Mark a parameter as unused           | `_`                          | ✔️ Stable       |
 
+## Types
+
+|        | Description                         |
+| ------ | ----------------------------------- |
+| int8   | 8-bit signed integer                |
+| int16  | 16-bit signed integer               |
+| int32  | 32-bit signed integer               |
+| int64  | 64-bit signed integer               |
+| uint8  | 8-bit unsigned integer              |
+| uint16 | 16-bit unsigned integer             |
+| uint32 | 32-bit unsigned integer             |
+| uint64 | 64-bit unsigned integer             |
+| int    | Signed integer (native size)        |
+| uint   | Unsigned integer (native size)      |
+| byte   | Alias of `uint8` (non-scalar use)   |
+| string | Alias of `[]byte` (slice of bytes)  |
+
 ## Tokens
 
 Source files are preprocessed by the tokenizer which groups the individual bytes into several token types:
