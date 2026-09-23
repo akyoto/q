@@ -68,6 +68,26 @@ func (env *Environment) TypeFromTokens(tokens token.List, file *fs.File) (types.
 		return env.Pointer(typ), nil
 	}
 
+	if len(tokens) >= 4 && tokens[0].Kind == token.ArrayStart && tokens[1].Kind == token.Number && tokens[2].Kind == token.ArrayEnd {
+		count, err := toNumber(tokens[1], file)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if count <= 0 {
+			return nil, errors.New(InvalidNumber, file, tokens[1])
+		}
+
+		element, err := env.TypeFromTokens(tokens[3:], file)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return env.Array(element, count), nil
+	}
+
 	if len(tokens) >= 2 && tokens[0].Kind == token.ArrayStart && tokens[1].Kind == token.ArrayEnd {
 		typ, err := env.TypeFromTokens(tokens[2:], file)
 

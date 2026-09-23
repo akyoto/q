@@ -8,9 +8,34 @@ import (
 
 // typeCache contains reusable type objects.
 type typeCache struct {
+	arrayTypes    sync.Map
 	pointerTypes  sync.Map
 	resourceTypes sync.Map
 	sliceTypes    sync.Map
+}
+
+// arrayKey identifies a static array type by element type and count.
+type arrayKey struct {
+	typ   types.Type
+	count int
+}
+
+// Array returns the type that is a static array of the given type and count.
+func (c *typeCache) Array(typ types.Type, count int) types.Type {
+	key := arrayKey{
+		typ:   typ,
+		count: count,
+	}
+
+	existing, ok := c.arrayTypes.Load(key)
+
+	if ok {
+		return existing.(types.Type)
+	}
+
+	new := types.Array(typ, count)
+	existing, _ = c.arrayTypes.LoadOrStore(key, new)
+	return existing.(types.Type)
 }
 
 // Pointer returns the type that points to the given type.
