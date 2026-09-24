@@ -7,10 +7,13 @@ import (
 
 // decomposeSlice decomposes a slices to its pointer, type and length.
 func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type, ssa.Value, error) {
-	addressType := types.Unwrap(addressValue.Type())
-
-	switch addressType.(type) {
+	switch addressType := types.Unwrap(addressValue.Type()).(type) {
 	case *types.Struct:
+		if addressType.IsArray() {
+			pointerType := &types.Pointer{To: addressType.Fields[0].Type}
+			return addressValue.(*ssa.Memory).Address, pointerType, nil, nil
+		}
+
 		structure, isStructure := addressValue.(*ssa.Struct)
 
 		if !isStructure {

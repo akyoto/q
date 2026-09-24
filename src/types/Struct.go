@@ -35,6 +35,11 @@ func (s *Struct) FieldByName(name string) *Field {
 	return nil
 }
 
+// IsArray returns true if the struct is an array.
+func (s *Struct) IsArray() bool {
+	return len(s.Fields) > 0 && s.Fields[0].Name == "0"
+}
+
 // Name returns the name of the struct.
 func (s *Struct) Name() string {
 	return s.name

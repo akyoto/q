@@ -164,6 +164,7 @@ var tests = []run{
 	{"array-struct-copy", nil, "", "", 0},
 	{"array-struct-copy-call", nil, "", "", 0},
 	{"array-string", nil, "", "HelloWorld", 0},
+	{"array-static", nil, "", "", 0},
 	{"signed-load-8", nil, "", "", 0},
 	{"signed-load-16", nil, "", "", 0},
 	{"signed-load-32", nil, "", "", 0},

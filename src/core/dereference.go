@@ -28,6 +28,10 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 	typ, isStruct := memory.Typ.(*types.Struct)
 
 	if isStruct {
+		if typ.IsArray() {
+			return value
+		}
+
 		return f.loadFields(memory, typ, memory.Source)
 	}
 
