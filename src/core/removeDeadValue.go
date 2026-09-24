@@ -8,10 +8,6 @@ import (
 
 // removeDeadValue checks if the value is dead and removes it.
 func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, folded map[ssa.Value]struct{}) error {
-	if !value.IsPure() {
-		return nil
-	}
-
 	if f.hasLiveUser(value) {
 		return nil
 	}
@@ -20,6 +16,10 @@ func (f *Function) removeDeadValue(block *ssa.Block, i int, value ssa.Value, fol
 
 	if isFolded {
 		block.RemoveAt(i)
+		return nil
+	}
+
+	if !value.IsPure() {
 		return nil
 	}
 

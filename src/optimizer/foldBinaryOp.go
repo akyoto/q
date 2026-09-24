@@ -19,6 +19,20 @@ func foldBinaryOp(ir ssa.IR, block *ssa.Block, binaryOp *ssa.BinaryOp, folded ma
 		return folded
 	}
 
+	if binaryOp.Op == token.Add || binaryOp.Op == token.Sub {
+		leftZero, leftIsZero := binaryOp.Left.(*ssa.Int)
+
+		if leftIsZero && leftZero.Int == 0 && binaryOp.Op == token.Add {
+			return foldTo(ir, binaryOp, binaryOp.Right, folded)
+		}
+
+		rightZero, rightIsZero := binaryOp.Right.(*ssa.Int)
+
+		if rightIsZero && rightZero.Int == 0 {
+			return foldTo(ir, binaryOp, binaryOp.Left, folded)
+		}
+	}
+
 	isAssociative := binaryOp.Op.IsAssociative()
 	foldLeft := binaryOp.Left
 	leftBinOp, leftIsBinOp := foldLeft.(*ssa.BinaryOp)

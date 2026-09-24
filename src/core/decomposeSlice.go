@@ -16,12 +16,6 @@ func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type
 			address := memory.Address
 
 			if memory.Index != nil {
-				integer, isInt := memory.Index.(*ssa.Int)
-
-				if isInt && integer.Int == 0 {
-					return address, pointerType, nil, nil
-				}
-
 				index := memory.Index
 
 				if memory.Scale {

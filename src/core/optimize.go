@@ -49,19 +49,19 @@ func (f *Function) optimize() error {
 	// to calculate the list of users.
 	f.ComputeUsers()
 
-	// Move values closer to their first use to reduce the number
-	// of values that are alive at the same time.
-	if f.Env.Build.Reorder {
-		optimizer.Reorder(f.IR)
-		optimizer.ReorderBlocks(&f.IR)
-	}
-
 	// Now that we have the list of users for each instruction,
 	// we can filter out dead values.
 	err := f.removeDeadCode(folded)
 
 	if err != nil {
 		return err
+	}
+
+	// Move values closer to their first use to reduce the number
+	// of values that are alive at the same time.
+	if f.Env.Build.Reorder {
+		optimizer.Reorder(f.IR)
+		optimizer.ReorderBlocks(&f.IR)
 	}
 
 	// Resource types that are still defined at the end of a
