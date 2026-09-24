@@ -2,6 +2,7 @@ package core
 
 import (
 	"git.urbach.dev/cli/q/src/ssa"
+	"git.urbach.dev/cli/q/src/token"
 	"git.urbach.dev/cli/q/src/types"
 )
 
@@ -11,7 +12,24 @@ func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type
 	case *types.Struct:
 		if addressType.IsArray() {
 			pointerType := &types.Pointer{To: addressType.Fields[0].Type}
-			return addressValue.(*ssa.Memory).Address, pointerType, nil, nil
+			memory := addressValue.(*ssa.Memory)
+			address := memory.Address
+
+			if memory.Index != nil {
+				index, isInt := memory.Index.(*ssa.Int)
+
+				if isInt && index.Int == 0 {
+					return address, pointerType, nil, nil
+				}
+
+				address = f.Append(&ssa.BinaryOp{
+					Op:    token.Add,
+					Left:  address,
+					Right: memory.Index,
+				})
+			}
+
+			return address, pointerType, nil, nil
 		}
 
 		structure, isStructure := addressValue.(*ssa.Struct)
