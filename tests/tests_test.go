@@ -167,6 +167,7 @@ var tests = []run{
 	{"array-static", nil, "", "", 0},
 	{"array-static-global", nil, "", "", 0},
 	{"array-static-global-grid", nil, "", "", 0},
+	{"array-static-loop", nil, "", "", 0},
 	{"signed-load-8", nil, "", "", 0},
 	{"signed-load-16", nil, "", "", 0},
 	{"signed-load-32", nil, "", "", 0},

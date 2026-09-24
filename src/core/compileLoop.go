@@ -55,6 +55,15 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 		// We check that the condition to jump to the loop body is true,
 		// otherwise we jump to the loop exit.
 		f.AddBlock(loopHead)
+
+		counter := &ssa.Phi{
+			Name:      name,
+			Typ:       fromValue.Type(),
+			Arguments: ssa.Arguments{fromValue},
+		}
+
+		loopHead.InsertAt(0, counter)
+		loopHead.ReplaceIdentifier(name, fromValue, counter)
 		toValue, err := f.evaluateRight(to)
 
 		if err != nil {
@@ -67,7 +76,7 @@ func (f *Function) compileLoop(node *ast.Loop) error {
 
 		condition := f.Append(&ssa.BinaryOp{
 			Op:    token.Less,
-			Left:  fromValue,
+			Left:  counter,
 			Right: toValue,
 		})
 
