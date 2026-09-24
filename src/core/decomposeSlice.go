@@ -11,21 +11,31 @@ func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type
 	switch addressType := types.Unwrap(addressValue.Type()).(type) {
 	case *types.Struct:
 		if addressType.IsArray() {
-			pointerType := &types.Pointer{To: addressType.Fields[0].Type}
+			pointerType := f.Env.Pointer(addressType.Fields[0].Type)
 			memory := addressValue.(*ssa.Memory)
 			address := memory.Address
 
 			if memory.Index != nil {
-				index, isInt := memory.Index.(*ssa.Int)
+				integer, isInt := memory.Index.(*ssa.Int)
 
-				if isInt && index.Int == 0 {
+				if isInt && integer.Int == 0 {
 					return address, pointerType, nil, nil
+				}
+
+				index := memory.Index
+
+				if memory.Scale {
+					size := memory.Typ.Size()
+
+					if size != 1 {
+						index = f.Append(&ssa.BinaryOp{Op: token.Mul, Left: memory.Index, Right: f.Append(&ssa.Int{Int: size})})
+					}
 				}
 
 				address = f.Append(&ssa.BinaryOp{
 					Op:    token.Add,
 					Left:  address,
-					Right: memory.Index,
+					Right: index,
 				})
 			}
 
@@ -42,6 +52,12 @@ func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type
 		length := structure.Arguments[1]
 		return pointer, pointer.Type(), length, nil
 	case *types.Pointer:
+		structure, isStructure := addressType.To.(*types.Struct)
+
+		if isStructure && structure.IsArray() {
+			return addressValue, f.Env.Pointer(structure.Fields[0].Type), nil, nil
+		}
+
 		return addressValue, addressType, nil, nil
 	default:
 		panic("not implemented")
