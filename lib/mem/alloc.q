@@ -3,9 +3,10 @@ alloc(length uint) -> (buffer ![]byte) {
 
 	if heap.current + aligned > heap.max {
 		size := (heap.max - heap.min + 32) * 2 as uint
+		needed := (aligned + 32 + (pageSize - 1)) & -pageSize
 
-		if size < pageSize {
-			size = (aligned + (pageSize - 1)) & -pageSize
+		if size < needed {
+			size = needed
 		}
 
 		x := rawAlloc(size)

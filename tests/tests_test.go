@@ -100,6 +100,7 @@ var tests = []run{
 	{"fibonacci", nil, "", "", 0},
 	{"memory", nil, "", "Hello\n", 0},
 	{"out-of-memory", nil, "", "(x as int) >= 0x1000\n", 1},
+	{"memory-growth", nil, "", "", 0},
 	{"index-static", nil, "", "", 0},
 	{"index-dynamic", nil, "", "", 0},
 	{"struct", nil, "", "", 0},
