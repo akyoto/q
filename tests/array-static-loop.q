@@ -5,8 +5,8 @@ Map {
 main() {
 	map := new(Map)
 
-	loop x := 0..4 {
-		loop y := 0..4 {
+	loop y := 0..map.grid.len {
+		loop x := 0..map.grid[y].len {
 			map.grid[y][x] = x * y
 		}
 	}

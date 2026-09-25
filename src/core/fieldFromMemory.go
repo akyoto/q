@@ -23,6 +23,10 @@ func (f *Function) fieldFromMemory(leftValue ssa.Value, left *expression.Express
 		return nil, errors.New(&NotDataStruct{TypeName: leftUnwrapped.Name()}, f.File, left.Source())
 	}
 
+	if structure.IsArray() && fieldName == "len" {
+		return f.Append(&ssa.Int{Int: len(structure.Fields), Source: right.Source()}), nil
+	}
+
 	field := structure.FieldByName(fieldName)
 
 	if field == nil {
