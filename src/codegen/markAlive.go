@@ -66,6 +66,10 @@ func (f *Function) markAlive(live *Step, block *ssa.Block, use *Step, first bool
 			continue
 		}
 
+		if f.isDeadAtEnd(live, pre) {
+			continue
+		}
+
 		f.markAlive(live, pre, use, false)
 	}
 }

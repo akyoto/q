@@ -9,6 +9,7 @@ func createSteps(ir ssa.IR) IR {
 	steps := make([]*Step, count)
 	valueToStep := make(map[ssa.Value]*Step, count)
 	blockToRegion := make(map[*ssa.Block]region, len(ir.Blocks))
+	blockToSuccessors := make(map[*ssa.Block][]*ssa.Block)
 	i := Index(0)
 
 	for _, block := range ir.Blocks {
@@ -20,6 +21,10 @@ func createSteps(ir ssa.IR) IR {
 			step.Register = -1
 			steps[i] = step
 			i++
+		}
+
+		for _, pre := range block.Predecessors {
+			blockToSuccessors[pre] = append(blockToSuccessors[pre], block)
 		}
 
 		blockToRegion[block] = region{
@@ -40,5 +45,5 @@ func createSteps(ir ssa.IR) IR {
 		}
 	}
 
-	return IR{steps, valueToStep, blockToRegion}
+	return IR{steps, valueToStep, blockToRegion, blockToSuccessors}
 }
