@@ -11,7 +11,7 @@ import (
 func (f *Function) deleteResources(filter map[string]ssa.Value) {
 	var (
 		names       []string
-		identifiers = f.Block().Identifiers.After
+		identifiers = f.Block().Identifiers.After.Raw()
 	)
 
 	if len(identifiers) == 0 {

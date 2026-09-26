@@ -22,7 +22,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 
 		// Append the if.then block
 		f.AddBlock(thenBlock)
-		before := f.Block().Identifiers.Before
+		before := f.Block().Identifiers.Before.Raw()
 		err = f.compileAST(branch.Body)
 
 		if err != nil {
@@ -40,7 +40,7 @@ func (f *Function) compileIf(branch *ast.If) error {
 			return err
 		}
 
-		before := f.Block().Identifiers.After
+		before := f.Block().Identifiers.After.Raw()
 
 		// Append the if.then block
 		f.AddBlock(thenBlock)

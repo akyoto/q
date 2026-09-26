@@ -1,7 +1,6 @@
 package ssa
 
 import (
-	"maps"
 	"slices"
 	"strings"
 
@@ -11,19 +10,21 @@ import (
 // mergeIdentifiers merges identifier mappings into the successor,
 // inserting phi functions where values differ across predecessors.
 func mergeIdentifiers(predecessor *Block, successor *Block) {
-	if predecessor.Identifiers.After == nil {
+	if predecessor.Identifiers.After.Raw() == nil {
 		return
 	}
 
-	if successor.Identifiers.After == nil {
-		successor.Identifiers.Before = make(map[string]Value, len(predecessor.Identifiers.After))
-		successor.Identifiers.After = make(map[string]Value, len(predecessor.Identifiers.After))
-
+	if successor.Identifiers.After.Raw() == nil {
 		if len(successor.Predecessors) == 1 {
-			maps.Copy(successor.Identifiers.Before, predecessor.Identifiers.After)
-			maps.Copy(successor.Identifiers.After, predecessor.Identifiers.After)
+			after := predecessor.Identifiers.After.Raw()
+			successor.Identifiers.Before.Share(after)
+			successor.Identifiers.After.Share(after)
 			return
 		}
+
+		fresh := make(map[string]Value, predecessor.Identifiers.After.Count())
+		successor.Identifiers.Before.Share(fresh)
+		successor.Identifiers.After.Share(fresh)
 	}
 
 	var (
@@ -38,12 +39,14 @@ func mergeIdentifiers(predecessor *Block, successor *Block) {
 	// Structs that were modified in branches need to be recreated
 	// to use the new Phi values as their arguments.
 	for _, name := range modifiedStructs {
-		structure := successor.Identifiers.Before[name].(*Struct)
+		value, _ := successor.Identifiers.Before.Get(name)
+		structure := value.(*Struct)
 		structType := types.Unwrap(structure.Typ).(*types.Struct)
 		newStruct := &Struct{Typ: structure.Typ, Arguments: make(Arguments, len(structure.Arguments))}
 
 		for i, field := range structType.Fields {
-			newStruct.Arguments[i] = successor.Identifiers.Before[name+"."+field.Name]
+			fieldValue, _ := successor.Identifiers.Before.Get(name + "." + field.Name)
+			newStruct.Arguments[i] = fieldValue
 		}
 
 		successor.ReplaceIdentifier(name, structure, newStruct)
@@ -52,15 +55,15 @@ func mergeIdentifiers(predecessor *Block, successor *Block) {
 
 // collectIdentifierNames returns all identifier names from both maps in deterministic order.
 func collectIdentifierNames(predecessor *Block, successor *Block) []string {
-	keys := make([]string, 0, max(len(predecessor.Identifiers.After), len(successor.Identifiers.After)))
+	keys := make([]string, 0, max(predecessor.Identifiers.After.Count(), successor.Identifiers.Before.Count()))
 
-	for name := range successor.Identifiers.Before {
+	for name := range successor.Identifiers.Before.Raw() {
 		if !slices.Contains(keys, name) {
 			keys = append(keys, name)
 		}
 	}
 
-	for name := range predecessor.Identifiers.After {
+	for name := range predecessor.Identifiers.After.Raw() {
 		if !slices.Contains(keys, name) {
 			keys = append(keys, name)
 		}
@@ -75,8 +78,8 @@ func collectIdentifierNames(predecessor *Block, successor *Block) []string {
 
 // mergeIdentifier merges a single identifier into the successor.
 func mergeIdentifier(predecessor *Block, successor *Block, name string, modifiedStructs *[]string) {
-	oldValue, oldExists := successor.Identifiers.Before[name]
-	newValue, newExists := predecessor.Identifiers.After[name]
+	oldValue, oldExists := successor.Identifiers.Before.Get(name)
+	newValue, newExists := predecessor.Identifiers.After.Get(name)
 
 	switch {
 	case oldExists:

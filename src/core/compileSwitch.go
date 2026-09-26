@@ -26,7 +26,7 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 
 	for i, branch := range s.Cases {
 		if branch.Condition == nil {
-			before := f.Block().Identifiers.Before
+			before := f.Block().Identifiers.Before.Raw()
 			err = f.compileAST(branch.Body)
 
 			if err != nil {
@@ -82,7 +82,7 @@ func (f *Function) compileSwitch(s *ast.Switch) error {
 		}
 
 		f.AddBlock(thenBlock)
-		before := f.Block().Identifiers.Before
+		before := f.Block().Identifiers.Before.Raw()
 		err = f.compileAST(branch.Body)
 
 		if err != nil {

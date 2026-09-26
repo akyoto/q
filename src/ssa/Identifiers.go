@@ -3,27 +3,28 @@ package ssa
 import (
 	"iter"
 	"slices"
+
+	"git.urbach.dev/cli/q/src/set"
 )
 
 // Identifiers contains the identifier mappings before and after a block executed.
 type Identifiers struct {
-	Before map[string]Value
-	After  map[string]Value
+	Before set.CowMap[string, Value]
+	After  set.CowMap[string, Value]
 }
 
 // FindIdentifier looks up an identifier.
 func (i *Identifiers) FindIdentifier(name string) (Value, bool) {
-	value, exists := i.After[name]
-	return value, exists
+	return i.After.Get(name)
 }
 
-// IdentifiersFor returns an iterator for all the identifiers pointing to the given value.
+// IdentifiersFor returns an iterator for all the identifiers pointing at the given value.
 func (i *Identifiers) IdentifiersFor(value Value) iter.Seq[string] {
 	return func(yield func(string) bool) {
-		names := make([]string, 0, len(i.After))
+		names := make([]string, 0, i.After.Count())
 
-		for name, val := range i.After {
-			if val == value {
+		for name, existing := range i.After.Raw() {
+			if existing == value {
 				names = append(names, name)
 			}
 		}
@@ -40,16 +41,12 @@ func (i *Identifiers) IdentifiersFor(value Value) iter.Seq[string] {
 
 // Identify adds a new identifier or changes an existing one.
 func (i *Identifiers) Identify(name string, value Value) {
-	if i.After == nil {
-		i.After = make(map[string]Value, 8)
-	}
-
-	i.After[name] = value
+	i.After.Set(name, value)
 }
 
 // IsIdentified returns true if the value can be obtained from one of the identifiers.
 func (i *Identifiers) IsIdentified(value Value) bool {
-	for _, existing := range i.After {
+	for _, existing := range i.After.Raw() {
 		if existing == value {
 			return true
 		}
@@ -60,19 +57,15 @@ func (i *Identifiers) IsIdentified(value Value) bool {
 
 // ReplaceIdentifier replaces an existing identifier.
 func (i *Identifiers) ReplaceIdentifier(name string, oldValue Value, newValue Value) {
-	i.Before[name] = newValue
+	i.Before.Set(name, newValue)
+	existing, _ := i.After.Get(name)
 
-	if i.After[name] == oldValue {
-		i.After[name] = newValue
+	if existing == oldValue {
+		i.After.Set(name, newValue)
 	}
 }
 
 // Unidentify deletes the identifier for the given value.
 func (i *Identifiers) Unidentify(value Value) {
-	for name, existing := range i.After {
-		if existing == value {
-			delete(i.After, name)
-			return
-		}
-	}
+	i.After.RemoveByValue(value)
 }
