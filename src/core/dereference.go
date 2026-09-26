@@ -11,12 +11,19 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 
 	switch v := value.(type) {
 	case *ssa.Global:
+		typ := v.Typ.(*types.Pointer).To
+		structure, isStructure := typ.(*types.Struct)
+
+		if isStructure && structure.IsArray() {
+			return f.convertToSlice(v, nil, false, structure, v.Source)
+		}
+
 		zero := f.Append(&ssa.Int{Int: 0})
 
 		memory = &ssa.Memory{
 			Address: v,
 			Index:   zero,
-			Typ:     v.Typ.(*types.Pointer).To,
+			Typ:     typ,
 			Source:  v.Source,
 		}
 	case *ssa.Memory:
@@ -29,7 +36,7 @@ func (f *Function) dereference(value ssa.Value) ssa.Value {
 
 	if isStruct {
 		if typ.IsArray() {
-			return value
+			return f.convertToSlice(memory.Address, memory.Index, memory.Scale, typ, memory.Source)
 		}
 
 		return f.loadFields(memory, typ, memory.Source)
