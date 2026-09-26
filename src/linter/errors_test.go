@@ -38,6 +38,8 @@ var errs = []struct {
 	{"MixedSignedUnsigned.q", &linter.MixedSignedUnsigned{Signed: "int64", Unsigned: "uint64"}},
 	{"Simplify.q", &linter.Simplify{To: "42"}},
 	{"Simplify2.q", &linter.Simplify{To: "x"}},
+	{"Simplify3.q", &linter.Simplify{To: "a[..2]"}},
+	{"Simplify4.q", &linter.Simplify{To: "a[2..]"}},
 }
 
 func TestErrors(t *testing.T) {
