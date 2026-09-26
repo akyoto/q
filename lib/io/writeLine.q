@@ -13,6 +13,11 @@ writeLine(unsigned uint) {
 	write("\n")
 }
 
+writeLine(boolean bool) {
+	write(boolean)
+	write("\n")
+}
+
 writeLine(pointer *any) {
 	write(pointer)
 	write("\n")

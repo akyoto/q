@@ -18,6 +18,14 @@ write(n uint) {
 	write(num)
 }
 
+write(n bool) {
+	if n {
+		write("true")
+	} else {
+		write("false")
+	}
+}
+
 write(n *any) {
 	buffer := new(byte, SIZE_UNSIGNED_16)
 	num := strings.fromInt(n as uint, 16, buffer)

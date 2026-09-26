@@ -48,7 +48,7 @@ var tests = []run{
 	{"branch-and", nil, "", "", 0},
 	{"branch-or", nil, "", "", 0},
 	{"branch-both", nil, "", "", 0},
-	{"logical-values", nil, "", "0\n1\n0\n1\n0\n1\n1\n1\n", 0},
+	{"bool", nil, "", "false\ntrue\nfalse\ntrue\nfalse\ntrue\ntrue\ntrue\n", 0},
 	{"jump-near", nil, "", "", 0},
 	{"reorder-blocks", nil, "", "CDFH\n", 0},
 	{"switch", nil, "", "", 0},
