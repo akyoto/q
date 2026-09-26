@@ -12,17 +12,15 @@ func (f *Function) makeSlice(address ssa.Value, from ssa.Value, to ssa.Value, so
 	addressOffset := f.multiplySize(from, elementType.Size())
 
 	newPointer := f.Append(&ssa.BinaryOp{
-		Op:     token.Add,
-		Left:   address,
-		Right:  addressOffset,
-		Source: source,
+		Op:    token.Add,
+		Left:  address,
+		Right: addressOffset,
 	})
 
 	newLength := f.Append(&ssa.BinaryOp{
-		Op:     token.Sub,
-		Left:   to,
-		Right:  from,
-		Source: source,
+		Op:    token.Sub,
+		Left:  to,
+		Right: from,
 	})
 
 	return f.makeStruct(f.Env.Slice(elementType), []ssa.Value{newPointer, newLength}, source)

@@ -23,13 +23,13 @@ func foldBinaryOp(ir ssa.IR, block *ssa.Block, binaryOp *ssa.BinaryOp, folded ma
 		leftZero, leftIsZero := binaryOp.Left.(*ssa.Int)
 
 		if leftIsZero && leftZero.Int == 0 && binaryOp.Op == token.Add {
-			return foldTo(ir, binaryOp, binaryOp.Right, folded)
+			return foldTo(ir, binaryOp, binaryOp.Right, binaryOp.Left, folded)
 		}
 
 		rightZero, rightIsZero := binaryOp.Right.(*ssa.Int)
 
 		if rightIsZero && rightZero.Int == 0 {
-			return foldTo(ir, binaryOp, binaryOp.Left, folded)
+			return foldTo(ir, binaryOp, binaryOp.Left, binaryOp.Right, folded)
 		}
 	}
 
