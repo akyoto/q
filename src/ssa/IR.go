@@ -79,6 +79,10 @@ func (ir *IR) IsIdentified(value Value) bool {
 func (ir *IR) ReplaceAll(old Value, new Value) {
 	for _, block := range ir.Blocks {
 		for _, value := range block.Instructions {
+			if value == nil {
+				continue
+			}
+
 			value.Replace(old, new)
 		}
 	}

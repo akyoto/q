@@ -7,6 +7,7 @@ type Build struct {
 	OS                   OS
 	Dry                  bool
 	Fold                 bool
+	RemoveCopies         bool
 	Reorder              bool
 	LintAssertionDensity bool
 	LintBinaryOps        bool

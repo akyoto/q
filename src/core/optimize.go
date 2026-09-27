@@ -45,6 +45,11 @@ func (f *Function) optimize() error {
 		folded = optimizer.Fold(f.IR)
 	}
 
+	// Replace copies with their actual values.
+	if f.Env.Build.RemoveCopies {
+		optimizer.RemoveCopies(&f.IR)
+	}
+
 	// After cleaning up some of the instructions we can proceed
 	// to calculate the list of users.
 	f.ComputeUsers()
