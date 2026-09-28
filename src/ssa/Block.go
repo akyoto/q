@@ -62,10 +62,15 @@ func (b *Block) FindExisting(instr Value) Value {
 
 		// If we encounter an instruction with side effects,
 		// we can't be sure that the value is still the same.
-		// TODO: This is a bit too conservative. We could check if the instruction affects the value.
-		switch existing.(type) {
-		case *Call, *CallExtern, *CallPointer, *Store, *Syscall, *Cas:
+		switch other := existing.(type) {
+		case *Call, *CallExtern, *CallPointer, *Syscall, *Cas:
 			return nil
+		case *Store:
+			load, isLoad := instr.(*Load)
+
+			if isLoad && load.Memory.Address == other.Memory.Address && load.Memory.Index == other.Memory.Index && load.Memory.Scale == other.Memory.Scale {
+				return nil
+			}
 		}
 	}
 
