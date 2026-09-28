@@ -51,10 +51,20 @@ func (f *Function) needsRegister(s *Step) bool {
 	case *ssa.Cas:
 		return false
 	case *ssa.Int:
+		// Check if we can encode zero as an immediate directly
+		// embedded in the instructions rather than requiring
+		// an extra register and a move.
+		if f.arch.sharedImmediate(instr) {
+			for _, user := range users {
+				if !f.arch.canEncodeNumber(user, instr) {
+					return true
+				}
+			}
+
+			return false
+		}
+
 		if len(users) == 1 {
-			// Check if we can encode single-use integers as immediates
-			// directly embedded in the instruction itself rather than
-			// requiring an extra register and a move.
 			return !f.arch.canEncodeNumber(users[0], instr)
 		}
 	case *ssa.Memory:

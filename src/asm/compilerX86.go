@@ -269,7 +269,7 @@ func (c *compilerX86) Compile(instr Instruction) {
 			}
 		}
 	case *LoadFixedOffset:
-		if instr.Scale {
+		if instr.Scale && instr.Index != 0 {
 			panic("x86-64 does not support offset scaling")
 		}
 
@@ -435,13 +435,13 @@ func (c *compilerX86) Compile(instr Instruction) {
 		scale := toX86Scale(instr.Scale, instr.Length)
 		c.code = x86.StoreRegister(c.code, instr.Base, instr.Index, scale, instr.Length, instr.Source)
 	case *StoreFixedOffset:
-		if instr.Scale {
+		if instr.Scale && instr.Index != 0 {
 			panic("x86-64 does not support offset scaling")
 		}
 
 		c.code = x86.StoreFixedOffsetRegister(c.code, instr.Base, int32(instr.Index), instr.Length, instr.Source)
 	case *StoreFixedOffsetNumber:
-		if instr.Scale {
+		if instr.Scale && instr.Index != 0 {
 			panic("x86-64 does not support offset scaling")
 		}
 

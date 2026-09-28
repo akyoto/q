@@ -21,6 +21,10 @@ func (a archARM) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 			return false
 		}
 
+		if number == instr.Left {
+			return false
+		}
+
 		if instr.Op.IsComparison() {
 			_, encodable := arm.CompareRegisterNumber(0, number.Int)
 			return encodable
@@ -56,6 +60,10 @@ func (a archARM) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 
 		return number.Int >= -256 && number.Int <= 255
 	case *ssa.Store:
+		if instr.Value == number {
+			return false
+		}
+
 		if instr.Memory.Index != number {
 			return false
 		}
@@ -123,4 +131,8 @@ func (a archARM) loadTLS(f *Function, destination cpu.Register, label string) {
 func (a archARM) operandConflict(instr ssa.Value, value ssa.Value) bool {
 	binaryOp, isBinaryOp := instr.(*ssa.BinaryOp)
 	return isBinaryOp && binaryOp.Op == token.Mod && (value == binaryOp.Left || value == binaryOp.Right)
+}
+
+func (a archARM) sharedImmediate(number *ssa.Int) bool {
+	return true
 }

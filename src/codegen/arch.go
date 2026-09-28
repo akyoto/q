@@ -38,6 +38,9 @@ type arch interface {
 
 	// operandConflict returns true if the register of the given value must differ from the destination register of the instruction.
 	operandConflict(instr ssa.Value, value ssa.Value) bool
+
+	// sharedImmediate returns true if the constant is allowed to be repeated as an immediate for every use.
+	sharedImmediate(number *ssa.Int) bool
 }
 
 // newArch returns the architecture for the given build.

@@ -21,6 +21,10 @@ func (a archX86) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 			return false
 		}
 
+		if number == instr.Left {
+			return false
+		}
+
 		if instr.Op.IsComparison() {
 			return cpu.SizeInt(number.Int) <= 4
 		}
@@ -36,21 +40,21 @@ func (a archX86) canEncodeNumber(instr ssa.Value, number *ssa.Int) bool {
 			return false
 		}
 
-		if instr.Memory.Scale {
+		if instr.Memory.Scale && number.Int != 0 {
 			return false
 		}
 
 		return number.Int >= -128 && number.Int <= 127
 	case *ssa.Store:
-		if instr.Memory.Scale {
-			return false
+		if instr.Memory.Index == number {
+			if instr.Memory.Scale && number.Int != 0 {
+				return false
+			}
+
+			return cpu.SizeInt(number.Int) <= 1
 		}
 
-		if instr.Value == number && cpu.SizeInt(number.Int) <= 4 {
-			return true
-		}
-
-		return instr.Memory.Index == number && cpu.SizeInt(number.Int) <= 1
+		return instr.Value == number && cpu.SizeInt(number.Int) <= 4
 	}
 
 	return false
@@ -121,4 +125,8 @@ func (a archX86) loadTLS(f *Function, destination cpu.Register, label string) {
 func (a archX86) operandConflict(instr ssa.Value, value ssa.Value) bool {
 	binaryOp, isBinaryOp := instr.(*ssa.BinaryOp)
 	return isBinaryOp && !binaryOp.Op.IsComparison() && value == binaryOp.Right
+}
+
+func (a archX86) sharedImmediate(number *ssa.Int) bool {
+	return number.Int == 0
 }
