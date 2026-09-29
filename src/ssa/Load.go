@@ -21,7 +21,7 @@ func (a *Load) Equals(v Value) bool {
 		return false
 	}
 
-	return a.Memory == b.Memory
+	return a.Memory.Equals(b.Memory)
 }
 
 // IsPure returns true because loads have no side effects.
