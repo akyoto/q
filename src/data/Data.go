@@ -4,4 +4,5 @@ package data
 type Data struct {
 	Immutable map[string][]byte
 	Mutable   map[string][]byte
+	TLS       map[string][]byte
 }

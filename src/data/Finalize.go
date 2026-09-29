@@ -13,8 +13,13 @@ func (data *Data) Finalize() ([]byte, map[string]int) {
 		capacity += len(value)
 	}
 
+	for _, value := range data.TLS {
+		capacity += len(value)
+	}
+
 	final := make([]byte, 0, capacity)
-	positions := make(map[string]int, len(data.Immutable)+len(data.Mutable))
+	positions := make(map[string]int, len(data.Immutable)+len(data.Mutable)+len(data.TLS))
+	final = appendLabeled(final, positions, data.TLS)
 	final = data.appendImmutable(final, positions)
 	final = data.appendMutable(final, positions)
 	return final, positions

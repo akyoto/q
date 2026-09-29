@@ -1,13 +1,18 @@
 import mem
 import process
 
+global {
+	// Set by the linker to the size of the thread-local block.
+	tlsSize uint64
+}
+
 create(func ()) -> (tid int) {
 	stack := mem.mmap(0, STACK_SIZE, mem.read|mem.write, mem.private|mem.anonymous, -1, 0)
-	tls := stack + STACK_SIZE - TLS_SIZE
+	tls := stack + STACK_SIZE - tlsSize
 	args := tls - process.CLONE_ARGS_SIZE as *process.CloneArgs
 	args.flags = CLONE_THREAD | CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_IO | CLONE_SIGHAND | CLONE_SETTLS
 	args.stack = stack as uint64
-	args.stack_size = STACK_SIZE - TLS_SIZE
+	args.stack_size = STACK_SIZE - tlsSize
 	args.tls = tls as uint64
 	tid := syscall(process._clone3, args, process.CLONE_ARGS_SIZE) as int
 

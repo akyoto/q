@@ -33,8 +33,8 @@ type arch interface {
 	// conflictsWithStackPointer returns true if the register conflicts with the stack pointer.
 	conflictsWithStackPointer(register cpu.Register) bool
 
-	// loadTLS loads the thread-local storage pointer into the destination register.
-	loadTLS(f *Function, destination cpu.Register, label string)
+	// loadTLS loads the address of the thread-local variable into the destination register.
+	loadTLS(f *Function, destination cpu.Register, label string, offset int)
 
 	// operandConflict returns true if the register of the given value must differ from the destination register of the instruction.
 	operandConflict(instr ssa.Value, value ssa.Value) bool

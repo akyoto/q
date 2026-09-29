@@ -1,4 +1,3 @@
 const {
 	STACK_SIZE = 4096
-	TLS_SIZE = 32
 }

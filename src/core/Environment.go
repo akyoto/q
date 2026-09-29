@@ -4,6 +4,8 @@ import (
 	"iter"
 
 	"git.urbach.dev/cli/q/src/config"
+	"git.urbach.dev/cli/q/src/data"
+	"git.urbach.dev/cli/q/src/exe"
 	"git.urbach.dev/cli/q/src/fs"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -151,4 +153,21 @@ func (env *Environment) Structs() iter.Seq[*types.Struct] {
 			}
 		}
 	}
+}
+
+// TLSLayout computes the layout of all thread-local variables.
+func (env *Environment) TLSLayout() (map[string]int, int) {
+	sizes := make(map[string]int)
+
+	for global := range env.Globals() {
+		if !global.ThreadLocal {
+			continue
+		}
+
+		label := global.File.Package + "." + global.Name
+		sizes[label] = global.Typ.Size()
+	}
+
+	offsets, size := data.TLSLayout(sizes)
+	return offsets, exe.Align(size, 16)
 }

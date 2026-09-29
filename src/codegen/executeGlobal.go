@@ -14,7 +14,7 @@ func (f *Function) executeGlobal(step *Step, instr *ssa.Global) {
 	}
 
 	if instr.ThreadLocal {
-		f.arch.loadTLS(f, destination, instr.Label)
+		f.arch.loadTLS(f, destination, instr.Label, f.TLSOffsets[instr.Label])
 	} else {
 		f.Assembler.Append(&asm.MoveLabel{
 			Destination: destination,

@@ -6,5 +6,6 @@ func (f *Function) Assemble() {
 		global.Used.Add(1)
 	}
 
+	f.TLSOffsets, f.TLSSize = f.Env.TLSLayout()
 	f.CompileToAssembly(f.IR, f.Env.Build, f.needsStackFrame(), f.Assembler.Libraries.Count() > 0)
 }

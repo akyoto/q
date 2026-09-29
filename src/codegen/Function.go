@@ -15,6 +15,8 @@ type Function struct {
 	Assembler         asm.Assembler
 	Preserved         set.Ordered[cpu.Register]
 	Count             count
+	TLSOffsets        map[string]int
+	TLSSize           int
 	stackSize         uint
 	IsExit            bool
 	needsFramePointer bool

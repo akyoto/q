@@ -2,6 +2,7 @@ package linker
 
 import (
 	"bytes"
+	"encoding/binary"
 
 	"git.urbach.dev/cli/q/src/arm"
 	"git.urbach.dev/cli/q/src/asm"
@@ -12,25 +13,47 @@ import (
 
 // initTLS initializes the thread-local storage.
 func initTLS(program *asm.Assembler, env *core.Environment) {
-	tls := ""
+	used := false
+	hasTLSSize := false
+	base := ""
 
 	for global := range env.Globals() {
-		if global.Used.Load() == 0 {
+		if !global.ThreadLocal {
+			if global.Used.Load() == 0 {
+				continue
+			}
+
+			label := global.File.Package + "." + global.Name
+			program.Data.SetMutable(label, bytes.Repeat([]byte{0}, global.Typ.Size()))
+
+			if label == "thread.tlsSize" {
+				hasTLSSize = true
+			}
+
 			continue
 		}
 
 		label := global.File.Package + "." + global.Name
-		data := bytes.Repeat([]byte{0}, global.Typ.Size())
-		program.Data.SetMutable(label, data)
+		program.Data.SetTLS(label, bytes.Repeat([]byte{0}, global.Typ.Size()))
 
-		// TODO: Make it deterministic.
-		if global.ThreadLocal && tls == "" {
-			tls = label
+		if base == "" || label < base {
+			base = label
+		}
+
+		if global.Used.Load() > 0 {
+			used = true
 		}
 	}
 
-	if tls == "" {
+	if !used {
 		return
+	}
+
+	if env.Build.OS == config.Linux && hasTLSSize {
+		_, tlsSize := env.TLSLayout()
+		size := make([]byte, 8)
+		binary.LittleEndian.PutUint64(size, uint64(tlsSize))
+		program.Data.SetMutable("thread.tlsSize", size)
 	}
 
 	switch env.Build.OS {
@@ -39,7 +62,7 @@ func initTLS(program *asm.Assembler, env *core.Environment) {
 		case config.ARM:
 			program.Append(&asm.MoveLabel{
 				Destination: arm.X0,
-				Label:       tls,
+				Label:       base,
 			})
 
 			program.Append(&asm.WriteSystemRegister{
@@ -49,7 +72,7 @@ func initTLS(program *asm.Assembler, env *core.Environment) {
 		case config.X86:
 			program.Append(&asm.MoveLabel{
 				Destination: x86.R0,
-				Label:       tls,
+				Label:       base,
 			})
 
 			program.Append(&asm.WriteSystemRegister{

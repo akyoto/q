@@ -101,13 +101,21 @@ func (a archARM) conflictsWithStackPointer(register cpu.Register) bool {
 	return register == arm.SP
 }
 
-func (a archARM) loadTLS(f *Function, destination cpu.Register, label string) {
+func (a archARM) loadTLS(f *Function, destination cpu.Register, label string, offset int) {
 	switch a.build.OS {
 	case config.Linux:
 		f.Assembler.Append(&asm.ReadSystemRegister{
 			Destination:    destination,
 			SystemRegister: arm.TPIDR_EL0,
 		})
+
+		if offset != 0 {
+			f.Assembler.Append(&asm.AddNumber{
+				Destination: destination,
+				Source:      destination,
+				Number:      offset,
+			})
+		}
 	case config.Windows:
 		f.Assembler.Append(&asm.AddNumber{
 			Destination: destination,
@@ -118,7 +126,7 @@ func (a archARM) loadTLS(f *Function, destination cpu.Register, label string) {
 		f.Assembler.Append(&asm.AddNumber{
 			Destination: destination,
 			Source:      destination,
-			Number:      WindowsTLSOffset + WindowsTLSSize - 0x20,
+			Number:      WindowsTLSOffset + WindowsTLSSize - f.TLSSize + offset,
 		})
 	default:
 		f.Assembler.Append(&asm.MoveLabel{

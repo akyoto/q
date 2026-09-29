@@ -17,3 +17,12 @@ func (data *Data) SetMutable(label string, bytes []byte) {
 
 	data.Mutable[label] = bytes
 }
+
+// SetTLS sets the thread-local data for the given label.
+func (data *Data) SetTLS(label string, bytes []byte) {
+	if data.TLS == nil {
+		data.TLS = map[string][]byte{}
+	}
+
+	data.TLS[label] = bytes
+}
