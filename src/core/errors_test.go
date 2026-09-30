@@ -90,6 +90,8 @@ var errs = []struct {
 	{"TypeMismatch16.q", &core.TypeMismatch{Encountered: "string", Expected: "int"}},
 	{"TypeMismatch17.q", &core.TypeMismatch{Encountered: "(int64, int64)", Expected: "int"}},
 	{"TypeMismatch18.q", &core.TypeMismatch{Encountered: "int", Expected: "bool"}},
+	{"TypeNotIndexable.q", &core.TypeNotIndexable{TypeName: "int"}},
+	{"TypeNotIndexable2.q", &core.TypeNotIndexable{TypeName: "int"}},
 	{"UndefinedStructField.q", &core.UndefinedStructField{Identifier: "p", FieldName: "y"}},
 	{"UnknownEnumMember.q", &core.UnknownEnumMember{EnumName: "MyEnum", MemberName: "unknown"}},
 	{"UnknownIdentifier.q", &core.UnknownIdentifier{Name: "x"}},

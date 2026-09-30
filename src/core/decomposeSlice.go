@@ -1,6 +1,7 @@
 package core
 
 import (
+	"git.urbach.dev/cli/q/src/errors"
 	"git.urbach.dev/cli/q/src/ssa"
 	"git.urbach.dev/cli/q/src/types"
 )
@@ -21,6 +22,6 @@ func (f *Function) decomposeSlice(addressValue ssa.Value) (ssa.Value, types.Type
 	case *types.Pointer:
 		return addressValue, addressType, nil, nil
 	default:
-		panic("not implemented")
+		return nil, nil, nil, errors.New(&TypeNotIndexable{TypeName: addressType.Name()}, f.File, addressValue.(errors.Source))
 	}
 }
